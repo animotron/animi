@@ -18,10 +18,21 @@
  */
 package org.animotron.animi;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.UUID;
 
+import org.animotron.graph.serializer.AnimoSerializer;
+import org.animotron.io.PipedInput;
+import org.animotron.io.PipedOutput;
 import org.junit.Assert;
 import org.junit.Test;
+import org.neo4j.graphdb.Relationship;
 
 /**
  * @author Ferenc Kovacs
@@ -50,14 +61,14 @@ public class ObjectTopicNameTest extends ATest {
 	 * Internal is n search of a match
 	 * Both external and internal are moving, they have to be stopped to see if their surface fit , it they have a hit or a match
 	 * 
-	 * Match is when the surface of external and that of internal are found to be in sync,  complementary or identical – connected (as true and valid connection) allowing the flow)
+	 * Match is when the surface of external and that of internal are found to be in sync,  complementary or identical ï¿½ connected (as true and valid connection) allowing the flow)
 	 *  
 	 * External is reduced to object first, the smallest thing to work with
 	 * 
-	 * 1.	Object belongs to external world – object will copied or doubled in the presence of another object in its internal world, or surface, like in case of a mirror
+	 * 1.	Object belongs to external world ï¿½ object will copied or doubled in the presence of another object in its internal world, or surface, like in case of a mirror
 	 * 2.	Object must have a copy recorded in internal world. It will be a point-like zero dimension animo object
 	 * 3.	Object must have a copy in Logic (interface) called Object for the link up or docking
-	 * 4.	Object is topic in a dialog between external world and internal world –  language, near surface level
+	 * 4.	Object is topic in a dialog between external world and internal world ï¿½  language, near surface level
 	 * 5.	topic is a noun or noun phrase at surface level
 	 * 6.	Object -topic- animo object are connected through the same desire to be contacted/connected which may be seen from internal external and reflexive (commutative) aspects
 	 * 
@@ -84,20 +95,20 @@ public class ObjectTopicNameTest extends ATest {
 		
 		testAnimo(obj);
 		
-		testAnimiParser("object", obj);
+		testAnimiParser("object\n", obj);
 		
 		//say - object, get answer - object
-		testAnimi("object", "object");
+		testAnimi("object\n", "object");
 	}
 	
 	@Test
 	public void test_02() throws Exception {
 		
 		//say - object, get answer - object
-		testAnimi("object", "object");
+		testAnimi("object\n", "object");
 
 		//? == any word
-		testAnimiParser("object", "the ? have name \"object\"");
+		testAnimiParser("object\n", "the ? have name \"object\"");
 		
 	}
 
@@ -105,11 +116,33 @@ public class ObjectTopicNameTest extends ATest {
 		return UUID.randomUUID().toString();
 	}
 	
-	private void testAnimiParser(String msg, String expression) {
-		Assert.fail("not implemented");
+	private void testAnimiParser(String msg, String expected) throws IOException {
+		PipedOutput<Relationship> op = new PipedOutput<Relationship>();
+		PipedInput<Relationship> ip = op.getInputStream();
+		
+		Reader reader = new StringReader(msg);
+		Dialogue dlg = new Dialogue(reader, op);
+		(new Thread(dlg)).run();
+		
+		for (Relationship r : ip) {
+			String actual = AnimoSerializer._.serialize(r);
+			Assert.assertEquals(expected, actual);
+		}
+		
+		reader.close();
 	}
 
-	private void testAnimi(String msg, String expected) {
-		Assert.fail("not implemented");
+	private void testAnimi(String msg, String expected) throws IOException {
+
+		PipedOutputStream output = new PipedOutputStream();
+		PipedInputStream input = new PipedInputStream(output);
+		
+		Reader reader = new StringReader(msg);
+		Dialogue dlg = new Dialogue(new StringReader(msg), output);
+		(new Thread(dlg)).run();
+		
+		assertEquals(input, expected);
+		
+		reader.close();
 	}
 }
