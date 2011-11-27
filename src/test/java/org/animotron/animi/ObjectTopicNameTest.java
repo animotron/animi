@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
+ * @author Ferenc Kovacs
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
@@ -83,13 +84,31 @@ public class ObjectTopicNameTest extends ATest {
 		
 		testAnimo(obj);
 		
-		testAnimi("object", obj);
+		testAnimiParser("object", obj);
+		
+		//say - object, get answer - object
+		testAnimi("object", "object");
 	}
 	
+	@Test
+	public void test_02() throws Exception {
+		
+		//say - object, get answer - object
+		testAnimi("object", "object");
+
+		//? == any word
+		testAnimiParser("object", "the ? have name \"object\"");
+		
+	}
+
 	private String uuid() {
 		return UUID.randomUUID().toString();
 	}
 	
+	private void testAnimiParser(String msg, String expression) {
+		Assert.fail("not implemented");
+	}
+
 	private void testAnimi(String msg, String expected) {
 		Assert.fail("not implemented");
 	}
