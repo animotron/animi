@@ -31,7 +31,7 @@ import org.junit.Test;
 public class TautologyTest extends ATest {
 
 	/*
-	 * Test two – tautology
+	 * Test two tautology
 	 * 
 	 * If a topic (word is used)  it has to make sense
 	 * A word (topic) makes sense, if it exist.
@@ -41,7 +41,7 @@ public class TautologyTest extends ATest {
 	 * a) perception (sensors)
 	 * b) cognition (memory, thinking)
 	 * 
-	 * If a property of existence exists – or if the object called topic has the property, then it must be tangible and comparable with the representation of the topic-internally, were representations are structured     in object-relation-properties pattern implemented or materialized by aimo graphs
+	 * If a property of existence exists ï¿½ or if the object called topic has the property, then it must be tangible and comparable with the representation of the topic-internally, were representations are structured     in object-relation-properties pattern implemented or materialized by aimo graphs
 	 * 
 	 * so if there is an object with a matching property of existence in the aimo graph that matches the perception of reality (which, if not is done real time and original, live objects, must be reduced to a2D representation of the same that is available or accessible by the computer in a different, dummy reality topology.
 	 * So the match is sought which will be two fitting  patterns to see that they are identical.
