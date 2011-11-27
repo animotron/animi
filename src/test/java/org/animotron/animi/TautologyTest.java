@@ -18,6 +18,8 @@
  */
 package org.animotron.animi;
 
+import static org.junit.Assert.fail;
+
 import java.util.UUID;
 
 import org.junit.Assert;
@@ -71,7 +73,7 @@ public class TautologyTest extends ATest {
 	 */
 	@Test
 	public void test_01() throws Exception {
-		
+		fail("Not yet implemented");
 	}
 	
 	private String uuid() {
