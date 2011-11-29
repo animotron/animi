@@ -19,20 +19,23 @@
 package org.animotron.animi;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.animotron.graph.AnimoGraph;
 import org.animotron.graph.serializer.AnimoSerializer;
 import org.animotron.io.PipedInput;
 import org.animotron.io.PipedOutput;
 import org.junit.Assert;
 import org.junit.Test;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.index.IndexHits;
 
 /**
  * @author Ferenc Kovacs
@@ -93,7 +96,15 @@ public class ObjectTopicNameTest extends ATest {
 		
 		String obj = "the "+uuid()+" have name \"object\".";
 		
-		testAnimo(obj);
+		Transaction tx = AnimoGraph.beginTx();
+		try {
+			Relationship the = testAnimo(obj);
+			Words._.add(the, "object");
+			
+			tx.success();
+		} finally {
+			AnimoGraph.finishTx(tx);
+		}
 		
 		testAnimiParser("object\n", obj);
 		
@@ -108,8 +119,32 @@ public class ObjectTopicNameTest extends ATest {
 		testAnimi("object\n", "object");
 
 		//? == any word
-		testAnimiParser("object\n", "the ? have name \"object\"");
+		testWord("object");
 		
+	}
+
+	private void testWord(String word) throws IOException {
+		IndexHits<Relationship> hits = Words._.search(word);
+		
+		Relationship result = null;
+		for (Relationship r : hits) {
+			if (result == null)
+				result = r;
+			else
+				Assert.fail("more then one result");
+		}
+		
+		if (result == null)
+			Assert.fail("expecting animo object for '"+word+"', but get none");
+		
+		String actual = AnimoSerializer._.serialize(result);
+		Pattern pattern = Pattern.compile("the [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} have name \""+word+"\".");
+		
+		System.out.println(actual);
+		
+		Matcher matcher = pattern.matcher(actual);
+		Assert.assertTrue(matcher.find());
+		Assert.assertFalse(matcher.find());
 	}
 
 	private String uuid() {
@@ -124,10 +159,20 @@ public class ObjectTopicNameTest extends ATest {
 		Dialogue dlg = new Dialogue(reader, op);
 		(new Thread(dlg)).run();
 		
+		Relationship result = null;
 		for (Relationship r : ip) {
-			String actual = AnimoSerializer._.serialize(r);
-			Assert.assertEquals(expected, actual);
+			if (result == null)
+				result = r;
+			else
+				Assert.fail("more then one result");
 		}
+		
+		if (result == null)
+			Assert.fail("expecting animo object '"+expected+"', but get none");
+		
+		String actual = AnimoSerializer._.serialize(result);
+		Assert.assertEquals(expected, actual);
+
 		
 		reader.close();
 	}

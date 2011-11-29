@@ -22,9 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.Writer;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,7 +46,7 @@ public class Dialogue implements Runnable {
 	private OutputStream out;
 	
     private Reader reader;
-    private Writer writer;
+    //private Writer writer;
     
     private PipedOutput<Relationship> leaned;
 
@@ -57,7 +55,7 @@ public class Dialogue implements Runnable {
     	this.out = null;
     	
     	reader = in;
-    	writer = null;
+    	//writer = null;
 
     	this.leaned = leaned;
     }
@@ -67,7 +65,7 @@ public class Dialogue implements Runnable {
     	this.out = out;
     	
     	reader = in;
-    	writer = null;
+    	//writer = null;
 
     	this.leaned = null;
     }
@@ -77,7 +75,7 @@ public class Dialogue implements Runnable {
     	this.out = out;
     	
     	reader = new InputStreamReader(in);
-    	writer = new PrintWriter(out);
+    	//writer = new PrintWriter(out);
     }
     
     private StringBuilder s = new StringBuilder();
@@ -119,10 +117,22 @@ public class Dialogue implements Runnable {
 				        			word = null;
 				        		}
 				        		if (leaned != null) leaned.write(expr);
+				        		
+				        		if (token == null)
+				        			token = new FastList<Relationship>();
+				        		
+				        		token.add(expr);
 			        		}
 			        	} else {
-			        		if (out != null) StringResultSerializer._.serialize(token.get(0), out);
+			        		if (leaned != null) {
+			        			for (Relationship r : token) {
+			        				leaned.write(r);
+			        			}
+			        		}
 			        	}
+			        	
+		        		if (out != null) 
+		        			StringResultSerializer._.serialize(token.get(0), out);
 			        } else {
 			        
 			            s.append(ch);
