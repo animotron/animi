@@ -37,7 +37,6 @@ public class Words {
 	private static RelationshipIndex INDEX;
 
 	private Words() {
-		
 		IndexManager indexManager = AnimoGraph.getDb().index();
 
 		INDEX = indexManager.forRelationships(NAME);

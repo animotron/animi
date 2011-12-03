@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.animotron.graph.AnimoGraph;
-import org.animotron.graph.serializer.AnimoSerializer;
+import org.animotron.graph.serializer.CachedSerializer;
 import org.animotron.io.PipedInput;
 import org.animotron.io.PipedOutput;
 import org.junit.Assert;
@@ -137,7 +137,7 @@ public class ObjectTopicNameTest extends ATest {
 		if (result == null)
 			Assert.fail("expecting animo object for '"+word+"', but get none");
 		
-		String actual = AnimoSerializer._.serialize(result);
+		String actual = CachedSerializer.ANIMO.serialize(result);
 		Pattern pattern = Pattern.compile("the [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} have name \""+word+"\".");
 		
 		System.out.println(actual);
@@ -170,7 +170,7 @@ public class ObjectTopicNameTest extends ATest {
 		if (result == null)
 			Assert.fail("expecting animo object '"+expected+"', but get none");
 		
-		String actual = AnimoSerializer._.serialize(result);
+		String actual = CachedSerializer.ANIMO.serialize(result);
 		Assert.assertEquals(expected, actual);
 
 		

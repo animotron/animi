@@ -30,7 +30,7 @@ import javolution.util.FastList;
 
 import org.animotron.expression.AnimoExpression;
 import org.animotron.graph.AnimoGraph;
-import org.animotron.graph.serializer.StringResultSerializer;
+import org.animotron.graph.serializer.CachedSerializer;
 import org.animotron.io.PipedOutput;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
@@ -132,7 +132,7 @@ public class Dialogue implements Runnable {
 			        	}
 			        	
 		        		if (out != null) 
-		        			StringResultSerializer._.serialize(token.get(0), out);
+		        			CachedSerializer.STRING.serialize(token.get(0), out);
 			        } else {
 			        
 			            s.append(ch);
