@@ -19,7 +19,12 @@
 package org.animotron.animi;
 
 import org.animotron.graph.AnimoGraph;
+import org.animotron.graph.GraphOperation;
+import org.animotron.statement.operator.THE;
+import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.event.ErrorState;
+import org.neo4j.graphdb.event.KernelEventHandler;
 import org.neo4j.graphdb.index.IndexHits;
 import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.graphdb.index.RelationshipIndex;
@@ -28,25 +33,62 @@ import org.neo4j.graphdb.index.RelationshipIndex;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class Words {
+public class Words implements KernelEventHandler {
 	
-	public static final Words _ = new Words();
+	private static Words _ = null;
 	
-	private static final String NAME = "words";
+	public static Words words() {
+		if (_ == null) {
+			_ = new Words();
+		}
+		return _;
+	}
+
+    protected static Node NAME = null;
+	
+	private static final String INDEX_NAME = "words";
 
 	private static RelationshipIndex INDEX;
 
 	private Words() {
 		IndexManager indexManager = AnimoGraph.getDb().index();
+		
+		AnimoGraph.getDb().registerKernelEventHandler(this);
 
-		INDEX = indexManager.forRelationships(NAME);
+		INDEX = indexManager.forRelationships(INDEX_NAME);
+		
+		NAME = AnimoGraph.execute(new GraphOperation<Node>() {
+			@Override
+			public Node execute() throws Exception {
+				return THE._("name");
+			}
+		});
 	}
 	
 	public void add(Relationship the, String word) {
-		INDEX.add(the, NAME, word);
+		INDEX.add(the, INDEX_NAME, word);
 	}
 
 	public IndexHits<Relationship> search(String word) {
-		return INDEX.get(NAME, word);
+		return INDEX.get(INDEX_NAME, word);
+	}
+
+	@Override
+	public void beforeShutdown() {
+		_ = null;
+	}
+
+	@Override
+	public void kernelPanic(ErrorState error) {
+	}
+
+	@Override
+	public Object getResource() {
+		return null;
+	}
+
+	@Override
+	public ExecutionOrder orderComparedTo(KernelEventHandler other) {
+		return null;
 	}
 }

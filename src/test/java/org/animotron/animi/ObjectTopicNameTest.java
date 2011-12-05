@@ -37,6 +37,8 @@ import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.index.IndexHits;
 
+import static org.animotron.animi.Words.words;
+
 /**
  * @author Ferenc Kovacs
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -99,7 +101,7 @@ public class ObjectTopicNameTest extends ATest {
 		Transaction tx = AnimoGraph.beginTx();
 		try {
 			Relationship the = testAnimo(obj);
-			Words._.add(the, "object");
+			words().add(the, "object");
 			
 			tx.success();
 		} finally {
@@ -124,7 +126,7 @@ public class ObjectTopicNameTest extends ATest {
 	}
 
 	private void testWord(String word) throws IOException {
-		IndexHits<Relationship> hits = Words._.search(word);
+		IndexHits<Relationship> hits = words().search(word);
 		
 		Relationship result = null;
 		for (Relationship r : hits) {

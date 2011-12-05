@@ -29,12 +29,21 @@ import java.util.UUID;
 import javolution.util.FastList;
 
 import org.animotron.expression.AnimoExpression;
+import org.animotron.expression.JExpression;
 import org.animotron.graph.AnimoGraph;
+import org.animotron.graph.builder.FastGraphBuilder;
 import org.animotron.graph.serializer.CachedSerializer;
 import org.animotron.io.PipedOutput;
+import org.animotron.statement.operator.AN;
+import org.animotron.statement.operator.REF;
+import org.animotron.statement.query.GET;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.index.IndexHits;
+
+import static org.animotron.animi.Words.words;
+import static org.animotron.animi.Words.NAME;
+import static org.animotron.expression.JExpression._;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -105,7 +114,7 @@ public class Dialogue implements Runnable {
 				        		try {
 				            		expr = new AnimoExpression("the "+uuid()+" have name \""+s.toString()+"\".");
 				            		
-				            		Words._.add(expr, word);
+				            		words().add(expr, word);
 				            		
 				            		tx.success();
 				        		} catch (Exception e) {
@@ -131,8 +140,24 @@ public class Dialogue implements Runnable {
 			        		}
 			        	}
 			        	
-		        		if (out != null) 
-		        			CachedSerializer.STRING.serialize(token.get(0), out);
+		        		if (out != null)  {
+		        			
+		        			try {
+			        			FastGraphBuilder builder = new FastGraphBuilder();
+			        			builder.startGraph();
+			        			builder.start(GET._);
+			                    builder._(REF._, NAME);
+			                    builder.start(AN._);
+		                        builder._(REF._, token.get(0).getEndNode());
+			                    builder.end();
+			                    builder.end();
+			                    builder.endGraph();
+			                    
+			        			CachedSerializer.STRING.serialize(builder.relationship(), out);
+		        			} catch (Exception e) {
+		        				//XXX: log?
+							}
+		        		}
 			        } else {
 			        
 			            s.append(ch);
@@ -165,7 +190,7 @@ public class Dialogue implements Runnable {
 		
 		List<Relationship> nodes = null;
 		
-		IndexHits<Relationship> hits = Words._.search(word);
+		IndexHits<Relationship> hits = words().search(word);
 		try {
 			nodes = new FastList<Relationship>(hits.size());
 			while (hits.hasNext()) {
