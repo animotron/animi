@@ -18,31 +18,23 @@
  */
 package org.animotron.animi;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.util.List;
-import java.util.UUID;
-
 import javolution.util.FastList;
-
 import org.animotron.expression.AnimoExpression;
 import org.animotron.expression.JExpression;
 import org.animotron.graph.AnimoGraph;
-import org.animotron.graph.builder.FastGraphBuilder;
 import org.animotron.graph.serializer.CachedSerializer;
 import org.animotron.io.PipedOutput;
-import org.animotron.statement.operator.AN;
-import org.animotron.statement.operator.REF;
 import org.animotron.statement.query.GET;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.index.IndexHits;
 
-import static org.animotron.animi.Words.words;
+import java.io.*;
+import java.util.List;
+import java.util.UUID;
+
 import static org.animotron.animi.Words.NAME;
+import static org.animotron.animi.Words.words;
 import static org.animotron.expression.JExpression._;
 
 /**
@@ -143,17 +135,12 @@ public class Dialogue implements Runnable {
 		        		if (out != null)  {
 		        			
 		        			try {
-			        			FastGraphBuilder builder = new FastGraphBuilder();
-			        			builder.startGraph();
-			        			builder.start(GET._);
-			                    builder._(REF._, NAME);
-			                    builder.start(AN._);
-		                        builder._(REF._, token.get(0).getEndNode());
-			                    builder.end();
-			                    builder.end();
-			                    builder.endGraph();
-			                    
-			        			CachedSerializer.STRING.serialize(builder.relationship(), out);
+			        			CachedSerializer.STRING.serialize(
+                                        new JExpression(
+                                                _(GET._, NAME, _(token.get(0)))
+                                        ),
+                                        out
+                                );
 		        			} catch (Exception e) {
 		        				//XXX: log?
 							}
