@@ -89,7 +89,7 @@ public class ObjectTopicNameTest extends ATest {
 	@Test
 	public void test_01() throws Exception {
 		
-		String obj = "the "+uuid()+" have name \"object\".";
+		String obj = "the "+uuid()+" name \"object\".";
 		
 		Transaction tx = AnimoGraph.beginTx();
 		try {
@@ -133,7 +133,7 @@ public class ObjectTopicNameTest extends ATest {
 			Assert.fail("expecting animo object for '"+word+"', but get none");
 		
 		String actual = CachedSerializer.ANIMO.serialize(result);
-		Pattern pattern = Pattern.compile("the [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} have name \""+word+"\".");
+		Pattern pattern = Pattern.compile("the [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} name \""+word+"\".");
 		
 		System.out.println(actual);
 		
