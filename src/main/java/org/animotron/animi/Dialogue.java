@@ -19,12 +19,14 @@
 package org.animotron.animi;
 
 import javolution.util.FastList;
+import org.animotron.expression.AbstractExpression;
 import org.animotron.expression.AnimoExpression;
-import org.animotron.expression.JExpression;
 import org.animotron.graph.AnimoGraph;
+import org.animotron.graph.builder.FastGraphBuilder;
 import org.animotron.graph.serializer.CachedSerializer;
 import org.animotron.io.PipedOutput;
 import org.animotron.statement.operator.AN;
+import org.animotron.statement.operator.REF;
 import org.animotron.statement.query.GET;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
@@ -136,15 +138,25 @@ public class Dialogue implements Runnable {
 		        		if (out != null)  {
 		        			
 		        			try {
-		        				Object[] ans = new Object[token.size()];
+		        				final Object[] ans = new Object[token.size()];
 		        				int j = 0;
 		        				for (Relationship t : token) {
 		        					ans[j++] = _(AN._, t.getEndNode());
 		        				}
 			        			CachedSerializer.STRING.serialize(
-                                        new JExpression(
-                                                _(GET._, NAME, _(AN._, ans))
-                                        ),
+                                        new AbstractExpression(new FastGraphBuilder()) {
+                                            @Override
+                                            public void build() throws Exception {
+                                                builder.start(GET._);
+                                                builder._(REF._, NAME);
+                                                builder.start(AN._);
+                                                for (Object o : ans){
+                                                    builder._(REF._, o);
+                                                }
+                                                builder.end();
+                                                builder.end();
+                                            }
+                                        },
                                         out
                                 );
 		        			} catch (Exception e) {
