@@ -136,9 +136,14 @@ public class Dialogue implements Runnable {
 		        		if (out != null)  {
 		        			
 		        			try {
+		        				Object[] ans = new Object[token.size()];
+		        				int j = 0;
+		        				for (Relationship t : token) {
+		        					ans[j++] = _(AN._, t.getEndNode());
+		        				}
 			        			CachedSerializer.STRING.serialize(
                                         new JExpression(
-                                                _(GET._, NAME, _(AN._, token.get(0).getEndNode()))
+                                                _(GET._, NAME, _(AN._, ans))
                                         ),
                                         out
                                 );
