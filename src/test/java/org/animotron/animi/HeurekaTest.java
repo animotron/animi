@@ -20,9 +20,6 @@ package org.animotron.animi;
 
 import static org.junit.Assert.fail;
 
-import java.util.UUID;
-
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -66,17 +63,5 @@ public class HeurekaTest extends ATest {
 	@Test
 	public void test_01() throws Exception {
 		fail("Not yet implemented");
-	}
-	
-	private String uuid() {
-		return UUID.randomUUID().toString();
-	}
-	
-	private void testAnimiParser(String msg, String expression) {
-		Assert.fail("not implemented");
-	}
-
-	private void testAnimi(String msg, String expected) {
-		Assert.fail("not implemented");
 	}
 }

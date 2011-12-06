@@ -24,8 +24,8 @@ import org.animotron.exception.AnimoException;
 import org.animotron.expression.AnimoExpression;
 import org.animotron.graph.GraphOperation;
 import org.animotron.graph.serializer.*;
-import org.animotron.manipulator.Evaluator;
-import org.animotron.manipulator.PFlow;
+import org.animotron.io.PipedInput;
+import org.animotron.io.PipedOutput;
 import org.junit.After;
 import org.junit.Before;
 import org.neo4j.graphdb.Node;
@@ -33,6 +33,7 @@ import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.index.IndexManager;
 
 import java.io.*;
+import java.util.UUID;
 
 import static org.animotron.Properties.HASH;
 import static org.animotron.graph.AnimoGraph.*;
@@ -48,6 +49,50 @@ public abstract class ATest {
     public static final String DATA_FOLDER = "data-test";
 	
 	public static final WstxOutputFactory OUTPUT_FACTORY = new WstxOutputFactory();
+
+	protected String uuid() {
+		return UUID.randomUUID().toString();
+	}
+	
+	protected void testAnimiParser(String msg, String expected) throws IOException {
+		PipedOutput<Relationship> op = new PipedOutput<Relationship>();
+		PipedInput<Relationship> ip = op.getInputStream();
+		
+		Reader reader = new StringReader(msg);
+		Dialogue dlg = new Dialogue(reader, op);
+		(new Thread(dlg)).run();
+		
+		Relationship result = null;
+		for (Relationship r : ip) {
+			if (result == null)
+				result = r;
+			else
+				Assert.fail("more then one result");
+		}
+		
+		if (result == null)
+			Assert.fail("expecting animo object '"+expected+"', but get none");
+		
+		String actual = CachedSerializer.ANIMO.serialize(result);
+		Assert.assertEquals(expected, actual);
+
+		
+		reader.close();
+	}
+
+	protected void testAnimi(String msg, String expected) throws IOException {
+
+		PipedOutputStream output = new PipedOutputStream();
+		PipedInputStream input = new PipedInputStream(output);
+		
+		Reader reader = new StringReader(msg);
+		Dialogue dlg = new Dialogue(new StringReader(msg), output);
+		(new Thread(dlg)).run();
+		
+		assertEquals(input, expected);
+		
+		reader.close();
+	}
 
 	protected AnimoExpression testAnimo(String exp) throws Exception {
         return testAnimo(exp, exp);

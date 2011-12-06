@@ -19,18 +19,11 @@
 package org.animotron.animi;
 
 import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.animotron.graph.AnimoGraph;
 import org.animotron.graph.serializer.CachedSerializer;
-import org.animotron.io.PipedInput;
-import org.animotron.io.PipedOutput;
 import org.junit.Assert;
 import org.junit.Test;
 import org.neo4j.graphdb.Relationship;
@@ -149,47 +142,4 @@ public class ObjectTopicNameTest extends ATest {
 		Assert.assertFalse(matcher.find());
 	}
 
-	private String uuid() {
-		return UUID.randomUUID().toString();
-	}
-	
-	private void testAnimiParser(String msg, String expected) throws IOException {
-		PipedOutput<Relationship> op = new PipedOutput<Relationship>();
-		PipedInput<Relationship> ip = op.getInputStream();
-		
-		Reader reader = new StringReader(msg);
-		Dialogue dlg = new Dialogue(reader, op);
-		(new Thread(dlg)).run();
-		
-		Relationship result = null;
-		for (Relationship r : ip) {
-			if (result == null)
-				result = r;
-			else
-				Assert.fail("more then one result");
-		}
-		
-		if (result == null)
-			Assert.fail("expecting animo object '"+expected+"', but get none");
-		
-		String actual = CachedSerializer.ANIMO.serialize(result);
-		Assert.assertEquals(expected, actual);
-
-		
-		reader.close();
-	}
-
-	private void testAnimi(String msg, String expected) throws IOException {
-
-		PipedOutputStream output = new PipedOutputStream();
-		PipedInputStream input = new PipedInputStream(output);
-		
-		Reader reader = new StringReader(msg);
-		Dialogue dlg = new Dialogue(new StringReader(msg), output);
-		(new Thread(dlg)).run();
-		
-		assertEquals(input, expected);
-		
-		reader.close();
-	}
 }
