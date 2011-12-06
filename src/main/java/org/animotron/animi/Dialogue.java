@@ -24,6 +24,7 @@ import org.animotron.expression.JExpression;
 import org.animotron.graph.AnimoGraph;
 import org.animotron.graph.serializer.CachedSerializer;
 import org.animotron.io.PipedOutput;
+import org.animotron.statement.operator.AN;
 import org.animotron.statement.query.GET;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
@@ -137,7 +138,7 @@ public class Dialogue implements Runnable {
 		        			try {
 			        			CachedSerializer.STRING.serialize(
                                         new JExpression(
-                                                _(GET._, NAME, _(token.get(0)))
+                                                _(GET._, NAME, _(AN._, token.get(0).getEndNode()))
                                         ),
                                         out
                                 );
