@@ -1,26 +1,24 @@
 /*
- *  Copyright (C) 2011 The Animo Project
+ *  Copyright (C) 2011-2012 The Animo Project
  *  http://animotron.org
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public License
- *  as published by the Free Software Foundation; either version 3
- *  of the License, or (at your option) any later version.
+ *  This file is part of Animotron.
  *
- *  This program is distributed in the hope that it will be useful,
+ *  Animotron is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of
+ *  the License, or (at your option) any later version.
+ *
+ *  Animotron is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
+ *  GNU Affero General Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  You should have received a copy of
+ *  the GNU Affero General Public License along with Animotron.
+ *  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.animotron.animi;
-
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.animotron.graph.AnimoGraph;
 import org.animotron.graph.serializer.CachedSerializer;
@@ -29,6 +27,10 @@ import org.junit.Test;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.index.IndexHits;
+
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.animotron.animi.Words.words;
 
