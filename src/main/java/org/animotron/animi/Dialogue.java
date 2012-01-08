@@ -109,7 +109,7 @@ public class Dialogue implements Runnable {
 				        		
 				        		Transaction tx = AnimoGraph.beginTx();
 				        		try {
-				            		expr = new AnimoExpression("the "+uuid()+" have name \""+s.toString()+"\".");
+				            		expr = new AnimoExpression("the "+uuid()+" name \""+s.toString()+"\".");
 				            		
 				            		words().add(expr, word);
 				            		
@@ -143,8 +143,9 @@ public class Dialogue implements Runnable {
 		        				final Object[] ans = new Object[token.size()];
 		        				int j = 0;
 		        				for (Relationship t : token) {
-		        					ans[j++] = _(AN._, t.getEndNode());
+		        					ans[j++] = t.getEndNode();
 		        				}
+		        				
 			        			CachedSerializer.STRING.serialize(
                                         new AbstractExpression(new FastGraphBuilder()) {
                                             @Override

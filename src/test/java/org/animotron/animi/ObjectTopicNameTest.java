@@ -1,22 +1,20 @@
 /*
- *  Copyright (C) 2011-2012 The Animo Project
+ *  Copyright (C) 2011 The Animo Project
  *  http://animotron.org
  *
- *  This file is part of Animotron.
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation; either version 3
+ *  of the License, or (at your option) any later version.
  *
- *  Animotron is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of
- *  the License, or (at your option) any later version.
- *
- *  Animotron is distributed in the hope that it will be useful,
+ *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
+ *  GNU Lesser General Public License for more details.
  *
- *  You should have received a copy of
- *  the GNU Affero General Public License along with Animotron.
- *  If not, see <http://www.gnu.org/licenses/>.
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 package org.animotron.animi;
 
@@ -91,7 +89,7 @@ public class ObjectTopicNameTest extends ATest {
 	@Test
 	public void test_01() throws Exception {
 		
-		String obj = "the "+uuid()+" have name \"object\".";
+		String obj = "the "+uuid()+" name \"object\".";
 		
 		Transaction tx = AnimoGraph.beginTx();
 		try {
@@ -135,7 +133,7 @@ public class ObjectTopicNameTest extends ATest {
 			Assert.fail("expecting animo object for '"+word+"', but get none");
 		
 		String actual = CachedSerializer.ANIMO.serialize(result);
-		Pattern pattern = Pattern.compile("the [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} have name \""+word+"\".");
+		Pattern pattern = Pattern.compile("the [0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} name \""+word+"\".");
 		
 		System.out.println(actual);
 		
