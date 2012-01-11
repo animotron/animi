@@ -30,13 +30,11 @@ import org.animotron.io.PipedInput;
 import org.animotron.io.PipedOutput;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.neo4j.graphdb.Relationship;
 
 import java.io.*;
 import java.util.UUID;
 
-import static org.animotron.graph.AnimoGraph.cleanDB;
 import static org.animotron.graph.AnimoGraph.shutdownDB;
 import static org.animotron.graph.AnimoGraph.startDB;
 import static org.animotron.graph.Properties.HASH;
@@ -243,9 +241,18 @@ public abstract class ATest {
         System.out.println();
     }
 
-    @BeforeClass
-    public static void clean() {
-        cleanDB(DATA_FOLDER);
+    private void deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            for (String aChildren : dir.list()) {
+                deleteDir(new File(dir, aChildren));
+            }
+        }
+        dir.delete();
+    }
+
+    public void cleanDB() {
+        shutdownDB();
+        deleteDir(new File(DATA_FOLDER));
     }
 
     @Before
@@ -256,6 +263,7 @@ public abstract class ATest {
 
     @After
     public void stop() {
-    	shutdownDB();
+        shutdownDB();
     }
+
 }
