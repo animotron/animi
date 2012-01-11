@@ -21,9 +21,6 @@
 package org.animotron.animi;
 
 import org.animotron.graph.AnimoGraph;
-import org.animotron.graph.GraphOperation;
-import org.animotron.statement.operator.THE;
-import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.event.ErrorState;
 import org.neo4j.graphdb.event.KernelEventHandler;
@@ -46,7 +43,7 @@ public class Words implements KernelEventHandler {
 		return _;
 	}
 
-    protected static Node NAME = null;
+    protected static final String NAME = "name";
 	
 	private static final String INDEX_NAME = "words";
 
@@ -59,12 +56,6 @@ public class Words implements KernelEventHandler {
 
 		INDEX = indexManager.forRelationships(INDEX_NAME);
 		
-		NAME = AnimoGraph.execute(new GraphOperation<Node>() {
-			@Override
-			public Node execute() throws Exception {
-				return THE._("name");
-			}
-		});
 	}
 	
 	public void add(Relationship the, String word) {
