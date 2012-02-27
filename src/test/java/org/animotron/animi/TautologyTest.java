@@ -86,7 +86,7 @@ public class TautologyTest extends ATest {
 	 * 
 	 */
 	@Test
-	public void test_01() throws Exception {
+	public void test_01() throws Throwable {
 		testAnimi("object\n", "object");
 		
 		testAnimi("object is object\n", "object");

@@ -63,7 +63,7 @@ public class HeurekaTest extends ATest {
 	 * 
 	 */
 	@Test
-	public void test_01() throws Exception {
+	public void test_01() throws Throwable {
 		fail("Not yet implemented");
 	}
 }

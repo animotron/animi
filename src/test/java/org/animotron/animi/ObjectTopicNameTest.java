@@ -89,7 +89,7 @@ public class ObjectTopicNameTest extends ATest {
 	 * 
 	 */
 	@Test
-	public void test_01() throws Exception {
+	public void test_01() throws Throwable {
 		
 		String obj = "the "+uuid()+" name \"object\".";
 		
@@ -110,7 +110,7 @@ public class ObjectTopicNameTest extends ATest {
 	}
 	
 	@Test
-	public void test_02() throws Exception {
+	public void test_02() throws Throwable {
 		
 		//say - object, get answer - object
 		testAnimi("object\n", "object");

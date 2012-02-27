@@ -114,7 +114,7 @@ public class Dialogue implements Runnable {
 				            		words().add(expr, word);
 				            		
 				            		tx.success();
-				        		} catch (Exception e) {
+				        		} catch (Throwable t) {
 									//reset
 									s = new StringBuilder();
 									continue;
@@ -149,7 +149,7 @@ public class Dialogue implements Runnable {
 			        			CachedSerializer.STRING.serialize(
                                         new AbstractExpression(new FastGraphBuilder()) {
                                             @Override
-                                            public void build() throws Exception {
+                                            public void build() throws Throwable {
                                                 builder.start(GET._);
                                                 builder._(REF._, NAME);
                                                 builder.start(AN._);
@@ -162,7 +162,7 @@ public class Dialogue implements Runnable {
                                         },
                                         out
                                 );
-		        			} catch (Exception e) {
+		        			} catch (Throwable t) {
 		        				//XXX: log?
 							}
 		        		}

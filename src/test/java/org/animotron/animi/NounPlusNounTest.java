@@ -41,7 +41,7 @@ public class NounPlusNounTest extends ATest {
 	 * 
 	 */
 	@Test
-	public void test_01() throws Exception {
+	public void test_01() throws Throwable {
 
 		testAnimi("driver\n", "driver");
 		testAnimi("back\n", "back");
