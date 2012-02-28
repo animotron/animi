@@ -40,7 +40,6 @@ import java.util.UUID;
 
 import static org.animotron.animi.Words.NAME;
 import static org.animotron.animi.Words.words;
-import static org.animotron.expression.JExpression._;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -149,7 +148,7 @@ public class Dialogue implements Runnable {
 			        			CachedSerializer.STRING.serialize(
                                         new AbstractExpression(new FastGraphBuilder()) {
                                             @Override
-                                            public void build() throws Exception {
+                                            public void build() throws Throwable {
                                                 builder.start(GET._);
                                                 builder._(REF._, NAME);
                                                 builder.start(AN._);
