@@ -113,7 +113,7 @@ public class Dialogue implements Runnable {
 				            		words().add(expr, word);
 				            		
 				            		tx.success();
-				        		} catch (Exception e) {
+				        		} catch (Throwable t) {
 									//reset
 									s = new StringBuilder();
 									continue;
@@ -161,7 +161,7 @@ public class Dialogue implements Runnable {
                                         },
                                         out
                                 );
-		        			} catch (Exception e) {
+		        			} catch (Throwable t) {
 		        				//XXX: log?
 							}
 		        		}
