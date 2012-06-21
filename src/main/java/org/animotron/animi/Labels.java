@@ -32,24 +32,24 @@ import org.neo4j.graphdb.index.RelationshipIndex;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class Words implements KernelEventHandler {
+public class Labels implements KernelEventHandler {
 	
-	private static Words _ = null;
+	private static Labels _ = null;
 	
-	public static Words words() {
+	public static Labels words() {
 		if (_ == null) {
-			_ = new Words();
+			_ = new Labels();
 		}
 		return _;
 	}
 
-    protected static final String NAME = "name";
+    protected static final String NAME = "label";
 	
-	private static final String INDEX_NAME = "words";
+	private static final String INDEX_NAME = "labels";
 
 	private static RelationshipIndex INDEX;
 
-	private Words() {
+	private Labels() {
 		IndexManager indexManager = AnimoGraph.getDb().index();
 		
 		AnimoGraph.getDb().registerKernelEventHandler(this);

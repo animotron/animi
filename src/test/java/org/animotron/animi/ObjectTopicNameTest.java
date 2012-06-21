@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.animotron.animi.Words.words;
+import static org.animotron.animi.Labels.words;
 
 /**
  * @author Ferenc Kovacs
