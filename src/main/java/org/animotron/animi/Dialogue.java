@@ -38,8 +38,8 @@ import java.io.*;
 import java.util.List;
 import java.util.UUID;
 
-import static org.animotron.animi.Words.NAME;
-import static org.animotron.animi.Words.words;
+import static org.animotron.animi.Labels.NAME;
+import static org.animotron.animi.Labels.words;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
