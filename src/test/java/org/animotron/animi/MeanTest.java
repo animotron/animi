@@ -48,8 +48,15 @@ public class MeanTest extends ATest {
 	public void test_01() throws Throwable {
 		__(
 			"def image.", "def action.", "def pointer.", "def question.",
-			"def time.", "def time-shift (?from time) (?to time).",
-			"def place.", "def place-shift (?from place) (?to place)."
+			"def time.", 
+			"def time-from (time) (from).", 
+			"def time-to (time) (to).", 
+			"def time-shift (?time-from) (?time-to).",
+			
+			"def place.",
+			"def place-from (place) (from).",
+			"def place-to (place) (to).",
+			"def place-shift (?place-from) (?place-to)."
 		);
 		
 		//ОБРАЗЫ (24): 
@@ -136,7 +143,7 @@ public class MeanTest extends ATest {
 		
 		//УКАЗАТЕЛИ (7): 
 		_("по", "pointer", "place");
-		_("в", "pointer", "place,to");
+		_("в", "pointer", "place-to");
 		_("к", "pointer");
 		_("спустя", "pointer");
 		_("за", "pointer");
@@ -147,8 +154,8 @@ public class MeanTest extends ATest {
 		_("когда", "question", "time");
 		
 		_("где", "question", "place");
-		_("куда", "question", "place, to");
-		_("откуда", "question", "place, from");
+		_("куда", "question", "place-to");
+		_("откуда", "question", "place-from");
 		
 		_("кто", "question");
 		_("что", "question");
