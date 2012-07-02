@@ -147,8 +147,8 @@ public class MeanTest extends ATest {
 		_("когда", "question", "time");
 		
 		_("где", "question", "place");
-		_("куда", "question", "place", "to");
-		_("откуда", "question", "place", "from");
+		_("куда", "question", "place-to");
+		_("откуда", "question", "place-from");
 		
 		_("кто", "question");
 		_("что", "question");
