@@ -20,11 +20,11 @@
  */
 package org.animotron.animi;
 
-import static org.animotron.expression.AnimoExpression.__;
-
 import org.animotron.graph.AnimoGraph;
+import org.animotron.statement.operator.Utils;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.event.ErrorState;
 import org.neo4j.graphdb.event.KernelEventHandler;
 import org.neo4j.graphdb.index.IndexHits;
@@ -35,86 +35,66 @@ import org.neo4j.graphdb.index.RelationshipIndex;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class Labels implements KernelEventHandler {
+public class Letters implements KernelEventHandler {
 	
-	protected static Labels _ = new Labels();
+	protected static Letters _ = new Letters();
 	
-    protected static final String NAME = "label";
-	private static final String INDEX_NAME = NAME+"s";
+    protected static final String LETTER = "letter";
+    protected static final String STARTS = "starts";
+    protected static final String DEFS = "DEF";
+	private static final String INDEX_NAME = LETTER+"s";
 
 	private static RelationshipIndex INDEX;
 
-	private Labels() {
+	private Letters() {
 		IndexManager indexManager = AnimoGraph.getDb().index();
 		
 		AnimoGraph.getDb().registerKernelEventHandler(this);
 
 		INDEX = indexManager.forRelationships(INDEX_NAME);
+	}
+	
+	public static void add(Relationship value, char ch) {
+		//System.out.println("adding '"+ch+"'");
+		INDEX.add(value, LETTER, ch);
 		
-		if (!hasLetters()) {
-			Transaction tx = AnimoGraph.beginTx();
-			try {
-				createLetters();
+		for (Path path : Utils.td_THE.traverse(value.getStartNode())) {
+			INDEX.add(path.lastRelationship(), DEFS, ch);
+		}
+		//IS topology here???
+	}
+
+	public static void addStarts(Relationship op, char ch) {
+		//System.out.println("adding '"+ch+"'");
+		INDEX.add(op, STARTS, ch);
+	}
+
+	public static IndexHits<Relationship> search(char ch) {
+		//System.out.println("searching '"+ch+"'");
+		return INDEX.get(LETTER, ch);
+	}
+
+	public static IndexHits<Relationship> starts(char ch) {
+		//System.out.println("searching defs '"+ch+"'");
+		return INDEX.get(STARTS, ch);
+	}
+
+	public static Node getDef(char ch) {
+		IndexHits<Relationship> hits = INDEX.get(DEFS, ch);
+		try {
+			if (hits.hasNext()) {
+				Relationship r = hits.next();
 				
-				tx.success();
-			} finally {
-				AnimoGraph.finishTx(tx);
+				if (hits.hasNext())
+					throw new UnsupportedOperationException("more than one defs for letter '"+ch+"'");
+				
+				return r.getEndNode();
 			}
-		}
-	}
-	
-	public static void add(Relationship the, String word) {
-//		System.out.println("adding '"+word+"'");
-		INDEX.add(the, INDEX_NAME, word);
-	}
-
-	public static IndexHits<Relationship> search(String word) {
-//		System.out.println("searching '"+word+"'");
-		return INDEX.get(INDEX_NAME, word);
-	}
-	
-	private boolean hasLetters() {
-		IndexHits<Relationship> hits = Letters.search('a');
-		try {
-			return hits.hasNext();
 		} finally {
 			hits.close();
 		}
+		throw new UnsupportedOperationException("no letter '"+ch+"'");
 	}
-
-	private void createLetters() {
-		IndexHits<Relationship> hits = Letters.search('a');
-		try {
-			if (hits.hasNext()) return;
-		} finally {
-			hits.close();
-		}
-		
-		StringBuilder sb = null;
-		
-		for (char ch = 'a'; ch <= 'z'; ch++) {
-			sb = new StringBuilder();
-			sb.append("def ").append(ch).append(" letter \"").append(ch).append("\"");
-			__(sb.toString());
-		}
-
-		for (char ch = 'A'; ch <= 'Z'; ch++) {
-			sb = new StringBuilder();
-			sb.append("def ").append(ch).append(" letter \"").append(ch).append("\"");
-			__(sb.toString());
-		}
-		
-		int shift = 'A' - 'a';
-
-		for (char ch = 'A'; ch <= 'Z'; ch++) {
-			sb = new StringBuilder();
-			char low = (char)(ch - shift);
-			sb.append("def ").append(ch).append(low).append(" (").append(ch).append(") (").append(low).append(")");
-			__(sb.toString());
-		}
-	}
-
-
 
 	@Override
 	public void beforeShutdown() {

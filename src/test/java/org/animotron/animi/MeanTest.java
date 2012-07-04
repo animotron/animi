@@ -22,15 +22,27 @@ package org.animotron.animi;
 
 import org.animotron.utils.MessageDigester;
 import org.junit.Test;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.index.IndexHits;
 
 import static org.animotron.expression.AnimoExpression.__;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ * @author Eduard Khachukaev
  *
  */
 public class MeanTest extends ATest {
 
+	private void sleep(int secs) {
+		try {
+			Thread.sleep(secs * 1000);
+		} catch (InterruptedException e) {
+		}
+	}
+	
 	private void _(String name, String ... types) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("def ").append(MessageDigester.uuid().toString());
@@ -39,13 +51,46 @@ public class MeanTest extends ATest {
 			sb.append(" (").append(types[i]).append(")");
 		}
 		
-		sb.append(" (label ru \"").append(name).append("\").");
+		sb.append(" (label \"").append(name).append("\").");
+		
+		System.out.println(sb.toString());
 		
 		__(sb.toString());
+	}
+	
+	@Test
+	public void test_00() throws Throwable {
+		_("Петя", "image");
+
+		IndexHits<Relationship> hits = Letters.starts('п');
+		try {
+			for (Relationship r : hits) {
+				System.out.println(r);
+			}
+		} finally {
+			hits.close();
+		}
 	}
 
 	@Test
 	public void test_01() throws Throwable {
+		_("Петя", "image");
+		
+		sleep(1);
+		
+		IndexHits<Relationship> hits = Labels.search("Петя");
+		try {
+			assertTrue(hits.hasNext());
+			hits.next();
+			assertFalse(hits.hasNext());
+		} finally {
+			hits.close();
+		}
+		
+	}
+
+	@Test
+	public void test_02() throws Throwable {
 		__(
 			"def image.", "def action.", "def pointer.", "def question.",
 			"def time.", 
@@ -60,95 +105,95 @@ public class MeanTest extends ATest {
 		);
 		
 		//ОБРАЗЫ (24): 
-		_("я", "image");
-		_("он", "image");
-		_("она",  "image");
-		_("они", "image");
+//		_("я", "image");
+//		_("он", "image");
+//		_("она",  "image");
+//		_("они", "image");
 
 		_("Петя", "image");
-		_("луна", "image");
-		_("мальчик", "image");
-		_("небе", "image");
+//		_("луна", "image");
+//		_("мальчик", "image");
+//		_("небе", "image");
 		
 		_("деревне", "image", "place");
 		_("школу", "image", "place");
 		
-		_("домой", "image");
-		_("деревни", "image");
-		_("деревней", "image");
-			
-		_("тёмная", "image");
-		_("сторона", "image");
-		_("поезд", "image");
-		_("реки", "image");
-
-		_("неделю", "image", "time");
+//		_("домой", "image");
+//		_("деревни", "image");
+//		_("деревней", "image");
+//			
+//		_("тёмная", "image");
+//		_("сторона", "image");
+//		_("поезд", "image");
+//		_("реки", "image");
+//
+//		_("неделю", "image", "time");
 		_("утром", "image", "time");
-		_("днём", "image", "time");
-		_("полудню", "image", "time");
-		_("вечером", "image", "time");
-		_("ночью", "image", "time");
-		_("сегодня", "image", "time");
+//		_("днём", "image", "time");
+//		_("полудню", "image", "time");
+//		_("вечером", "image", "time");
+//		_("ночью", "image", "time");
+//		_("сегодня", "image", "time");
 		
 		//АКЦИИ (48): 
 		_("пошёл", "action", "?time", "?place-shift");
 		
-		_("взошла", "action");
-		_("появилась", "action");
-		_("знают", "action");
-		_("пойдёт", "action");
-		_("пришёл", "action");
-		_("появилось", "action");
-		_("сделал", "action");
-		_("делал", "action");
+//		_("взошла", "action");
+//		_("появилась", "action");
+//		_("знают", "action");
+//		_("пойдёт", "action");
+//		_("пришёл", "action");
+//		_("появилось", "action");
+//		_("сделал", "action");
+//		_("делал", "action");
 		_("шёл", "action");
-		_("был", "action");
-		_("была",  "action");
-		_("пошла", "action");
-		_("пошло", "action");
-		_("пошли", "action");
-		_("пришла", "action");
-		_("пришло", "action");
-		_("пришли", "action");
-		_("шла", "action");
-		_("шло", "action");
-		_("шли", "action");
-		_("сделала", "action");
-		_("делала", "action");
-		_("сделало", "action");
-		_("делало", "action");
-		_("сделали", "action");
-		_("делали", "action");
-		_("появились", "action");
-		_("появился", "action");
-		_("произошло", "action");
-		_("побежал", "action");
-		_("побежала", "action");
-		_("побежало", "action");
-		_("побежали", "action");
-		_("прибежал", "action");
-		_("прибежала", "action");
-		_("прибежало", "action");
-		_("прибежали", "action");
-		_("бежал", "action");
-		_("бежала", "action");
-		_("бежало", "action");
-		_("бежали", "action");
-		_("было", "action");
-		_("были",  "action");
-		_("положил", "action");
-		_("положила", "action");
-		_("положило", "action");
-		_("положили", "action");
+//		_("был", "action");
+//		_("была",  "action");
+//		_("пошла", "action");
+//		_("пошло", "action");
+//		_("пошли", "action");
+//		_("пришла", "action");
+//		_("пришло", "action");
+//		_("пришли", "action");
+//		_("шла", "action");
+//		_("шло", "action");
+//		_("шли", "action");
+//		_("сделала", "action");
+//		_("делала", "action");
+//		_("сделало", "action");
+//		_("делало", "action");
+//		_("сделали", "action");
+//		_("делали", "action");
+//		_("появились", "action");
+//		_("появился", "action");
+//		_("произошло", "action");
+//		_("побежал", "action");
+//		_("побежала", "action");
+//		_("побежало", "action");
+//		_("побежали", "action");
+//		_("прибежал", "action");
+//		_("прибежала", "action");
+//		_("прибежало", "action");
+//		_("прибежали", "action");
+//		_("бежал", "action");
+//		_("бежала", "action");
+//		_("бежало", "action");
+//		_("бежали", "action");
+//		_("было", "action");
+//		_("были",  "action");
+//		_("положил", "action");
+//		_("положила", "action");
+//		_("положило", "action");
+//		_("положили", "action");
 		
 		//УКАЗАТЕЛИ (7): 
 		_("по", "pointer", "place");
 		_("в", "pointer", "place-to");
-		_("к", "pointer");
-		_("спустя", "pointer");
-		_("за", "pointer");
-		_("из", "pointer");
-		_("возле", "pointer");
+//		_("к", "pointer");
+//		_("спустя", "pointer");
+//		_("за", "pointer");
+//		_("из", "pointer");
+//		_("возле", "pointer");
 
 		//ВОПРОСИТЕЛИ (10): 
 		_("когда", "question", "time");
@@ -157,17 +202,17 @@ public class MeanTest extends ATest {
 		_("куда", "question", "place-to");
 		_("откуда", "question", "place-from");
 		
-		_("кто", "question");
-		_("что", "question");
+//		_("кто", "question");
+//		_("что", "question");
+//		
+//		_("какой", "question");
+//		_("какая", "question");
+//		_("какое", "question");
+//		_("какие", "question");
 		
-		_("какой", "question");
-		_("какая", "question");
-		_("какое", "question");
-		_("какие", "question");
-		
-		testAnimi("Петя пошёл в школу по деревне утром.", "");
-		testAnimi("где Петя?","Петя в школе.");
-		testAnimi("Вечером он пришёл домой.", "");
+		testAnimi("Петя пошёл в школу по деревне утром.\n", "");
+		testAnimi("где Петя?\n","Петя в школе.");
+//		testAnimi("Вечером он пришёл домой.", "");
 	}
 	
 }

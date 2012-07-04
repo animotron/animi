@@ -32,8 +32,6 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.animotron.animi.Labels.words;
-
 /**
  * @author Ferenc Kovacs
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -96,7 +94,7 @@ public class ObjectTopicNameTest extends ATest {
 		Transaction tx = AnimoGraph.beginTx();
 		try {
 			Relationship the = testAnimo(obj);
-			words().add(the, "object");
+			Labels.add(the, "object");
 			
 			tx.success();
 		} finally {
@@ -121,7 +119,7 @@ public class ObjectTopicNameTest extends ATest {
 	}
 
 	private void testWord(String word) throws IOException {
-		IndexHits<Relationship> hits = words().search(word);
+		IndexHits<Relationship> hits = Labels.search(word);
 		
 		Relationship result = null;
 		for (Relationship r : hits) {

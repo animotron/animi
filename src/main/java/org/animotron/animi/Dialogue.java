@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.animotron.animi.Labels.NAME;
-import static org.animotron.animi.Labels.words;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -103,31 +102,13 @@ public class Dialogue implements Runnable {
 			        		//learn
 			        		
 							word = s.toString();
-			        		if (word != null) {
-				        		AnimoExpression expr;
+							System.out.println("final checking "+word);
+
+							if (token == null)
+			        			token = new FastList<Relationship>();
 				        		
-				        		Transaction tx = AnimoGraph.beginTx();
-				        		try {
-				            		expr = new AnimoExpression("the "+uuid()+" name \""+s.toString()+"\".");
-				            		
-				            		words().add(expr, word);
-				            		
-				            		tx.success();
-				        		} catch (Throwable t) {
-									//reset
-									s = new StringBuilder();
-									continue;
-				        		} finally {
-				        			AnimoGraph.finishTx(tx);
-				        			word = null;
-				        		}
-				        		if (leaned != null) leaned.write(expr);
-				        		
-				        		if (token == null)
-				        			token = new FastList<Relationship>();
-				        		
-				        		token.add(expr);
-			        		}
+//			        		token.add(expr);
+
 			        	} else {
 			        		if (leaned != null) {
 			        			for (Relationship r : token) {
@@ -137,43 +118,21 @@ public class Dialogue implements Runnable {
 			        	}
 			        	
 		        		if (out != null)  {
-		        			
-		        			try {
-		        				final Object[] ans = new Object[token.size()];
-		        				int j = 0;
-		        				for (Relationship t : token) {
-		        					ans[j++] = t.getEndNode();
-		        				}
-		        				
-			        			CachedSerializer.STRING.serialize(
-                                        new AbstractExpression(new FastGraphBuilder()) {
-                                            @Override
-                                            public void build() throws Throwable {
-                                                builder.start(GET._);
-                                                builder._(REF._, NAME);
-                                                builder.start(AN._);
-                                                for (Object o : ans){
-                                                    builder._(REF._, o);
-                                                }
-                                                builder.end();
-                                                builder.end();
-                                            }
-                                        },
-                                        out
-                                );
-		        			} catch (Throwable t) {
-		        				//XXX: log?
-							}
+		        			//answer
 		        		}
+		        			
 			        } else {
-			        
-			            s.append(ch);
-						word = s.toString();
-	
-				        token = check(word);
-				        if (token != null && token.size() > 0) {
-				        	s = new StringBuilder();
-				        }
+			        	if (s.length() == 0 && ch == ' ')
+			        		;
+			        	else {
+				        	s.append(ch);
+							word = s.toString();
+		
+					        token = check(word);
+					        if (token != null && token.size() > 0) {
+					        	s = new StringBuilder();
+					        }
+			        	}
 			        }
 			    }
 
@@ -195,17 +154,21 @@ public class Dialogue implements Runnable {
 
 	private List<Relationship> check(String word) {
 		
+		boolean found = false;
 		List<Relationship> nodes = null;
 		
-		IndexHits<Relationship> hits = words().search(word);
+		IndexHits<Relationship> hits = Labels.search(word);
 		try {
 			nodes = new FastList<Relationship>(hits.size());
 			while (hits.hasNext()) {
 				nodes.add(hits.next());
+				found = true;
 			}
 		} finally {
 			hits.close();
 		}
+		if (found)
+			System.out.println("found '"+word+"'");
 		
 		return nodes;
 	}
