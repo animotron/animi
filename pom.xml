@@ -72,7 +72,6 @@
 	<repositories>
 		<repository>
 			<id>javacv</id>
-			<reference>JavaCV repository</reference>
 			<url>http://maven2.javacv.googlecode.com/git/</url>
 		</repository>
 	</repositories>
