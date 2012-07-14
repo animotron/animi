@@ -69,12 +69,14 @@
                 <artifactId>maven-javacl-plugin</artifactId>
                 <version>1.0.0-RC2</version>
                 <executions>
-                <execution>
-                  <phase>generate-sources</phase>
-                  <goals>
-                    <goal>compile</goal>
-                  </goals>
-                </execution>
+                    <!-- 
+                	<execution>
+                  		<phase>generate-sources</phase>
+                 		<goals>
+                    		<goal>compile</goal>
+                  		</goals>
+                	</execution>
+                 	-->
                 </executions>
             </plugin>
 		</plugins>
