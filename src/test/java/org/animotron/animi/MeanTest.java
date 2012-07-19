@@ -51,7 +51,7 @@ public class MeanTest extends ATest {
 			sb.append(" (").append(types[i]).append(")");
 		}
 		
-		sb.append(" (label \"").append(name).append("\").");
+		sb.append(" '").append(name).append("'.");
 		
 		System.out.println(sb.toString());
 		
@@ -146,9 +146,9 @@ public class MeanTest extends ATest {
 //		_("появилось", "action");
 //		_("сделал", "action");
 //		_("делал", "action");
-		_("шёл", "action");
 //		_("был", "action");
 //		_("была",  "action");
+		_("шёл", "action");
 //		_("пошла", "action");
 //		_("пошло", "action");
 //		_("пошли", "action");
@@ -214,5 +214,19 @@ public class MeanTest extends ATest {
 		testAnimi("где Петя?\n","Петя в школе.");
 //		testAnimi("Вечером он пришёл домой.", "");
 	}
+	
+    @Test
+	public void test_10() throws Throwable {
+    	__(
+			"def id1 'Петя'.",
+			"def id2 'развел'.",
+			"def id3 'костер'.",
+			"def id4 'в'.",
+			"def id5 'лес'.",
+			"def id6 (id4 id5) 'в лесу'.",
+			"id1 id2 (id3) (id6)."
+		);
+	}
+
 	
 }
