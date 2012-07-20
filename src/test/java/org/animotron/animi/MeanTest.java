@@ -152,7 +152,7 @@ public class MeanTest extends ATest {
 			
 			assertEquals(1, cur.size());
 			
-			Node start = cur.toArray(new Relationship[1])[0].getStartNode();
+			Node start = cur.valueOf(cur.head().getNext()).getStartNode();
 			for (Path path : td.traverse(start))
 				assertEquals(n, path.lastRelationship().getStartNode());
 			
