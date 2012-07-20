@@ -20,13 +20,31 @@
  */
 package org.animotron.animi;
 
+import java.util.Arrays;
+import java.util.Set;
+
+import javolution.util.FastSet;
+
+import org.animotron.statement.operator.AN;
+import org.animotron.statement.operator.AREV;
+import org.animotron.statement.operator.REF;
+import org.animotron.statement.operator.Utils;
 import org.animotron.statement.value.VALUE;
 import org.animotron.utils.MessageDigester;
 import org.junit.Test;
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Path;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.traversal.Evaluation;
+import org.neo4j.graphdb.traversal.TraversalDescription;
+import org.neo4j.kernel.Traversal;
+import org.neo4j.kernel.Uniqueness;
 
 import static org.animotron.expression.AnimoExpression.__;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
+import static org.neo4j.graphdb.Direction.*;
+import static org.neo4j.graphdb.traversal.Evaluation.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -45,22 +63,104 @@ public class MeanTest extends ATest {
 		
 		sb.append(" '").append(name).append("'.");
 		
-		System.out.println(sb.toString());
+//		System.out.println(sb.toString());
 		
 		__(sb.toString());
 	}
 	
+	private static TraversalDescription td = 
+	Traversal.description().
+		depthFirst().
+		uniqueness(Uniqueness.RELATIONSHIP_GLOBAL).
+        evaluator(new org.neo4j.graphdb.traversal.Evaluator(){
+			@Override
+			public Evaluation evaluate(Path path) {
+
+				if (path.length() == 0)
+					return EXCLUDE_AND_CONTINUE;
+				
+				if (!path.lastRelationship().getStartNode().equals(path.endNode()))
+					return EXCLUDE_AND_PRUNE;
+				
+				if (path.length() == 1)
+					if (path.lastRelationship().isType(VALUE._))
+						return EXCLUDE_AND_CONTINUE;
+
+				if (path.length() == 2)
+					if (path.lastRelationship().isType(AREV._))
+						return EXCLUDE_AND_CONTINUE;
+
+				if (path.length() == 3)
+					if (path.lastRelationship().isType(REF._))
+						return EXCLUDE_AND_CONTINUE;
+
+				if (path.length() == 4)
+					if (path.lastRelationship().isType(AN._))
+						return INCLUDE_AND_PRUNE;
+
+				return EXCLUDE_AND_PRUNE;
+			}
+        });
+	
+
+	private FastSet<Relationship> step(Node n, FastSet<Relationship> cur) {
+		FastSet<Relationship> nex = FastSet.newInstance();
+		
+		for (Path path : td.traverse(n)) {
+			
+			Relationship r = path.lastRelationship();
+			Node end = r.getEndNode();
+			
+			if (!Utils.haveContext(end))
+				nex.add(r);
+			else
+				for (Relationship rr : cur) {
+					if (rr.getStartNode().equals(r.getEndNode())) {
+						nex.add(r);
+						break;
+					}
+				}
+		}
+		FastSet.recycle(cur);
+		
+		return nex;
+	}
+
 	@Test
 	public void test_00() throws Throwable {
-		_("Петя", "image");
+		String sentence = "Петя";
+		
+		_(sentence, "image");
 		
 		sleep(1);
+		
+		Node n = null;
 
-		Node n = VALUE._.get("П");
-		assertNotNull(n);
+		FastSet<Relationship> cur = FastSet.newInstance();
+		try {
+			for (int i = 0; i < sentence.length(); i++) {
+				n = VALUE._.get(sentence.charAt(i));
+				assertNotNull(n);
+				
+				cur = step(n, cur);
+			}
+			
+			System.out.println(Arrays.toString(cur.toArray()));
 
-		n = VALUE._.get("Петя");
-		assertNotNull(n);
+			n = VALUE._.get(sentence);
+			assertNotNull(n);
+			
+			assertEquals(1, cur.size());
+			
+			Node start = cur.toArray(new Relationship[1])[0].getStartNode();
+			for (Path path : td.traverse(start))
+				assertEquals(n, path.lastRelationship().getStartNode());
+			
+		} finally {
+			FastSet.recycle(cur);
+		}
+
+
 	}
 
 	private void sleep(int secs) {
