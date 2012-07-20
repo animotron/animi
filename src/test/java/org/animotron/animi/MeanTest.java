@@ -20,14 +20,13 @@
  */
 package org.animotron.animi;
 
+import org.animotron.statement.value.VALUE;
 import org.animotron.utils.MessageDigester;
 import org.junit.Test;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.index.IndexHits;
+import org.neo4j.graphdb.Node;
 
 import static org.animotron.expression.AnimoExpression.__;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -36,13 +35,6 @@ import static org.junit.Assert.assertFalse;
  */
 public class MeanTest extends ATest {
 
-	private void sleep(int secs) {
-		try {
-			Thread.sleep(secs * 1000);
-		} catch (InterruptedException e) {
-		}
-	}
-	
 	private void _(String name, String ... types) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("def ").append(MessageDigester.uuid().toString());
@@ -62,31 +54,15 @@ public class MeanTest extends ATest {
 	public void test_00() throws Throwable {
 		_("Петя", "image");
 
-		IndexHits<Relationship> hits = Letters.starts('п');
-		try {
-			for (Relationship r : hits) {
-				System.out.println(r);
-			}
-		} finally {
-			hits.close();
-		}
+		Node n = VALUE._.get('П');
+		assertNotNull(n);
+
+		n = VALUE._.get("Петя");
+		assertNotNull(n);
 	}
 
 	@Test
 	public void test_01() throws Throwable {
-		_("Петя", "image");
-		
-		sleep(1);
-		
-		IndexHits<Relationship> hits = Labels.search("Петя");
-		try {
-			assertTrue(hits.hasNext());
-			hits.next();
-			assertFalse(hits.hasNext());
-		} finally {
-			hits.close();
-		}
-		
 	}
 
 	@Test

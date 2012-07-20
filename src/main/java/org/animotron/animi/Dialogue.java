@@ -21,24 +21,16 @@
 package org.animotron.animi;
 
 import javolution.util.FastList;
-import org.animotron.expression.AbstractExpression;
-import org.animotron.expression.AnimoExpression;
-import org.animotron.graph.AnimoGraph;
-import org.animotron.graph.builder.FastGraphBuilder;
-import org.animotron.graph.serializer.CachedSerializer;
 import org.animotron.io.PipedOutput;
-import org.animotron.statement.operator.AN;
-import org.animotron.statement.operator.REF;
-import org.animotron.statement.query.GET;
+import org.animotron.statement.value.VALUE;
+import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.index.IndexHits;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static org.animotron.animi.Labels.NAME;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -154,21 +146,16 @@ public class Dialogue implements Runnable {
 
 	private List<Relationship> check(String word) {
 		
-		boolean found = false;
 		List<Relationship> nodes = null;
-		
-		IndexHits<Relationship> hits = Labels.search(word);
-		try {
-			nodes = new FastList<Relationship>(hits.size());
-			while (hits.hasNext()) {
-				nodes.add(hits.next());
-				found = true;
-			}
-		} finally {
-			hits.close();
-		}
-		if (found)
+
+		Node n = VALUE._.get(word);
+		if (n != null) {
+			nodes = new ArrayList<Relationship>();
+			
+			for (Relationship r : n.getRelationships(VALUE._, Direction.INCOMING))
+				nodes.add(r);
 			System.out.println("found '"+word+"'");
+		}
 		
 		return nodes;
 	}
