@@ -53,12 +53,20 @@ public class MeanTest extends ATest {
 	@Test
 	public void test_00() throws Throwable {
 		_("Петя", "image");
+		
+		sleep(1);
 
-		Node n = VALUE._.get('П');
+		Node n = VALUE._.get("П");
 		assertNotNull(n);
 
 		n = VALUE._.get("Петя");
 		assertNotNull(n);
+	}
+
+	private void sleep(int secs) {
+		try {
+			Thread.sleep(secs * 1000);
+		} catch (Exception e) {}
 	}
 
 	@Test
