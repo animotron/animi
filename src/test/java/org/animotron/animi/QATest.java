@@ -20,8 +20,10 @@
  */
 package org.animotron.animi;
 
+import static org.animotron.expression.AnimoExpression.__;
 import static org.junit.Assert.*;
 
+import org.animotron.utils.MessageDigester;
 import org.junit.Test;
 
 /**
@@ -35,26 +37,43 @@ public class QATest extends ATest {
 	@Test
 	public void test() {
 		
+		//properties
+		String participant = _("participant");
+
+		String name = _("name");
+
+		String system = _("system");
 		String human = _("human");
 
-		_("Ann");
-		_("Ferenc Kovacs", human);
-		_("Evgeny Gazdovsky", human);
-		_("Dmitriy Shabanov", human);
+		//object 
+		_("Ann", system, name+" 'Ann'", participant);
 		
-		//object, properties, relations
+		_("Ferenc Kovacs", participant, human);
+		_("Evgeny Gazdovsky", participant, human);
+		_("Dmitriy Shabanov", participant, human);
+
+		_("We");
+		
+		//relations
+		
+		//Questions
+		_("What");
+		_("Who");
+		_("How");
 		
 		//Definition: one for machine, one for user
 		
-		question("What is the name of the system?");
-		question("What is the purpose of the system?");
-		question("What is the form of the system's description?");
-		question("Who are the participants?");
-		question("How does the look like for this passage?");
-		question("How do we interpret the code in semantic terms?");
+		question("What is the name of the system?", "Ann.", "The name of the system is a Ann.");
+		
+		
+		question("What is the purpose of the system?", "to create a systems description through dialog between the participants.");
+		question("What is the form of the system's description?", "dialog", "dialog between the participants");
+		question("Who are the participants?", "We", "Ann, Ferenc Kovacs, Evgeny Gazdovsky, Dmitriy Shabanov");
+//		question("How does the look like for this passage?", "");
+//		question("How do we interpret the code in semantic terms?", "");
 	}
 	
-	private String question(String message) {
+	private String question(String message, String ... answers) {
 		return "";
 	}
 
