@@ -56,26 +56,6 @@ import static org.neo4j.graphdb.traversal.Evaluation.*;
  */
 public class MeanTest extends ATest {
 
-	private String _(String name, String ... types) {
-		
-		String uuid = uuid();
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("def ").append(MessageDigester.uuid().toString());
-		
-		for (int i = 0; i < types.length; i++) {
-			sb.append(" (").append(types[i]).append(")");
-		}
-		
-		sb.append(" '").append(name).append("'.");
-		
-//		System.out.println(sb.toString());
-		
-		__(sb.toString());
-		
-		return uuid;
-	}
-	
 	private static TraversalDescription td = 
 	Traversal.description().
 		depthFirst().
