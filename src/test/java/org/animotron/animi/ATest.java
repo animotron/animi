@@ -27,12 +27,12 @@ import org.animotron.graph.serializer.CachedSerializer;
 import org.animotron.graph.serializer.DigestSerializer;
 import org.animotron.io.PipedInput;
 import org.animotron.io.PipedOutput;
+import org.animotron.utils.MessageDigester;
 import org.junit.After;
 import org.junit.Before;
 import org.neo4j.graphdb.Relationship;
 
 import java.io.*;
-import java.util.UUID;
 
 import static org.animotron.graph.AnimoGraph.shutdownDB;
 import static org.animotron.graph.AnimoGraph.startDB;
@@ -51,7 +51,13 @@ public abstract class ATest {
 	public static final WstxOutputFactory OUTPUT_FACTORY = new WstxOutputFactory();
 
 	protected String uuid() {
-		return UUID.randomUUID().toString();
+		return MessageDigester.uuid().toString();
+	}
+	
+	protected void sleep(int secs) {
+		try {
+			Thread.sleep(secs * 1000);
+		} catch (Exception e) {}
 	}
 	
 	protected void testAnimiParser(String msg, String expected) throws IOException {
