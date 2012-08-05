@@ -77,8 +77,10 @@ public abstract class ATest {
 //		System.out.println(sb.toString());
 		
 		__(sb.toString());
-		
-		return uuid;
+
+        try {Thread.sleep(250);} catch (InterruptedException e) {}
+
+        return uuid;
 	}
 	
 	protected void testAnimiParser(String msg, String expected) throws IOException {
