@@ -105,7 +105,7 @@ public class MeanTest extends ATest {
 		assertEquals(1, state.size());
 		
 		Brain.MentalObject mo = state.valueOf(state.head().getNext());
-		assertEquals(2, mo.steps.size());
+		assertEquals(1, mo.steps.size());
 	}
 
 	@Test
