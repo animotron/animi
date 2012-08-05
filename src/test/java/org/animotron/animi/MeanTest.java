@@ -20,34 +20,17 @@
  */
 package org.animotron.animi;
 
-import java.util.Arrays;
-import java.util.Set;
-
-import javolution.util.FastList;
 import javolution.util.FastSet;
 
-import org.animotron.statement.operator.AN;
-import org.animotron.statement.operator.AREV;
-import org.animotron.statement.operator.DEF;
-import org.animotron.statement.operator.REF;
-import org.animotron.statement.operator.Utils;
 import org.animotron.statement.value.VALUE;
-import org.animotron.utils.MessageDigester;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Path;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.traversal.Evaluation;
-import org.neo4j.graphdb.traversal.TraversalDescription;
-import org.neo4j.kernel.Traversal;
-import org.neo4j.kernel.Uniqueness;
 
 import static org.animotron.expression.AnimoExpression.__;
 import static org.junit.Assert.*;
-import static org.neo4j.graphdb.Direction.*;
-import static org.neo4j.graphdb.traversal.Evaluation.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -55,258 +38,6 @@ import static org.neo4j.graphdb.traversal.Evaluation.*;
  *
  */
 public class MeanTest extends ATest {
-
-	private static TraversalDescription td = 
-	Traversal.description().
-		depthFirst().
-		uniqueness(Uniqueness.RELATIONSHIP_GLOBAL).
-        evaluator(new org.neo4j.graphdb.traversal.Evaluator(){
-			@Override
-			public Evaluation evaluate(Path path) {
-
-				if (path.length() == 0)
-					return EXCLUDE_AND_CONTINUE;
-				
-				Relationship r = path.lastRelationship();
-				if (!r.getStartNode().equals(path.endNode()))
-					return EXCLUDE_AND_PRUNE;
-				
-				if (path.length() == 1)
-					if (r.isType(VALUE._))
-						return EXCLUDE_AND_CONTINUE;
-
-				if (path.length() == 2)
-					if (r.isType(AREV._))
-						return EXCLUDE_AND_CONTINUE;
-
-				if (path.length() == 3)
-					if (r.isType(REF._))
-						return EXCLUDE_AND_CONTINUE;
-
-				if (path.length() == 4)
-					if (r.isType(AN._))
-						return INCLUDE_AND_PRUNE;
-
-				return EXCLUDE_AND_PRUNE;
-			}
-        });
-	
-	private static TraversalDescription tdSensorToMental = 
-	Traversal.description().
-		depthFirst().
-		uniqueness(Uniqueness.RELATIONSHIP_GLOBAL).
-        evaluator(new org.neo4j.graphdb.traversal.Evaluator(){
-			@Override
-			public Evaluation evaluate(Path path) {
-
-				if (path.length() == 0)
-					return EXCLUDE_AND_CONTINUE;
-				
-				Relationship r = path.lastRelationship();
-				if (!r.getStartNode().equals(path.endNode()))
-					return EXCLUDE_AND_PRUNE;
-				
-				if (path.length() == 1)
-					if (r.isType(AREV._))
-						return EXCLUDE_AND_CONTINUE;
-
-				if (path.length() == 2)
-					if (r.isType(REF._))
-						return EXCLUDE_AND_CONTINUE;
-
-				if (path.length() == 3)
-					if (r.isType(AN._))
-						return EXCLUDE_AND_CONTINUE;
-
-				if (path.length() == 4)
-					if (r.isType(VALUE._))
-						return EXCLUDE_AND_CONTINUE;
-
-				if (path.length() == 5)
-					if (r.isType(AREV._))
-						return EXCLUDE_AND_CONTINUE;
-
-				if (path.length() == 6)
-					if (r.isType(REF._))
-						return EXCLUDE_AND_CONTINUE;
-
-				if (path.length() == 7)
-					if (r.isType(AN._))
-						return INCLUDE_AND_PRUNE;
-
-				return EXCLUDE_AND_PRUNE;
-			}
-        });
-
-	private static TraversalDescription tdMental = 
-	Traversal.description().
-		depthFirst().
-		uniqueness(Uniqueness.RELATIONSHIP_GLOBAL).
-        evaluator(new org.neo4j.graphdb.traversal.Evaluator(){
-			@Override
-			public Evaluation evaluate(Path path) {
-
-				if (path.length() == 0)
-					return EXCLUDE_AND_CONTINUE;
-				
-				Relationship r = path.lastRelationship();
-				if (!r.getStartNode().equals(path.endNode()))
-					return EXCLUDE_AND_PRUNE;
-				
-				if (path.length() == 1)
-					if (r.isType(AREV._))
-						return EXCLUDE_AND_CONTINUE;
-
-				if (path.length() == 2)
-					if (r.isType(REF._))
-						return EXCLUDE_AND_CONTINUE;
-
-				if (path.length() == 3)
-					if (r.isType(AN._))
-						return INCLUDE_AND_PRUNE;
-
-				return EXCLUDE_AND_PRUNE;
-			}
-        });
-
-	private void sensorStep(Node n, Brain brain) {
-		FastSet<Relationship> state = FastSet.newInstance();
-		
-		for (Path path : td.traverse(n)) {
-			
-			Relationship r = path.lastRelationship();
-			Node end = r.getEndNode();
-			
-			if (!Utils.haveContext(end)) {
-				state.add(r);
-			} else
-				for (Relationship rr : brain.sensorState) {
-					if (rr.getStartNode().equals(r.getEndNode())) {
-						state.add(r);
-						break;
-					}
-				}
-//			brain.detectedSensorObject(r);
-			
-			//check next levels
-//			mentalStep(r.getStartNode(), brain);
-		}
-		brain.replaceSensorState(state);
-	}
-	
-	private Brain parse(String sentence) {
-		Node n = null;
-
-		Brain brain = new Brain();
-
-		for (int i = 0; i < sentence.length(); i++) {
-			n = VALUE._.get(sentence.charAt(i));
-			if (n == null) {
-				System.out.println("noise point '"+sentence.charAt(i)+"'");
-				
-			} else
-				sensorStep(n, brain);
-		}
-			
-		System.out.println(brain.toString());
-
-		return brain;
-	}
-	
-	class MentalObject {
-		FastList<Relationship> steps = new FastList<Relationship>();
-		
-		public MentalObject(Relationship r) {
-			steps.add(r);
-		}
-		
-		public String toString() {
-			return Arrays.toString(steps.toArray());
-		}
-	}
-	
-	class Brain {
-		FastSet<Relationship> sensorState = new FastSet<Relationship>();
-		FastSet<Relationship> detectedSensorObjects = new FastSet<Relationship>();
-		
-		FastSet<MentalObject> mentalState = new FastSet<MentalObject>();
-		
-		public Brain() {
-			sensorState = FastSet.newInstance();
-			mentalState = FastSet.newInstance();
-		}
-		
-		protected void replaceSensorState(FastSet<Relationship> state) {
-			FastSet.recycle(sensorState);
-			sensorState = state;
-			
-			checkSensorStateForCompleteObjects();
-		}
-		
-		protected void replaceMentalState(FastSet<MentalObject> state) {
-			FastSet.recycle(mentalState);
-			mentalState = state;
-		}
-		
-		private void detectedSensorObject(Relationship r) {
-			detectedSensorObjects.add(r);
-			
-			for (Path path : tdSensorToMental.traverse(r.getStartNode())) {
-//				System.out.println(path);
-				
-				boolean matched = false;
-				Relationship last = path.lastRelationship();
-				for (MentalObject m : mentalState) {
-					if (m.steps.getFirst().getStartNode().equals(last.getEndNode())) {
-//						System.out.println("match by first "+m.steps.getFirst());
-						m.steps.addFirst(last);
-						matched = true;
-						continue;
-					}
-					if (m.steps.getLast().getEndNode().equals(last.getStartNode())) {
-//						System.out.println("match by last "+m.steps.getLast());
-						m.steps.addLast(last);
-						matched = true;
-						continue;
-					}
-				}
-				if (!matched)
-					mentalState.add(new MentalObject(last));
-			}
-		}
-		
-		private void checkSensorStateForCompleteObjects() {
-			for (Relationship r : sensorState) {
-		        Relationship ar = r.getStartNode().getSingleRelationship(AREV._, Direction.INCOMING);
-		        if (ar != null)
-		        	detectedSensorObject(r);
-			}
-		}
-		
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			
-			sb.append("detected sensor objects: [ ");
-			for (Relationship r : detectedSensorObjects) {
-				sb.append(r.getId()).append(" ");
-			}
-			sb.append("]\n");
-
-			sb.append("sensor state: [ ");
-			for (Relationship r : sensorState) {
-				sb.append(r.getId()).append(" ");
-			}
-			sb.append("]\n");
-
-			sb.append("mental state: [ ");
-			for (MentalObject mo : mentalState) {
-				sb.append(mo.toString()).append(" ");
-			}
-			sb.append("]");
-			
-			return sb.toString();
-		}
-	}
 
 	@Test
 	public void test_00() throws Throwable {
@@ -316,7 +47,7 @@ public class MeanTest extends ATest {
 		
 		sleep(1);
 		
-		Brain brain = parse(image);
+		Brain brain = Brain.parse(image);
 
 		Node n = VALUE._.get(image);
 		assertNotNull(n);
@@ -325,7 +56,7 @@ public class MeanTest extends ATest {
 		assertEquals(1, state.size());
 		
 		Node start = state.valueOf(state.head().getNext()).getStartNode();
-		for (Path path : td.traverse(start))
+		for (Path path : Brain.td.traverse(start))
 			assertEquals(n, path.lastRelationship().getStartNode());
 	}
 
@@ -342,7 +73,7 @@ public class MeanTest extends ATest {
 
     	sleep(1);
 
-    	Brain brain = parse(sentence);
+    	Brain brain = Brain.parse(sentence);
 
 		Node n = VALUE._.get(sentence);
 		assertNotNull(n);
@@ -351,7 +82,7 @@ public class MeanTest extends ATest {
 		assertEquals(1, state.size());
 		
 		Node start = state.valueOf(state.head().getNext()).getStartNode();
-		for (Path path : td.traverse(start))
+		for (Path path : Brain.td.traverse(start))
 			assertEquals(n, path.lastRelationship().getStartNode());
 	}
 
@@ -368,12 +99,12 @@ public class MeanTest extends ATest {
     	
     	sleep(1);
 
-		Brain brain = parse(sentence);
+		Brain brain = Brain.parse(sentence);
 
-		FastSet<MentalObject> state = brain.mentalState;
+		FastSet<Brain.MentalObject> state = brain.mentalState;
 		assertEquals(1, state.size());
 		
-		MentalObject mo = state.valueOf(state.head().getNext());
+		Brain.MentalObject mo = state.valueOf(state.head().getNext());
 		assertEquals(2, mo.steps.size());
 	}
 
