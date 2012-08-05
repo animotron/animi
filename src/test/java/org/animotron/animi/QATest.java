@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2011-2012 The Animo Project
+ *  Copyright (C) 2012 The Animo Project
  *  http://animotron.org
  *
  *  This file is part of Animotron.
@@ -20,10 +20,13 @@
  */
 package org.animotron.animi;
 
-import static org.animotron.expression.AnimoExpression.__;
 import static org.junit.Assert.*;
 
-import org.animotron.utils.MessageDigester;
+import java.io.IOException;
+
+import javolution.util.FastSet;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -35,7 +38,22 @@ import org.junit.Test;
 public class QATest extends ATest {
 
 	@Test
-	public void test() {
+	public void test01() throws IOException {
+		
+		//properties
+		String system = _("system");
+
+		String name = _("name");
+
+		//object 
+		_("Ann", system, name+" 'Ann'");
+		
+		question("What is the name of the system?", "Ann.", "The name of the system is a Ann.");
+	}
+	
+	@Test
+	@Ignore
+	public void test02() throws IOException {
 		
 		//properties
 		String participant = _("participant");
@@ -72,8 +90,18 @@ public class QATest extends ATest {
 //		question("How does the look like for this passage?", "");
 //		question("How do we interpret the code in semantic terms?", "");
 	}
-	
-	private String question(String message, String ... answers) {
+
+	private String question(String message, String ... answers) throws IOException {
+		Brain brain = Brain.parse(message);
+
+		FastSet<Brain.MentalObject> state = brain.mentalState;
+		assertEquals(1, state.size());
+		
+		Brain.MentalObject mo = state.valueOf(state.head().getNext());
+		assertEquals(2, mo.steps.size());
+		
+		assertAnimo(mo.steps.get(0), "");
+
 		return "";
 	}
 
