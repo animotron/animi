@@ -27,6 +27,7 @@ import org.animotron.graph.serializer.CachedSerializer;
 import org.animotron.graph.serializer.DigestSerializer;
 import org.animotron.io.PipedInput;
 import org.animotron.io.PipedOutput;
+import org.animotron.statement.value.VALUE;
 import org.animotron.utils.MessageDigester;
 import org.junit.After;
 import org.junit.Before;
@@ -56,6 +57,8 @@ public abstract class ATest {
 	}
 	
 	protected void sleep(int secs) {
+		VALUE._.waitToBeEmpty();
+
 		try {
 			Thread.sleep(secs * 1000);
 		} catch (Exception e) {}

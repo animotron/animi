@@ -71,7 +71,7 @@ public class MeanTest extends ATest {
 			"def id3 id1 id2 '"+sentence+"'."
 		);
 
-    	sleep(1);
+		sleep(1);
 
     	Brain brain = Brain.parse(sentence);
 
@@ -97,7 +97,7 @@ public class MeanTest extends ATest {
 			"def id3 id1 id2."
 		);
     	
-    	sleep(1);
+		sleep(1);
 
 		Brain brain = Brain.parse(sentence);
 
@@ -230,6 +230,8 @@ public class MeanTest extends ATest {
 //		_("какое", "question");
 //		_("какие", "question");
 		
+		sleep(1);
+
 		testAnimi("Петя пошёл в школу по деревне утром.\n", "");
 		testAnimi("где Петя?\n","Петя в школе.");
 //		testAnimi("Вечером он пришёл домой.", "");
@@ -248,6 +250,4 @@ public class MeanTest extends ATest {
 			"id1 id2 (id3) (id6)."
 		);
 	}
-
-	
 }
