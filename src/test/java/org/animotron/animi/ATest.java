@@ -66,10 +66,11 @@ public abstract class ATest {
 	
 	protected String _(String name, String ... types) {
 		
-		String uuid = uuid();
+//		String uuid = uuid();
+		String uuid = name;
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("def ").append(MessageDigester.uuid().toString());
+		sb.append("def ").append(uuid);
 		
 		for (int i = 0; i < types.length; i++) {
 			sb.append(" (").append(types[i]).append(")");

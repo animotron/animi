@@ -46,9 +46,13 @@ public class QATest extends ATest {
 		String name = _("name");
 
 		//object 
-		_("Ann", system, name+" 'Ann'");
+		System.out.println(
+			_("Ann", system, name+" 'Ann'")
+		);
 		
-		question("What is the name of the system?", "Ann.", "The name of the system is a Ann.");
+		sleep(1);
+		
+		question("what is the name of the system?", "Ann.", "The name of the system is a Ann.");
 	}
 	
 	@Test

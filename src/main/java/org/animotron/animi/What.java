@@ -45,11 +45,10 @@ public class What extends DetermInstruction {
 		
 		if (brain.mentalState.isEmpty()) {
 			String uuid = MessageDigester.uuid().toString();
-			__("def "+uuid+" 'what'", "def what "+uuid);
+			__("def "+uuid+" 'what'.", "def what "+uuid+".");
 		}
     }
-
-
+    
 	@Override
 	public OnQuestion onCalcQuestion() {
 		System.out.println("WHAT");
