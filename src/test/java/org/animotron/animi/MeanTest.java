@@ -45,7 +45,7 @@ public class MeanTest extends ATest {
 		
 		_(image);
 		
-		sleep(1);
+		VALUE._.waitToBeEmpty();
 		
 		Brain brain = Brain.parse(image);
 
@@ -71,7 +71,7 @@ public class MeanTest extends ATest {
 			"def id3 id1 id2 '"+sentence+"'."
 		);
 
-    	sleep(1);
+		VALUE._.waitToBeEmpty();
 
     	Brain brain = Brain.parse(sentence);
 
@@ -97,7 +97,7 @@ public class MeanTest extends ATest {
 			"def id3 id1 id2."
 		);
     	
-    	sleep(1);
+		VALUE._.waitToBeEmpty();
 
 		Brain brain = Brain.parse(sentence);
 
@@ -230,6 +230,8 @@ public class MeanTest extends ATest {
 //		_("какое", "question");
 //		_("какие", "question");
 		
+		VALUE._.waitToBeEmpty();
+
 		testAnimi("Петя пошёл в школу по деревне утром.\n", "");
 		testAnimi("где Петя?\n","Петя в школе.");
 //		testAnimi("Вечером он пришёл домой.", "");
