@@ -29,6 +29,7 @@ import javolution.util.FastSet;
 
 import org.animotron.statement.operator.AN;
 import org.animotron.statement.operator.AREV;
+import org.animotron.statement.operator.DEF;
 import org.animotron.statement.operator.REF;
 import org.animotron.statement.operator.Utils;
 import org.animotron.statement.value.VALUE;
@@ -180,7 +181,14 @@ public class Brain {
 		}
 		
 		public String toString() {
-			return Arrays.toString(steps.toArray());
+			StringBuilder sb = new StringBuilder();
+			for (Relationship r : steps) {
+				for (Relationship rr : r.getEndNode().getRelationships(REF._, Direction.OUTGOING)) {
+					sb.append(" ").append(DEF._.reference(rr));
+				}
+				sb.append(" [").append(r.getId()).append("]");
+			}
+			return sb.toString();
 		}
 	}
 	
