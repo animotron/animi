@@ -78,6 +78,7 @@ public abstract class ATest {
 		
 		__(sb.toString());
 
+        // deadlock workaround
         try {Thread.sleep(250);} catch (InterruptedException e) {}
 
         return uuid;
