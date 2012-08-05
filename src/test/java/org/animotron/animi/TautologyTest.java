@@ -20,6 +20,7 @@
  */
 package org.animotron.animi;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;
@@ -86,6 +87,7 @@ public class TautologyTest extends ATest {
 	 * 
 	 */
 	@Test
+	@Ignore
 	public void test_01() throws Throwable {
 		testAnimi("object\n", "object");
 		

@@ -20,6 +20,7 @@
  */
 package org.animotron.animi;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -41,6 +42,7 @@ public class NounPlusNounTest extends ATest {
 	 * 
 	 */
 	@Test
+	@Ignore
 	public void test_01() throws Throwable {
 
 		testAnimi("driver\n", "driver");

@@ -20,6 +20,7 @@
  */
 package org.animotron.animi;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;
@@ -63,6 +64,7 @@ public class HeurekaTest extends ATest {
 	 * 
 	 */
 	@Test
+	@Ignore
 	public void test_01() throws Throwable {
 		fail("Not yet implemented");
 	}

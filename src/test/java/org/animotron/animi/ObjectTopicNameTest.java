@@ -21,6 +21,7 @@
 package org.animotron.animi;
 
 import org.animotron.graph.AnimoGraph;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
@@ -82,6 +83,7 @@ public class ObjectTopicNameTest extends ATest {
 	 * 
 	 */
 	@Test
+	@Ignore
 	public void test_01() throws Throwable {
 		
 		String obj = "the "+uuid()+" name \"object\".";
@@ -103,6 +105,7 @@ public class ObjectTopicNameTest extends ATest {
 	}
 	
 	@Test
+	@Ignore
 	public void test_02() throws Throwable {
 		
 		//say - object, get answer - object
