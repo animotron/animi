@@ -45,7 +45,7 @@ public class MeanTest extends ATest {
 		
 		_(image);
 		
-		VALUE._.waitToBeEmpty();
+		sleep(1);
 		
 		Brain brain = Brain.parse(image);
 
@@ -71,7 +71,7 @@ public class MeanTest extends ATest {
 			"def id3 id1 id2 '"+sentence+"'."
 		);
 
-		VALUE._.waitToBeEmpty();
+		sleep(1);
 
     	Brain brain = Brain.parse(sentence);
 
@@ -97,7 +97,7 @@ public class MeanTest extends ATest {
 			"def id3 id1 id2."
 		);
     	
-		VALUE._.waitToBeEmpty();
+		sleep(1);
 
 		Brain brain = Brain.parse(sentence);
 
@@ -105,7 +105,7 @@ public class MeanTest extends ATest {
 		assertEquals(1, state.size());
 		
 		Brain.MentalObject mo = state.valueOf(state.head().getNext());
-		assertEquals(1, mo.steps.size());
+		assertEquals(2, mo.steps.size());
 	}
 
 	@Test
@@ -230,7 +230,7 @@ public class MeanTest extends ATest {
 //		_("какое", "question");
 //		_("какие", "question");
 		
-		VALUE._.waitToBeEmpty();
+		sleep(1);
 
 		testAnimi("Петя пошёл в школу по деревне утром.\n", "");
 		testAnimi("где Петя?\n","Петя в школе.");
@@ -250,6 +250,4 @@ public class MeanTest extends ATest {
 			"id1 id2 (id3) (id6)."
 		);
 	}
-
-	
 }
