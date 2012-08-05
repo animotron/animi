@@ -280,6 +280,7 @@ public abstract class ATest {
     public void start() {
         cleanDB();
         startDB(DATA_FOLDER);
+		new Plugin();
     }
 
     @After

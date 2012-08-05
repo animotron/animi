@@ -20,40 +20,16 @@
  */
 package org.animotron.animi;
 
-import org.animotron.manipulator.OnQuestion;
-import org.animotron.statement.instruction.DetermInstruction;
-import org.animotron.utils.MessageDigester;
-
-import static org.animotron.expression.AnimoExpression.__;
-
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class What extends DetermInstruction {
+public class Plugin {
 	
-	public final static What _ = new What();
-	
-	public What() {
-		super("what");
-		
-		init();
+	static {
+		What o = What._;
 	}
 	
-    public void init() {
-		Brain brain = Brain.parse("what");
-		
-		if (brain.mentalState.isEmpty()) {
-			String uuid = MessageDigester.uuid().toString();
-			__("def "+uuid+" 'what'", "def what "+uuid);
-		}
-    }
-
-
-	@Override
-	public OnQuestion onCalcQuestion() {
-		System.out.println("WHAT");
-		// TODO Auto-generated method stub
-		return null;
+	public Plugin() {
 	}
 }
