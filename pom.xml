@@ -4,7 +4,7 @@
 
 	<groupId>org.animotron</groupId>
 	<artifactId>animi</artifactId>
-	<version>0.1.M02</version>
+	<version>0.1.M03</version>
 	<packaging>jar</packaging>
 
 	<name>Animi - natural language bridge to Animo world</name>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>org.animotron</groupId>
 			<artifactId>core</artifactId>
-			<version>0.1.M02</version>
+			<version>0.1.M03</version>
 		</dependency>
 
 		<dependency>
