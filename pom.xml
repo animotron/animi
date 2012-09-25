@@ -30,6 +30,12 @@
 			<artifactId>core</artifactId>
 			<version>0.1.M03</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.github.sarxos</groupId>
+			<artifactId>webcam-capture</artifactId>
+			<version>0.3.3</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.googlecode.javacv</groupId>
