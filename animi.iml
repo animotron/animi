@@ -21,7 +21,7 @@
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-cypher:1.8.RC1" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.9.1-1" level="project" />
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-jmx:1.8.RC1" level="project" />
-    <orderEntry type="library" name="Maven: org.neo4j.build:neo4j-berkeleydb-je-index:1.8.M07" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j.build:neo4j-berkeleydb-je-index:1.8.RC1" level="project" />
     <orderEntry type="library" name="Maven: com.sleepycat:je:5.0.55" level="project" />
     <orderEntry type="library" name="Maven: javolution:javolution:5.5.1" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:1.6.2" level="project" />
@@ -39,15 +39,9 @@
     <orderEntry type="library" name="Maven: jgroups:jgroups:2.9.0.GA" level="project" />
     <orderEntry type="library" name="Maven: org.jetlang:jetlang:0.2.5" level="project" />
     <orderEntry type="library" name="Maven: com.eaio.uuid:uuid:3.3" level="project" />
-    <orderEntry type="library" name="Maven: com.googlecode.javacv:javacv:0.1" level="project" />
-    <orderEntry type="library" name="Maven: com.googlecode.javacpp:javacpp:0.1" level="project" />
-    <orderEntry type="library" name="Maven: com.googlecode.javacv:javacv:linux-x86_64:0.1" level="project" />
-    <orderEntry type="library" name="Maven: com.nativelibs4java:javacl:1.0.0-RC2" level="project" />
-    <orderEntry type="library" name="Maven: com.nativelibs4java:javacl-core:1.0.0-RC2" level="project" />
-    <orderEntry type="library" name="Maven: com.nativelibs4java:opencl4java:1.0.0-RC2" level="project" />
-    <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.6.1" level="project" />
-    <orderEntry type="library" name="Maven: com.google.android.tools:dx:1.7" level="project" />
-    <orderEntry type="library" name="Maven: com.nativelibs4java:nativelibs4java-utils:1.4" level="project" />
+    <orderEntry type="library" name="Maven: com.github.sarxos:webcam-capture:0.3.4-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.github.sarxos:webcam-capture-driver-openimaj:0.3.4" level="project" />
+    <orderEntry type="library" name="Maven: com.github.rwl:jtransforms:2.4.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />
   </component>
 </module>
