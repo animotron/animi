@@ -22,6 +22,8 @@ package org.animotron.animi.gui;
 
 import java.awt.Button;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -68,9 +70,21 @@ public class Application extends JFrame implements Runnable {
         add(bt);
 
         bt = new Button("pause");
+        bt.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pause();
+			}
+		});
         add(bt);
 
-        bt = new Button("continue");
+        bt = new Button("resume");
+        bt.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				resume();
+			}
+        });
         add(bt);
 
         camView = new WebcamPanel();
