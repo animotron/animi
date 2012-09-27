@@ -144,6 +144,10 @@ public class MultiCortex {
                 for (int y = 0; y < height; y++) {
                     for (int z = 0; z < deep; z++) {
                         SNeuron sn = s[x][y][z];
+                        if (sn == null) {
+                        	sn = new SNeuron();
+                        	s[x][y][z] = sn;
+                        }
                         sn.s_links = new Link2dZone[ns_links];
                         sn.occupy = sn.active = false;
                         sn.n1 = sn.n2 = 0;
@@ -182,6 +186,12 @@ public class MultiCortex {
                                 } while (nerv_links[lx][ly]);
                                 nerv_links[lx][ly] = true;
                                 SNeuron n = s[x][y][z];
+                                if (n == null) {
+                                	n = new SNeuron();
+                                	s[x][y][z] = n;
+                                }
+                                if (n.s_links[n.n1] == null)
+                                	n.s_links[n.n1] = new Link2dZone();
                                 n.s_links[n.n1].x = lx;
                                 n.s_links[n.n1].y = ly;
                                 n.s_links[n.n1].zone = m.zone;
