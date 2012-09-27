@@ -52,25 +52,29 @@ public class MultiCortex {
     // Simple neuron
     static class SNeuron {
         boolean occupy, active;
-        int n_on, n_act;
-        double p_on, p_off_m;
-        int n_off_m;
-        Link2dZone[] s_links;
-        Link2d[] a_links;
-        int n1, n2;
+        int n_on;               // Number of active cycles after activation
+        int n_act;              // Number of cycles after activation
+        double p_on;            // Average number of active neighbors at activation moment
+        double p_off_m;         // Average number of active neighbors when calm and activity of neighbors more p_on
+        int n_off_m;            // Number of passive cycles after activation when activity of neighbors more p_on
+        Link2dZone[] s_links;   // Links of synapses connects cortex neurons with projecting nerve bundle
+        Link2d[] a_links;       // Axonal connections with nearest cortical columns
+        int n1;                 // Counter for links of synapses
+        int n2;                 // Counter for axonal connections
     }
 
     // Complex neuron
     static class CNeuron {
         boolean active;
-        int sum;
-        Link3d[] s_links;
+        int sum;                // Number of active neurons
+        Link3d[] s_links;       // Links of synapses connects cortex neurons with neurons of cortical columns
     }
 
+    // Projection description of the one zone to another
     static class Mapping {
-        SCortexZone zone;
-        int ns_links;
-        double disp_links;
+        SCortexZone zone;       // Projecting zone
+        int ns_links;           // Number of synaptic connections for the zone
+        double disp_links;      // Grouping parameter. Describe a size of sensor field
 
         public Mapping(SCortexZone zone, int ns_links, double disp_links) {
             this.zone = zone;
@@ -79,12 +83,13 @@ public class MultiCortex {
         }
     }
 
+    // Simple cortex zone
     static class SCortexZone {
 
         String name;
-        CNeuron[][] col;
-        int width;
-        int height;
+        CNeuron[][] col;        // State of complex neurons (outputs cortical columns)
+        int width;              //
+        int height;             //
 
         SCortexZone(String name, int width, int height) {
             this.name = name;
@@ -95,17 +100,20 @@ public class MultiCortex {
 
     }
 
+    // Complex cortex zone
     static class CCortexZone extends SCortexZone {
 
         Mapping[] in_zones;
         int deep;
-        int ns_links, nas_links, nsc_links;
-        double k_active;
-        int k_mem;
-        double k_det1, k_det2;
-        int n_act_min;
-        double k_non;
-        SNeuron[][][] s;
+        int ns_links;           // Number of synaptic connections of the all simple neurons
+        int nas_links;          // Number of axonal connections of the all simple neurons
+        int nsc_links;          // Number of synaptic connections of the complex neuron
+        double k_active;        // Excitation threshold of cortical column
+        int k_mem;              // Min number of active synapses to remember
+        double k_det1, k_det2;  // Matching percent for the active/passive elements required for recognition
+        int n_act_min;          // Number of cycles to turn on the possibility of forgetting
+        double k_non;           // Ratio threshold of forgetting
+        SNeuron[][][] s;        // Memory
 
         CCortexZone(String name, int width, int height, int deep,
                    int nas_links,
