@@ -128,8 +128,9 @@ public class Application extends JFrame implements Runnable {
         add(camView, CENTER);
 
         setBounds(0, 0, 800, 600);
+        setLocationByPlatform(true);
 
-        pack();
+        //pack();
 
 		setVisible(true);
 
