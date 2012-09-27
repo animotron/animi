@@ -20,17 +20,19 @@
  */
 package org.animotron.animi.gui;
 
-import java.awt.Button;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 import org.animotron.animi.MultiCortex;
+
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.NORTH;
+import static java.awt.Frame.MAXIMIZED_BOTH;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -56,75 +58,79 @@ public class Application extends JFrame implements Runnable {
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
-        	@Override
-        	public void windowClosed(WindowEvent e) {
-        		stop();
-        	}
+            @Override
+            public void windowClosed(WindowEvent e) {
+                stop();
+            }
 
-        	@Override
-        	public void windowDeiconified(WindowEvent e) {
-        		resume();
-        	}
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+                resume();
+            }
 
-			@Override
-        	public void windowIconified(WindowEvent e) {
-        		pause();
-        	}
+            @Override
+            public void windowIconified(WindowEvent e) {
+                pause();
+            }
         });
 
-        setLayout(new GridLayout(2,2,2,2));
+        //setLayout(new GridLayout(2,2,2,2));
+
+        JPanel tools = new JPanel();
+        add(tools, NORTH);
         
         btInit = new Button("initialize");
         btInit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-		        
-				btInit.disable();
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
-		        //задание параметров зон коры и структуры связей
-		        //BrainInit
-		        //инициализация зон коры
-		        //CortexInit
-		        //Начальный сброс "хорошо - плохо"
-		        cortexs = new MultiCortex();
+                btInit.disable();
+
+                //задание параметров зон коры и структуры связей
+                //BrainInit
+                //инициализация зон коры
+                //CortexInit
+                //Начальный сброс "хорошо - плохо"
+                cortexs = new MultiCortex();
 
 //		        FillMSensPol() ' создание связей сенсорных полей
 //
 //		        SetOnOFF() ' распределение он и офф полей
 
-		        btPause.setEnabled(true);
-			}
-		});
-        add(btInit);
+                btPause.setEnabled(true);
+            }
+        });
+        tools.add(btInit);
 
         btPause = new Button("pause");
         btPause.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				pause();
-				btPause.setEnabled(false);
-				btResume.setEnabled(true);
-			}
-		});
-        add(btPause);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pause();
+                btPause.setEnabled(false);
+                btResume.setEnabled(true);
+            }
+        });
+        tools.add(btPause);
 
         btResume = new Button("resume");
         btResume.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				resume();
-				btResume.setEnabled(false);
-				btPause.setEnabled(true);
-			}
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resume();
+                btResume.setEnabled(false);
+                btPause.setEnabled(true);
+            }
         });
-        add(btResume);
+        tools.add(btResume);
 
         camView = new WebcamPanel();
-        add(camView);
-        
+        add(camView, CENTER);
+
         setBounds(0, 0, 800, 600);
 
-		pack();
+        pack();
+
 		setVisible(true);
 
 	}
