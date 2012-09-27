@@ -84,7 +84,9 @@ public class Application extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                btInit.disable();
+                btInit.setEnabled(false);
+                
+                camView.pause();
 
                 //задание параметров зон коры и структуры связей
                 //BrainInit
@@ -98,6 +100,8 @@ public class Application extends JFrame implements Runnable {
 //		        SetOnOFF() ' распределение он и офф полей
 
                 btPause.setEnabled(true);
+                
+                camView.resume();
             }
         });
         tools.add(btInit);
@@ -111,6 +115,7 @@ public class Application extends JFrame implements Runnable {
                 btResume.setEnabled(true);
             }
         });
+        btPause.setEnabled(false);
         tools.add(btPause);
 
         btResume = new Button("resume");
@@ -122,6 +127,7 @@ public class Application extends JFrame implements Runnable {
                 btPause.setEnabled(true);
             }
         });
+        btResume.setEnabled(false);
         tools.add(btResume);
 
         camView = new WebcamPanel();

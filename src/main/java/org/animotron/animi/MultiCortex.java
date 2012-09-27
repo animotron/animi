@@ -140,6 +140,7 @@ public class MultiCortex {
             this.n_act_min = n_act_min;
             this.k_non = k_non;
 
+            System.out.println("...");
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     for (int z = 0; z < deep; z++) {
@@ -155,7 +156,11 @@ public class MultiCortex {
                 }
             }
 
+            System.out.println("Создание синаптических связей симпл нейронов. " +
+            		"Связи распределяются случайным образом. " +
+            		"Плотность связей убывает экспоненциально с удалением от колонки.");
             for (Mapping m : in_zones) {
+            	System.out.print(".");
                 boolean[][] nerv_links = new boolean[m.zone.width][m.zone.height];
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
@@ -200,6 +205,9 @@ public class MultiCortex {
                     }
                 }
             }
+            System.out.println(">");
+            System.out.println("Инициализация аксонных связей простых нейронов " +
+            		"и, соответственно, синаптических сложных нейронов.");
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     CNeuron sn = col[x][y];
@@ -207,6 +215,8 @@ public class MultiCortex {
                     sn.active = false;
                 }
             }
+            
+            System.out.println("колонки по периметру не задействованы");
             for (int x = 1; x < width - 1; x++) {
                 for (int y = 1; y < height - 1; y++) {
                     int n = 0;
@@ -236,8 +246,10 @@ public class MultiCortex {
 
     static {
 
+    	System.out.println("z_video");
         z_video = new SCortexZone("Input visual layer", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT);
 
+    	System.out.println("z_viscor");
         z_viscor = new CCortexZone("Prime visual cortex", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT, 2,
                 9, 0, 0.3, 0.6, 0.6, 10, 2,
                 new Mapping[]{
@@ -245,6 +257,7 @@ public class MultiCortex {
                 }
         );
 
+    	System.out.println("z_asscor");
         z_asscor = new CCortexZone("Associative cortex", 48, 48, 10,
                 9, 0, 0.3, 0.6, 0.6, 10, 2,
                 new Mapping[]{
@@ -254,11 +267,14 @@ public class MultiCortex {
                 }
         );
 
+    	System.out.println("z_good");
         z_good = new SCortexZone("Zone good", 20, 20);
+    	System.out.println("z_bad");
         z_bad = new SCortexZone("Zone bad", 20, 20);
 
         zones = new SCortexZone[]{z_video, z_viscor, z_asscor, z_good, z_bad};
 
+    	System.out.println("done.");
     }
 
     static void cycle_1() {
