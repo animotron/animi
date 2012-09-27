@@ -65,11 +65,11 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 				Webcam.setDriver(new OpenImajDriver());
 				webcam = Webcam.getDefault();
-                webcam.setViewSize(new Dimension(640, 480));
 				if (webcam == null) {
 					System.out.println("No webcams found...");
 					System.exit(1);
 				}
+                webcam.setViewSize(new Dimension(640, 480));
 				webcam.addWebcamListener(WebcamPanel.this);
 
 				if (!webcam.isOpen()) {
