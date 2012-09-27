@@ -162,11 +162,16 @@ public class MultiCortex {
             double X, S, Y, dX, dy;
             int lx, ly;
             for (Mapping m : in_zones) {
-            	System.out.println("!");
+            	System.out.println("!"+width);
                 boolean[][] nerv_links = new boolean[m.zone.width][m.zone.height];
                 for (int x = 0; x < width; x++) {
+                	
                 	if (x % 10 == 0)
-                		System.out.print(".");
+                    	if (x % 100 == 0)
+                    		System.out.print("|");
+                    	else
+                    		System.out.print(".");
+                	
                     for (int y = 0; y < height; y++) {
                         int x_in_nerv = x * m.zone.width / width;
                         int y_in_nerv = x * m.zone.height / height;
