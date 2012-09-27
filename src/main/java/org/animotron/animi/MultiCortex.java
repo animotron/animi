@@ -140,7 +140,7 @@ public class MultiCortex {
             this.n_act_min = n_act_min;
             this.k_non = k_non;
 
-            System.out.println("...");
+            System.out.println("Инициализация синаптических связей простых нейронов");
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     for (int z = 0; z < deep; z++) {
@@ -159,10 +159,14 @@ public class MultiCortex {
             System.out.println("Создание синаптических связей симпл нейронов. " +
             		"Связи распределяются случайным образом. " +
             		"Плотность связей убывает экспоненциально с удалением от колонки.");
+            double X, S, Y, dX, dy;
+            int lx, ly;
             for (Mapping m : in_zones) {
-            	System.out.print(".");
+            	System.out.println("!");
                 boolean[][] nerv_links = new boolean[m.zone.width][m.zone.height];
                 for (int x = 0; x < width; x++) {
+                	if (x % 10 == 0)
+                		System.out.print(".");
                     for (int y = 0; y < height; y++) {
                         int x_in_nerv = x * m.zone.width / width;
                         int y_in_nerv = x * m.zone.height / height;
@@ -173,18 +177,16 @@ public class MultiCortex {
                                 }
                             }
                             for (int i = 0; i < m.ns_links; i++) {
-                                int lx, ly;
                                 do {
                                     do {
-                                        double X, S, Y;
                                         do {
                                             X = 2.0 * Math.random() - 1;
                                             Y = 2.0 * Math.random() - 1;
                                             S =  X * X + Y * Y;
                                         } while (!(S < 1 && S > 0));
                                         S = Math.sqrt(-2 * Math.log(S) / S);
-                                        double dX = X * S * m.zone.width * m.disp_links;
-                                        double dy = Y * S * m.zone.height * m.disp_links;
+                                        dX = X * S * m.zone.width * m.disp_links;
+                                        dy = Y * S * m.zone.height * m.disp_links;
                                         lx = (int) Math.round(x_in_nerv + dX);
                                         ly = (int) Math.round(y_in_nerv + dy);
                                     } while (!(lx >= 1 && ly >= 1 && lx < m.zone.width && ly < m.zone.height));
@@ -205,7 +207,7 @@ public class MultiCortex {
                     }
                 }
             }
-            System.out.println(">");
+
             System.out.println("Инициализация аксонных связей простых нейронов " +
             		"и, соответственно, синаптических сложных нейронов.");
             for (int x = 0; x < width; x++) {
