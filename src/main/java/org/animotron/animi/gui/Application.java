@@ -30,6 +30,8 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.animotron.animi.MultiCortex;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
@@ -39,6 +41,12 @@ public class Application extends JFrame implements Runnable {
 	private static final long serialVersionUID = 3243253015790558286L;
 
 	private WebcamPanel camView = null;
+	
+	private Button btInit = null;
+	private Button btPause = null;
+	private Button btResume = null;
+	
+	private MultiCortex cortexs = null;
 	
 	private Application() {}
 	
@@ -66,26 +74,50 @@ public class Application extends JFrame implements Runnable {
 
         setLayout(new GridLayout(2,2,2,2));
         
-        Button bt = new Button("initialize");
-        add(bt);
+        btInit = new Button("initialize");
+        btInit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+		        
+				btInit.disable();
 
-        bt = new Button("pause");
-        bt.addActionListener(new ActionListener() {
+		        //задание параметров зон коры и структуры связей
+		        //BrainInit
+		        //инициализация зон коры
+		        //CortexInit
+		        //Начальный сброс "хорошо - плохо"
+		        cortexs = new MultiCortex();
+
+//		        FillMSensPol() ' создание связей сенсорных полей
+//
+//		        SetOnOFF() ' распределение он и офф полей
+
+		        btPause.setEnabled(true);
+			}
+		});
+        add(btInit);
+
+        btPause = new Button("pause");
+        btPause.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pause();
+				btPause.setEnabled(false);
+				btResume.setEnabled(true);
 			}
 		});
-        add(bt);
+        add(btPause);
 
-        bt = new Button("resume");
-        bt.addActionListener(new ActionListener() {
+        btResume = new Button("resume");
+        btResume.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				resume();
+				btResume.setEnabled(false);
+				btPause.setEnabled(true);
 			}
         });
-        add(bt);
+        add(btResume);
 
         camView = new WebcamPanel();
         add(camView);
