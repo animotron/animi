@@ -582,7 +582,7 @@ public class MultiCortex {
         int g = get_green(value);
         int b = get_blue(value);
         
-        return (r+g+b)/3;
+        return r+g+b;// /3;
 
 //        value = (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
 //        return value;
