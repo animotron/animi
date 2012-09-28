@@ -113,10 +113,10 @@ public class MultiCortex {
         }
 
         public BufferedImage getColImage() {
-            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    int c = col[x][y].active ? 255 : 0;
+                    int c = col[x][y].active ? 0xFFFFFFFF : 0;
                     image.setRGB(x, y, c);
                 }
             }
@@ -307,10 +307,10 @@ public class MultiCortex {
         public BufferedImage [] getSImage() {
             BufferedImage [] a = new BufferedImage[deep];
             for (int z = 0; z < deep; z++) {
-                BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
-                        int c = s[x][y][z].active ? 255 : 0;
+                        int c = s[x][y][z].active ? 0xFFFFFFFF : 0;
                         image.setRGB(x, y, c);
                     }
                 }
@@ -373,7 +373,7 @@ public class MultiCortex {
         for (int x = 0; x < RETINA_WIDTH; x++) {
             for (int y = 0; y < RETINA_HEIGHT; y++) {
                 int c = Bsetch[x][y];
-                image.setRGB(x, y, create_rgb(255, c, c, c));
+                image.setRGB(x, y, 256 * (256 * c + c) + c | 0xFF000000);
             }
         }
         return image;
@@ -500,7 +500,7 @@ public class MultiCortex {
 		
     	for (int ix = 0; ix < RETINA_WIDTH; ix++)
         	for (int iy = 0; iy < RETINA_HEIGHT; iy++)
-        		Bsetch[ix][iy] = calcGreyVal(image, ix, iy);// image.getRGB( ix, iy );
+        		Bsetch[ix][iy] = image.getRGB( ix, iy ) & 255; //calcGreyVal(image, ix, iy);
         
         long SP, SC, SA;
         double K_cont;
@@ -574,47 +574,18 @@ public class MultiCortex {
 //    private final double LUM_RED = 0.299;
 //    private final double LUM_GREEN = 0.587;
 //    private final double LUM_BLUE = 0.114;
-	
-    private int calcGreyVal(final BufferedImage img, final int x, final int y) {
-        int value = img.getRGB(x, y);
-
-        int alpha = get_alpha(value);
-        int r = get_red(value);
-        int g = get_green(value);
-        int b = get_blue(value);
-
-        value = (r + g + b) / 3; // grey by averaging the pixels
-        return value;
-//        r = g = b = value;
-//        value = create_rgb(alpha, r, g, b);
-//        gray.setRGB(i, j, value);
-//        
+//
+//    private int calcGreyVal(final BufferedImage img, final int x, final int y) {
+//        int oldVal = img.getRGB(x, y);
+//
+//        int red = (oldVal & RED_SHIFT * COL_MAX_VAL) / (RED_SHIFT);
+//        int green = (oldVal & GREEN_SHIFT * COL_MAX_VAL) / GREEN_SHIFT;
+//        int blue = (oldVal & COL_MAX_VAL);
+//        int grey = (int) Math.floor(LUM_RED * red + LUM_GREEN * green + LUM_BLUE * blue);
+//
 //        return RED_SHIFT * grey + GREEN_SHIFT * grey + grey;
 ////        return grey;
-    }
-    
-    public static int create_rgb(int alpha, int r, int g, int b) {
-        int rgb = (alpha << 24) + (r << 16) + (g << 8) + b;
-        return rgb;
-    }
-
-    public static int get_alpha(int rgb) {
-        return (rgb >> 24) & 0xFF;
-        // return rgb & 0xFF000000;
-    }
-
-    public static int get_red(int rgb) {
-        return (rgb >> 16) & 0xFF;
-        // return rgb & 0x00FF0000;
-    }
-
-    public static int get_green(int rgb) {
-        return (rgb >> 8) & 0xFF;
-    }
-
-    public static int get_blue(int rgb) {
-        return rgb & 0xFF;
-    }
+//    }
     
     public void cycle1() {
         for (SCortexZone cortex : zones) {
