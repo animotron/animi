@@ -406,7 +406,7 @@ public class MultiCortex {
     //Радиус сенсорного поля
     int RSensPol = 8;
     //Радиус центра сенсорного поля
-    int RCSensPol = 3;
+    int RCSensPol = 4;
 
     //Кол-во элементов в центре и переферии сенсорного поля
     int NSensCentr;
@@ -437,10 +437,10 @@ public class MultiCortex {
 
                 R2 = ix * ix + iy * iy;
 
-                if (R2 < RCen2)
+                if (R2 > RPol2)
                     SQ[ix][iy] = 0;
                 else {
-                    if (R2 < RPol2) {
+                    if (R2 > RCen2) {
                         SQ[ix][iy] = 1;
                         NSensPeref = NSensPeref + 1;
                     } else {
@@ -632,105 +632,126 @@ public class MultiCortex {
         return rgb & 0xFF;
     }
     
+    //Такт 1. Активация колонок (узнавание)
     public void cycle1() {
+    	//Последовательность активации зон коры определяется их номером
         for (SCortexZone cortex : zones) {
-            if (cortex instanceof CCortexZone) {
-                CCortexZone zone = (CCortexZone) cortex;
-                for (int x = 1; x < zone.width - 1; x++) {
-                    for (int y = 1; y < zone.height - 1; y++) {
-                        for (int z = 0; z < zone.deep; z++) {
-                            int sum_on_on, sum_on_off, sum_off_on, sum_off_off;
-                            SNeuron sn = zone.s[x][y][z];
-                            if (sn.occupy) {
-                                sum_on_on = sum_on_off = sum_off_on = sum_off_off = 0;
-                                for (int i = 0; i < zone.ns_links; i++) {
-                                    Link2dZone link = sn.s_links[i];
-                                    if (link.zone.col[link.x][link.y].active) {
-                                        if (link.cond) {
-                                            sum_on_on ++;
-                                            sum_on_off ++;
-                                        } else {
-                                            sum_off_on++;
-                                            sum_off_off++;
-                                        }
+            if (!(cortex instanceof CCortexZone))
+            	continue;
+            CCortexZone zone = (CCortexZone) cortex;
+            
+            //Активация простых нейронов при узнавании запомненной картины
+            //Граничные нейроны не задействованы.
+            
+            for (int x = 1; x < zone.width - 1; x++) {
+                for (int y = 1; y < zone.height - 1; y++) {
+                    for (int z = 0; z < zone.deep; z++) {
+                        int sum_on_on, sum_on_off, sum_off_on, sum_off_off;
+                        SNeuron sn = zone.s[x][y][z];
+                        if (sn.occupy) {
+                            sum_on_on = sum_on_off = sum_off_on = sum_off_off = 0;
+                            for (int i = 0; i < zone.ns_links; i++) {
+                                Link2dZone link = sn.s_links[i];
+                                if (link.zone.col[link.x][link.y].active) {
+                                    if (link.cond) {
+                                        sum_on_on ++;
+                                        sum_on_off ++;
+                                    } else {
+                                        sum_off_on++;
+                                        sum_off_off++;
                                     }
                                 }
-                                sn.active = sum_on_on / (sum_on_on + sum_off_on) > zone.k_det1 && sum_off_off / (sum_on_off + sum_off_off) > zone.k_det2;
                             }
+                            sn.active = sum_on_on / (sum_on_on + sum_off_on) > zone.k_det1 && sum_off_off / (sum_on_off + sum_off_off) > zone.k_det2;
                         }
                     }
                 }
-                for (int x = 1; x < zone.width - 1; x++) {
-                    for (int y = 1; y < zone.height - 1; y++) {
-                        int sum = 0;
-                        for (int z = 0; z < zone.deep; z++) {
-                            if (zone.s[x][y][z].active) {
-                                sum++;
-                            }
+            }
+            //активация колонок если набралась критическая масса активности нейронов обвязки
+            for (int x = 1; x < zone.width - 1; x++) {
+                for (int y = 1; y < zone.height - 1; y++) {
+                    int sum = 0;
+                    for (int z = 0; z < zone.deep; z++) {
+                        if (zone.s[x][y][z].active) {
+                            sum++;
                         }
-                        CNeuron cn = zone.col[x][y];
-                        cn.sum = sum;
-                        sum = 0;
-                        for (int i = 0; i < zone.ns_links; i++) {
-                            Link3d link = cn.s_links[i];
-                            if (zone.s[link.x][link.y][link.z].active) {
-                                sum++;
-                            }
-                        }
-                        cn.active = sum / zone.ns_links > zone.k_active;
                     }
+                    CNeuron cn = zone.col[x][y];
+                    cn.sum = sum;
+                    sum = 0;
+                    for (int i = 0; i < zone.ns_links; i++) {
+                        Link3d link = cn.s_links[i];
+                        if (zone.s[link.x][link.y][link.z].active) {
+                            sum++;
+                        }
+                    }
+                    cn.active = sum / zone.ns_links > zone.k_active;
                 }
             }
         }
     }
 
+    //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     public void cycle2() {
         for (SCortexZone cortex : zones) {
-            if (cortex instanceof CCortexZone) {
-                CCortexZone zone = (CCortexZone) cortex;
-                for (int x = 1; x < zone.width - 1; x++) {
-                    for (int y = 1; y < zone.height - 1; y++) {
-                        for (int z = 0; z < zone.deep; z++) {
-                            int sumact = 0;
-                            SNeuron s = zone.s[x][y][z];
-                            for (int i = x - 1; i <= x + 1; i++) {
-                                for (int j = y - 1; j <= y + 1; j++) {
-                                    sumact += zone.col[i][j].sum;
+            if (!(cortex instanceof CCortexZone))
+            	continue;
+            CCortexZone zone = (CCortexZone) cortex;
+            
+            //Граничные нейроны не задействованы. 
+            //Это дает возможность всем используемым нейронам иметь восемь соседних колонок.
+            
+            for (int x = 1; x < zone.width - 1; x++) {
+                for (int y = 1; y < zone.height - 1; y++) {
+                    for (int z = 0; z < zone.deep; z++) {
+                        SNeuron s = zone.s[x][y][z];
+                        
+                        //Вычисляем кол-во активных соседей
+                        int sumact = 0;
+                        for (int i = x - 1; i <= x + 1; i++) {
+                            for (int j = y - 1; j <= y + 1; j++) {
+                                sumact += zone.col[i][j].sum;
+                            }
+                        }
+                        if (s.occupy) {
+                        	//Нейрон занят. Изменяем информацию об активности.
+                            if (s.active) {
+                            	//изменяем среднее кол-во активных соседей в состоянии активности
+                                s.p_on = (s.p_on * s.n_on + sumact) / (s.n_on + 1);
+                                s.n_on++;
+                            } else {
+                                if (sumact > s.p_on) {
+                                	//изменяем среднее кол-во активных соседей в состоянии покоя в случаях, 
+                                	//когда их больше чем при собственной активности нейрона
+                                    s.p_off_m = (s.p_off_m * s.n_off_m + sumact) / (s.n_off_m + 1);
+                                    s.n_off_m++;
                                 }
                             }
-                            if (s.occupy) {
-                                if (s.active) {
-                                    s.p_on = (s.p_on * s.n_on + sumact) / (s.n_on + 1);
-                                    s.n_on++;
-                                } else {
-                                    if (sumact > s.p_on) {
-                                        s.p_off_m = (s.p_off_m * s.n_off_m + sumact) / (s.n_off_m + 1);
-                                        s.n_off_m++;
-                                    }
+                            s.n_act++;
+                            //проверяем условие забывания и обнуляем нейрон если оно выполняется
+                            if (s.n_act > zone.n_act_min && s.n_off_m > s.n_on * zone.k_non) {
+                                s.occupy = false;
+                            }
+                        } else {
+                        	//Нейрон свободен. Проверяем основание для записи и записываем если выполняется.
+                            int sum = 0;
+                            for (int i = 0; i < zone.ns_links; i++) {
+                                Link2dZone link = s.s_links[1];
+                                if (link.zone != null && link.zone.col[link.x][link.y].active) {
+                                    sum++;
                                 }
-                                s.n_act++;
-                                if (s.n_act > zone.n_act_min && s.n_off_m > s.n_on * zone.k_non) {
-                                    s.occupy = false;
-                                }
-                            } else {
-                                int sum = 0;
+                            }
+                            if (sum > zone.k_mem) {
+                            	//запоминаем состояние
+                                s.occupy = true;
+                                s.n_on = 1;
+                                s.n_act = 0;
+                                s.p_on = sumact;
+                                s.p_off_m = 0;
+                                s.n_off_m = 0;
                                 for (int i = 0; i < zone.ns_links; i++) {
                                     Link2dZone link = s.s_links[1];
-                                    if (link.zone != null && link.zone.col[link.x][link.y].active) {
-                                        sum++;
-                                    }
-                                }
-                                if (sum > zone.k_mem) {
-                                    s.occupy = true;
-                                    s.n_on = 1;
-                                    s.n_act = 0;
-                                    s.p_on = sumact;
-                                    s.p_off_m = 0;
-                                    s.n_off_m = 0;
-                                    for (int i = 0; i < zone.ns_links; i++) {
-                                        Link2dZone link = s.s_links[1];
-                                        link.cond = link.zone.col[link.x][link.y].active;
-                                    }
+                                    link.cond = link.zone.col[link.x][link.y].active;
                                 }
                             }
                         }
