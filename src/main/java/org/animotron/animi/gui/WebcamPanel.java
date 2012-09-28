@@ -103,16 +103,17 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
         g.drawImage(image, 0, 0, null);
 
-        BufferedImage retina = cortexs.getRetinaImage();
-        g.drawImage(retina, 643, 0, null);
-
-        int y = 483;
-        int x = 0;
-
-        for (MultiCortex.SCortexZone zone : cortexs.zones) {
-//        	System.out.println("paint "+zone);
-            g.drawImage(zone.getColImage(), x, y, null);
-            x += zone.getWidth() + 3;
+        if (cortexs != null) {
+	        BufferedImage retina = cortexs.getRetinaImage();
+	        g.drawImage(retina, 643, 0, null);
+	
+	        int y = 483;
+	        int x = 0;
+	
+	        for (MultiCortex.SCortexZone zone : cortexs.zones) {
+	            g.drawImage(zone.getColImage(), x, y, null);
+	            x += zone.getWidth() + 3;
+	        }
         }
     }
 
