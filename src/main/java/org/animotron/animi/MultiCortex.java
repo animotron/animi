@@ -144,12 +144,13 @@ public class MultiCortex {
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     for (int z = 0; z < deep; z++) {
-                        SNeuron sn = s[x][y][z];
-                        if (sn == null) {
-                        	sn = new SNeuron();
-                        	s[x][y][z] = sn;
-                        }
+                        SNeuron sn = s[x][y][z] = new SNeuron();
                         sn.s_links = new Link2dZone[ns_links];
+                        for (int i = 0; i < ns_links; i++)
+                        	sn.s_links[i] = new Link2dZone();
+                        sn.a_links = new Link2d[ns_links];
+                        for (int i = 0; i < nas_links; i++)
+                        	sn.a_links[i] = new Link2d();
                         sn.occupy = sn.active = false;
                         sn.n1 = sn.n2 = 0;
                     }
@@ -181,6 +182,7 @@ public class MultiCortex {
                                     nerv_links[n1][n2] = false;
                                 }
                             }
+                            System.out.println("  "+x+" "+y+" "+z);
                             for (int i = 0; i < m.ns_links; i++) {
                                 do {
                                     do {
@@ -189,21 +191,23 @@ public class MultiCortex {
                                             Y = 2.0 * Math.random() - 1;
                                             S =  X * X + Y * Y;
                                         } while (!(S < 1 && S > 0));
+
                                         S = Math.sqrt(-2 * Math.log(S) / S);
                                         dX = X * S * m.zone.width * m.disp_links;
                                         dy = Y * S * m.zone.height * m.disp_links;
                                         lx = (int) Math.round(x_in_nerv + dX);
                                         ly = (int) Math.round(y_in_nerv + dy);
+                                        
+                                        if (lx >= m.zone.width)
+                                        	lx = m.zone.width - 1;
+                                        
+                                        if (ly >= m.zone.height)
+                                        	ly = m.zone.height - 1;
+                                        
                                     } while (!(lx >= 1 && ly >= 1 && lx < m.zone.width && ly < m.zone.height));
                                 } while (nerv_links[lx][ly]);
                                 nerv_links[lx][ly] = true;
                                 SNeuron n = s[x][y][z];
-                                if (n == null) {
-                                	n = new SNeuron();
-                                	s[x][y][z] = n;
-                                }
-                                if (n.s_links[n.n1] == null)
-                                	n.s_links[n.n1] = new Link2dZone();
                                 n.s_links[n.n1].x = lx;
                                 n.s_links[n.n1].y = ly;
                                 n.s_links[n.n1].zone = m.zone;
@@ -217,8 +221,10 @@ public class MultiCortex {
             		"и, соответственно, синаптических сложных нейронов.");
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    CNeuron sn = col[x][y];
+                    CNeuron sn = col[x][y] = new CNeuron();
                     sn.s_links = new Link3d[ns_links];
+                    for (int i = 0; i < ns_links; i++)
+                    	sn.s_links[i] = new Link3d();
                     sn.active = false;
                 }
             }
@@ -231,6 +237,7 @@ public class MultiCortex {
                         for (int j = y - 1; j <= y + 1; j++) {
                             for (int k = 0; k < deep ; k++) {
                                 CNeuron cn = col[x][y];
+                                System.out.println(n+" "+ns_links);
                                 cn.s_links[n].x = i;
                                 cn.s_links[n].y = j;
                                 cn.s_links[n].z = k;
