@@ -115,7 +115,7 @@ public class MultiCortex {
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     int c = col[x][y].active ? 255 : 0;
-                    image.setRGB(c, c, c);
+                    image.setRGB(x, y, c);
                 }
             }
             return image;

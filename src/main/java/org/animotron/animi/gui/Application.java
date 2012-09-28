@@ -109,7 +109,7 @@ public class Application extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
             	cortexs.cycle1();
-            	cortexs.cycle2();
+            	//cortexs.cycle2();
             }
         });
         btStep.setEnabled(false);
