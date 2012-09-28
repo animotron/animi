@@ -22,6 +22,7 @@ package org.animotron.animi;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 /**
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
@@ -403,7 +404,7 @@ public class MultiCortex {
         int X, Y;
         int NC, NP;
 
-        int sensPoLength = 2 * RSensPol - 1;
+        int sensPoLength = 2 * RSensPol - 2;
         int[][] SQ = new int[sensPoLength][sensPoLength];
 
         RPol2 = RSensPol * RSensPol;
@@ -431,9 +432,10 @@ public class MultiCortex {
                 }
         	}
         }
+        Arrays.toString(SQ);
 
-        XScale = (RETINA_WIDTH - 2 * RSensPol - 2) / z_video.width;
-        YScale = (RETINA_HEIGHT - 2 * RSensPol - 2) / z_video.height;
+        XScale = (RETINA_WIDTH - sensPoLength) / z_video.width;
+        YScale = (RETINA_HEIGHT - sensPoLength) / z_video.height;
 
         for (int ix = 0; ix < z_video.width; ix++) {
         	for (int iy = 0; iy < z_video.height; iy++) {
