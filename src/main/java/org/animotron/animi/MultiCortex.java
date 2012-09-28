@@ -493,9 +493,12 @@ public class MultiCortex {
     
     public void TransormToNerv(BufferedImage image) {
 
-        for (int ix = 0; ix < RETINA_WIDTH; ix++)
+//		int gray = image.getRaster().getPixel(x, y, (int[]) null)[0];
+//		int rgbVal = (gray << 16) + (gray << 8) + (gray); 
+		
+    	for (int ix = 0; ix < RETINA_WIDTH; ix++)
         	for (int iy = 0; iy < RETINA_HEIGHT; iy++)
-        		Bsetch[ix][iy] = image.getRGB( ix, iy );
+        		Bsetch[ix][iy] = calcGreyVal(image, ix, iy);// image.getRGB( ix, iy );
         
         long SP, SC, SA;
         double K_cont;
@@ -556,7 +559,25 @@ public class MultiCortex {
         	}
         }
     }
-        	
+    
+    private final int COL_MAX_VAL = 255;
+    private final int RED_SHIFT = 256 * 256;
+    private final int GREEN_SHIFT = 256;
+    private final double LUM_RED = 0.299;
+    private final double LUM_GREEN = 0.587;
+    private final double LUM_BLUE = 0.114;
+    
+    private int calcGreyVal(final BufferedImage img, final int x, final int y) {
+        int oldVal = img.getRGB(x, y);
+
+        int red = (oldVal & RED_SHIFT * COL_MAX_VAL) / (RED_SHIFT);
+        int green = (oldVal & GREEN_SHIFT * COL_MAX_VAL) / GREEN_SHIFT;
+        int blue = (oldVal & COL_MAX_VAL);
+        int grey = (int) Math.floor(LUM_RED * red + LUM_GREEN * green + LUM_BLUE * blue);
+
+        return grey;
+    }
+    
     public void cycle1() {
         for (SCortexZone cortex : zones) {
             if (cortex instanceof CCortexZone) {
