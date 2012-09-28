@@ -164,6 +164,7 @@ public class Application extends JFrame implements Runnable {
 	private void stop() {
 		if (camView != null)
 			camView.stop();
+		cortexs.active = false; 
 	}
 
 	public static void main(String[] args) {

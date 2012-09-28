@@ -67,7 +67,6 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 	private Webcam webcam = null;
     private BufferedImage image = null;
-    private BufferedImage gray = null;
     private Repainter repainter = null;
 
 	public WebcamPanel() {
