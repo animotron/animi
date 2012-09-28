@@ -32,7 +32,6 @@ import org.animotron.animi.MultiCortex;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
-import static java.awt.Frame.MAXIMIZED_BOTH;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -45,6 +44,7 @@ public class Application extends JFrame implements Runnable {
 	private WebcamPanel camView = null;
 	
 	private Button btInit = null;
+	private Button btStep = null;
 	private Button btPause = null;
 	private Button btResume = null;
 	
@@ -102,9 +102,21 @@ public class Application extends JFrame implements Runnable {
                 btPause.setEnabled(true);
                 
                 camView.resume();
+                btStep.setEnabled(true);
             }
         });
         tools.add(btInit);
+
+        btStep = new Button("step");
+        btStep.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	cortexs.cycle1();
+            	cortexs.cycle2();
+            }
+        });
+        btStep.setEnabled(false);
+        tools.add(btStep);
 
         btPause = new Button("pause");
         btPause.addActionListener(new ActionListener() {

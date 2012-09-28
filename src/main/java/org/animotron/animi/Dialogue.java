@@ -30,7 +30,6 @@ import org.neo4j.graphdb.Relationship;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -158,9 +157,5 @@ public class Dialogue implements Runnable {
 		}
 		
 		return nodes;
-	}
-	
-	private String uuid() {
-		return UUID.randomUUID().toString();
 	}
 }

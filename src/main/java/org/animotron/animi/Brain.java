@@ -22,8 +22,6 @@ package org.animotron.animi;
 
 import static org.neo4j.graphdb.traversal.Evaluation.*;
 
-import java.util.Arrays;
-
 import javolution.util.FastList;
 import javolution.util.FastSet;
 

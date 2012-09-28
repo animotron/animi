@@ -307,7 +307,7 @@ public class MultiCortex {
     	System.out.println("done.");
     }
 
-    static void cycle_1() {
+    public void cycle1() {
         for (SCortexZone cortex : zones) {
             if (cortex instanceof CCortexZone) {
                 CCortexZone zone = (CCortexZone) cortex;
@@ -359,7 +359,7 @@ public class MultiCortex {
         }
     }
 
-    void cycle2() {
+    public void cycle2() {
         for (SCortexZone cortex : zones) {
             if (cortex instanceof CCortexZone) {
                 CCortexZone zone = (CCortexZone) cortex;
