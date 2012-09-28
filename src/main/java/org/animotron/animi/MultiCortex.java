@@ -376,7 +376,7 @@ public class MultiCortex {
         BufferedImage image = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < RETINA_WIDTH; x++) {
             for (int y = 0; y < RETINA_HEIGHT; y++) {
-                int c = Bsetch[x][y];
+                int c = Bsetch[x][y] / 3;
                 image.setRGB(x, y, create_rgb(255, c, c, c));
             }
         }
