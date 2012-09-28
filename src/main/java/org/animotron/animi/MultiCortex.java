@@ -144,7 +144,7 @@ public class MultiCortex {
     }
 
     // Complex cortex zone
-    class CCortexZone extends SCortexZone {
+    public class CCortexZone extends SCortexZone {
 
         Mapping[] in_zones;
         int deep;
@@ -301,6 +301,22 @@ public class MultiCortex {
                 }
             }
         }
+
+        public BufferedImage [] getSImage() {
+            BufferedImage [] a = new BufferedImage[deep];
+            for (int z = 0; z < deep; z++) {
+                BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                for (int x = 0; x < width; x++) {
+                    for (int y = 0; y < height; y++) {
+                        int c = s[x][y][z].active ? 255 : 0;
+                        image.setRGB(x, y, c);
+                    }
+                }
+                a[z] = image;
+            }
+            return a;
+        }
+
     }
 
     Pole[][] MSensPol;
