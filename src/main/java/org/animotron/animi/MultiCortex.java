@@ -20,6 +20,8 @@
  */
 package org.animotron.animi;
 
+import org.junit.Assert;
+
 /**
  * @author <a href="aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
@@ -77,9 +79,14 @@ public class MultiCortex {
         double disp_links;      // Grouping parameter. Describe a size of sensor field
 
         public Mapping(SCortexZone zone, int ns_links, double disp_links) {
+        	Assert.assertNotNull(zone);
             this.zone = zone;
             this.ns_links = ns_links;
             this.disp_links = disp_links;
+        }
+
+        public String toString() {
+        	return "mapping "+zone.toString();
         }
     }
 
@@ -97,7 +104,10 @@ public class MultiCortex {
             this.height = height;
             this.col = new CNeuron[width][height];
         }
-
+        
+        public String toString() {
+        	return name;
+        }
     }
 
     // Complex cortex zone
@@ -131,7 +141,7 @@ public class MultiCortex {
                 ns_links += i.ns_links;
             }
 
-            this.nas_links = nas_links;
+            this.nas_links = 9 * deep;//nas_links;
             nsc_links = nas_links * deep;
             this.k_active = k_active;
             this.k_mem = (int) Math.round(ns_links * k_mem);
@@ -139,7 +149,7 @@ public class MultiCortex {
             this.k_det2 = k_det2;
             this.n_act_min = n_act_min;
             this.k_non = k_non;
-
+            
             System.out.println("Инициализация синаптических связей простых нейронов");
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
@@ -163,11 +173,14 @@ public class MultiCortex {
             double X, S, Y, dX, dy;
             int lx, ly;
             for (Mapping m : in_zones) {
-            	System.out.println("!"+width);
+                if (!(m.zone instanceof CCortexZone))
+                	continue;
+
+            	System.out.println("!"+width+" "+m);
                 boolean[][] nerv_links = new boolean[m.zone.width][m.zone.height];
                 for (int x = 0; x < width; x++) {
                 	
-                	if (x % 10 == 0)
+                	if (x != 0 && x % 10 == 0)
                     	if (x % 100 == 0)
                     		System.out.print("|");
                     	else
@@ -182,7 +195,7 @@ public class MultiCortex {
                                     nerv_links[n1][n2] = false;
                                 }
                             }
-                            System.out.println("  "+x+" "+y+" "+z);
+//                            System.out.println("  "+x+" "+y+" "+z);
                             for (int i = 0; i < m.ns_links; i++) {
                                 do {
                                     do {
@@ -215,15 +228,17 @@ public class MultiCortex {
                         }
                     }
                 }
+                System.out.println();
             }
 
             System.out.println("Инициализация аксонных связей простых нейронов " +
             		"и, соответственно, синаптических сложных нейронов.");
+            int simLinks = 3*3*deep;
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     CNeuron sn = col[x][y] = new CNeuron();
-                    sn.s_links = new Link3d[ns_links];
-                    for (int i = 0; i < ns_links; i++)
+                    sn.s_links = new Link3d[simLinks];
+                    for (int i = 0; i < simLinks; i++)
                     	sn.s_links[i] = new Link3d();
                     sn.active = false;
                 }
@@ -236,8 +251,9 @@ public class MultiCortex {
                     for (int i = x - 1; i <= x + 1; i++) {
                         for (int j = y - 1; j <= y + 1; j++) {
                             for (int k = 0; k < deep ; k++) {
+//                            	System.out.println(" "+i+" "+j+" "+k);
                                 CNeuron cn = col[x][y];
-                                System.out.println(n+" "+ns_links);
+//                                System.out.println(n+" "+simLinks);
                                 cn.s_links[n].x = i;
                                 cn.s_links[n].y = j;
                                 cn.s_links[n].z = k;
@@ -271,6 +287,11 @@ public class MultiCortex {
                 }
         );
 
+    	System.out.println("z_good");
+        z_good = new SCortexZone("Zone good", 20, 20);
+    	System.out.println("z_bad");
+        z_bad = new SCortexZone("Zone bad", 20, 20);
+
     	System.out.println("z_asscor");
         z_asscor = new CCortexZone("Associative cortex", 48, 48, 10,
                 9, 0, 0.3, 0.6, 0.6, 10, 2,
@@ -280,11 +301,6 @@ public class MultiCortex {
                         new Mapping(z_bad, 10, 0.01)
                 }
         );
-
-    	System.out.println("z_good");
-        z_good = new SCortexZone("Zone good", 20, 20);
-    	System.out.println("z_bad");
-        z_bad = new SCortexZone("Zone bad", 20, 20);
 
         zones = new SCortexZone[]{z_video, z_viscor, z_asscor, z_good, z_bad};
 
