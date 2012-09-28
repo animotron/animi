@@ -107,8 +107,7 @@ public class Application extends JFrame implements Runnable {
         btStep.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	cortexs.cycle1();
-            	//cortexs.cycle2();
+            	cortexs.active = true;
             }
         });
         btStep.setEnabled(false);
@@ -151,11 +150,13 @@ public class Application extends JFrame implements Runnable {
 	}
 
 	private void resume() {
+		cortexs.active = true; 
 		if (camView != null)
 			camView.resume();
 	}
 
 	private void pause() {
+		cortexs.active = false; 
 		if (camView != null)
 			camView.pause();
 	}

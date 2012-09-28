@@ -33,6 +33,8 @@ public class MultiCortex {
     static final int VISUAL_FIELD_WIDTH = 96 * 2;
     static final int VISUAL_FIELD_HEIGHT = 72 * 2;
 
+    public boolean active = false;
+    
     // create a grayscale image the same size
     // Neuron link on the surfarce
     class Link2d {
@@ -367,7 +369,7 @@ public class MultiCortex {
 
     public BufferedImage getRetinaImage() {
     	
-        BufferedImage image = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
         for (int x = 0; x < RETINA_WIDTH; x++) {
             for (int y = 0; y < RETINA_HEIGHT; y++) {
                 int c = Bsetch[x][y];
@@ -428,7 +430,7 @@ public class MultiCortex {
         }
 
         XScale = (RETINA_WIDTH - 2 * RSensPol - 2) / z_video.width;
-        YScale = (RETINA_HEIGHT - 2 * RSensPol - 2) / z_video.height;
+//        YScale = (RETINA_HEIGHT - 2 * RSensPol - 2) / z_video.height;
 
         for (int ix = 0; ix < z_video.width; ix++) {
         	for (int iy = 0; iy < z_video.height; iy++) {
@@ -439,7 +441,7 @@ public class MultiCortex {
         		mSensPol.peref = new int[NSensPeref+1][3];
 
                 X = ix * XScale + RSensPol + 1;
-                Y = iy * YScale + RSensPol + 1;
+                Y = iy * XScale + RSensPol + 1;
 
                 NC = 0;
                 NP = 0;
@@ -558,6 +560,12 @@ public class MultiCortex {
                 }
         	}
         }
+        
+        if (active) {
+	    	cycle1();
+	    	cycle2();
+	    	System.out.println("step");
+        }
     }
     
     private final int COL_MAX_VAL = 255;
@@ -566,7 +574,7 @@ public class MultiCortex {
     private final double LUM_RED = 0.299;
     private final double LUM_GREEN = 0.587;
     private final double LUM_BLUE = 0.114;
-    
+	
     private int calcGreyVal(final BufferedImage img, final int x, final int y) {
         int oldVal = img.getRGB(x, y);
 
@@ -663,7 +671,7 @@ public class MultiCortex {
                                 int sum = 0;
                                 for (int i = 0; i < zone.ns_links; i++) {
                                     Link2dZone link = s.s_links[1];
-                                    if (link.zone.col[link.x][link.y].active) {
+                                    if (link.zone != null && link.zone.col[link.x][link.y].active) {
                                         sum++;
                                     }
                                 }
