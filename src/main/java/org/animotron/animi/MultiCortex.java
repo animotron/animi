@@ -517,13 +517,13 @@ public class MultiCortex {
                 SC = 0;
                 for (int j = 0; j < NSensCentr; j++) {
 
-                    SC = SC + Bsetch[mSensPol.centr[j][1]][mSensPol.centr[j][2]];
+                    SC += Bsetch[mSensPol.centr[j][1]][mSensPol.centr[j][2]];
                 }
 
                 SP = 0;
                 for (int j = 0; j < NSensPeref; j++) {
 
-                    SP = SP + Bsetch[mSensPol.peref[j][1]][mSensPol.peref[j][2]];
+                    SP += Bsetch[mSensPol.peref[j][1]][mSensPol.peref[j][2]];
                 }
 
                 SA = ((SP + SC) / (NSensCentr + NSensPeref));
@@ -571,9 +571,9 @@ public class MultiCortex {
         }
     }
     
-    private final double LUM_RED = 0.299;
-    private final double LUM_GREEN = 0.587;
-    private final double LUM_BLUE = 0.114;
+//    private final double LUM_RED = 0.299;
+//    private final double LUM_GREEN = 0.587;
+//    private final double LUM_BLUE = 0.114;
 
     private int calcGreyVal(final BufferedImage img, final int x, final int y) {
         int value = img.getRGB(x, y);
@@ -581,9 +581,11 @@ public class MultiCortex {
         int r = get_red(value);
         int g = get_green(value);
         int b = get_blue(value);
+        
+        return (r+g+b)/3;
 
-        value = (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
-        return value;
+//        value = (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
+//        return value;
     }
 
     public static int create_rgb(int alpha, int r, int g, int b) {
