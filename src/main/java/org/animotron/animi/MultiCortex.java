@@ -24,7 +24,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 
 /**
- * @author <a href="aldrd@yahoo.com">Alexey Redozubov</a>
+ * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
