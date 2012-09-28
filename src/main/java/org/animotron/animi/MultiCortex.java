@@ -143,7 +143,7 @@ public class MultiCortex {
     
     class Pole {
     	//1 - on 2 - off 3 - универсальный (срабатывает на оба стимула)
-    	short type = 3;
+    	short type = 1;
 
     	int[][] centr;
     	int[][] peref;
@@ -431,14 +431,16 @@ public class MultiCortex {
         for (int ix = 0; ix < sensPoLength; ix++) {
         	for (int iy = 0; iy < sensPoLength; iy++) {
 
-                int dx = ix - RSensPol;
-                int dy = iy - RSensPol;
-                R2 = dx * dx + dy * dy;
+//                int dx = ix - RSensPol;
+//                int dy = iy - RSensPol;
+//                R2 = dx * dx + dy * dy;
 
-                if (R2 > RPol2)
+                R2 = ix * ix + iy * iy;
+
+                if (R2 < RCen2)
                     SQ[ix][iy] = 0;
                 else {
-                    if (R2 > RCen2) {
+                    if (R2 < RPol2) {
                         SQ[ix][iy] = 1;
                         NSensPeref = NSensPeref + 1;
                     } else {
@@ -459,8 +461,8 @@ public class MultiCortex {
 
         		Pole mSensPol = new Pole();
                 MSensPol[ix][iy] = mSensPol;
-                mSensPol.centr = new int[NSensCentr+1][3];
-        		mSensPol.peref = new int[NSensPeref+1][3];
+                mSensPol.centr = new int[NSensCentr][3];
+        		mSensPol.peref = new int[NSensPeref][3];
 
                 X = ix * XScale + RSensPol + 1;
                 Y = iy * YScale + RSensPol + 1;
@@ -586,7 +588,7 @@ public class MultiCortex {
         if (active) {
 	    	cycle1();
 	    	cycle2();
-	    	System.out.println("step");
+//	    	System.out.println("step");
         }
     }
     
