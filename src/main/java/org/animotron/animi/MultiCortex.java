@@ -574,8 +574,9 @@ public class MultiCortex {
         int green = (oldVal & GREEN_SHIFT * COL_MAX_VAL) / GREEN_SHIFT;
         int blue = (oldVal & COL_MAX_VAL);
         int grey = (int) Math.floor(LUM_RED * red + LUM_GREEN * green + LUM_BLUE * blue);
-
-        return grey;
+        
+        return RED_SHIFT * grey + GREEN_SHIFT * grey + grey;
+//        return grey;
     }
     
     public void cycle1() {
