@@ -20,6 +20,9 @@
  */
 package org.animotron.animi;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
+
 import org.junit.Assert;
 
 /**
@@ -109,7 +112,15 @@ public class MultiCortex {
         	return name;
         }
     }
-
+    
+    static class Pole {
+    	//1 - on 2 - off 3 - универсальный (срабатывает на оба стимула)
+    	short type = 3;
+    	
+    	int[][] centr;
+    	int[][] peref;
+    }
+    
     // Complex cortex zone
     static class CCortexZone extends SCortexZone {
 
@@ -270,6 +281,8 @@ public class MultiCortex {
         }
     }
 
+    static Pole[][] MSensPol; 
+
     static SCortexZone z_video, z_viscor, z_asscor, z_good, z_bad;
 
     static SCortexZone [] zones;
@@ -303,9 +316,212 @@ public class MultiCortex {
         );
 
         zones = new SCortexZone[]{z_video, z_viscor, z_asscor, z_good, z_bad};
+        
+        MSensPol = new Pole[VISUAL_FIELD_WIDTH - 1][VISUAL_FIELD_HEIGHT - 1]; 
 
     	System.out.println("done.");
     }
+    
+	//Сетчатка
+    int X_setch = 640;
+	int Y_setch = 480;
+
+	//Параметры преобразования сетчатки в сигналы полей с он-центом и офф-центром
+
+    //Радиус сенсорного поля
+    int RSensPol = 8;
+    //Радиус центра сенсорного поля
+    int RCSensPol = 3;
+
+    //Кол-во элементов в центре и переферии сенсорного поля
+    int NSensCentr;
+    int NSensPeref;
+
+    public void FillMSensPol() {
+    	
+        int XScale, YScale, R2, RPol2, RCen2;
+        int X, Y;
+        int NC, NP;
+
+        int length = 2 * RSensPol - 2;
+        int[][] SQ = new int[length][length];
+
+        RPol2 = RSensPol * RSensPol;
+        RCen2 = RCSensPol * RCSensPol;
+
+        NSensCentr = 0;
+        NSensPeref = 0;
+
+        //Разметка квадратного массива двумя кругами (центром и переферией сенсорного поля)
+        for (int ix = 0; ix < length; ix++) {
+        	for (int iy = 0; iy < length; iy++) {
+
+                R2 = ix * ix + iy * iy;
+
+                if (R2 > RPol2)
+                    SQ[ix][iy] = 0;
+                else {
+                    if (R2 > RCen2) {
+                        SQ[ix][iy] = 1;
+                        NSensPeref = NSensPeref + 1;
+                    } else {
+                        SQ[ix][iy] = 2;
+                        NSensCentr = NSensCentr + 1;
+                    }
+                }
+        	}
+        }
+
+        XScale = (X_setch - 2 * RSensPol - 2) / z_video.width;
+        YScale = (Y_setch - 2 * RSensPol - 2) / z_video.height;
+
+        for (int ix = 0; ix < z_video.width; ix++) {
+        	for (int iy = 0; iy < z_video.height; iy++) {
+
+        		Pole mSensPol = MSensPol[ix][iy];
+        		mSensPol.centr = new int[NSensCentr][2];
+        		mSensPol.peref = new int[NSensPeref][2];
+
+                X = ix * XScale + RSensPol + 1;
+                Y = iy * YScale + RSensPol + 1;
+
+                NC = 0;
+                NP = 0;
+
+                for (int i = 0; i < length; i++) {
+                    for (int j = 0; j < length; j++) {
+
+                    	switch (SQ[i][j]) {
+
+                        case 0:
+                        case 1:
+
+                            mSensPol.peref[NP][1] = X - RSensPol + i;
+                            mSensPol.peref[NP][2] = Y - RSensPol + j;
+
+                            NP = NP + 1;
+                            break;
+                        case 2:
+
+                        	mSensPol.centr[NC][1] = X - RSensPol + i;
+                        	mSensPol.centr[NC][2] = Y - RSensPol + j;
+
+                            NC = NC + 1;
+                            break;
+						default:
+							break;
+                		}
+                    }
+                }
+        	}
+        }
+    }
+
+    //Количество цветов
+    int N_Col = 3;
+
+    //минимальное соотношение средней контрасности переферии и центра сенсорного поля, необходимое для активации
+    //контрастность для темных элементов (0)
+    double KContr1 = 1.45;
+    //контрастность для светлых элементов (Level_Bright)
+    double KContr2 = 1.15;
+	//минимальная контрастность
+	double KContr3 = 1.15;
+	//(0..255)
+    int Level_Bright = 100;
+    int Lelel_min = 10 * N_Col;
+
+    
+    public void TransormToNerv(BufferedImage image) {
+
+		//Числовое представление сетчатки. Черно-белая картинка.
+		BufferedImage gray = convertToGray(image);
+		int[][] Bsetch = new int[X_setch - 1][Y_setch - 1];
+		
+        for (int ix = 0; ix < X_setch; ix++)
+        	for (int iy = 0; iy < Y_setch; iy++)
+        		
+        		Bsetch[ix][iy] = gray.getRGB( ix, iy );
+        
+        long SP, SC, SA;
+        double K_cont;
+        for (int ix = 0; ix < z_video.width; ix++) {
+        	for (int iy = 0; iy < z_video.height; iy++) {
+
+        		Pole mSensPol = MSensPol[ix][iy];
+
+                z_video.col[ix][iy].active = false;
+
+                SC = 0;
+                for (int j = 0; j < NSensCentr; j++) {
+
+                    SC = SC + Bsetch[mSensPol.centr[j][1]][mSensPol.centr[j][2]];
+                }
+
+                SP = 0;
+                for (int j = 0; j < NSensPeref; j++) {
+
+                    SP = SP + Bsetch[mSensPol.peref[j][1]][mSensPol.peref[j][2]];
+                }
+
+                SA = ((SP + SC) / (NSensCentr + NSensPeref));
+
+                K_cont = KContr1 + (SA / N_Col) * (KContr2 - KContr1) / Level_Bright;
+
+                if (K_cont < KContr3) K_cont = KContr3;
+
+                SC = SC / NSensCentr;
+                SP = SP / NSensPeref;
+
+                if (SA > Lelel_min) {
+                	switch (mSensPol.type) {
+                    case 1:
+
+                        if (SC / SP > K_cont)
+                            z_video.col[ix][iy].active = true;
+
+						break;
+
+                    case 2:
+
+                        if (SP / SC > K_cont)
+                            z_video.col[ix][iy].active = true;
+
+                        break;
+
+                    case 3:
+
+                        if (SC / SP > K_cont || SP / SC > K_cont) 
+                            z_video.col[ix][iy].active = true;
+
+                        break;
+					default:
+						break;
+					}
+                }
+        	}
+        }
+    }
+        	
+	private BufferedImage convertToGray(BufferedImage image) {
+        // create a grayscale image the same size
+		BufferedImage gray = 
+			new BufferedImage(
+				image.getWidth(),
+				image.getHeight(),
+				BufferedImage.TYPE_BYTE_GRAY
+			);
+
+        // convert the original colored image to grayscale
+        ColorConvertOp op = 
+    		new ColorConvertOp(
+                 image.getColorModel().getColorSpace(),
+                 gray.getColorModel().getColorSpace(),
+                 null
+             );
+        op.filter(image,gray);
+        return gray;
+	}
 
     public void cycle1() {
         for (SCortexZone cortex : zones) {

@@ -48,7 +48,7 @@ public class Application extends JFrame implements Runnable {
 	private Button btPause = null;
 	private Button btResume = null;
 	
-	private MultiCortex cortexs = null;
+	protected static MultiCortex cortexs = null;
 	
 	private Application() {}
 	

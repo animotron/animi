@@ -36,7 +36,9 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			while (webcam.isOpen()) {
 
 				image = webcam.getImage();
-
+				
+				Application.cortexs.TransormToNerv(image);
+				
 				try {
 					if (paused) {
 						synchronized (this) {
