@@ -14,6 +14,7 @@ import org.animotron.animi.Retina;
 
 import static org.animotron.animi.Retina.RETINA_HEIGHT;
 import static org.animotron.animi.Retina.RETINA_WIDTH;
+import static org.animotron.animi.gui.Application.cortexs;
 
 /**
  * Simply implementation of JPanel allowing users to render pictures taken with
@@ -35,25 +36,22 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 		@Override
 		public void run() {
-			super.run();
-
+			//super.run();
 			while (webcam.isOpen()) {
-
-				image = webcam.getImage();
-				
-				Application.cortexs.TransormToNerv(image);
-				
 				try {
 					if (paused) {
 						synchronized (this) {
 							this.wait();
 						}
 					}
-					Thread.sleep(1000 / frequency);
-				} catch (InterruptedException e) {
+                    image = webcam.getImage();
+                    cortexs.TransormToNerv(image);
+                    Thread.sleep(1000 / frequency);
+				} catch (Throwable e) {
 					e.printStackTrace();
-				}
-				WebcamPanel.this.repaint();
+				} finally {
+                    WebcamPanel.this.repaint();
+                }
 			}
 		}
 	}

@@ -48,7 +48,7 @@ public class Application extends JFrame implements Runnable {
 	private Button btPause = null;
 	private Button btResume = null;
 	
-	protected static MultiCortex cortexs = null;
+	protected static MultiCortex cortexs = new MultiCortex();
 	
 	private Application() {}
 	
@@ -93,11 +93,8 @@ public class Application extends JFrame implements Runnable {
                 //инициализация зон коры
                 //CortexInit
                 //Начальный сброс "хорошо - плохо"
-                cortexs = new MultiCortex();
 
-//		        FillMSensPol() ' создание связей сенсорных полей
 //
-//		        SetOnOFF() ' распределение он и офф полей
 
                 btPause.setEnabled(true);
                 

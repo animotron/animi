@@ -23,8 +23,6 @@ package org.animotron.animi;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 
-import org.junit.Assert;
-
 /**
  * @author <a href="aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
@@ -36,26 +34,24 @@ public class MultiCortex {
     static final int VISUAL_FIELD_WIDTH = 96 * 2;
     static final int VISUAL_FIELD_HEIGHT = 72 * 2;
 
-    static int i_step = 0;
-
     // Neuron link on the surfarce
-    static class Link2d {
+    class Link2d {
         int x, y;
         boolean cond;
     }
 
     // Neuron link on the surfarce with a cortex reference
-    static class Link2dZone extends Link2d {
+    class Link2dZone extends Link2d {
         SCortexZone zone;
     }
 
     // Neuron link in the cortex space
-    static class Link3d {
+    class Link3d {
         int x, y, z;
     }
 
     // Simple neuron
-    static class SNeuron {
+    class SNeuron {
         boolean occupy, active;
         int n_on;               // Number of active cycles after activation
         int n_act;              // Number of cycles after activation
@@ -69,20 +65,19 @@ public class MultiCortex {
     }
 
     // Complex neuron
-    static class CNeuron {
+    class CNeuron {
         boolean active;
         int sum;                // Number of active neurons
         Link3d[] s_links;       // Links of synapses connects cortex neurons with neurons of cortical columns
     }
 
     // Projection description of the one zone to another
-    static class Mapping {
+    class Mapping {
         SCortexZone zone;       // Projecting zone
         int ns_links;           // Number of synaptic connections for the zone
         double disp_links;      // Grouping parameter. Describe a size of sensor field
 
         public Mapping(SCortexZone zone, int ns_links, double disp_links) {
-        	Assert.assertNotNull(zone);
             this.zone = zone;
             this.ns_links = ns_links;
             this.disp_links = disp_links;
@@ -94,7 +89,7 @@ public class MultiCortex {
     }
 
     // Simple cortex zone
-    static class SCortexZone {
+    class SCortexZone {
 
         String name;
         CNeuron[][] col;        // State of complex neurons (outputs cortical columns)
@@ -106,6 +101,13 @@ public class MultiCortex {
             this.width = width;
             this.height = height;
             this.col = new CNeuron[width][height];
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    CNeuron cn = new CNeuron();
+                    cn.active = false;
+                    this.col[x][y] = cn;
+                }
+            }
         }
         
         public String toString() {
@@ -113,7 +115,7 @@ public class MultiCortex {
         }
     }
     
-    static class Pole {
+    class Pole {
     	//1 - on 2 - off 3 - универсальный (срабатывает на оба стимула)
     	short type = 3;
     	
@@ -122,7 +124,7 @@ public class MultiCortex {
     }
     
     // Complex cortex zone
-    static class CCortexZone extends SCortexZone {
+    class CCortexZone extends SCortexZone {
 
         Mapping[] in_zones;
         int deep;
@@ -281,18 +283,18 @@ public class MultiCortex {
         }
     }
 
-    static Pole[][] MSensPol; 
+    Pole[][] MSensPol;
 
-    static SCortexZone z_video, z_viscor, z_asscor, z_good, z_bad;
+    SCortexZone z_video, z_viscor, z_asscor, z_good, z_bad;
 
-    static SCortexZone [] zones;
+    SCortexZone [] zones;
 
-    static {
+    public MultiCortex() {
 
-    	System.out.println("z_video");
+        System.out.println("z_video");
         z_video = new SCortexZone("Input visual layer", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT);
 
-    	System.out.println("z_viscor");
+        System.out.println("z_viscor");
         z_viscor = new CCortexZone("Prime visual cortex", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT, 2,
                 9, 0, 0.3, 0.6, 0.6, 10, 2,
                 new Mapping[]{
@@ -300,12 +302,12 @@ public class MultiCortex {
                 }
         );
 
-    	System.out.println("z_good");
+        System.out.println("z_good");
         z_good = new SCortexZone("Zone good", 20, 20);
-    	System.out.println("z_bad");
+        System.out.println("z_bad");
         z_bad = new SCortexZone("Zone bad", 20, 20);
 
-    	System.out.println("z_asscor");
+        System.out.println("z_asscor");
         z_asscor = new CCortexZone("Associative cortex", 48, 48, 10,
                 9, 0, 0.3, 0.6, 0.6, 10, 2,
                 new Mapping[]{
@@ -316,12 +318,18 @@ public class MultiCortex {
         );
 
         zones = new SCortexZone[]{z_video, z_viscor, z_asscor, z_good, z_bad};
-        
-        MSensPol = new Pole[VISUAL_FIELD_WIDTH - 1][VISUAL_FIELD_HEIGHT - 1]; 
 
-    	System.out.println("done.");
+        MSensPol = new Pole[VISUAL_FIELD_WIDTH][VISUAL_FIELD_HEIGHT];
+
+        FillMSensPol(); // создание связей сенсорных полей
+
+        //SetOnOFF(); // распределение он и офф полей
+
+        System.out.println("done.");
+
     }
-    
+
+
 	//Сетчатка
     int X_setch = 640;
 	int Y_setch = 480;
@@ -343,7 +351,7 @@ public class MultiCortex {
         int X, Y;
         int NC, NP;
 
-        int length = 2 * RSensPol - 2;
+        int length = 2 * RSensPol - 1;
         int[][] SQ = new int[length][length];
 
         RPol2 = RSensPol * RSensPol;
@@ -378,9 +386,10 @@ public class MultiCortex {
         for (int ix = 0; ix < z_video.width; ix++) {
         	for (int iy = 0; iy < z_video.height; iy++) {
 
-        		Pole mSensPol = MSensPol[ix][iy];
-        		mSensPol.centr = new int[NSensCentr][2];
-        		mSensPol.peref = new int[NSensPeref][2];
+        		Pole mSensPol = new Pole();
+                MSensPol[ix][iy] = mSensPol;
+                mSensPol.centr = new int[NSensCentr+1][3];
+        		mSensPol.peref = new int[NSensPeref+1][3];
 
                 X = ix * XScale + RSensPol + 1;
                 Y = iy * YScale + RSensPol + 1;
@@ -394,6 +403,7 @@ public class MultiCortex {
                     	switch (SQ[i][j]) {
 
                         case 0:
+                            break;
                         case 1:
 
                             mSensPol.peref[NP][1] = X - RSensPol + i;
@@ -436,11 +446,11 @@ public class MultiCortex {
 
 		//Числовое представление сетчатки. Черно-белая картинка.
 		BufferedImage gray = convertToGray(image);
-		int[][] Bsetch = new int[X_setch - 1][Y_setch - 1];
+		int[][] Bsetch = new int[X_setch][Y_setch];
 		
         for (int ix = 0; ix < X_setch; ix++)
         	for (int iy = 0; iy < Y_setch; iy++)
-        		
+
         		Bsetch[ix][iy] = gray.getRGB( ix, iy );
         
         long SP, SC, SA;
