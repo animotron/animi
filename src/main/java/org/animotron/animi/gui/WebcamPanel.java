@@ -29,8 +29,6 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 	private int frequency = 65; // Hz
 
-    BufferedImage gray = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, TYPE_BYTE_GRAY);
-
     // convert the original colored image to grayscale
     ColorConvertOp op = new ColorConvertOp(null);
 
@@ -65,8 +63,9 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	}
 
 	private Webcam webcam = null;
-	private BufferedImage image = null;
-	private Repainter repainter = null;
+    private BufferedImage image = null;
+    private BufferedImage gray = null;
+    private Repainter repainter = null;
 
 	public WebcamPanel() {
 		
