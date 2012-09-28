@@ -349,6 +349,17 @@ public class MultiCortex {
 
     }
 
+    public BufferedImage getRetinaImage() {
+    	
+        BufferedImage image = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        for (int x = 0; x < RETINA_WIDTH; x++) {
+            for (int y = 0; y < RETINA_HEIGHT; y++) {
+                int c = Bsetch[x][y];
+                image.setRGB(x, y, c);
+            }
+        }
+        return image;
+    }
 
 	//Сетчатка
     public static final int RETINA_WIDTH = 640;
@@ -461,12 +472,11 @@ public class MultiCortex {
     int Level_Bright = 100;
     int Lelel_min = 10 * N_Col;
 
+	//Числовое представление сетчатки. Черно-белая картинка.
+	int[][] Bsetch = new int[RETINA_WIDTH][RETINA_HEIGHT];
     
     public void TransormToNerv(BufferedImage image) {
 
-		//Числовое представление сетчатки. Черно-белая картинка.
-		int[][] Bsetch = new int[RETINA_WIDTH][RETINA_HEIGHT];
-		
         for (int ix = 0; ix < RETINA_WIDTH; ix++)
         	for (int iy = 0; iy < RETINA_HEIGHT; iy++)
         		Bsetch[ix][iy] = image.getRGB( ix, iy );
