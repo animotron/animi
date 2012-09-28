@@ -365,10 +365,24 @@ public class MultiCortex {
 
         FillMSensPol(); // создание связей сенсорных полей
 
-        //SetOnOFF(); // распределение он и офф полей
+        SetOnOFF(); // распределение он и офф полей
 
         System.out.println("done.");
 
+    }
+
+    private void SetOnOFF() {
+        boolean fl = true;
+        for (int x = 0; x < z_video.width; x++) {
+            for (int y = 0; y < z_video.height; y++) {
+                if (fl) {
+                    MSensPol[x][y].type = 3;
+                } else {
+                    MSensPol[x][y].type = 3;
+                }
+                fl = !fl;
+            }
+        }
     }
 
     public BufferedImage getRetinaImage() {
@@ -404,7 +418,7 @@ public class MultiCortex {
         int X, Y;
         int NC, NP;
 
-        int sensPoLength = 2 * RSensPol - 2;
+        int sensPoLength = 2 * RSensPol + 1;
         int[][] SQ = new int[sensPoLength][sensPoLength];
 
         int RPol2 = RSensPol * RSensPol;
@@ -417,7 +431,9 @@ public class MultiCortex {
         for (int ix = 0; ix < sensPoLength; ix++) {
         	for (int iy = 0; iy < sensPoLength; iy++) {
 
-                R2 = ix * ix + iy * iy;
+                int dx = ix - RSensPol;
+                int dy = iy - RSensPol;
+                R2 = dx * dx + dy * dy;
 
                 if (R2 > RPol2)
                     SQ[ix][iy] = 0;
