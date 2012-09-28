@@ -51,7 +51,9 @@ public class WebcamPanel extends JPanel implements WebcamListener {
                     image = webcam.getImage();
                     gray = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, TYPE_BYTE_GRAY);
                     op.filter(image, gray);
-                    cortexs.TransormToNerv(gray);
+                    
+                    if (cortexs != null)
+                    	cortexs.TransormToNerv(gray);
                     Thread.sleep(1000 / frequency);
 				} catch (Throwable e) {
 					e.printStackTrace();
@@ -108,7 +110,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
         int x = 0;
 
         for (MultiCortex.SCortexZone zone : cortexs.zones) {
-        	System.out.println("paint "+zone);
+//        	System.out.println("paint "+zone);
             g.drawImage(zone.getColImage(), x, y, null);
             x += zone.getWidth() + 3;
         }

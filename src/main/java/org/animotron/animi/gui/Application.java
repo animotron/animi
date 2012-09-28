@@ -48,7 +48,7 @@ public class Application extends JFrame implements Runnable {
 	private Button btPause = null;
 	private Button btResume = null;
 	
-	protected static MultiCortex cortexs = new MultiCortex();
+	protected static MultiCortex cortexs = null;
 	
 	private Application() {}
 	
@@ -93,8 +93,7 @@ public class Application extends JFrame implements Runnable {
                 //инициализация зон коры
                 //CortexInit
                 //Начальный сброс "хорошо - плохо"
-
-//
+                cortexs = new MultiCortex();
 
                 btPause.setEnabled(true);
                 
