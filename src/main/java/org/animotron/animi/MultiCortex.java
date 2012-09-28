@@ -400,15 +400,15 @@ public class MultiCortex {
 
     public void FillMSensPol() {
     	
-        int XScale, YScale, R2, RPol2, RCen2;
+        int R2;
         int X, Y;
         int NC, NP;
 
         int sensPoLength = 2 * RSensPol - 2;
         int[][] SQ = new int[sensPoLength][sensPoLength];
 
-        RPol2 = RSensPol * RSensPol;
-        RCen2 = RCSensPol * RCSensPol;
+        int RPol2 = RSensPol * RSensPol;
+        int RCen2 = RCSensPol * RCSensPol;
 
         NSensCentr = 0;
         NSensPeref = 0;
@@ -430,12 +430,13 @@ public class MultiCortex {
                         NSensCentr = NSensCentr + 1;
                     }
                 }
+                System.out.print(" "+SQ[ix][iy]);
         	}
+        	System.out.println();
         }
-        Arrays.toString(SQ);
 
-        XScale = (RETINA_WIDTH - sensPoLength) / z_video.width;
-        YScale = (RETINA_HEIGHT - sensPoLength) / z_video.height;
+        int XScale = (RETINA_WIDTH - sensPoLength) / z_video.width;
+        int YScale = (RETINA_HEIGHT - sensPoLength) / z_video.height;
 
         for (int ix = 0; ix < z_video.width; ix++) {
         	for (int iy = 0; iy < z_video.height; iy++) {
