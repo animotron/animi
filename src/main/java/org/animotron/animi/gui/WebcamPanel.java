@@ -10,6 +10,10 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
+import org.animotron.animi.Retina;
+
+import static org.animotron.animi.Retina.RETINA_HEIGHT;
+import static org.animotron.animi.Retina.RETINA_WIDTH;
 
 /**
  * Simply implementation of JPanel allowing users to render pictures taken with
@@ -60,23 +64,23 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 
-			@Override
-			public void run() {
+            @Override
+            public void run() {
 
-				Webcam.setDriver(new OpenImajDriver());
-				webcam = Webcam.getDefault();
-				if (webcam == null) {
-					System.out.println("No webcams found...");
-					System.exit(1);
-				}
-                webcam.setViewSize(new Dimension(640, 480));
-				webcam.addWebcamListener(WebcamPanel.this);
+                Webcam.setDriver(new OpenImajDriver());
+                webcam = Webcam.getDefault();
+                if (webcam == null) {
+                    System.out.println("No webcams found...");
+                    System.exit(1);
+                }
+                webcam.setViewSize(new Dimension(RETINA_WIDTH, RETINA_HEIGHT));
+                webcam.addWebcamListener(WebcamPanel.this);
 
-				if (!webcam.isOpen()) {
-					webcam.open();
-				}
-			}
-		});
+                if (!webcam.isOpen()) {
+                    webcam.open();
+                }
+            }
+        });
 	}
 
 	@Override
