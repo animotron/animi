@@ -1,6 +1,7 @@
 package org.animotron.animi.gui;
 
 import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 
@@ -14,6 +15,7 @@ import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
 import org.animotron.animi.MultiCortex;
 
 import static java.awt.image.BufferedImage.TYPE_BYTE_GRAY;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static org.animotron.animi.MultiCortex.*;
 import static org.animotron.animi.gui.Application.cortexs;
 
@@ -30,7 +32,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	private int frequency = 65; // Hz
 
     // convert the original colored image to grayscale
-    ColorConvertOp op = new ColorConvertOp(null);
+    ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_sRGB), ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 
     private class Repainter extends Thread {
 
@@ -49,9 +51,9 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 						}
 					}
                     image = webcam.getImage();
-                    BufferedImage gray = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, TYPE_BYTE_GRAY);
+                    BufferedImage gray = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, TYPE_INT_ARGB);
                     op.filter(image, gray);
-                    
+
                     if (cortexs != null)
                     	cortexs.TransormToNerv(gray);
                     
