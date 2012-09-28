@@ -49,7 +49,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 						}
 					}
                     image = webcam.getImage();
-                    gray = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, TYPE_BYTE_GRAY);
+                    BufferedImage gray = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, TYPE_BYTE_GRAY);
                     op.filter(image, gray);
                     
                     if (cortexs != null)

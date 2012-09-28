@@ -116,11 +116,11 @@ public class MultiCortex {
         public BufferedImage getColImage() {
         	int c;
         	
-            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     c = col[x][y].active ? Color.WHITE.getRGB() : 0;
-                    image.setRGB(x, y, c);
+                    image.setRGB(x, y, create_rgb(255, c, c, c));
                 }
             }
             return image;
@@ -310,11 +310,11 @@ public class MultiCortex {
         public BufferedImage [] getSImage() {
             BufferedImage [] a = new BufferedImage[deep];
             for (int z = 0; z < deep; z++) {
-                BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
                         int c = s[x][y][z].active ? 255 : 0;
-                        image.setRGB(x, y, c);
+                        image.setRGB(x, y, create_rgb(255, c, c, c));
                     }
                 }
                 a[z] = image;
@@ -372,7 +372,7 @@ public class MultiCortex {
 
     public BufferedImage getRetinaImage() {
     	
-        BufferedImage image = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage image = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < RETINA_WIDTH; x++) {
             for (int y = 0; y < RETINA_HEIGHT; y++) {
                 int c = Bsetch[x][y];
@@ -571,31 +571,21 @@ public class MultiCortex {
         }
     }
     
-//    private final int COL_MAX_VAL = 255;
-//    private final int RED_SHIFT = 256 * 256;
-//    private final int GREEN_SHIFT = 256;
-//    private final double LUM_RED = 0.299;
-//    private final double LUM_GREEN = 0.587;
-//    private final double LUM_BLUE = 0.114;
-	
+    private final double LUM_RED = 0.299;
+    private final double LUM_GREEN = 0.587;
+    private final double LUM_BLUE = 0.114;
+
     private int calcGreyVal(final BufferedImage img, final int x, final int y) {
         int value = img.getRGB(x, y);
 
-        int alpha = get_alpha(value);
         int r = get_red(value);
         int g = get_green(value);
         int b = get_blue(value);
 
-        value = (r + g + b) / 3; // grey by averaging the pixels
+        value = (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
         return value;
-//        r = g = b = value;
-//        value = create_rgb(alpha, r, g, b);
-//        gray.setRGB(i, j, value);
-//        
-//        return RED_SHIFT * grey + GREEN_SHIFT * grey + grey;
-////        return grey;
     }
-    
+
     public static int create_rgb(int alpha, int r, int g, int b) {
         int rgb = (alpha << 24) + (r << 16) + (g << 8) + b;
         return rgb;
