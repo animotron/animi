@@ -20,6 +20,7 @@
  */
 package org.animotron.animi;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 /**
@@ -113,10 +114,12 @@ public class MultiCortex {
         }
 
         public BufferedImage getColImage() {
+        	int c;
+        	
             BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    int c = col[x][y].active ? 255 : 0;
+                    c = col[x][y].active ? Color.WHITE.getRGB() : 0;
                     image.setRGB(x, y, c);
                 }
             }
@@ -400,8 +403,8 @@ public class MultiCortex {
         int X, Y;
         int NC, NP;
 
-        int length = 2 * RSensPol - 1;
-        int[][] SQ = new int[length][length];
+        int sensPoLength = 2 * RSensPol - 1;
+        int[][] SQ = new int[sensPoLength][sensPoLength];
 
         RPol2 = RSensPol * RSensPol;
         RCen2 = RCSensPol * RCSensPol;
@@ -410,8 +413,8 @@ public class MultiCortex {
         NSensPeref = 0;
 
         //Разметка квадратного массива двумя кругами (центром и переферией сенсорного поля)
-        for (int ix = 0; ix < length; ix++) {
-        	for (int iy = 0; iy < length; iy++) {
+        for (int ix = 0; ix < sensPoLength; ix++) {
+        	for (int iy = 0; iy < sensPoLength; iy++) {
 
                 R2 = ix * ix + iy * iy;
 
@@ -430,7 +433,7 @@ public class MultiCortex {
         }
 
         XScale = (RETINA_WIDTH - 2 * RSensPol - 2) / z_video.width;
-//        YScale = (RETINA_HEIGHT - 2 * RSensPol - 2) / z_video.height;
+        YScale = (RETINA_HEIGHT - 2 * RSensPol - 2) / z_video.height;
 
         for (int ix = 0; ix < z_video.width; ix++) {
         	for (int iy = 0; iy < z_video.height; iy++) {
@@ -441,13 +444,13 @@ public class MultiCortex {
         		mSensPol.peref = new int[NSensPeref+1][3];
 
                 X = ix * XScale + RSensPol + 1;
-                Y = iy * XScale + RSensPol + 1;
+                Y = iy * YScale + RSensPol + 1;
 
                 NC = 0;
                 NP = 0;
 
-                for (int i = 0; i < length; i++) {
-                    for (int j = 0; j < length; j++) {
+                for (int i = 0; i < sensPoLength; i++) {
+                    for (int j = 0; j < sensPoLength; j++) {
 
                     	switch (SQ[i][j]) {
 
