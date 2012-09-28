@@ -21,7 +21,6 @@
 package org.animotron.animi;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
 
 /**
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
@@ -34,6 +33,7 @@ public class MultiCortex {
     static final int VISUAL_FIELD_WIDTH = 96 * 2;
     static final int VISUAL_FIELD_HEIGHT = 72 * 2;
 
+    // create a grayscale image the same size
     // Neuron link on the surfarce
     class Link2d {
         int x, y;
@@ -89,14 +89,14 @@ public class MultiCortex {
     }
 
     // Simple cortex zone
-    class SCortexZone {
+    public class SCortexZone {
 
         String name;
         CNeuron[][] col;        // State of complex neurons (outputs cortical columns)
         int width;              //
         int height;             //
 
-        SCortexZone(String name, int width, int height) {
+        public SCortexZone(String name, int width, int height) {
             this.name = name;
             this.width = width;
             this.height = height;
@@ -109,20 +109,40 @@ public class MultiCortex {
                 }
             }
         }
+
+        public BufferedImage getColImage() {
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    int c = col[x][y].active ? 255 : 0;
+                    image.setRGB(c, c, c);
+                }
+            }
+            return image;
+        }
         
         public String toString() {
         	return name;
         }
+
+        public int getWidth() {
+            return width;
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
     }
     
     class Pole {
     	//1 - on 2 - off 3 - универсальный (срабатывает на оба стимула)
     	short type = 3;
-    	
+
     	int[][] centr;
     	int[][] peref;
     }
-    
+
     // Complex cortex zone
     class CCortexZone extends SCortexZone {
 
@@ -285,9 +305,9 @@ public class MultiCortex {
 
     Pole[][] MSensPol;
 
-    SCortexZone z_video, z_viscor, z_asscor, z_good, z_bad;
+    public SCortexZone z_video, z_viscor, z_asscor, z_good, z_bad;
 
-    SCortexZone [] zones;
+    public SCortexZone [] zones;
 
     public MultiCortex() {
 
@@ -331,8 +351,8 @@ public class MultiCortex {
 
 
 	//Сетчатка
-    int X_setch = 640;
-	int Y_setch = 480;
+    public static final int RETINA_WIDTH = 640;
+	public static final int RETINA_HEIGHT = 480;
 
 	//Параметры преобразования сетчатки в сигналы полей с он-центом и офф-центром
 
@@ -380,8 +400,8 @@ public class MultiCortex {
         	}
         }
 
-        XScale = (X_setch - 2 * RSensPol - 2) / z_video.width;
-        YScale = (Y_setch - 2 * RSensPol - 2) / z_video.height;
+        XScale = (RETINA_WIDTH - 2 * RSensPol - 2) / z_video.width;
+        YScale = (RETINA_HEIGHT - 2 * RSensPol - 2) / z_video.height;
 
         for (int ix = 0; ix < z_video.width; ix++) {
         	for (int iy = 0; iy < z_video.height; iy++) {
@@ -445,13 +465,11 @@ public class MultiCortex {
     public void TransormToNerv(BufferedImage image) {
 
 		//Числовое представление сетчатки. Черно-белая картинка.
-		BufferedImage gray = convertToGray(image);
-		int[][] Bsetch = new int[X_setch][Y_setch];
+		int[][] Bsetch = new int[RETINA_WIDTH][RETINA_HEIGHT];
 		
-        for (int ix = 0; ix < X_setch; ix++)
-        	for (int iy = 0; iy < Y_setch; iy++)
-
-        		Bsetch[ix][iy] = gray.getRGB( ix, iy );
+        for (int ix = 0; ix < RETINA_WIDTH; ix++)
+        	for (int iy = 0; iy < RETINA_HEIGHT; iy++)
+        		Bsetch[ix][iy] = image.getRGB( ix, iy );
         
         long SP, SC, SA;
         double K_cont;
@@ -513,26 +531,6 @@ public class MultiCortex {
         }
     }
         	
-	private BufferedImage convertToGray(BufferedImage image) {
-        // create a grayscale image the same size
-		BufferedImage gray = 
-			new BufferedImage(
-				image.getWidth(),
-				image.getHeight(),
-				BufferedImage.TYPE_BYTE_GRAY
-			);
-
-        // convert the original colored image to grayscale
-        ColorConvertOp op = 
-    		new ColorConvertOp(
-                 image.getColorModel().getColorSpace(),
-                 gray.getColorModel().getColorSpace(),
-                 null
-             );
-        op.filter(image,gray);
-        return gray;
-	}
-
     public void cycle1() {
         for (SCortexZone cortex : zones) {
             if (cortex instanceof CCortexZone) {

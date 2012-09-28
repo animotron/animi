@@ -2,6 +2,7 @@ package org.animotron.animi.gui;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -10,10 +11,10 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
-import org.animotron.animi.Retina;
+import org.animotron.animi.MultiCortex;
 
-import static org.animotron.animi.Retina.RETINA_HEIGHT;
-import static org.animotron.animi.Retina.RETINA_WIDTH;
+import static java.awt.image.BufferedImage.TYPE_BYTE_GRAY;
+import static org.animotron.animi.MultiCortex.*;
 import static org.animotron.animi.gui.Application.cortexs;
 
 /**
@@ -28,7 +29,12 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 	private int frequency = 65; // Hz
 
-	private class Repainter extends Thread {
+    BufferedImage gray = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, TYPE_BYTE_GRAY);
+
+    // convert the original colored image to grayscale
+    ColorConvertOp op = new ColorConvertOp(null);
+
+    private class Repainter extends Thread {
 
 		public Repainter() {
 			setDaemon(true);
@@ -45,7 +51,9 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 						}
 					}
                     image = webcam.getImage();
-                    cortexs.TransormToNerv(image);
+                    gray = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, TYPE_BYTE_GRAY);
+                    op.filter(image, gray);
+                    cortexs.TransormToNerv(gray);
                     Thread.sleep(1000 / frequency);
 				} catch (Throwable e) {
 					e.printStackTrace();
@@ -92,8 +100,14 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			return;
 		}
 
-		g.drawImage(image, 0, 0, null);
-	}
+        g.drawImage(image, 0, 0, null);
+        g.drawImage(gray, 640, 0, null);
+        int x = 0;
+        for (MultiCortex.SCortexZone zone : cortexs.zones) {
+            g.drawImage(zone.getColImage(), x, 480, null);
+            x += zone.getWidth();
+        }
+    }
 
 	@Override
 	public void webcamOpen(WebcamEvent we) {
