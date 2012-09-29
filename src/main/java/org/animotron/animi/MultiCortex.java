@@ -375,9 +375,9 @@ public class MultiCortex {
         for (int x = 0; x < z_video.width; x++) {
             for (int y = 0; y < z_video.height; y++) {
                 if (fl) {
-                    MSensPol[x][y].type = 1;
+                    MSensPol[x][y].type = 3;
                 } else {
-                    MSensPol[x][y].type = 2;
+                    MSensPol[x][y].type = 3;
                 }
                 fl = !fl;
             }
@@ -447,9 +447,7 @@ public class MultiCortex {
                         NSensCentr = NSensCentr + 1;
                     }
                 }
-                System.out.print(" "+SQ[ix][iy]);
         	}
-        	System.out.println();
         }
 
         int XScale = (RETINA_WIDTH - sensPoLength) / z_video.width;
@@ -602,9 +600,9 @@ public class MultiCortex {
         int g = get_green(value);
         int b = get_blue(value);
         
+        return r+g+b;
 //        return (r+g+b) /3;
-
-        return (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
+//        return (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
     }
 
     public static int create_rgb(int alpha, int r, int g, int b) {
