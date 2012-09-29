@@ -23,6 +23,8 @@ package org.animotron.animi;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+import Jama.util.Maths;
+
 /**
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
@@ -179,8 +181,8 @@ public class MultiCortex {
                 ns_links += i.ns_links;
             }
 
-            this.nas_links = 9 * deep;//nas_links;
-            nsc_links = nas_links * deep;
+            this.nas_links = nas_links;
+            this.nsc_links = nas_links * deep;
             this.k_active = k_active;
             this.k_mem = (int) Math.round(ns_links * k_mem);
             this.k_det1 = k_det1;
@@ -192,13 +194,16 @@ public class MultiCortex {
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     for (int z = 0; z < deep; z++) {
-                        SNeuron sn = s[x][y][z] = new SNeuron();
+                        
+                    	SNeuron sn = s[x][y][z] = new SNeuron();
                         sn.s_links = new Link2dZone[ns_links];
                         for (int i = 0; i < ns_links; i++)
                         	sn.s_links[i] = new Link2dZone();
-                        sn.a_links = new Link2d[ns_links];
+                        
+                        sn.a_links = new Link2d[nas_links];
                         for (int i = 0; i < nas_links; i++)
                         	sn.a_links[i] = new Link2d();
+                        
                         sn.occupy = sn.active = false;
                         sn.n1 = sn.n2 = 0;
                     }
@@ -208,26 +213,32 @@ public class MultiCortex {
             //Создание синаптических связей симпл нейронов.
             //Связи распределяются случайным образом.
             //Плотность связей убывает экспоненциально с удалением от колонки.
-            double X, S, Y, dX, dy;
+            double X, S, Y, dX, dY;
+        	double x_in_nerv, y_in_nerv;
             int lx, ly;
             for (Mapping m : in_zones) {
-                if (!(m.zone instanceof CCortexZone))
-                	continue;
+//                if (!(m.zone instanceof CCortexZone))
+//                	continue;
 
 //            	System.out.println("!"+width+" "+m);
                 boolean[][] nerv_links = new boolean[m.zone.width][m.zone.height];
                 for (int x = 0; x < width; x++) {
-                	
                     for (int y = 0; y < height; y++) {
-                        int x_in_nerv = x * m.zone.width / width;
-                        int y_in_nerv = x * m.zone.height / height;
-                        for (int z = 0; z < deep; z++) {
+
+                    	//Определение координат текущего нейрона в масштабе проецируемой зоны
+                    	x_in_nerv = x * m.zone.width / (double)width;
+                    	y_in_nerv = x * m.zone.height / (double)height;
+                        
+                    	for (int z = 0; z < deep; z++) {
+                    		//Обнуление массива занятости связей
                             for (int n1 = 0; n1 < m.zone.width; n1++) {
                                 for (int n2 = 0; n2 < m.zone.height; n2++) {
                                     nerv_links[n1][n2] = false;
                                 }
                             }
 //                            System.out.println("  "+x+" "+y+" "+z);
+                            //преобразование Бокса — Мюллера для получения нормально распределенной величины
+                            //DispLink - дисперсия связей
                             for (int i = 0; i < m.ns_links; i++) {
                                 do {
                                     do {
@@ -239,56 +250,78 @@ public class MultiCortex {
 
                                         S = Math.sqrt(-2 * Math.log(S) / S);
                                         dX = X * S * m.zone.width * m.disp_links;
-                                        dy = Y * S * m.zone.height * m.disp_links;
+                                        dY = Y * S * m.zone.height * m.disp_links;
                                         lx = (int) Math.round(x_in_nerv + dX);
-                                        ly = (int) Math.round(y_in_nerv + dy);
+                                        ly = (int) Math.round(y_in_nerv + dY);
                                         
+                                        if (lx <= 0)
+                                        	lx = 1;
+                                        
+                                        if (ly <= 0)
+                                        	ly = 1;
+
                                         if (lx >= m.zone.width)
                                         	lx = m.zone.width - 1;
                                         
                                         if (ly >= m.zone.height)
                                         	ly = m.zone.height - 1;
                                         
+                                    //определяем, что не вышли за границы поля колонок
+                                    //колонки по периметру не задействованы
                                     } while (!(lx >= 1 && ly >= 1 && lx < m.zone.width && ly < m.zone.height));
+                                //Проверка на повтор связи
                                 } while (nerv_links[lx][ly]);
+                                
                                 nerv_links[lx][ly] = true;
+                                
+                                //Создаем синаптическую связь
                                 SNeuron n = s[x][y][z];
                                 n.s_links[n.n1].x = lx;
                                 n.s_links[n.n1].y = ly;
                                 n.s_links[n.n1].zone = m.zone;
+                                n.n1++;
+                                //System.out.println(""+n.n1+" "+n.n2);
                             }
                         }
                     }
                 }
             }
-
+            
             //Инициализация аксонных связей простых нейронов
             //и, соответственно, синаптических сложных нейронов.
-            int simLinks = 3*3*deep;
+            //В простейшем случае каждый простой нейрон сязан с девятью колонками, образующими 
+            //квадрат с центров в этом нейроне.
+//            int simLinks = 3*3*deep;
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    CNeuron sn = col[x][y] = new CNeuron();
-                    sn.s_links = new Link3d[simLinks];
-                    for (int i = 0; i < simLinks; i++)
+                    CNeuron sn = col[x][y];// = new CNeuron();
+                    
+                    sn.s_links = new Link3d[nsc_links];
+                    for (int i = 0; i < nsc_links; i++)
                     	sn.s_links[i] = new Link3d();
+                    
                     sn.active = false;
                 }
             }
             
+            int n;
             //колонки по периметру не задействованы
             for (int x = 1; x < width - 1; x++) {
                 for (int y = 1; y < height - 1; y++) {
-                    int n = 0;
-                    for (int i = x - 1; i <= x + 1; i++) {
+                    
+                	n = 0;
+                    
+                	for (int i = x - 1; i <= x + 1; i++) {
                         for (int j = y - 1; j <= y + 1; j++) {
                             for (int k = 0; k < deep ; k++) {
-//                            	System.out.println(" "+i+" "+j+" "+k);
+
                                 CNeuron cn = col[x][y];
-//                                System.out.println(n+" "+simLinks);
+
                                 cn.s_links[n].x = i;
                                 cn.s_links[n].y = j;
                                 cn.s_links[n].z = k;
                                 n++;
+
                                 SNeuron sn = s[i][j][k];
                                 sn.a_links[sn.n2].x = x;
                                 sn.a_links[sn.n2].y = y;
@@ -336,22 +369,23 @@ public class MultiCortex {
                 }
         );
 
-        System.out.println("z_good");
-        z_good = new SCortexZone("Zone good", 20, 20);
-        System.out.println("z_bad");
-        z_bad = new SCortexZone("Zone bad", 20, 20);
-
-        System.out.println("z_asscor");
-        z_asscor = new CCortexZone("Associative cortex", 48, 48, 10,
-                9, 0, 0.3, 0.6, 0.6, 10, 2,
-                new Mapping[]{
-                        new Mapping(z_viscor, 20, 0.1),
-                        new Mapping(z_good, 10, 0.01),
-                        new Mapping(z_bad, 10, 0.01)
-                }
-        );
-
-        zones = new SCortexZone[]{z_video, z_viscor, z_asscor, z_good, z_bad};
+//        System.out.println("z_good");
+//        z_good = new SCortexZone("Zone good", 20, 20);
+//        System.out.println("z_bad");
+//        z_bad = new SCortexZone("Zone bad", 20, 20);
+//
+//        System.out.println("z_asscor");
+//        z_asscor = new CCortexZone("Associative cortex", 48, 48, 10,
+//                9, 0, 0.3, 0.6, 0.6, 10, 2,
+//                new Mapping[]{
+//                        new Mapping(z_viscor, 20, 0.1),
+//                        new Mapping(z_good, 10, 0.01),
+//                        new Mapping(z_bad, 10, 0.01)
+//                }
+//        );
+//
+//        zones = new SCortexZone[]{z_video, z_viscor, z_asscor, z_good, z_bad};
+        zones = new SCortexZone[]{z_video, z_viscor};
 
         MSensPol = new Pole[VISUAL_FIELD_WIDTH][VISUAL_FIELD_HEIGHT];
 
@@ -596,8 +630,8 @@ public class MultiCortex {
         int b = get_blue(value);
         
 //        return r+g+b;
-        return (r+g+b) /3;
-//        return (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
+//        return (r+g+b) /3;
+        return (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
     }
 
     public static int create_rgb(int alpha, int r, int g, int b) {
@@ -625,7 +659,9 @@ public class MultiCortex {
     
     //Такт 1. Активация колонок (узнавание)
     public void cycle1() {
-    	//Последовательность активации зон коры определяется их номером
+        int sum_on_on, sum_on_off, sum_off_on, sum_off_off;
+
+        //Последовательность активации зон коры определяется их номером
         for (SCortexZone cortex : zones) {
             if (!(cortex instanceof CCortexZone))
             	continue;
@@ -637,31 +673,43 @@ public class MultiCortex {
             for (int x = 1; x < zone.width - 1; x++) {
                 for (int y = 1; y < zone.height - 1; y++) {
                     for (int z = 0; z < zone.deep; z++) {
-                        int sum_on_on, sum_on_off, sum_off_on, sum_off_off;
                         SNeuron sn = zone.s[x][y][z];
                         if (sn.occupy) {
                             sum_on_on = sum_on_off = sum_off_on = sum_off_off = 0;
                             for (int i = 0; i < zone.ns_links; i++) {
                                 Link2dZone link = sn.s_links[i];
                                 if (link.zone.col[link.x][link.y].active) {
-                                    if (link.cond) {
-                                        sum_on_on ++;
-                                        sum_on_off ++;
-                                    } else {
+                                    if (link.cond)
+                                        sum_on_on++;
+                                    else
+                                        sum_on_off++;
+                                    
+                                } else {
+                                    if (link.cond)
                                         sum_off_on++;
+                                    else
                                         sum_off_off++;
-                                    }
                                 }
                             }
-                            sn.active = sum_on_on / (sum_on_on + sum_off_on) > zone.k_det1 && sum_off_off / (sum_on_off + sum_off_off) > zone.k_det2;
+                            double k1 = 0;
+                            if (sum_on_on != 0)
+                            	k1 = sum_on_on / (double)(sum_on_on + sum_off_on);
+                            
+                            double k2 = 0;
+                            if (sum_off_off != 0)
+                            	k2 = sum_off_off / (double)(sum_on_off + sum_off_off);
+                            
+                            sn.active = k1 > zone.k_det1 && k2 > zone.k_det2;
                         }
                     }
                 }
             }
+            int sum = 0;
+
             //активация колонок если набралась критическая масса активности нейронов обвязки
             for (int x = 1; x < zone.width - 1; x++) {
                 for (int y = 1; y < zone.height - 1; y++) {
-                    int sum = 0;
+                    sum = 0;
                     for (int z = 0; z < zone.deep; z++) {
                         if (zone.s[x][y][z].active) {
                             sum++;
@@ -676,7 +724,7 @@ public class MultiCortex {
                             sum++;
                         }
                     }
-                    cn.active = sum / zone.ns_links > zone.k_active;
+                    cn.active = sum / (double)zone.ns_links > zone.k_active;
                 }
             }
         }
@@ -727,10 +775,10 @@ public class MultiCortex {
                         	//Нейрон свободен. Проверяем основание для записи и записываем если выполняется.
                             int sum = 0;
                             for (int i = 0; i < zone.ns_links; i++) {
-                                Link2dZone link = s.s_links[1];
-                                if (link.zone != null && link.zone.col[link.x][link.y].active) {
-                                    sum++;
-                                }
+                                Link2dZone link = s.s_links[i];
+                                if (link.zone != null)
+                                	if (link.zone.col[link.x][link.y].active)
+                                		sum++;
                             }
                             if (sum > zone.k_mem) {
                             	//запоминаем состояние
@@ -741,7 +789,7 @@ public class MultiCortex {
                                 s.p_off_m = 0;
                                 s.n_off_m = 0;
                                 for (int i = 0; i < zone.ns_links; i++) {
-                                    Link2dZone link = s.s_links[1];
+                                    Link2dZone link = s.s_links[i];
                                     link.cond = link.zone.col[link.x][link.y].active;
                                 }
                             }
