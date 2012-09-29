@@ -412,7 +412,7 @@ public class MultiCortex {
         int X, Y;
         int NC, NP;
 
-        int sensPoLength = 2 * RSensPol + 1;
+        int sensPoLength = 2 * RSensPol - 2;
         int[][] SQ = new int[sensPoLength][sensPoLength];
 
         int RPol2 = RSensPol * RSensPol;
@@ -436,17 +436,17 @@ public class MultiCortex {
                 else {
                     if (R2 > RCen2) {
                         SQ[ix][iy] = 1;
-                        NSensPeref = NSensPeref + 1;
+                        NSensPeref++;
                     } else {
                         SQ[ix][iy] = 2;
-                        NSensCentr = NSensCentr + 1;
+                        NSensCentr++;
                     }
                 }
         	}
         }
 
-        int XScale = (RETINA_WIDTH - sensPoLength) / z_video.width;
-        int YScale = (RETINA_HEIGHT - sensPoLength) / z_video.height;
+        double XScale = (RETINA_WIDTH - sensPoLength) / (double)z_video.width;
+        double YScale = (RETINA_HEIGHT - sensPoLength) / (double)z_video.height;
 
         for (int ix = 0; ix < z_video.width; ix++) {
         	for (int iy = 0; iy < z_video.height; iy++) {
@@ -456,8 +456,8 @@ public class MultiCortex {
                 mSensPol.centr = new int[NSensCentr][2];
         		mSensPol.peref = new int[NSensPeref][2];
 
-                X = ix * XScale + RSensPol + 1;
-                Y = iy * YScale + RSensPol + 1;
+                X = (int)Math.round( ix * XScale + RSensPol + 1 );
+                Y = (int)Math.round( iy * YScale + RSensPol + 1 );
 
                 NC = 0;
                 NP = 0;
