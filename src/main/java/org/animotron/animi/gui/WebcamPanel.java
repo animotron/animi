@@ -51,11 +51,11 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 						}
 					}
                     image = webcam.getImage();
-                    BufferedImage gray = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, TYPE_INT_ARGB);
-                    op.filter(image, gray);
+//                    BufferedImage gray = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, TYPE_INT_ARGB);
+//                    op.filter(image, gray);
 
                     if (cortexs != null)
-                    	cortexs.TransormToNerv(gray);
+                    	cortexs.TransormToNerv(image);
                     
                     Thread.sleep(1000 / frequency);
 				} catch (Throwable e) {

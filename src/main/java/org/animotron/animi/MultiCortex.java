@@ -22,7 +22,6 @@ package org.animotron.animi;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 
 /**
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
@@ -120,7 +119,7 @@ public class MultiCortex {
             BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    c = col[x][y].active ? Color.WHITE.getRGB() : 0;
+                    c = col[x][y].active ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
                     image.setRGB(x, y, create_rgb(255, c, c, c));
                 }
             }
@@ -376,9 +375,9 @@ public class MultiCortex {
         for (int x = 0; x < z_video.width; x++) {
             for (int y = 0; y < z_video.height; y++) {
                 if (fl) {
-                    MSensPol[x][y].type = 3;
+                    MSensPol[x][y].type = 1;
                 } else {
-                    MSensPol[x][y].type = 3;
+                    MSensPol[x][y].type = 2;
                 }
                 fl = !fl;
             }
@@ -427,15 +426,15 @@ public class MultiCortex {
         NSensCentr = 0;
         NSensPeref = 0;
 
+        int dx, dy;
+
         //Разметка квадратного массива двумя кругами (центром и переферией сенсорного поля)
         for (int ix = 0; ix < sensPoLength; ix++) {
         	for (int iy = 0; iy < sensPoLength; iy++) {
 
-//                int dx = ix - RSensPol;
-//                int dy = iy - RSensPol;
-//                R2 = dx * dx + dy * dy;
-
-                R2 = ix * ix + iy * iy;
+                dx = RSensPol - ix;
+                dy = RSensPol - iy;
+                R2 = dx * dx + dy * dy;
 
                 if (R2 > RPol2)
                     SQ[ix][iy] = 0;
@@ -501,18 +500,18 @@ public class MultiCortex {
     }
 
     //Количество цветов
-    int N_Col = 3;
+    static int N_Col = 3;
 
     //минимальное соотношение средней контрасности переферии и центра сенсорного поля, необходимое для активации
     //контрастность для темных элементов (0)
-    double KContr1 = 1.45;
+    public static double KContr1 = 1.45;
     //контрастность для светлых элементов (Level_Bright)
-    double KContr2 = 1.15;
+    public static double KContr2 = 1.15;
 	//минимальная контрастность
-	double KContr3 = 1.15;
+    public static double KContr3 = 1.15;
 	//(0..255)
-    int Level_Bright = 100;
-    int Lelel_min = 10 * N_Col;
+    public static int Level_Bright = 100;
+    public static int Lelel_min = 10 * N_Col;
 
 	//Числовое представление сетчатки. Черно-белая картинка.
 	int[][] Bsetch = new int[RETINA_WIDTH][RETINA_HEIGHT];
@@ -592,9 +591,9 @@ public class MultiCortex {
         }
     }
     
-//    private final double LUM_RED = 0.299;
-//    private final double LUM_GREEN = 0.587;
-//    private final double LUM_BLUE = 0.114;
+    private final double LUM_RED = 0.299;
+    private final double LUM_GREEN = 0.587;
+    private final double LUM_BLUE = 0.114;
 
     private int calcGreyVal(final BufferedImage img, final int x, final int y) {
         int value = img.getRGB(x, y);
@@ -603,10 +602,9 @@ public class MultiCortex {
         int g = get_green(value);
         int b = get_blue(value);
         
-        return r+g+b;// /3;
+//        return (r+g+b) /3;
 
-//        value = (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
-//        return value;
+        return (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
     }
 
     public static int create_rgb(int alpha, int r, int g, int b) {
