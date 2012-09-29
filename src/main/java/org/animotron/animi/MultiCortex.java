@@ -408,10 +408,6 @@ public class MultiCortex {
 
     public void FillMSensPol() {
     	
-        int R2;
-        int X, Y;
-        int NC, NP;
-
         int sensPoLength = 2 * RSensPol - 2;
         int[][] SQ = new int[sensPoLength][sensPoLength];
 
@@ -421,6 +417,7 @@ public class MultiCortex {
         NSensCentr = 0;
         NSensPeref = 0;
 
+        int R2;
         int dx, dy;
 
         //Разметка квадратного массива двумя кругами (центром и переферией сенсорного поля)
@@ -447,6 +444,9 @@ public class MultiCortex {
 
         double XScale = (RETINA_WIDTH - sensPoLength) / (double)z_video.width;
         double YScale = (RETINA_HEIGHT - sensPoLength) / (double)z_video.height;
+
+        int X, Y;
+        int NC, NP;
 
         for (int ix = 0; ix < z_video.width; ix++) {
         	for (int iy = 0; iy < z_video.height; iy++) {
@@ -518,7 +518,7 @@ public class MultiCortex {
         	for (int iy = 0; iy < RETINA_HEIGHT; iy++)
         		Bsetch[ix][iy] = calcGreyVal(image, ix, iy);// image.getRGB( ix, iy );
         
-        long SP, SC, SA;
+    	double SP, SC, SA;
         double K_cont;
         for (int ix = 0; ix < z_video.width; ix++) {
         	for (int iy = 0; iy < z_video.height; iy++) {
