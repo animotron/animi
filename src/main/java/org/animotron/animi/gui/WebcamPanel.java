@@ -1,9 +1,27 @@
+/*
+ *  Copyright (C) 2012 The Animo Project
+ *  http://animotron.org
+ *
+ *  This file is part of Animotron.
+ *
+ *  Animotron is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of
+ *  the License, or (at your option) any later version.
+ *
+ *  Animotron is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of
+ *  the GNU Affero General Public License along with Animotron.
+ *  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.animotron.animi.gui;
 
 import java.awt.*;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -14,16 +32,14 @@ import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
 import org.animotron.animi.MultiCortex;
 
-import static java.awt.image.BufferedImage.TYPE_BYTE_GRAY;
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static org.animotron.animi.MultiCortex.*;
 import static org.animotron.animi.gui.Application.cortexs;
 
 /**
- * Simply implementation of JPanel allowing users to render pictures taken with
- * webcam.
  * 
  * @author Bartosz Firyn (SarXos)
+ * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
+ * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class WebcamPanel extends JPanel implements WebcamListener {
 
@@ -32,7 +48,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	private int frequency = 65; // Hz
 
     // convert the original colored image to grayscale
-    ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_sRGB), ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+//    ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_sRGB), ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 
     private class Repainter extends Thread {
 
@@ -118,6 +134,10 @@ public class WebcamPanel extends JPanel implements WebcamListener {
                 if (zone instanceof MultiCortex.CCortexZone) {
                     MultiCortex.CCortexZone cz = (MultiCortex.CCortexZone) zone;
                     for (BufferedImage image : cz.getSImage()) {
+                        g.drawImage(image, x, y, null);
+                        x += cz.getWidth() + 3;
+                    }
+                    for (BufferedImage image : cz.getOccupyImage()) {
                         g.drawImage(image, x, y, null);
                         x += cz.getWidth() + 3;
                     }

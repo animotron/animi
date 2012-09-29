@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2011-2012 The Animo Project
+ *  Copyright (C) 2012 The Animo Project
  *  http://animotron.org
  *
  *  This file is part of Animotron.
@@ -22,8 +22,6 @@ package org.animotron.animi;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-
-import Jama.util.Maths;
 
 /**
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
@@ -333,13 +331,14 @@ public class MultiCortex {
             }
         }
 
+        //Картинка активных нейронов по колонкам
         public BufferedImage [] getSImage() {
             BufferedImage [] a = new BufferedImage[deep];
             for (int z = 0; z < deep; z++) {
                 BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
-                        int c = s[x][y][z].active ? 255 : 0;
+                        int c = s[x][y][z].active ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
                         image.setRGB(x, y, create_rgb(255, c, c, c));
                     }
                 }
@@ -348,6 +347,21 @@ public class MultiCortex {
             return a;
         }
 
+        //Картинка суммы занятых нейронов в колонке
+        public BufferedImage [] getOccupyImage() {
+            BufferedImage [] a = new BufferedImage[deep];
+            for (int z = 0; z < deep; z++) {
+                BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                for (int x = 0; x < width; x++) {
+                    for (int y = 0; y < height; y++) {
+                        int c = s[x][y][z].occupy ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
+                        image.setRGB(x, y, create_rgb(255, c, c, c));
+                    }
+                }
+                a[z] = image;
+            }
+            return a;
+        }
     }
 
     Pole[][] MSensPol;
@@ -717,14 +731,15 @@ public class MultiCortex {
                     }
                     CNeuron cn = zone.col[x][y];
                     cn.sum = sum;
+                    
                     sum = 0;
-                    for (int i = 0; i < zone.ns_links; i++) {
+                    for (int i = 0; i < zone.nsc_links; i++) {
                         Link3d link = cn.s_links[i];
                         if (zone.s[link.x][link.y][link.z].active) {
                             sum++;
                         }
                     }
-                    cn.active = sum / (double)zone.ns_links > zone.k_active;
+                    cn.active = sum / (double)zone.nsc_links > zone.k_active;
                 }
             }
         }
@@ -732,6 +747,10 @@ public class MultiCortex {
 
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     public void cycle2() {
+    	SNeuron s = null;
+        int sumact = 0;
+        int sum = 0;
+    	
         for (SCortexZone cortex : zones) {
             if (!(cortex instanceof CCortexZone))
             	continue;
@@ -743,15 +762,15 @@ public class MultiCortex {
             for (int x = 1; x < zone.width - 1; x++) {
                 for (int y = 1; y < zone.height - 1; y++) {
                     for (int z = 0; z < zone.deep; z++) {
-                        SNeuron s = zone.s[x][y][z];
+                        
+                    	s = zone.s[x][y][z];
                         
                         //Вычисляем кол-во активных соседей
-                        int sumact = 0;
-                        for (int i = x - 1; i <= x + 1; i++) {
-                            for (int j = y - 1; j <= y + 1; j++) {
+                        sumact = 0;
+                        for (int i = x - 1; i <= x + 1; i++)
+                            for (int j = y - 1; j <= y + 1; j++)
                                 sumact += zone.col[i][j].sum;
-                            }
-                        }
+
                         if (s.occupy) {
                         	//Нейрон занят. Изменяем информацию об активности.
                             if (s.active) {
@@ -773,7 +792,7 @@ public class MultiCortex {
                             }
                         } else {
                         	//Нейрон свободен. Проверяем основание для записи и записываем если выполняется.
-                            int sum = 0;
+                            sum = 0;
                             for (int i = 0; i < zone.ns_links; i++) {
                                 Link2dZone link = s.s_links[i];
                                 if (link.zone != null)
@@ -799,5 +818,4 @@ public class MultiCortex {
             }
         }
     }
-
 }
