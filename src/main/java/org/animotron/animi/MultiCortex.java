@@ -188,7 +188,7 @@ public class MultiCortex {
             this.n_act_min = n_act_min;
             this.k_non = k_non;
             
-            System.out.println("Инициализация синаптических связей простых нейронов");
+            //Инициализация синаптических связей простых нейронов
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     for (int z = 0; z < deep; z++) {
@@ -205,24 +205,18 @@ public class MultiCortex {
                 }
             }
 
-            System.out.println("Создание синаптических связей симпл нейронов. " +
-            		"Связи распределяются случайным образом. " +
-            		"Плотность связей убывает экспоненциально с удалением от колонки.");
+            //Создание синаптических связей симпл нейронов.
+            //Связи распределяются случайным образом.
+            //Плотность связей убывает экспоненциально с удалением от колонки.
             double X, S, Y, dX, dy;
             int lx, ly;
             for (Mapping m : in_zones) {
                 if (!(m.zone instanceof CCortexZone))
                 	continue;
 
-            	System.out.println("!"+width+" "+m);
+//            	System.out.println("!"+width+" "+m);
                 boolean[][] nerv_links = new boolean[m.zone.width][m.zone.height];
                 for (int x = 0; x < width; x++) {
-                	
-                	if (x != 0 && x % 10 == 0)
-                    	if (x % 100 == 0)
-                    		System.out.print("|");
-                    	else
-                    		System.out.print(".");
                 	
                     for (int y = 0; y < height; y++) {
                         int x_in_nerv = x * m.zone.width / width;
@@ -266,11 +260,10 @@ public class MultiCortex {
                         }
                     }
                 }
-                System.out.println();
             }
 
-            System.out.println("Инициализация аксонных связей простых нейронов " +
-            		"и, соответственно, синаптических сложных нейронов.");
+            //Инициализация аксонных связей простых нейронов
+            //и, соответственно, синаптических сложных нейронов.
             int simLinks = 3*3*deep;
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
@@ -282,7 +275,7 @@ public class MultiCortex {
                 }
             }
             
-            System.out.println("колонки по периметру не задействованы");
+            //колонки по периметру не задействованы
             for (int x = 1; x < width - 1; x++) {
                 for (int y = 1; y < height - 1; y++) {
                     int n = 0;
@@ -362,9 +355,11 @@ public class MultiCortex {
 
         MSensPol = new Pole[VISUAL_FIELD_WIDTH][VISUAL_FIELD_HEIGHT];
 
-        FillMSensPol(); // создание связей сенсорных полей
+        // создание связей сенсорных полей
+        FillMSensPol(); 
 
-        SetOnOFF(); // распределение он и офф полей
+        // распределение он и офф полей
+        SetOnOFF(); 
 
         System.out.println("done.");
 
@@ -458,8 +453,8 @@ public class MultiCortex {
 
         		Pole mSensPol = new Pole();
                 MSensPol[ix][iy] = mSensPol;
-                mSensPol.centr = new int[NSensCentr][3];
-        		mSensPol.peref = new int[NSensPeref][3];
+                mSensPol.centr = new int[NSensCentr][2];
+        		mSensPol.peref = new int[NSensPeref][2];
 
                 X = ix * XScale + RSensPol + 1;
                 Y = iy * YScale + RSensPol + 1;
@@ -476,15 +471,15 @@ public class MultiCortex {
                             break;
                         case 1:
 
-                            mSensPol.peref[NP][1] = X - RSensPol + i;
-                            mSensPol.peref[NP][2] = Y - RSensPol + j;
+                            mSensPol.peref[NP][0] = X - RSensPol + i;
+                            mSensPol.peref[NP][1] = Y - RSensPol + j;
 
                             NP = NP + 1;
                             break;
                         case 2:
 
-                        	mSensPol.centr[NC][1] = X - RSensPol + i;
-                        	mSensPol.centr[NC][2] = Y - RSensPol + j;
+                        	mSensPol.centr[NC][0] = X - RSensPol + i;
+                        	mSensPol.centr[NC][1] = Y - RSensPol + j;
 
                             NC = NC + 1;
                             break;
@@ -509,7 +504,7 @@ public class MultiCortex {
     public static double KContr3 = 1.15;
 	//(0..255)
     public static int Level_Bright = 100;
-    public static int Lelel_min = 10 * N_Col;
+    public static int Lelel_min = 10;// * N_Col;
 
 	//Числовое представление сетчатки. Черно-белая картинка.
 	int[][] Bsetch = new int[RETINA_WIDTH][RETINA_HEIGHT];
@@ -535,18 +530,18 @@ public class MultiCortex {
                 SC = 0;
                 for (int j = 0; j < NSensCentr; j++) {
 
-                    SC += Bsetch[mSensPol.centr[j][1]][mSensPol.centr[j][2]];
+                    SC += Bsetch[mSensPol.centr[j][0]][mSensPol.centr[j][1]];
                 }
 
                 SP = 0;
                 for (int j = 0; j < NSensPeref; j++) {
 
-                    SP += Bsetch[mSensPol.peref[j][1]][mSensPol.peref[j][2]];
+                    SP += Bsetch[mSensPol.peref[j][0]][mSensPol.peref[j][1]];
                 }
 
                 SA = ((SP + SC) / (NSensCentr + NSensPeref));
 
-                K_cont = KContr1 + (SA / N_Col) * (KContr2 - KContr1) / Level_Bright;
+                K_cont = KContr1 + SA * (KContr2 - KContr1) / Level_Bright;
 
                 if (K_cont < KContr3) K_cont = KContr3;
 
@@ -600,8 +595,8 @@ public class MultiCortex {
         int g = get_green(value);
         int b = get_blue(value);
         
-        return r+g+b;
-//        return (r+g+b) /3;
+//        return r+g+b;
+        return (r+g+b) /3;
 //        return (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
     }
 

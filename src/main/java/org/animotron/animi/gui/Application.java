@@ -144,10 +144,12 @@ public class Application extends JFrame implements Runnable {
         //constants control
         //минимальное соотношение средней контрасности переферии и центра сенсорного поля, 
         //необходимое для активации контрастность для темных элементов (0)
-		addSlider("соот.  переферии и центра", "KContr1", tools);
+		addDoubleSlider("соот.  переферии и центра", "KContr1", tools);
 		//контрастность для светлых элементов
-		addSlider("контрастность для светлых", "KContr2", tools);
-		addSlider("минимальная контрастность", "KContr3", tools);
+		addDoubleSlider("контрастность для светлых", "KContr2", tools);
+		addDoubleSlider("минимальная контрастность", "KContr3", tools);
+		
+		addIntSlider("Bright Level","Level_Bright",tools);
 
 		camView = new WebcamPanel();
         add(camView, CENTER);
@@ -161,7 +163,7 @@ public class Application extends JFrame implements Runnable {
 
 	}
 	
-	private void addSlider(String name, final String constName, JPanel tools) {
+	private void addDoubleSlider(String name, final String constName, JPanel tools) {
 		final Field field;
 		double value;
 		try {
@@ -193,6 +195,63 @@ public class Application extends JFrame implements Runnable {
 				JSlider source = (JSlider)e.getSource();
 				try {
 					field.setDouble(MultiCortex.class, source.getValue() / 100.0);
+			        label.setText(String.valueOf(field.get(MultiCortex.class)));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+
+        label.setText(String.valueOf(value));
+        label.setLabelFor(slider);
+		c.gridwidth = 1;
+		c.gridx = 0;
+		c.gridy = 1;
+        panel.add(label, c);
+
+        //Turn on labels at major tick marks.
+		slider.setMajorTickSpacing(10);
+		slider.setMinorTickSpacing(5);
+		slider.setPaintTicks(true);
+		c.gridx = 1;
+		c.gridy = 1;
+		panel.add(slider, c);
+		
+        tools.add(panel);
+	}
+
+	private void addIntSlider(String name, final String constName, JPanel tools) {
+		final Field field;
+		int value;
+		try {
+			field = MultiCortex.class.getDeclaredField(constName);
+			value = field.getInt(MultiCortex.class);
+		} catch (Exception ex) {
+			return;
+		}
+		
+        JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        GridBagLayout layout = new GridBagLayout();
+		panel.setLayout(layout);
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 2;
+		
+        panel.add(new JLabel(name), c);
+
+        final JLabel label = new JLabel();
+        JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 255, value);
+        slider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider source = (JSlider)e.getSource();
+				try {
+					field.setInt(MultiCortex.class, source.getValue());
 			        label.setText(String.valueOf(field.get(MultiCortex.class)));
 				} catch (Exception ex) {
 					ex.printStackTrace();
