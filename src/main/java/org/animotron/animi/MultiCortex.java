@@ -674,6 +674,7 @@ public class MultiCortex {
     //Такт 1. Активация колонок (узнавание)
     public void cycle1() {
         int sum_on_on, sum_on_off, sum_off_on, sum_off_off;
+        double k1, k2 = 0;
 
         //Последовательность активации зон коры определяется их номером
         for (SCortexZone cortex : zones) {
@@ -705,11 +706,11 @@ public class MultiCortex {
                                         sum_off_off++;
                                 }
                             }
-                            double k1 = 0;
+                            k1 = 0;
                             if (sum_on_on != 0)
                             	k1 = sum_on_on / (double)(sum_on_on + sum_off_on);
                             
-                            double k2 = 0;
+                            k2 = 0;
                             if (sum_off_off != 0)
                             	k2 = sum_off_off / (double)(sum_on_off + sum_off_off);
                             

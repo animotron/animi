@@ -21,6 +21,7 @@
 package org.animotron.animi.gui;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
@@ -109,8 +110,8 @@ public class WebcamPanel extends JPanel implements WebcamListener {
             }
         });
 	}
-
-	@Override
+	
+    @Override
 	protected void paintComponent(Graphics g) {
 
 		super.paintComponent(g);
@@ -130,27 +131,43 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	        BufferedImage retina = cortexs.getRetinaImage();
 	        g.drawImage(
         		retina.getScaledInstance(x, y, Image.SCALE_SMOOTH),
-        		x+3, 0, null
+        		x+2, 0, null
     		);
 	
-	        y += 3;
-
+	        y += 2;
+	        
+	        Graphics2D g2d = (Graphics2D)g;
+	        
 	        for (MultiCortex.SCortexZone zone : cortexs.zones) {
                 x = 0;
+	        	
+	        	y += getFontMetrics(getFont()).getHeight();
+	        	int textY = y;
+                g.drawString(zone.toString(), x, textY);
+                
+                y += 2;
+	        	
                 g.drawImage(zone.getColImage(), x, y, null);
                 x += zone.getWidth() + 3;
                 if (zone instanceof MultiCortex.CCortexZone) {
                     MultiCortex.CCortexZone cz = (MultiCortex.CCortexZone) zone;
+
+//                    AffineTransform nt = g2d.getTransform();
+//                    g2d.rotate(-Math.PI / 2.0, x, y);
+        	        g2d.drawString("активные нейроны по колонкам", x, textY);
+//        	        g2d.setTransform(nt);
+
                     for (BufferedImage image : cz.getSImage()) {
                         g.drawImage(image, x, y, null);
-                        x += cz.getWidth() + 3;
+                        x += cz.getWidth() + 2;
                     }
+        	        g2d.drawString("занятые нейроны по колонкам", x, textY);
                     for (BufferedImage image : cz.getOccupyImage()) {
                         g.drawImage(image, x, y, null);
-                        x += cz.getWidth() + 3;
+                        x += cz.getWidth() + 2;
                     }
                 }
-                y += zone.getHeight() + 3;
+                y += zone.getHeight() + 2;
             }
         }
     }
