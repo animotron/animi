@@ -31,8 +31,12 @@ import java.awt.image.BufferedImage;
  */
 public class MultiCortex {
 
-    static final int VISUAL_FIELD_WIDTH = 96 * 2;
-    static final int VISUAL_FIELD_HEIGHT = 72 * 2;
+	//Сетчатка
+    public static final int RETINA_WIDTH = 640;
+	public static final int RETINA_HEIGHT = 480;
+
+	public static final int VISUAL_FIELD_WIDTH = 96 * 2;
+	public static final int VISUAL_FIELD_HEIGHT = 72 * 2;
 
     public boolean active = false;
     
@@ -92,7 +96,7 @@ public class MultiCortex {
     }
 
     // Simple cortex zone
-    public class SCortexZone {
+    public class SCortexZone implements Layer {
 
         String name;
         CNeuron[][] col;        // State of complex neurons (outputs cortical columns)
@@ -120,7 +124,7 @@ public class MultiCortex {
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     c = col[x][y].active ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-                    image.setRGB(x, y, create_rgb(255, c, c, c));
+                    image.setRGB(x, y, ImgP.create_rgb(255, c, c, c));
                 }
             }
             return image;
@@ -130,24 +134,25 @@ public class MultiCortex {
         	return name;
         }
 
-        public int getWidth() {
+        public int width() {
             return width;
         }
 
-        public int getHeight() {
+        public int height() {
             return height;
         }
 
+		@Override
+		public void process() {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void set(int x, int y, boolean b) {
+			col[x][y].active = b;
+		}
     }
     
-    class Pole {
-    	//1 - on 2 - off 3 - универсальный (срабатывает на оба стимула)
-    	short type = 1;
-
-    	int[][] centr;
-    	int[][] peref;
-    }
-
     // Complex cortex zone
     public class CCortexZone extends SCortexZone {
 
@@ -339,7 +344,7 @@ public class MultiCortex {
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
                         int c = s[x][y][z].active ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-                        image.setRGB(x, y, create_rgb(255, c, c, c));
+                        image.setRGB(x, y, ImgP.create_rgb(255, c, c, c));
                     }
                 }
                 a[z] = image;
@@ -355,7 +360,7 @@ public class MultiCortex {
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
                         int c = s[x][y][z].occupy ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-                        image.setRGB(x, y, create_rgb(255, c, c, c));
+                        image.setRGB(x, y, ImgP.create_rgb(255, c, c, c));
                     }
                 }
                 a[z] = image;
@@ -364,7 +369,7 @@ public class MultiCortex {
         }
     }
 
-    Pole[][] MSensPol;
+    public Retina retina;
 
     public SCortexZone z_video, z_viscor, z_asscor, z_good, z_bad;
 
@@ -400,277 +405,14 @@ public class MultiCortex {
 //
 //        zones = new SCortexZone[]{z_video, z_viscor, z_asscor, z_good, z_bad};
         zones = new SCortexZone[]{z_video, z_viscor};
-
-        MSensPol = new Pole[VISUAL_FIELD_WIDTH][VISUAL_FIELD_HEIGHT];
-
-        // создание связей сенсорных полей
-        FillMSensPol(); 
-
-        // распределение он и офф полей
-        SetOnOFF(); 
+        
+        retina = new Retina(RETINA_WIDTH, RETINA_HEIGHT);
+        retina.setNextLayer(z_video);
 
         System.out.println("done.");
 
     }
 
-    private void SetOnOFF() {
-        boolean fl = true;
-        for (int x = 0; x < z_video.width; x++) {
-            for (int y = 0; y < z_video.height; y++) {
-                if (fl) {
-                    MSensPol[x][y].type = 3;
-                } else {
-                    MSensPol[x][y].type = 3;
-                }
-                fl = !fl;
-            }
-        }
-    }
-
-    public BufferedImage getRetinaImage() {
-    	
-        BufferedImage image = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        for (int x = 0; x < RETINA_WIDTH; x++) {
-            for (int y = 0; y < RETINA_HEIGHT; y++) {
-                int c = Bsetch[x][y] / 3;
-                image.setRGB(x, y, create_rgb(255, c, c, c));
-            }
-        }
-        return image;
-    }
-
-	//Сетчатка
-    public static final int RETINA_WIDTH = 640;
-	public static final int RETINA_HEIGHT = 480;
-
-	//Параметры преобразования сетчатки в сигналы полей с он-центом и офф-центром
-
-    //Радиус сенсорного поля
-    int RSensPol = 8;
-    //Радиус центра сенсорного поля
-    int RCSensPol = 4;
-
-    //Кол-во элементов в центре и переферии сенсорного поля
-    int NSensCentr;
-    int NSensPeref;
-
-    public void FillMSensPol() {
-    	
-        int sensPoLength = 2 * RSensPol - 2;
-        int[][] SQ = new int[sensPoLength][sensPoLength];
-
-        int RPol2 = RSensPol * RSensPol;
-        int RCen2 = RCSensPol * RCSensPol;
-
-        NSensCentr = 0;
-        NSensPeref = 0;
-
-        int R2;
-        int dx, dy;
-
-        //Разметка квадратного массива двумя кругами (центром и переферией сенсорного поля)
-        for (int ix = 0; ix < sensPoLength; ix++) {
-        	for (int iy = 0; iy < sensPoLength; iy++) {
-
-                dx = RSensPol - ix;
-                dy = RSensPol - iy;
-                R2 = dx * dx + dy * dy;
-
-                if (R2 > RPol2)
-                    SQ[ix][iy] = 0;
-                else {
-                    if (R2 > RCen2) {
-                        SQ[ix][iy] = 1;
-                        NSensPeref++;
-                    } else {
-                        SQ[ix][iy] = 2;
-                        NSensCentr++;
-                    }
-                }
-        	}
-        }
-
-        double XScale = (RETINA_WIDTH - sensPoLength) / (double)z_video.width;
-        double YScale = (RETINA_HEIGHT - sensPoLength) / (double)z_video.height;
-
-        int X, Y;
-        int NC, NP;
-
-        for (int ix = 0; ix < z_video.width; ix++) {
-        	for (int iy = 0; iy < z_video.height; iy++) {
-
-        		Pole mSensPol = new Pole();
-                MSensPol[ix][iy] = mSensPol;
-                mSensPol.centr = new int[NSensCentr][2];
-        		mSensPol.peref = new int[NSensPeref][2];
-
-                X = (int)Math.round( ix * XScale + RSensPol + 1 );
-                Y = (int)Math.round( iy * YScale + RSensPol + 1 );
-
-                NC = 0;
-                NP = 0;
-
-                for (int i = 0; i < sensPoLength; i++) {
-                    for (int j = 0; j < sensPoLength; j++) {
-
-                    	switch (SQ[i][j]) {
-
-                        case 0:
-                            break;
-                        case 1:
-
-                            mSensPol.peref[NP][0] = X - RSensPol + i;
-                            mSensPol.peref[NP][1] = Y - RSensPol + j;
-
-                            NP = NP + 1;
-                            break;
-                        case 2:
-
-                        	mSensPol.centr[NC][0] = X - RSensPol + i;
-                        	mSensPol.centr[NC][1] = Y - RSensPol + j;
-
-                            NC = NC + 1;
-                            break;
-						default:
-							break;
-                		}
-                    }
-                }
-        	}
-        }
-    }
-
-    //Количество цветов
-    static int N_Col = 3;
-
-    //минимальное соотношение средней контрасности переферии и центра сенсорного поля, необходимое для активации
-    //контрастность для темных элементов (0)
-    public static double KContr1 = 1.45;
-    //контрастность для светлых элементов (Level_Bright)
-    public static double KContr2 = 1.15;
-	//минимальная контрастность
-    public static double KContr3 = 1.15;
-	//(0..255)
-    public static int Level_Bright = 100;
-    public static int Lelel_min = 10;// * N_Col;
-
-	//Числовое представление сетчатки. Черно-белая картинка.
-	int[][] Bsetch = new int[RETINA_WIDTH][RETINA_HEIGHT];
-    
-    public void TransormToNerv(BufferedImage image) {
-
-//		int gray = image.getRaster().getPixel(x, y, (int[]) null)[0];
-//		int rgbVal = (gray << 16) + (gray << 8) + (gray); 
-		
-    	for (int ix = 0; ix < RETINA_WIDTH; ix++)
-        	for (int iy = 0; iy < RETINA_HEIGHT; iy++)
-        		Bsetch[ix][iy] = calcGreyVal(image, ix, iy);// image.getRGB( ix, iy );
-        
-    	double SP, SC, SA;
-        double K_cont;
-        for (int ix = 0; ix < z_video.width; ix++) {
-        	for (int iy = 0; iy < z_video.height; iy++) {
-
-        		Pole mSensPol = MSensPol[ix][iy];
-
-                z_video.col[ix][iy].active = false;
-
-                SC = 0;
-                for (int j = 0; j < NSensCentr; j++) {
-
-                    SC += Bsetch[mSensPol.centr[j][0]][mSensPol.centr[j][1]];
-                }
-
-                SP = 0;
-                for (int j = 0; j < NSensPeref; j++) {
-
-                    SP += Bsetch[mSensPol.peref[j][0]][mSensPol.peref[j][1]];
-                }
-
-                SA = ((SP + SC) / (NSensCentr + NSensPeref));
-
-                K_cont = KContr1 + SA * (KContr2 - KContr1) / Level_Bright;
-
-                if (K_cont < KContr3) K_cont = KContr3;
-
-                SC = SC / NSensCentr;
-                SP = SP / NSensPeref;
-
-                if (SA > Lelel_min) {
-                	switch (mSensPol.type) {
-                    case 1:
-
-                        if (SC / SP > K_cont)
-                            z_video.col[ix][iy].active = true;
-
-						break;
-
-                    case 2:
-
-                        if (SP / SC > K_cont)
-                            z_video.col[ix][iy].active = true;
-
-                        break;
-
-                    case 3:
-
-                        if (SC / SP > K_cont || SP / SC > K_cont) 
-                            z_video.col[ix][iy].active = true;
-
-                        break;
-					default:
-						break;
-					}
-                }
-        	}
-        }
-        
-        if (active) {
-	    	cycle1();
-	    	cycle2();
-//	    	System.out.println("step");
-        }
-    }
-    
-    private final double LUM_RED = 0.299;
-    private final double LUM_GREEN = 0.587;
-    private final double LUM_BLUE = 0.114;
-
-    private int calcGreyVal(final BufferedImage img, final int x, final int y) {
-        int value = img.getRGB(x, y);
-
-        int r = get_red(value);
-        int g = get_green(value);
-        int b = get_blue(value);
-        
-//        return r+g+b;
-//        return (r+g+b) /3;
-        return (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
-    }
-
-    public static int create_rgb(int alpha, int r, int g, int b) {
-        int rgb = (alpha << 24) + (r << 16) + (g << 8) + b;
-        return rgb;
-    }
-
-    public static int get_alpha(int rgb) {
-        return (rgb >> 24) & 0xFF;
-        // return rgb & 0xFF000000;
-    }
-
-    public static int get_red(int rgb) {
-        return (rgb >> 16) & 0xFF;
-        // return rgb & 0x00FF0000;
-    }
-
-    public static int get_green(int rgb) {
-        return (rgb >> 8) & 0xFF;
-    }
-
-    public static int get_blue(int rgb) {
-        return rgb & 0xFF;
-    }
-    
     //Такт 1. Активация колонок (узнавание)
     public void cycle1() {
         int sum_on_on, sum_on_off, sum_off_on, sum_off_off;

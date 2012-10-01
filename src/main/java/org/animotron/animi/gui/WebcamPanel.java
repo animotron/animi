@@ -21,7 +21,6 @@
 package org.animotron.animi.gui;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
@@ -33,7 +32,6 @@ import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
 import org.animotron.animi.MultiCortex;
 
-import static org.animotron.animi.MultiCortex.*;
 import static org.animotron.animi.gui.Application.cortexs;
 
 /**
@@ -72,7 +70,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 //                    op.filter(image, gray);
 
                     if (cortexs != null)
-                    	cortexs.TransormToNerv(image);
+                    	cortexs.retina.process(image);
                     
                     Thread.sleep(1000 / frequency);
 				} catch (Throwable e) {
@@ -101,7 +99,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
                     System.out.println("No webcams found...");
                     System.exit(1);
                 }
-                webcam.setViewSize(new Dimension(RETINA_WIDTH, RETINA_HEIGHT));
+                webcam.setViewSize(new Dimension(cortexs.RETINA_WIDTH, cortexs.RETINA_HEIGHT));
                 webcam.addWebcamListener(WebcamPanel.this);
 
                 if (!webcam.isOpen()) {
@@ -128,7 +126,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		);
 
         if (cortexs != null) {
-	        BufferedImage retina = cortexs.getRetinaImage();
+	        BufferedImage retina = cortexs.retina.getImage();
 	        g.drawImage(
         		retina.getScaledInstance(x, y, Image.SCALE_SMOOTH),
         		x+2, 0, null
@@ -148,7 +146,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
                 y += 2;
 	        	
                 g.drawImage(zone.getColImage(), x, y, null);
-                x += zone.getWidth() + 3;
+                x += zone.width() + 3;
                 if (zone instanceof MultiCortex.CCortexZone) {
                     MultiCortex.CCortexZone cz = (MultiCortex.CCortexZone) zone;
 
@@ -159,15 +157,15 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
                     for (BufferedImage image : cz.getSImage()) {
                         g.drawImage(image, x, y, null);
-                        x += cz.getWidth() + 2;
+                        x += cz.width() + 2;
                     }
         	        g2d.drawString("занятые нейроны по колонкам", x, textY);
                     for (BufferedImage image : cz.getOccupyImage()) {
                         g.drawImage(image, x, y, null);
-                        x += cz.getWidth() + 2;
+                        x += cz.width() + 2;
                     }
                 }
-                y += zone.getHeight() + 2;
+                y += zone.height() + 2;
             }
         }
     }
