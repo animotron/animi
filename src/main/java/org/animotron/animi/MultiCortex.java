@@ -25,13 +25,8 @@ package org.animotron.animi;
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
- *
  */
 public class MultiCortex {
-
-	//Сетчатка
-    public static final int RETINA_WIDTH = 640;
-	public static final int RETINA_HEIGHT = 480;
 
 	public static final int VISUAL_FIELD_WIDTH = 96 * 2;
 	public static final int VISUAL_FIELD_HEIGHT = 72 * 2;
@@ -75,7 +70,7 @@ public class MultiCortex {
 //        zones = new SCortexZone[]{z_video, z_viscor, z_asscor, z_good, z_bad};
         zones = new CortexZoneSimple[]{z_video, z_viscor};
         
-        retina = new Retina(RETINA_WIDTH, RETINA_HEIGHT);
+        retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_video);
 
         System.out.println("done.");

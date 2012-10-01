@@ -28,6 +28,10 @@ import java.awt.image.BufferedImage;
  */
 //TODO: macula lutea
 public class Retina {
+
+	//Сетчатка
+    public static final int WIDTH = 640;
+	public static final int HEIGHT = 480;
 	
 	/* x */
 	private int width;

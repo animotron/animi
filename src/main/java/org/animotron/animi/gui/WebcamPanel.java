@@ -33,6 +33,7 @@ import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
 
 import org.animotron.animi.CortexZoneComplex;
 import org.animotron.animi.CortexZoneSimple;
+import org.animotron.animi.Retina;
 
 import static org.animotron.animi.gui.Application.cortexs;
 
@@ -101,7 +102,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
                     System.out.println("No webcams found...");
                     System.exit(1);
                 }
-                webcam.setViewSize(new Dimension(cortexs.RETINA_WIDTH, cortexs.RETINA_HEIGHT));
+                webcam.setViewSize(new Dimension(Retina.WIDTH, Retina.HEIGHT));
                 webcam.addWebcamListener(WebcamPanel.this);
 
                 if (!webcam.isOpen()) {
