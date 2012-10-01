@@ -99,7 +99,7 @@ public class MultiCortex {
             for (int x = 1; x < zone.width - 1; x++) {
                 for (int y = 1; y < zone.height - 1; y++) {
                     for (int z = 0; z < zone.deep; z++) {
-                        SNeuron sn = zone.s[x][y][z];
+                        NeuronSimple sn = zone.s[x][y][z];
                         if (sn.occupy) {
                             sum_on_on = sum_on_off = sum_off_on = sum_off_off = 0;
                             for (int i = 0; i < zone.ns_links; i++) {
@@ -141,7 +141,7 @@ public class MultiCortex {
                             sum++;
                         }
                     }
-                    CNeuron cn = zone.col[x][y];
+                    NeuronComplex cn = zone.col[x][y];
                     cn.sum = sum;
                     
                     sum = 0;
@@ -159,7 +159,7 @@ public class MultiCortex {
 
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     public void cycle2() {
-    	SNeuron s = null;
+    	NeuronSimple s = null;
         int sumact = 0;
         int sum = 0;
     	

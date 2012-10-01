@@ -29,68 +29,72 @@ public class OnOffMatrix {
 	//Параметры преобразования сетчатки в сигналы полей с он-центом и офф-центром
 
 	//Радиус сенсорного поля
-    int RSensPol = 8;
+    int radius = 8;
     //Радиус центра сенсорного поля
-    int RCSensPol = 4;
+    int centeRadius = 4;
 
     //Кол-во элементов в центре и переферии сенсорного поля
-    int NSensCentr = 0;
-    int NSensPeref = 0;
+    int numInCenter = 0;
+    int numInPeref = 0;
     
-    int sensPoLength = 0;
-    int[][] SQ;
+    int regionSize = 0;
+    int[][] matrix;
     
     public OnOffMatrix() {
-        sensPoLength = 2 * RSensPol - 2;
+    	initialize();
+    };
+    
+    private void initialize() {
+        regionSize = 2 * radius - 2;
         
-        SQ = new int[sensPoLength][sensPoLength];
+        matrix = new int[regionSize][regionSize];
 
-        int RPol2 = RSensPol * RSensPol;
-        int RCen2 = RCSensPol * RCSensPol;
+        int radius2 = radius * radius;
+        int centeRadius2 = centeRadius * centeRadius;
 
         int R2;
         int dx, dy;
 
         //Разметка квадратного массива двумя кругами (центром и переферией сенсорного поля)
-        for (int ix = 0; ix < sensPoLength; ix++) {
-        	for (int iy = 0; iy < sensPoLength; iy++) {
+        for (int ix = 0; ix < regionSize; ix++) {
+        	for (int iy = 0; iy < regionSize; iy++) {
 
-                dx = RSensPol - ix;
-                dy = RSensPol - iy;
+                dx = radius - ix;
+                dy = radius - iy;
                 R2 = dx * dx + dy * dy;
 
-                if (R2 > RPol2)
-                    SQ[ix][iy] = 0;
+                if (R2 > radius2)
+                    matrix[ix][iy] = 0;
                 else {
-                    if (R2 > RCen2) {
-                        SQ[ix][iy] = 1;
-                        NSensPeref++;
+                    if (R2 > centeRadius2) {
+                        matrix[ix][iy] = 1;
+                        numInPeref++;
                     } else {
-                        SQ[ix][iy] = 2;
-                        NSensCentr++;
+                        matrix[ix][iy] = 2;
+                        numInCenter++;
                     }
                 }
         	}
         }
 	}
     
-    public int sensPoLength() {
-    	return sensPoLength;
+    public int regionSize() {
+    	return regionSize;
     }
 
 	public int getType(int i, int j) {
-		return SQ[i][j];
+		return matrix[i][j];
 	}
 
-	public int NSensCentr() {
-		return NSensCentr;
+	public int numInCenter() {
+		return numInCenter;
 	}
 
-	public int NSensPeref() {
-		return NSensPeref;
+	public int numInPeref() {
+		return numInPeref;
 	}
 
-	public int RSensPol() {
-		return RSensPol;
+	public int radius() {
+		return radius;
 	}
 }

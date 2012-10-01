@@ -16,7 +16,7 @@ import java.awt.image.BufferedImage;
         double k_det1, k_det2;  // Matching percent for the active/passive elements required for recognition
         int n_act_min;          // Number of cycles to turn on the possibility of forgetting
         double k_non;           // Ratio threshold of forgetting
-        SNeuron[][][] s;        // Memory
+        NeuronSimple[][][] s;        // Memory
 
         CCortexZone(String name, int width, int height, int deep,
                    int nas_links,
@@ -26,7 +26,7 @@ import java.awt.image.BufferedImage;
 
             super(name, width, height);
             this.deep = deep;
-            this.s = new SNeuron[width][height][deep];
+            this.s = new NeuronSimple[width][height][deep];
             this.in_zones = in_zones;
 
             ns_links = 0;
@@ -48,7 +48,7 @@ import java.awt.image.BufferedImage;
                 for (int y = 0; y < height; y++) {
                     for (int z = 0; z < deep; z++) {
                         
-                    	SNeuron sn = s[x][y][z] = new SNeuron();
+                    	NeuronSimple sn = s[x][y][z] = new NeuronSimple();
                         sn.s_links = new Link2dZone[ns_links];
                         for (int i = 0; i < ns_links; i++)
                         	sn.s_links[i] = new Link2dZone();
@@ -128,7 +128,7 @@ import java.awt.image.BufferedImage;
                                 nerv_links[lx][ly] = true;
                                 
                                 //Создаем синаптическую связь
-                                SNeuron n = s[x][y][z];
+                                NeuronSimple n = s[x][y][z];
                                 n.s_links[n.n1].x = lx;
                                 n.s_links[n.n1].y = ly;
                                 n.s_links[n.n1].zone = m.zone;
@@ -147,7 +147,7 @@ import java.awt.image.BufferedImage;
 //            int simLinks = 3*3*deep;
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    CNeuron sn = col[x][y];// = new CNeuron();
+                    NeuronComplex sn = col[x][y];// = new CNeuron();
                     
                     sn.s_links = new Link3d[nsc_links];
                     for (int i = 0; i < nsc_links; i++)
@@ -168,14 +168,14 @@ import java.awt.image.BufferedImage;
                         for (int j = y - 1; j <= y + 1; j++) {
                             for (int k = 0; k < deep ; k++) {
 
-                                CNeuron cn = col[x][y];
+                                NeuronComplex cn = col[x][y];
 
                                 cn.s_links[n].x = i;
                                 cn.s_links[n].y = j;
                                 cn.s_links[n].z = k;
                                 n++;
 
-                                SNeuron sn = s[i][j][k];
+                                NeuronSimple sn = s[i][j][k];
                                 sn.a_links[sn.n2].x = x;
                                 sn.a_links[sn.n2].y = y;
                                 sn.n2++;

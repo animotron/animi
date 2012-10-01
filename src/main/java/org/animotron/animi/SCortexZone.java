@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 public class SCortexZone implements Layer {
 
     String name;
-    CNeuron[][] col;        // State of complex neurons (outputs cortical columns)
+    NeuronComplex[][] col;        // State of complex neurons (outputs cortical columns)
     int width;              //
     int height;             //
 
@@ -16,10 +16,10 @@ public class SCortexZone implements Layer {
         this.name = name;
         this.width = width;
         this.height = height;
-        this.col = new CNeuron[width][height];
+        this.col = new NeuronComplex[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                CNeuron cn = new CNeuron();
+                NeuronComplex cn = new NeuronComplex();
                 cn.active = false;
                 this.col[x][y] = cn;
             }

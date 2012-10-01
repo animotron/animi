@@ -2,7 +2,7 @@ package org.animotron.animi;
 
 
 // Simple neuron
-class SNeuron {
+class NeuronSimple {
     boolean occupy, active;
     int n_on;               // Number of active cycles after activation
     int n_act;              // Number of cycles after activation
