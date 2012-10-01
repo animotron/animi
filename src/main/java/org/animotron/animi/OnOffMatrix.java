@@ -24,7 +24,7 @@ package org.animotron.animi;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class OnOff {
+public class OnOffMatrix {
 	
 	//Параметры преобразования сетчатки в сигналы полей с он-центом и офф-центром
 
@@ -40,7 +40,7 @@ public class OnOff {
     int sensPoLength = 0;
     int[][] SQ;
     
-    public OnOff() {
+    public OnOffMatrix() {
         sensPoLength = 2 * RSensPol - 2;
         
         SQ = new int[sensPoLength][sensPoLength];

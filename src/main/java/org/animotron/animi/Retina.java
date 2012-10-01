@@ -37,9 +37,9 @@ public class Retina {
 	private int preprocessing[][];
 	
 //	private int receptiveField[][] = null;
-	private ReceptiveField[][] MSensPol;
+	private OnOffReceptiveField[][] MSensPol;
 	
-	private OnOff onOff = new OnOff();
+	private OnOffMatrix onOff = new OnOffMatrix();
 	
 	public Retina(int width, int height) {
 		this.width = width;
@@ -60,7 +60,7 @@ public class Retina {
 	
     // создание связей сенсорных полей
 	private void FillMSensPol() {
-		MSensPol = new ReceptiveField[NL.width()][NL.height()];
+		MSensPol = new OnOffReceptiveField[NL.width()][NL.height()];
 
         double XScale = (width - onOff.sensPoLength()) / (double)NL.width();
         double YScale = (height - onOff.sensPoLength()) / (double)NL.height();
@@ -72,7 +72,7 @@ public class Retina {
         for (int ix = 0; ix < NL.width(); ix++) {
         	for (int iy = 0; iy < NL.height(); iy++) {
 
-        		ReceptiveField mSensPol = new ReceptiveField();
+        		OnOffReceptiveField mSensPol = new OnOffReceptiveField();
                 MSensPol[ix][iy] = mSensPol;
                 mSensPol.centr = new int[onOff.NSensCentr()][2];
         		mSensPol.peref = new int[onOff.NSensPeref()][2];
@@ -145,7 +145,7 @@ public class Retina {
         for (int ix = 0; ix < NL.width(); ix++) {
         	for (int iy = 0; iy < NL.height(); iy++) {
 
-        		ReceptiveField mSensPol = MSensPol[ix][iy];
+        		OnOffReceptiveField mSensPol = MSensPol[ix][iy];
 
                 NL.set(ix,iy,false);
 

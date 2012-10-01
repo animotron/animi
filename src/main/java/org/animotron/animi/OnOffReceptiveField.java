@@ -24,7 +24,7 @@ package org.animotron.animi;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class ReceptiveField {
+public class OnOffReceptiveField {
 
 	//1 - on 2 - off 3 - универсальный (срабатывает на оба стимула)
 	public int type;
