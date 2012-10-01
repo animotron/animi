@@ -30,7 +30,9 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
-import org.animotron.animi.MultiCortex;
+
+import org.animotron.animi.CCortexZone;
+import org.animotron.animi.SCortexZone;
 
 import static org.animotron.animi.gui.Application.cortexs;
 
@@ -136,7 +138,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	        
 	        Graphics2D g2d = (Graphics2D)g;
 	        
-	        for (MultiCortex.SCortexZone zone : cortexs.zones) {
+	        for (SCortexZone zone : cortexs.zones) {
                 x = 0;
 	        	
 	        	y += getFontMetrics(getFont()).getHeight();
@@ -147,8 +149,8 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	        	
                 g.drawImage(zone.getColImage(), x, y, null);
                 x += zone.width() + 3;
-                if (zone instanceof MultiCortex.CCortexZone) {
-                    MultiCortex.CCortexZone cz = (MultiCortex.CCortexZone) zone;
+                if (zone instanceof CCortexZone) {
+                    CCortexZone cz = (CCortexZone) zone;
 
 //                    AffineTransform nt = g2d.getTransform();
 //                    g2d.rotate(-Math.PI / 2.0, x, y);
