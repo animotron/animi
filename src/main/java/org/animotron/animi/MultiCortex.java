@@ -40,17 +40,17 @@ public class MultiCortex {
     
     public Retina retina;
 
-    public SCortexZone z_video, z_viscor, z_asscor, z_good, z_bad;
+    public CortexZoneSimple z_video, z_viscor, z_asscor, z_good, z_bad;
 
-    public SCortexZone [] zones;
+    public CortexZoneSimple [] zones;
 
     public MultiCortex() {
 
         System.out.println("z_video");
-        z_video = new SCortexZone("Input visual layer", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT);
+        z_video = new CortexZoneSimple("Input visual layer", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT);
 
         System.out.println("z_viscor");
-        z_viscor = new CCortexZone("Prime visual cortex", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT, 2,
+        z_viscor = new CortexZoneComplex("Prime visual cortex", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT, 2,
                 9, 0, 0.3, 0.6, 0.6, 10, 2,
                 new Mapping[]{
                         new Mapping(z_video, 15, 0.02)
@@ -73,7 +73,7 @@ public class MultiCortex {
 //        );
 //
 //        zones = new SCortexZone[]{z_video, z_viscor, z_asscor, z_good, z_bad};
-        zones = new SCortexZone[]{z_video, z_viscor};
+        zones = new CortexZoneSimple[]{z_video, z_viscor};
         
         retina = new Retina(RETINA_WIDTH, RETINA_HEIGHT);
         retina.setNextLayer(z_video);
@@ -88,10 +88,10 @@ public class MultiCortex {
         double k1, k2 = 0;
 
         //Последовательность активации зон коры определяется их номером
-        for (SCortexZone cortex : zones) {
-            if (!(cortex instanceof CCortexZone))
+        for (CortexZoneSimple cortex : zones) {
+            if (!(cortex instanceof CortexZoneComplex))
             	continue;
-            CCortexZone zone = (CCortexZone) cortex;
+            CortexZoneComplex zone = (CortexZoneComplex) cortex;
             
             //Активация простых нейронов при узнавании запомненной картины
             //Граничные нейроны не задействованы.
@@ -163,10 +163,10 @@ public class MultiCortex {
         int sumact = 0;
         int sum = 0;
     	
-        for (SCortexZone cortex : zones) {
-            if (!(cortex instanceof CCortexZone))
+        for (CortexZoneSimple cortex : zones) {
+            if (!(cortex instanceof CortexZoneComplex))
             	continue;
-            CCortexZone zone = (CCortexZone) cortex;
+            CortexZoneComplex zone = (CortexZoneComplex) cortex;
             
             //Граничные нейроны не задействованы. 
             //Это дает возможность всем используемым нейронам иметь восемь соседних колонок.

@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 // Complex cortex zone
-    public class CCortexZone extends SCortexZone {
+    public class CortexZoneComplex extends CortexZoneSimple {
 
         Mapping[] in_zones;
         int deep;
@@ -18,7 +18,7 @@ import java.awt.image.BufferedImage;
         double k_non;           // Ratio threshold of forgetting
         NeuronSimple[][][] s;        // Memory
 
-        CCortexZone(String name, int width, int height, int deep,
+        CortexZoneComplex(String name, int width, int height, int deep,
                    int nas_links,
                    double k_active, double k_mem, double k_det1, double k_det2,
                    int n_act_min, double k_non,

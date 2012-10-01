@@ -5,14 +5,14 @@ import java.awt.image.BufferedImage;
 
 
 // Simple cortex zone
-public class SCortexZone implements Layer {
+public class CortexZoneSimple implements Layer {
 
     String name;
     NeuronComplex[][] col;        // State of complex neurons (outputs cortical columns)
     int width;              //
     int height;             //
 
-    public SCortexZone(String name, int width, int height) {
+    public CortexZoneSimple(String name, int width, int height) {
         this.name = name;
         this.width = width;
         this.height = height;
