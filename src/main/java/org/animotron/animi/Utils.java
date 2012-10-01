@@ -26,7 +26,7 @@ import java.awt.image.BufferedImage;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class ImgP {
+public class Utils {
 
     private final static double LUM_RED = 0.299;
     private final static double LUM_GREEN = 0.587;

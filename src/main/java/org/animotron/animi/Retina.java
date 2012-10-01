@@ -138,7 +138,7 @@ public class Retina {
     	//preprocessing
     	for (int x = 0; x < width; x++)
         	for (int y = 0; y < height; y++)
-        		preprocessing[x][y] = ImgP.calcGrey(image, x, y);
+        		preprocessing[x][y] = Utils.calcGrey(image, x, y);
         
     	double SP, SC, SA;
         double K_cont;
@@ -214,7 +214,7 @@ public class Retina {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int c = preprocessing[x][y];
-                image.setRGB(x, y, ImgP.create_rgb(255, c, c, c));
+                image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
             }
         }
         return image;

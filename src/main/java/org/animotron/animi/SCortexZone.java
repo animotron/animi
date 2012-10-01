@@ -33,7 +33,7 @@ public class SCortexZone implements Layer {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 c = col[x][y].active ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-                image.setRGB(x, y, ImgP.create_rgb(255, c, c, c));
+                image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
             }
         }
         return image;

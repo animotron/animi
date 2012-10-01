@@ -194,7 +194,7 @@ import java.awt.image.BufferedImage;
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
                         int c = s[x][y][z].active ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-                        image.setRGB(x, y, ImgP.create_rgb(255, c, c, c));
+                        image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
                     }
                 }
                 a[z] = image;
@@ -210,7 +210,7 @@ import java.awt.image.BufferedImage;
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
                         int c = s[x][y][z].occupy ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-                        image.setRGB(x, y, ImgP.create_rgb(255, c, c, c));
+                        image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
                     }
                 }
                 a[z] = image;
