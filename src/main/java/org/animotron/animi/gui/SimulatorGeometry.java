@@ -18,18 +18,42 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi;
+package org.animotron.animi.gui;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+import org.animotron.animi.Retina;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class OnOffReceptiveField {
+public class SimulatorGeometry implements Simulator {
+	
+	private BufferedImage image;
 
-	//1 - on 2 - off 3 - универсальный (срабатывает на оба стимула)
-	public int type = 3;
+	public SimulatorGeometry() {
+		image = new BufferedImage(Retina.WIDTH, Retina.HEIGHT, BufferedImage.TYPE_INT_RGB);
+	}
+	
+	public BufferedImage getImage() {
+		step();
+		
+		Graphics g = image.getGraphics();
+		g.setColor(Color.WHITE);
+		g.drawRect(100, 100, 100, 100);
+		g.fillRect(250, 100, 100, 100);
 
-	public int[][] center;
-	public int[][] periphery;
+		g.drawLine(400, 100, 450, 200);
+		
+		g.drawOval(100, 250, 100, 100);
+		g.fillOval(250, 250, 100, 100);
 
+		return image;
+	}
+	
+	private void step() {
+	}
 }

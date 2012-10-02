@@ -69,25 +69,19 @@ public class Retina {
         int X, Y;
         int NC, NP;
 
-        boolean top = true;
-        boolean fl = true;
+        int fl = 3;
         
         for (int ix = 0; ix < NL.width(); ix++) {
-        	fl = top = !top;
+//        	fl++; if (fl == 3) fl = 1;
         	for (int iy = 0; iy < NL.height(); iy++) {
 
         		OnOffReceptiveField mSensPol = new OnOffReceptiveField();
                 sensorField[ix][iy] = mSensPol;
-                mSensPol.centr = new int[onOff.numInCenter()][2];
-        		mSensPol.peref = new int[onOff.numInPeref()][2];
+                mSensPol.center = new int[onOff.numInCenter()][2];
+        		mSensPol.periphery = new int[onOff.numInPeref()][2];
 
                 // распределение он и офф полей
-                if (fl) {
-                	mSensPol.type = 3;
-                } else {
-                	mSensPol.type = 3;
-                }
-                fl = !fl;
+            	mSensPol.type = fl;
 
                 X = (int)Math.round( ix * XScale + onOff.radius() + 1 );
                 Y = (int)Math.round( iy * YScale + onOff.radius() + 1 );
@@ -104,15 +98,15 @@ public class Retina {
                             break;
                         case 1:
 
-                            mSensPol.peref[NP][0] = X - onOff.radius() + i;
-                            mSensPol.peref[NP][1] = Y - onOff.radius() + j;
+                            mSensPol.periphery[NP][0] = X - onOff.radius() + i;
+                            mSensPol.periphery[NP][1] = Y - onOff.radius() + j;
 
                             NP = NP + 1;
                             break;
                         case 2:
 
-                        	mSensPol.centr[NC][0] = X - onOff.radius() + i;
-                        	mSensPol.centr[NC][1] = Y - onOff.radius() + j;
+                        	mSensPol.center[NC][0] = X - onOff.radius() + i;
+                        	mSensPol.center[NC][1] = Y - onOff.radius() + j;
 
                             NC = NC + 1;
                             break;
@@ -156,16 +150,16 @@ public class Retina {
                 SC = 0;
                 for (int j = 0; j < onOff.numInCenter(); j++) {
 
-                    SC += preprocessed[mSensPol.centr[j][0]][mSensPol.centr[j][1]];
+                    SC += preprocessed[mSensPol.center[j][0]][mSensPol.center[j][1]];
                 }
 
                 SP = 0;
                 for (int j = 0; j < onOff.numInPeref(); j++) {
 
-                    SP += preprocessed[mSensPol.peref[j][0]][mSensPol.peref[j][1]];
+                    SP += preprocessed[mSensPol.periphery[j][0]][mSensPol.periphery[j][1]];
                 }
 
-                SA = ((SP + SC) / (onOff.numInCenter() + onOff.numInPeref()));
+                SA = ((SP + SC) / (double)(onOff.numInCenter() + onOff.numInPeref()));
 
                 K_cont = KContr1 + SA * (KContr2 - KContr1) / Level_Bright;
 

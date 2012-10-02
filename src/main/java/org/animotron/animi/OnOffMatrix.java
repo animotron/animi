@@ -34,8 +34,8 @@ public class OnOffMatrix {
     int centeRadius = 4;
 
     //Кол-во элементов в центре и переферии сенсорного поля
-    int numInCenter = 0;
-    int numInPeref = 0;
+    int numCenter = 0;
+    int numsPeriphery = 0;
     
     int regionSize = 0;
     int[][] matrix;
@@ -45,37 +45,57 @@ public class OnOffMatrix {
     };
     
     private void initialize() {
-        regionSize = 2 * radius - 2;
-        
-        matrix = new int[regionSize][regionSize];
+    	radius = 4;
+    			
+    	regionSize = 8;
+    	
+    	numCenter = 9;
+    	numsPeriphery = 20;
+    	
+        matrix = new int[][] {
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 1, 0, 0, 0, 0},
+        {0, 1, 1, 1, 1, 1, 0, 0},
+        {0, 1, 2, 2, 2, 1, 0, 0},
+        {1, 1, 2, 2, 2, 1, 1, 0},
+        {0, 1, 2, 2, 2, 1, 0, 0},
+        {0, 1, 1, 1, 1, 1, 0, 0},
+        {0, 0, 0, 1, 0, 0, 0, 0}
+        };
 
-        int radius2 = radius * radius;
-        int centeRadius2 = centeRadius * centeRadius;
-
-        int R2;
-        int dx, dy;
+//    	regionSize = 2 * radius + 1;
+//        
+//        matrix = new int[regionSize][regionSize];
+//
+//        int radius2 = radius * radius;
+//        int centeRadius2 = centeRadius * centeRadius;
+//
+//        int R2;
+//        int dx, dy;
 
         //Разметка квадратного массива двумя кругами (центром и переферией сенсорного поля)
-        for (int ix = 0; ix < regionSize; ix++) {
-        	for (int iy = 0; iy < regionSize; iy++) {
-
-                dx = radius - ix;
-                dy = radius - iy;
-                R2 = dx * dx + dy * dy;
-
-                if (R2 > radius2)
-                    matrix[ix][iy] = 0;
-                else {
-                    if (R2 > centeRadius2) {
-                        matrix[ix][iy] = 1;
-                        numInPeref++;
-                    } else {
-                        matrix[ix][iy] = 2;
-                        numInCenter++;
-                    }
-                }
-        	}
-        }
+//        for (int x = 0; x < regionSize; x++) {
+//        	for (int y = 0; y < regionSize; y++) {
+//
+//                dx = radius - x;
+//                dy = radius - y;
+//                R2 = dx * dx + dy * dy;
+//
+//                if (R2 > radius2)
+//                    matrix[x][y] = 0;
+//                else {
+//                    if (R2 > centeRadius2) {
+//                        matrix[x][y] = 1;
+//                        numsPeriphery++;
+//                    } else {
+//                        matrix[x][y] = 2;
+//                        numCenter++;
+//                    }
+//                }
+//                System.out.print(" "+matrix[x][y]);
+//        	}
+//        	System.out.println();
+//        }
 	}
     
     public int regionSize() {
@@ -87,11 +107,11 @@ public class OnOffMatrix {
 	}
 
 	public int numInCenter() {
-		return numInCenter;
+		return numCenter;
 	}
 
 	public int numInPeref() {
-		return numInPeref;
+		return numsPeriphery;
 	}
 
 	public int radius() {

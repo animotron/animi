@@ -18,18 +18,15 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi;
+package org.animotron.animi.gui;
+
+import java.awt.image.BufferedImage;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class OnOffReceptiveField {
+public interface Simulator {
 
-	//1 - on 2 - off 3 - универсальный (срабатывает на оба стимула)
-	public int type = 3;
-
-	public int[][] center;
-	public int[][] periphery;
-
+	public BufferedImage getImage();
 }

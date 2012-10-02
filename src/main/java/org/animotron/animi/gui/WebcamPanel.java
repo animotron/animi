@@ -31,7 +31,6 @@ import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
 
-import org.animotron.animi.CortexZoneComplex;
 import org.animotron.animi.CortexZoneSimple;
 import org.animotron.animi.Retina;
 
@@ -61,19 +60,27 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		@Override
 		public void run() {
 			//super.run();
-			while (webcam.isOpen()) {
+			while (simulator != null || webcam.isOpen()) {
 				try {
 					if (paused) {
 						synchronized (this) {
 							this.wait();
 						}
 					}
-                    image = webcam.getImage();
-//                    BufferedImage gray = new BufferedImage(RETINA_WIDTH, RETINA_HEIGHT, TYPE_INT_ARGB);
-//                    op.filter(image, gray);
+					if (simulator != null) {
+						image = simulator.getImage();
+					} else {
+						image = webcam.getImage();
+					}
 
-                    if (cortexs != null)
+                    if (cortexs != null && image != null) {
                     	cortexs.retina.process(image);
+                    	
+                    	if (cortexs.active) {
+                    		cortexs.cycle1();
+                    		cortexs.cycle2();
+                    	}
+                    }
                     
                     Thread.sleep(1000 / frequency);
 				} catch (Throwable e) {
@@ -84,6 +91,8 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 			}
 		}
 	}
+    
+    private Simulator simulator;
 
 	private Webcam webcam = null;
     private BufferedImage image = null;
@@ -91,23 +100,32 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 	public WebcamPanel() {
 		
+		//simulate
+		if (true) {
+			simulator = new SimulatorGeometry();
+			repainter = new Repainter();
+			repainter.start();
+		}
+
 		SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
 
-                Webcam.setDriver(new OpenImajDriver());
-                webcam = Webcam.getDefault();
-                if (webcam == null) {
-                    System.out.println("No webcams found...");
-                    System.exit(1);
-                }
-                webcam.setViewSize(new Dimension(Retina.WIDTH, Retina.HEIGHT));
-                webcam.addWebcamListener(WebcamPanel.this);
-
-                if (!webcam.isOpen()) {
-                    webcam.open();
-                }
+            	if (simulator == null) {
+	                Webcam.setDriver(new OpenImajDriver());
+	                webcam = Webcam.getDefault();
+	                if (webcam == null) {
+	                    System.out.println("No webcams found...");
+	                    System.exit(1);
+	                }
+	                webcam.setViewSize(new Dimension(Retina.WIDTH, Retina.HEIGHT));
+	                webcam.addWebcamListener(WebcamPanel.this);
+	
+	                if (!webcam.isOpen()) {
+	                    webcam.open();
+	                }
+            	}
             }
         });
 	}
@@ -137,8 +155,6 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	
 	        y += 2;
 	        
-	        Graphics2D g2d = (Graphics2D)g;
-	        
 	        for (CortexZoneSimple zone : cortexs.zones) {
                 x = 0;
 	        	
@@ -148,27 +164,29 @@ public class WebcamPanel extends JPanel implements WebcamListener {
                 
                 y += 2;
 	        	
-                g.drawImage(zone.getColImage(), x, y, null);
-                x += zone.width() + 3;
-                if (zone instanceof CortexZoneComplex) {
-                    CortexZoneComplex cz = (CortexZoneComplex) zone;
-
-//                    AffineTransform nt = g2d.getTransform();
-//                    g2d.rotate(-Math.PI / 2.0, x, y);
-        	        g2d.drawString("активные нейроны по колонкам", x, textY);
-//        	        g2d.setTransform(nt);
-
-                    for (BufferedImage image : cz.getSImage()) {
-                        g.drawImage(image, x, y, null);
-                        x += cz.width() + 2;
-                    }
-        	        g2d.drawString("занятые нейроны по колонкам", x, textY);
-                    for (BufferedImage image : cz.getOccupyImage()) {
-                        g.drawImage(image, x, y, null);
-                        x += cz.width() + 2;
-                    }
-                }
-                y += zone.height() + 2;
+                BufferedImage img = zone.getColImage();
+                g.drawImage(
+            		img.getScaledInstance(img.getWidth()*2, img.getHeight()*2, Image.SCALE_AREA_AVERAGING),
+            		x, y, null
+        		);
+                
+                x += img.getWidth() * 2 + 3;
+//                if (zone instanceof CortexZoneComplex) {
+//                    CortexZoneComplex cz = (CortexZoneComplex) zone;
+//
+//        	        g2d.drawString("активные нейроны по колонкам", x, textY);
+//
+//                    for (BufferedImage image : cz.getSImage()) {
+//                        g.drawImage(image, x, y, null);
+//                        x += cz.width() + 2;
+//                    }
+//        	        g2d.drawString("занятые нейроны по колонкам", x, textY);
+//                    for (BufferedImage image : cz.getOccupyImage()) {
+//                        g.drawImage(image, x, y, null);
+//                        x += cz.width() + 2;
+//                    }
+//                }
+                y += img.getHeight()*2 + 2;
             }
         }
     }
