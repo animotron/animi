@@ -9,10 +9,6 @@
 
 	<name>Animi - natural language bridge to Animo world</name>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
 	<developers>
 		<developer>
 			<name>Dmitiry Shabanov</name>
@@ -23,14 +19,14 @@
             <email>gazdovsky@gmail.com</email>
 		</developer>
 	</developers>
+	
+	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.animotron</groupId>
-			<artifactId>core</artifactId>
-			<version>0.1.M03</version>
-		</dependency>
-		
+        <junit.version>4.10</junit.version>
+    </properties>
+
+    <dependencies>
 		<!-- web camera -->
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
@@ -43,31 +39,33 @@
     		<version>0.3.4</version>
    		</dependency>
    		
-		<!-- FFT -->
-		<dependency>
-			<groupId>com.github.rwl</groupId>
-			<artifactId>jtransforms</artifactId>
-			<version>2.4.0</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+		<!-- 
+        <dependency>
+            <groupId>net.java.dev.java3d</groupId>
+            <artifactId>j3d-core</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.java3d</groupId>
+            <artifactId>j3d-utils</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.java3d</groupId>
+            <artifactId>vecmath</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        -->
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.8.2</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	
-	<build>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -81,12 +79,5 @@
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 	</build>
-	
-	<repositories>
-		<repository>
-    		<id>sarxos-repo</id>
-    		<url>http://repo.sarxos.pl/maven2</url>
-    	</repository>
-	</repositories>
-	
+    
 </project>
