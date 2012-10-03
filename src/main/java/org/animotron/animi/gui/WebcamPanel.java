@@ -33,6 +33,8 @@ import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
 
 import org.animotron.animi.CortexZoneSimple;
 import org.animotron.animi.Retina;
+import org.animotron.animi.simulator.Simulator;
+import org.animotron.animi.simulator.SimulatorRectAnime;
 
 import static org.animotron.animi.gui.Application.cortexs;
 
@@ -46,7 +48,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 	private static final long serialVersionUID = 5792962512394656227L;
 
-	private int frequency = 65; // Hz
+	private int frequency = 60; // Hz
 
     // convert the original colored image to grayscale
 //    ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_sRGB), ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
@@ -102,7 +104,16 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		
 		//simulate
 		if (true) {
-			simulator = new SimulatorGeometry();
+			simulator = new SimulatorRectAnime(
+                    Retina.WIDTH, Retina.HEIGHT, 100,
+                    new int[][] {
+                            {150, 150},
+                            {Retina.WIDTH - 150, 150},
+                            {Retina.WIDTH - 150, Retina.HEIGHT - 150},
+                            {150, Retina.HEIGHT - 150},
+                            {150, 150}
+                    }
+            );
 			repainter = new Repainter();
 			repainter.start();
 		}

@@ -18,15 +18,42 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.gui;
+package org.animotron.animi.simulator;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+
+import org.animotron.animi.Retina;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public interface Simulator {
+public class SimulatorGeometry implements Simulator {
+	
+	private BufferedImage image;
 
-	public BufferedImage getImage();
+	public SimulatorGeometry() {
+		image = new BufferedImage(Retina.WIDTH, Retina.HEIGHT, BufferedImage.TYPE_INT_RGB);
+	}
+	
+	public BufferedImage getImage() {
+		step();
+		
+		Graphics g = image.getGraphics();
+		g.setColor(Color.WHITE);
+		g.drawRect(100, 100, 100, 100);
+		g.fillRect(250, 100, 100, 100);
+
+		g.drawLine(400, 100, 450, 200);
+		
+		g.drawOval(100, 250, 100, 100);
+		g.fillOval(250, 250, 100, 100);
+
+		return image;
+	}
+	
+	private void step() {
+	}
 }
