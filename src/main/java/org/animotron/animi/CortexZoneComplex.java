@@ -291,14 +291,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
                         sn.active = k1 > k_det1 && k2 > k_det2;
                     }
                 }
-            }
-        }
-        int sum = 0;
-
-        //активация колонок если набралась критическая масса активности нейронов обвязки
-        for (int x = 1; x < width - 1; x++) {
-            for (int y = 1; y < height - 1; y++) {
-                sum = 0;
+                //активация колонок если набралась критическая масса активности нейронов обвязки
+                int sum = 0;
                 for (int z = 0; z < deep; z++) {
                     if (s[x][y][z].active) {
                         sum++;
