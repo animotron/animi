@@ -27,7 +27,7 @@ package org.animotron.animi;
 public class OnOffReceptiveField {
 
 	//1 - on 2 - off 3 - универсальный (срабатывает на оба стимула)
-	public int type = 2;
+	public int type = 1;
 
 	public int[][] center;
 	public int[][] periphery;
