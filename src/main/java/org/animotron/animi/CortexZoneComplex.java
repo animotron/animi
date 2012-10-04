@@ -113,7 +113,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					// Определение координат текущего нейрона в масштабе
 					// проецируемой зоны
 					x_in_nerv = x * m.zone.width / (double) width;
-					y_in_nerv = x * m.zone.height / (double) height;
+					y_in_nerv = y * m.zone.height / (double) height;
 
 					for (int z = 0; z < deep; z++) {
 						// Обнуление массива занятости связей
