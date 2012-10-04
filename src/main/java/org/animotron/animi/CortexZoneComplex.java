@@ -243,23 +243,32 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		
 		Graphics g = image.getGraphics();
 		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, width, height);
+		g.fillRect(0, 0, maxX, maxY);
 
+		g.setColor(Color.GRAY);
 		for (int x = 1; x < width - 1; x++) {
 			for (int y = 1; y < height - 1; y++) {
 
 				g.drawLine(x*4, 0, x*4, maxY);
 				g.drawLine(0, y*4, maxX, y*4);
+			}
+		}
+		
+		int pX, pY = 0;
+		NeuronComplex cn = null;
+		Link3d link = null;
 
-				NeuronComplex cn = col[x][y];
+		for (int x = 1; x < width - 1; x++) {
+			for (int y = 1; y < height - 1; y++) {
+
+				cn = col[x][y];
 
                 for (int i = 0; i < nsc_links; i++) {
-                    Link3d link = cn.s_links[i];
+                    link = cn.s_links[i];
                     if (s[link.x][link.y][link.z].occupy) {
                     	
-						int pX = link.x *4;
-						int pY = link.y *4;
-						
+						pX = x*4 + (2 + x - link.x);
+						pY = y*4 + (2 + y - link.y);
                     	
                     	int c = Utils.calcGrey(image, pX, pY);
 						c += 100;
