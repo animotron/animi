@@ -298,19 +298,18 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
     //Такт 1. Активация колонок (узнавание)
     public void cycle1() {
-        int sum_on_on, sum_on_off, sum_off_on, sum_off_off;
-        double k1, k2 = 0;
-        int sum = 0;
 
         //Активация простых нейронов при узнавании запомненной картины
         //Граничные нейроны не задействованы.
 
         for (int x = 1; x < width - 1; x++) {
             for (int y = 1; y < height - 1; y++) {
+                int sum = 0;
+                NeuronComplex cn = col[x][y];
                 for (int z = 0; z < deep; z++) {
                     NeuronSimple sn = s[x][y][z];
                     if (sn.occupy) {
-                        sum_on_on = sum_on_off = sum_off_on = sum_off_off = 0;
+                        int sum_on_on = 0; int sum_on_off = 0; int sum_off_on = 0; int sum_off_off = 0;
                         for (int i = 0; i < ns_links; i++) {
                             Link2dZone link = sn.s_links[i];
                             if (link.zone.col[link.x][link.y].active) {
@@ -326,35 +325,28 @@ public class CortexZoneComplex extends CortexZoneSimple {
                                     sum_off_off++;
                             }
                         }
-                        k1 = 0;
+                        double k1 = 0;
                         if (sum_on_on != 0)
-                            k1 = sum_on_on / (double)(sum_on_on + sum_off_on);
+                            k1 = (double) sum_on_on / (sum_on_on + sum_off_on);
 
-                        k2 = 0;
+                        double k2 = 0;
                         if (sum_off_off != 0)
-                            k2 = sum_off_off / (double)(sum_on_off + sum_off_off);
+                            k2 = (double) sum_off_off / (sum_on_off + sum_off_off);
 
                         sn.active = k1 > k_det1 && k2 > k_det2;
+                        if (sn.active) {
+                            sum++;
+                        }
                     }
                 }
-                //активация колонок если набралась критическая масса активности нейронов обвязки
-                sum = 0;
-                for (int z = 0; z < deep; z++) {
-                    if (s[x][y][z].active) {
-                        sum++;
-                    }
-                }
-                NeuronComplex cn = col[x][y];
                 cn.sum = sum;
             }
         }
-                
-	    for (int x = 1; x < width - 1; x++) {
+        //активация колонок если набралась критическая масса активности нейронов обвязки
+        for (int x = 1; x < width - 1; x++) {
 	        for (int y = 1; y < height - 1; y++) {
-                
-	        	sum = 0;
+	        	int sum = 0;
                 NeuronComplex cn = col[x][y];
-
                 for (int i = 0; i < nsc_links; i++) {
                     Link3d link = cn.s_links[i];
                     if (s[link.x][link.y][link.z].active) {

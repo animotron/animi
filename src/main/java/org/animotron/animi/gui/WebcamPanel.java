@@ -95,6 +95,14 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 				} catch (Throwable e) {
 					e.printStackTrace();
 				} finally {
+                    frame++;
+                    long t = System.currentTimeMillis();
+                    long dt = t - t0;
+                    if (dt > 1000) {
+                        fps = 1000 * frame / dt;
+                        frame = 0;
+                        t0 = t;
+                    }
                     WebcamPanel.this.repaint();
                 }
 			}
@@ -166,17 +174,6 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
     	int textY;
 		int x = 0;
 		int y = textY = getFontMetrics(getFont()).getHeight();
-
-        frame++;
-        long t = System.currentTimeMillis();
-        long dt = t - t0;
-        if (dt > 500) {
-            fps = 1000 * frame / dt;
-            if (dt > 2000) {
-                frame = 0;
-                t0 = t;
-            }
-        }
 
         g.setColor(Color.BLACK);
 
