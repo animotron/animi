@@ -20,8 +20,6 @@
  */
 package org.animotron.animi.simulator;
 
-import org.animotron.animi.Retina;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
