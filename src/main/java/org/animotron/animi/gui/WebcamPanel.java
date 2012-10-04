@@ -53,6 +53,10 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 
 	private int frequency = 60; // Hz
 
+    private long fps;
+    private long frame = 0;
+    private long t0 = System.currentTimeMillis();
+
     // convert the original colored image to grayscale
 //    ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_sRGB), ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 
@@ -65,7 +69,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 		@Override
 		public void run() {
 			//super.run();
-			while (simulator != null || webcam.isOpen()) {
+            while (simulator != null || webcam.isOpen()) {
 				try {
 					if (paused) {
 						synchronized (this) {
@@ -87,7 +91,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
                     	}
                     }
                     
-                    Thread.sleep(1000 / frequency);
+                    //Thread.sleep(1000 / frequency);
 				} catch (Throwable e) {
 					e.printStackTrace();
 				} finally {
@@ -162,6 +166,21 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
     	int textY;
 		int x = 0;
 		int y = textY = getFontMetrics(getFont()).getHeight();
+
+        frame++;
+        long t = System.currentTimeMillis();
+        long dt = t - t0;
+        if (dt > 500) {
+            fps = 1000 * frame / dt;
+            if (dt > 2000) {
+                frame = 0;
+                t0 = t;
+            }
+        }
+
+        g.setColor(Color.BLACK);
+
+        g.drawString(fps + " fps", 0, textY);
 
     	int zoomX = image.getWidth()/3;
 		int zoomY = image.getHeight()/3;
