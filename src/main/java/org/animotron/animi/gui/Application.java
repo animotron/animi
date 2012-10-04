@@ -46,7 +46,7 @@ public class Application extends JFrame implements Runnable {
 	private WebcamPanel camView = null;
 	
 	private Button btInit = null;
-	private Button btStep = null;
+	private Button btRun = null;
 	private Button btPause = null;
 	private Button btResume = null;
 	
@@ -100,20 +100,21 @@ public class Application extends JFrame implements Runnable {
                 btPause.setEnabled(true);
                 
                 camView.resume();
-                btStep.setEnabled(true);
+                btRun.setEnabled(true);
             }
         });
         tools.add(btInit);
 
-        btStep = new Button("step");
-        btStep.addActionListener(new ActionListener() {
+        btRun = new Button("run");
+        btRun.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	cortexs.active = true;
+            	btRun.setEnabled(true);
             }
         });
-        btStep.setEnabled(false);
-        tools.add(btStep);
+        btRun.setEnabled(false);
+        tools.add(btRun);
 
         btPause = new Button("pause");
         btPause.addActionListener(new ActionListener() {
