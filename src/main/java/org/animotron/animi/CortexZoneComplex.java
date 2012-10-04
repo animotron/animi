@@ -236,7 +236,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		return a;
 	}
 
-	public BufferedImage getColRFImage() {
+	public BufferedImage getColumnRFimage() {
 		int maxX = width*4;
 		int maxY = height*4;
 		BufferedImage image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
@@ -245,14 +245,14 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, maxX, maxY);
 
-		g.setColor(Color.GRAY);
-		for (int x = 1; x < width - 1; x++) {
-			for (int y = 1; y < height - 1; y++) {
-
-				g.drawLine(x*4, 0, x*4, maxY);
-				g.drawLine(0, y*4, maxX, y*4);
-			}
-		}
+//		g.setColor(Color.GRAY);
+//		for (int x = 1; x < width - 1; x++) {
+//			for (int y = 1; y < height - 1; y++) {
+//
+//				g.drawLine(x*4, 0, x*4, maxY);
+//				g.drawLine(0, y*4, maxX, y*4);
+//			}
+//		}
 		
 		int pX, pY = 0;
 		NeuronComplex cn = null;

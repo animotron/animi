@@ -21,6 +21,8 @@
 package org.animotron.animi.gui;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
@@ -45,7 +47,7 @@ import static org.animotron.animi.gui.Application.cortexs;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class WebcamPanel extends JPanel implements WebcamListener {
+public class WebcamPanel extends JPanel implements WebcamListener, MouseListener {
 
 	private static final long serialVersionUID = 5792962512394656227L;
 
@@ -99,6 +101,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 
 	private Webcam webcam = null;
     private BufferedImage image = null;
+    private BufferedImage buffer = new BufferedImage(2000, 2000, BufferedImage.TYPE_INT_RGB);
     private Repainter repainter = null;
 
 	public WebcamPanel() {
@@ -140,10 +143,15 @@ public class WebcamPanel extends JPanel implements WebcamListener {
             	}
             }
         });
+		
+		addMouseListener(this);
 	}
 	
     @Override
-	protected void paintComponent(Graphics g) {
+	protected void paintComponent(Graphics _g) {
+    	
+//    	buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+    	Graphics g = buffer.getGraphics();
 
 		super.paintComponent(g);
 
@@ -193,7 +201,7 @@ public class WebcamPanel extends JPanel implements WebcamListener {
     	        	textY = y;
                     g.drawString("активные нейроны по колонкам", x, textY);
 
-                    BufferedImage RFimg = cz.getColRFImage();
+                    BufferedImage RFimg = cz.getColumnRFimage();
                     g.drawImage(
                     		RFimg,
 //                    		RFimg.getScaledInstance(RFimg.getWidth()*2, RFimg.getHeight()*2, Image.SCALE_AREA_AVERAGING),
@@ -202,6 +210,45 @@ public class WebcamPanel extends JPanel implements WebcamListener {
                 }
             }
         }
+        
+        if (zoomPoint != null) {
+        	zoomX = zoomPoint.x;
+        	zoomY = zoomPoint.y;
+//        	System.out.println("zoomX = "+zoomX+"; zoomY = "+zoomY);
+        	BufferedImage zoomer = new BufferedImage(40, 40, BufferedImage.TYPE_INT_RGB);
+        	int zoomerX = 0, zoomerY = 0;
+        	for (int zX = zoomX - 20; zX <= zoomX + 20; zX++) {
+        		zoomerY = 0;
+            	for (int zY = zoomY - 20; zY <= zoomY + 20; zY++) {
+            		if (zX > buffer.getWidth() && zY > buffer.getHeight()) {
+            			System.out.println("! x = "+zX+"; y = "+zY);
+        				zoomer.setRGB(zoomerX, zoomerY, Color.BLACK.getRGB());
+            		} else
+	            		try {
+	            			zoomer.setRGB(zoomerX, zoomerY, buffer.getRGB(zX, zY));
+	            		} catch (Exception e) {
+	            			System.out.println("x = "+zX+"; y = "+zY);
+//	            			e.printStackTrace();
+	            			try {
+	            				zoomer.setRGB(zoomerX, zoomerY, Color.BLACK.getRGB());
+	            			} catch (Exception e1) {
+							}
+						}
+            		zoomerY++;
+            	}
+            	zoomerX++;
+        	}
+        	int zoomFactor = 10;
+        	g.drawImage(
+//    			zoomer, 
+    			zoomer.getScaledInstance(
+					zoomer.getWidth()*zoomFactor, 
+					zoomer.getHeight()*zoomFactor, 
+					Image.SCALE_AREA_AVERAGING
+				),
+    			getWidth() - (zoomer.getWidth()*zoomFactor), 0, null);
+        }
+        _g.drawImage(buffer, 0, 0, null);
     }
 
 //	@Override
@@ -336,5 +383,26 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 		}
 		this.frequency = frequency;
 	}
+	
+	Point zoomPoint = null;
 
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		
+		zoomPoint = e.getPoint();
+	
+		System.out.println("mousePressed x = "+zoomPoint.x+"; y = "+zoomPoint.y);
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+
+	@Override
+	public void mouseExited(MouseEvent e) {}
 }
