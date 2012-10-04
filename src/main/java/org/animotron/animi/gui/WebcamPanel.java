@@ -56,6 +56,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
     private long fps;
     private long frame = 0;
     private long t0 = System.currentTimeMillis();
+    private long count = 0;
 
     // convert the original colored image to grayscale
 //    ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_sRGB), ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
@@ -90,6 +91,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
                     	if (cortexs.active) {
                     		cortexs.cycle1();
                     		cortexs.cycle2();
+                    		count++;
                     	}
                     }
                     
@@ -182,7 +184,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 
         g.setColor(Color.BLACK);
 
-        g.drawString(fps + " fps", 0, textY);
+        g.drawString(fps + " fps; "+count+" cycles;", 0, textY);
 
     	int zoomX = image.getWidth()/3;
 		int zoomY = image.getHeight()/3;
