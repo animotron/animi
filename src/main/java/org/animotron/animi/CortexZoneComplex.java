@@ -21,6 +21,7 @@
 package org.animotron.animi;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 /**
@@ -236,30 +237,35 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	}
 
 	public BufferedImage getColRFImage() {
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		int maxX = width*4;
+		int maxY = height*4;
+		BufferedImage image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
 		
-		int n;
+		Graphics g = image.getGraphics();
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, width, height);
+
 		for (int x = 1; x < width - 1; x++) {
 			for (int y = 1; y < height - 1; y++) {
 
-				n = 0;
+				g.drawLine(x*4, 0, x*4, maxY);
+				g.drawLine(0, y*4, maxX, y*4);
 
-				for (int i = x - 1; i <= x + 1; i++) {
-					for (int j = y - 1; j <= y + 1; j++) {
-						for (int k = 0; k < deep; k++) {
+				NeuronComplex cn = col[x][y];
 
-							NeuronComplex cn = col[x][y];
-							Link3d link = cn.s_links[n];
-
-							if (s[link.x][link.y][link.z].occupy) {
-								int c = Utils.calcGrey(image, i, j);
-								c += 100;
-								image.setRGB(i, j, Utils.create_rgb(255, c, c, c));
-							}
-							n++;
-						}
-					}
-				}
+                for (int i = 0; i < nsc_links; i++) {
+                    Link3d link = cn.s_links[i];
+                    if (s[link.x][link.y][link.z].occupy) {
+                    	
+						int pX = link.x *4;
+						int pY = link.y *4;
+						
+                    	
+                    	int c = Utils.calcGrey(image, pX, pY);
+						c += 100;
+						image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+                    }
+                }
 			}
 		}
 		return image;
@@ -285,6 +291,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public void cycle1() {
         int sum_on_on, sum_on_off, sum_off_on, sum_off_off;
         double k1, k2 = 0;
+        int sum = 0;
 
         //Активация простых нейронов при узнавании запомненной картины
         //Граничные нейроны не задействованы.
@@ -322,7 +329,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
                     }
                 }
                 //активация колонок если набралась критическая масса активности нейронов обвязки
-                int sum = 0;
+                sum = 0;
                 for (int z = 0; z < deep; z++) {
                     if (s[x][y][z].active) {
                         sum++;
@@ -330,8 +337,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
                 }
                 NeuronComplex cn = col[x][y];
                 cn.sum = sum;
+            }
+        }
+                
+	    for (int x = 1; x < width - 1; x++) {
+	        for (int y = 1; y < height - 1; y++) {
+                
+	        	sum = 0;
+                NeuronComplex cn = col[x][y];
 
-                sum = 0;
                 for (int i = 0; i < nsc_links; i++) {
                     Link3d link = cn.s_links[i];
                     if (s[link.x][link.y][link.z].active) {
