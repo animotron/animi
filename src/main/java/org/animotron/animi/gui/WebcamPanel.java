@@ -31,6 +31,7 @@ import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
 
+import org.animotron.animi.CortexZoneComplex;
 import org.animotron.animi.CortexZoneSimple;
 import org.animotron.animi.Retina;
 import org.animotron.animi.simulator.Simulator;
@@ -177,30 +178,88 @@ public class WebcamPanel extends JPanel implements WebcamListener {
 	        	
                 BufferedImage img = zone.getColImage();
                 g.drawImage(
-            		img.getScaledInstance(img.getWidth()*2, img.getHeight()*2, Image.SCALE_AREA_AVERAGING),
+//            		img.getScaledInstance(img.getWidth()*2, img.getHeight()*2, Image.SCALE_AREA_AVERAGING),
+            		img,
             		x, y, null
         		);
                 
-                x += img.getWidth() * 2 + 3;
-//                if (zone instanceof CortexZoneComplex) {
-//                    CortexZoneComplex cz = (CortexZoneComplex) zone;
-//
-//        	        g2d.drawString("активные нейроны по колонкам", x, textY);
-//
-//                    for (BufferedImage image : cz.getSImage()) {
-//                        g.drawImage(image, x, y, null);
-//                        x += cz.width() + 2;
-//                    }
-//        	        g2d.drawString("занятые нейроны по колонкам", x, textY);
-//                    for (BufferedImage image : cz.getOccupyImage()) {
-//                        g.drawImage(image, x, y, null);
-//                        x += cz.width() + 2;
-//                    }
-//                }
-                y += img.getHeight()*2 + 2;
+                x += 0;
+                y += img.getHeight() + 2;
+                if (zone instanceof CortexZoneComplex) {
+                    CortexZoneComplex cz = (CortexZoneComplex) zone;
+
+    	        	y += getFontMetrics(getFont()).getHeight();
+    	        	textY = y;
+                    g.drawString("активные нейроны по колонкам", x, textY);
+
+                    BufferedImage RFimg = cz.getColRFImage();
+                    g.drawImage(cz.getColRFImage(), x, y, null);
+                    x += RFimg.getWidth() + 2;
+                }
             }
         }
     }
+
+//	@Override
+//	protected void paintComponent(Graphics g) {
+//
+//		super.paintComponent(g);
+//
+//		if (image == null) {
+//			return;
+//		}
+//
+//		int x = image.getWidth()/3;
+//		int y = image.getHeight()/3;
+//        g.drawImage(
+//    		image.getScaledInstance(x, y, Image.SCALE_SMOOTH),
+//    		0, 0, null
+//		);
+//
+//        if (cortexs != null) {
+//	        BufferedImage retina = cortexs.retina.getImage();
+//	        g.drawImage(
+//        		retina.getScaledInstance(x, y, Image.SCALE_SMOOTH),
+//        		x+2, 0, null
+//    		);
+//	
+//	        y += 2;
+//	        
+//	        for (CortexZoneSimple zone : cortexs.zones) {
+//                x = 0;
+//	        	
+//	        	y += getFontMetrics(getFont()).getHeight();
+//	        	int textY = y;
+//                g.drawString(zone.toString(), x, textY);
+//                
+//                y += 2;
+//	        	
+//                BufferedImage img = zone.getColImage();
+//                g.drawImage(
+//            		img.getScaledInstance(img.getWidth()*2, img.getHeight()*2, Image.SCALE_AREA_AVERAGING),
+//            		x, y, null
+//        		);
+//                
+//                x += img.getWidth() * 2 + 3;
+////                if (zone instanceof CortexZoneComplex) {
+////                    CortexZoneComplex cz = (CortexZoneComplex) zone;
+////
+////        	        g2d.drawString("активные нейроны по колонкам", x, textY);
+////
+////                    for (BufferedImage image : cz.getSImage()) {
+////                        g.drawImage(image, x, y, null);
+////                        x += cz.width() + 2;
+////                    }
+////        	        g2d.drawString("занятые нейроны по колонкам", x, textY);
+////                    for (BufferedImage image : cz.getOccupyImage()) {
+////                        g.drawImage(image, x, y, null);
+////                        x += cz.width() + 2;
+////                    }
+////                }
+//                y += img.getHeight()*2 + 2;
+//            }
+//        }
+//    }
 
 	@Override
 	public void webcamOpen(WebcamEvent we) {

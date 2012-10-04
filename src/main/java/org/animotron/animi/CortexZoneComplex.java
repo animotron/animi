@@ -235,6 +235,36 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		return a;
 	}
 
+	public BufferedImage getColRFImage() {
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		
+		int n;
+		for (int x = 1; x < width - 1; x++) {
+			for (int y = 1; y < height - 1; y++) {
+
+				n = 0;
+
+				for (int i = x - 1; i <= x + 1; i++) {
+					for (int j = y - 1; j <= y + 1; j++) {
+						for (int k = 0; k < deep; k++) {
+
+							NeuronComplex cn = col[x][y];
+							Link3d link = cn.s_links[n];
+
+							if (s[link.x][link.y][link.z].occupy) {
+								int c = Utils.calcGrey(image, i, j);
+								c += 100;
+								image.setRGB(i, j, Utils.create_rgb(255, c, c, c));
+							}
+							n++;
+						}
+					}
+				}
+			}
+		}
+		return image;
+	}
+
 	// Картинка суммы занятых нейронов в колонке
 	public BufferedImage[] getOccupyImage() {
 		BufferedImage[] a = new BufferedImage[deep];
