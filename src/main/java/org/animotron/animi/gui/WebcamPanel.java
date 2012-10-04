@@ -128,11 +128,11 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 			simulator = new SimulatorRectAnime(
                     Retina.WIDTH, Retina.HEIGHT, 100,
                     new int[][] {
-                            {150, 150},
-                            {Retina.WIDTH - 150, 150},
-                            {Retina.WIDTH - 150, Retina.HEIGHT - 150},
-                            {150, Retina.HEIGHT - 150},
-                            {150, 150}
+                            {80, 80},
+                            {Retina.WIDTH - 80, 80},
+                            {Retina.WIDTH - 80, Retina.HEIGHT - 80},
+                            {80, Retina.HEIGHT - 80},
+                            {80, 80}
                     }
             );
 			repainter = new Repainter();
@@ -184,8 +184,8 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 
         g.drawString(fps + " fps", 0, textY);
 
-    	int zoomX = image.getWidth()/3;
-		int zoomY = image.getHeight()/3;
+    	int zoomX = image.getWidth();//3;
+		int zoomY = image.getHeight();//3;
         g.drawImage(
     		image.getScaledInstance(zoomX, zoomY, Image.SCALE_SMOOTH),
     		x, y, null

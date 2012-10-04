@@ -28,8 +28,8 @@ package org.animotron.animi;
  */
 public class MultiCortex {
 
-	public static final int VISUAL_FIELD_WIDTH = 96 * 2;
-	public static final int VISUAL_FIELD_HEIGHT = 72 * 2;
+	public static final int VISUAL_FIELD_WIDTH = 96;
+	public static final int VISUAL_FIELD_HEIGHT = 72;
 
     public boolean active = false;
     
