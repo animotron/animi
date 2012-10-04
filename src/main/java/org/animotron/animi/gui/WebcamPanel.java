@@ -62,6 +62,8 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 
     private class Repainter extends Thread {
 
+    	boolean show = true;
+    	
 		public Repainter() {
 			setDaemon(true);
 		}
@@ -103,7 +105,10 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
                         frame = 0;
                         t0 = t;
                     }
-                    WebcamPanel.this.repaint();
+                    if (show) {
+                    	WebcamPanel.this.repaint();
+                    }
+                    show = !show;
                 }
 			}
 		}
@@ -215,7 +220,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 
     	        	y += getFontMetrics(getFont()).getHeight();
     	        	textY = y;
-                    g.drawString("активные нейроны по колонкам", x, textY);
+                    g.drawString("входной слой от выходных колонок", x, textY);
 
                     BufferedImage RFimg = cz.getColumnRFimage();
                     g.drawImage(
@@ -230,21 +235,20 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
         if (zoomPoint != null) {
         	zoomX = zoomPoint.x;
         	zoomY = zoomPoint.y;
-//        	System.out.println("zoomX = "+zoomX+"; zoomY = "+zoomY);
+
         	BufferedImage zoomer = new BufferedImage(40, 40, BufferedImage.TYPE_INT_RGB);
         	int zoomerX = 0, zoomerY = 0;
         	for (int zX = zoomX - 20; zX <= zoomX + 20; zX++) {
         		zoomerY = 0;
             	for (int zY = zoomY - 20; zY <= zoomY + 20; zY++) {
             		if (zX > buffer.getWidth() && zY > buffer.getHeight()) {
-            			System.out.println("! x = "+zX+"; y = "+zY);
+
         				zoomer.setRGB(zoomerX, zoomerY, Color.BLACK.getRGB());
             		} else
 	            		try {
 	            			zoomer.setRGB(zoomerX, zoomerY, buffer.getRGB(zX, zY));
 	            		} catch (Exception e) {
-	            			System.out.println("x = "+zX+"; y = "+zY);
-//	            			e.printStackTrace();
+
 	            			try {
 	            				zoomer.setRGB(zoomerX, zoomerY, Color.BLACK.getRGB());
 	            			} catch (Exception e1) {
@@ -407,10 +411,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		
 		zoomPoint = e.getPoint();
-	
-		System.out.println("mousePressed x = "+zoomPoint.x+"; y = "+zoomPoint.y);
 	}
 
 	@Override
