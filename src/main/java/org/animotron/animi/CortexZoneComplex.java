@@ -236,43 +236,58 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		return a;
 	}
 
+	
+	int boxSize = 10;
+	int maxX = width * boxSize;
+	int maxY = height * boxSize;
+	BufferedImage image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
+
 	public BufferedImage getColumnRFimage() {
-		int maxX = width*4;
-		int maxY = height*4;
-		BufferedImage image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
-		
 		Graphics g = image.getGraphics();
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, maxX, maxY);
 
-//		g.setColor(Color.GRAY);
-//		for (int x = 1; x < width - 1; x++) {
-//			for (int y = 1; y < height - 1; y++) {
-//
-//				g.drawLine(x*4, 0, x*4, maxY);
-//				g.drawLine(0, y*4, maxX, y*4);
-//			}
-//		}
-		
 		int pX, pY = 0;
-		NeuronComplex cn = null;
-		Link3d link = null;
+
+//		g.setColor(Color.YELLOW);
 
 		for (int x = 1; x < width - 1; x++) {
 			for (int y = 1; y < height - 1; y++) {
+				
+//				g.drawLine(x*boxSize, 0, x*boxSize, maxY);
+//				g.drawLine(0, y*boxSize, maxX, y*boxSize);
 
-				cn = col[x][y];
+				final NeuronComplex cn = col[x][y];
 
                 for (int i = 0; i < nsc_links; i++) {
-                    link = cn.s_links[i];
-                    if (s[link.x][link.y][link.z].occupy) {
+                	final Link3d cl = cn.s_links[i];
+                    if (s[cl.x][cl.y][cl.z].occupy) {
                     	
-						pX = x*4 + (2 + x - link.x);
-						pY = y*4 + (2 + y - link.y);
-                    	
-                    	int c = Utils.calcGrey(image, pX, pY);
-						c += 100;
-						image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+                    	final NeuronSimple sn = s[cl.x][cl.y][cl.z];
+                    	if (sn.occupy) {
+                    		
+                    		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+                            for (int j = 0; j < ns_links; j++) {
+                                final Link2dZone sl = sn.s_links[j];
+                                if (sl.cond) {
+                                	minX = Math.min(minX, sl.x);
+                                	minY = Math.min(minY, sl.y);
+                                }
+                            }
+                            for (int j = 0; j < ns_links; j++) {
+                                final Link2dZone sl = sn.s_links[j];
+                                if (sl.cond) {
+                                	if (sl.x - minX < boxSize && sl.y - minY < boxSize) {
+										pX = x*boxSize + (sl.x - minX);
+										pY = y*boxSize + (sl.y - minY);
+				                    	
+				                    	int c = Utils.calcGrey(image, pX, pY);
+										c += 50;
+										image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+                                	}
+                                }
+                            }
+                    	}
                     }
                 }
 			}
