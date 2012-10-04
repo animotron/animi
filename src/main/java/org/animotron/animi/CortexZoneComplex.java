@@ -337,15 +337,18 @@ public class CortexZoneComplex extends CortexZoneSimple {
     private Action activateNeurone = new Action() {
         @Override
         //Активация простых нейронов при узнавании запомненной картины
-        public void process (int x, int y) {
+        public void process (final int x, final int y) {
             int sum = 0;
-            NeuronComplex cn = col[x][y];
+            int sum_on_on = 0, sum_on_off = 0, sum_off_on = 0, sum_off_off = 0;
+            double k1 = 0, k2 = 0;
+
+            final NeuronComplex cn = col[x][y];
             for (int z = 0; z < deep; z++) {
-                NeuronSimple sn = s[x][y][z];
+            	final NeuronSimple sn = s[x][y][z];
                 if (sn.occupy) {
-                    int sum_on_on = 0; int sum_on_off = 0; int sum_off_on = 0; int sum_off_off = 0;
+                    sum_on_on = 0; sum_on_off = 0; sum_off_on = 0; sum_off_off = 0;
                     for (int i = 0; i < ns_links; i++) {
-                        Link2dZone link = sn.s_links[i];
+                    	final Link2dZone link = sn.s_links[i];
                         if (link.zone.col[link.x][link.y].active) {
                             if (link.cond)
                                 sum_on_on++;
@@ -359,11 +362,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
                                 sum_off_off++;
                         }
                     }
-                    double k1 = 0;
+                    k1 = 0;
                     if (sum_on_on != 0)
                         k1 = (double) sum_on_on / (sum_on_on + sum_off_on);
 
-                    double k2 = 0;
+                    k2 = 0;
                     if (sum_off_off != 0)
                         k2 = (double) sum_off_off / (sum_on_off + sum_off_off);
 
@@ -381,11 +384,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
     private Action activateColumn = new Action()  {
         @Override
         //активация колонок если набралась критическая масса активности нейронов обвязки
-        public void process(int x, int y) {
+        public void process(final int x, final int y) {
             int sum = 0;
-            NeuronComplex cn = col[x][y];
+            final NeuronComplex cn = col[x][y];
             for (int i = 0; i < nsc_links; i++) {
-                Link3d link = cn.s_links[i];
+                final Link3d link = cn.s_links[i];
                 if (s[link.x][link.y][link.z].active) {
                     sum++;
                 }
@@ -397,11 +400,13 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     private Action remember = new Action()  {
         @Override
-        public void process(int x, int y) {
+        public void process(final int x, final int y) {
+            int sumact = 0;
+
             for (int z = 0; z < deep; z++) {
-                NeuronSimple sn = s[x][y][z];
+                final NeuronSimple sn = s[x][y][z];
                 //Вычисляем кол-во активных соседей
-                int sumact = 0;
+                sumact = 0;
                 for (int i = x - 1; i <= x + 1; i++)
                     for (int j = y - 1; j <= y + 1; j++)
                         sumact += col[i][j].sum;
@@ -428,7 +433,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
                     //Нейрон свободен. Проверяем основание для записи и записываем если выполняется.
                     int sum = 0;
                     for (int i = 0; i < ns_links; i++) {
-                        Link2dZone link = sn.s_links[i];
+                        final Link2dZone link = sn.s_links[i];
                         if (link.zone != null)
                             if (link.zone.col[link.x][link.y].active)
                                 sum++;
@@ -442,7 +447,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
                         sn.p_off_m = 0;
                         sn.n_off_m = 0;
                         for (int i = 0; i < ns_links; i++) {
-                            Link2dZone link = sn.s_links[i];
+                            final Link2dZone link = sn.s_links[i];
                             link.cond = link.zone.col[link.x][link.y].active;
                         }
                     }
@@ -450,5 +455,4 @@ public class CortexZoneComplex extends CortexZoneSimple {
             }
         }
     };
-
 }
