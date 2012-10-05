@@ -128,37 +128,33 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						// DispLink - дисперсия связей
 						for (int i = 0; i < m.ns_links; i++) {
 							do {
-								do {
-									do {
-										X = 2.0 * Math.random() - 1;
-										Y = 2.0 * Math.random() - 1;
-										S = X * X + Y * Y;
-									} while (!(S < 1 && S > 0));
+                                do {
+                                    X = 2.0 * Math.random() - 1;
+                                    Y = 2.0 * Math.random() - 1;
+                                    S = X * X + Y * Y;
+                                } while (!(S < 1 && S > 0));
 
-									S = Math.sqrt(-2 * Math.log(S) / S);
-									dX = X * S * m.zone.width * m.disp_links;
-									dY = Y * S * m.zone.height * m.disp_links;
-									lx = (int) Math.round(x_in_nerv + dX);
-									ly = (int) Math.round(y_in_nerv + dY);
+                                S = Math.sqrt(-2 * Math.log(S) / S);
+                                dX = X * S * m.zone.width * m.disp_links;
+                                dY = Y * S * m.zone.height * m.disp_links;
+                                lx = (int) Math.round(x_in_nerv + dX);
+                                ly = (int) Math.round(y_in_nerv + dY);
 
-									if (lx <= 0)
-										lx = 1;
+                                // колонки по периметру не задействованы
 
-									if (ly <= 0)
-										ly = 1;
+                                if (lx < 1)
+                                    lx = 1;
 
-									if (lx >= m.zone.width)
-										lx = m.zone.width - 2;
+                                if (ly < 1)
+                                    ly = 1;
 
-									if (ly >= m.zone.height)
-										ly = m.zone.height - 2;
+                                if (lx > m.zone.width - 1)
+                                    lx = m.zone.width - 2;
 
-									// определяем, что не вышли за границы поля
-									// колонок
-									// колонки по периметру не задействованы
-								} while (!(lx >= 1 && ly >= 1
-										&& lx <= m.zone.width - 2 && ly <= m.zone.height - 2));
-								// Проверка на повтор связи
+                                if (ly > m.zone.height - 1)
+                                    ly = m.zone.height - 2;
+
+                            // Проверка на повтор связи
 							} while (nerv_links[lx][ly]);
 
 							nerv_links[lx][ly] = true;
