@@ -33,9 +33,9 @@ import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
 
-import org.animotron.animi.CortexZoneComplex;
-import org.animotron.animi.CortexZoneSimple;
-import org.animotron.animi.Retina;
+import org.animotron.animi.cortex.CortexZoneComplex;
+import org.animotron.animi.cortex.CortexZoneSimple;
+import org.animotron.animi.cortex.Retina;
 import org.animotron.animi.simulator.Simulator;
 import org.animotron.animi.simulator.SimulatorRectAnime;
 

@@ -31,7 +31,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.animotron.animi.MultiCortex;
+import org.animotron.animi.cortex.MultiCortex;
 
 import static java.awt.BorderLayout.*;
 

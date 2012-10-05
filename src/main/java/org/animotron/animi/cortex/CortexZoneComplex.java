@@ -18,7 +18,9 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi;
+package org.animotron.animi.cortex;
+
+import org.animotron.animi.Utils;
 
 import java.awt.Color;
 import java.awt.Graphics;

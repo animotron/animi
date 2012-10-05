@@ -2,7 +2,7 @@
  *  Copyright (C) 2012 The Animo Project
  *  http://animotron.org
  *
- *  This file is part of Animotron.
+ *  This file is part of Animi.
  *
  *  Animotron is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -18,27 +18,19 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi;
+package org.animotron.animi.cortex;
 
 /**
- * Projection description of the one zone to another
- * 
- * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
- * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ *
  */
-class Mapping {
-    CortexZoneSimple zone;       // Projecting zone
-    int ns_links;           // Number of synaptic connections for the zone
-    double disp_links;      // Grouping parameter. Describe a size of sensor field
+public interface Layer {
+	
+	int width();
+	int height();
+	
+    public void process();
 
-    public Mapping(CortexZoneSimple zone, int ns_links, double disp_links) {
-        this.zone = zone;
-        this.ns_links = ns_links;
-        this.disp_links = disp_links;
-    }
+    void set(int x, int y, boolean b);
 
-    public String toString() {
-    	return "mapping "+zone.toString();
-    }
 }

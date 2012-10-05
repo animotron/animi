@@ -2,7 +2,7 @@
  *  Copyright (C) 2012 The Animo Project
  *  http://animotron.org
  *
- *  This file is part of Animotron.
+ *  This file is part of Animi.
  *
  *  Animotron is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -18,18 +18,18 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi;
-
+package org.animotron.animi.cortex;
 
 /**
- * Complex neuron
- * 
- * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
- * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ *
  */
-class NeuronComplex {
-    boolean active;
-    int sum;                // Number of active neurons
-    Link3d[] s_links;       // Links of synapses connects cortex neurons with neurons of cortical columns
+public class OnOffReceptiveField {
+
+	//1 - on 2 - off 3 - универсальный (срабатывает на оба стимула)
+	public int type = 1;
+
+	public int[][] center;
+	public int[][] periphery;
+
 }

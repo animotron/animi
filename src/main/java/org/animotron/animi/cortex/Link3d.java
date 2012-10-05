@@ -18,16 +18,15 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi;
+package org.animotron.animi.cortex;
 
 /**
- * Neuron link on the surfarce
+ * Neuron link in the cortex space
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-class Link2d {
-    int x, y;
-    boolean cond;
+class Link3d {
+    int x, y, z;
 }

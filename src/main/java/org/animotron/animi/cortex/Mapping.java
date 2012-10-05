@@ -18,15 +18,27 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi;
+package org.animotron.animi.cortex;
 
 /**
- * Neuron link on the surfarce with a cortex reference
+ * Projection description of the one zone to another
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-class Link2dZone extends Link2d {
-    CortexZoneSimple zone;
+class Mapping {
+    CortexZoneSimple zone;       // Projecting zone
+    int ns_links;           // Number of synaptic connections for the zone
+    double disp_links;      // Grouping parameter. Describe a size of sensor field
+
+    public Mapping(CortexZoneSimple zone, int ns_links, double disp_links) {
+        this.zone = zone;
+        this.ns_links = ns_links;
+        this.disp_links = disp_links;
+    }
+
+    public String toString() {
+    	return "mapping "+zone.toString();
+    }
 }
