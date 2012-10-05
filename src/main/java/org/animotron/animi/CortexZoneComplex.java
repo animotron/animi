@@ -148,16 +148,16 @@ public class CortexZoneComplex extends CortexZoneSimple {
 										ly = 1;
 
 									if (lx >= m.zone.width)
-										lx = m.zone.width - 1;
+										lx = m.zone.width - 2;
 
 									if (ly >= m.zone.height)
-										ly = m.zone.height - 1;
+										ly = m.zone.height - 2;
 
 									// определяем, что не вышли за границы поля
 									// колонок
 									// колонки по периметру не задействованы
 								} while (!(lx >= 1 && ly >= 1
-										&& lx < m.zone.width - 1 && ly < m.zone.height - 1));
+										&& lx <= m.zone.width - 2 && ly <= m.zone.height - 2));
 								// Проверка на повтор связи
 							} while (nerv_links[lx][ly]);
 
