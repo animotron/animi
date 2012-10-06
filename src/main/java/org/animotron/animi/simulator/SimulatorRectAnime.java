@@ -21,6 +21,8 @@
 package org.animotron.animi.simulator;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
 /**
@@ -34,41 +36,56 @@ public class SimulatorRectAnime implements Simulator {
     private int width;
     private int height;
     private int i = 0;
-    private double x, y, dx, dy;
+    private double dx, dy, dt;
     private double l = 0;
+    private AffineTransform at;
+    Point2D[] p;
     private int a;
-    private int X, Y;
 
-    public SimulatorRectAnime(int width, int height, int a, int[][] anime) {
+    public SimulatorRectAnime(int width, int height, int a, double dt, int[][] anime) {
         this.a = a;
+        this.dt = dt;
         this.anime = anime;
         this.width = width;
         this.height = height;
-	}
+        this.p = new Point2D[] {
+                new Point(anime[0][0], anime[0][1]),
+                new Point(anime[0][0] - a / 2, anime[0][1] - a / 2),
+                new Point(anime[0][0] + a / 2, anime[0][1] - a / 2),
+                new Point(anime[0][0] + a / 2, anime[0][1] + a / 2),
+                new Point(anime[0][0] - a / 2, anime[0][1] + a / 2)
+        };
+    }
 	
 	public BufferedImage getImage() {
         step();
+        at = new AffineTransform();
+        at.rotate(dt, p[0].getX(), p[0].getY());
+        at.translate(dx, dy);
+        Polygon polygon = new Polygon();
+        for (int i = 0; i < p.length; i++) {
+            Point2D q = at.transform(p[i], null);
+            if (i > 0) {
+                polygon.addPoint((int) Math.round(q.getX()), (int) Math.round(q.getY()));
+            }
+            p[i] = q;
+        }
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         g.setColor(Color.WHITE);
-        g.fillRect(X - a / 2, Y - a / 2, a, a);
+        g.drawPolygon(polygon);
         return image;
 	}
 	
 	private void step() {
         if (l <= 0) {
-            x = X = anime[i][0];
-            y = Y = anime[i][1];
             int j = Math.min(i + 1, anime.length - 1);
-            dx = anime[j][0] - x;
-            dy = anime[j][1] - y;
+            dx = anime[j][0] - anime[i][0];
+            dy = anime[j][1] - anime[i][1];
             l = Math.sqrt(dx * dx + dy * dy);
             dx /= l; dy /= l;
             i = j == anime.length - 1 ? 0 : j;
         } else {
-            x += dx; y += dy;
-            X = (int) Math.round(x);
-            Y = (int) Math.round(y);
             l--;
         }
     }
