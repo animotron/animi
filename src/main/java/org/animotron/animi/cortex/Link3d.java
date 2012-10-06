@@ -27,6 +27,6 @@ package org.animotron.animi.cortex;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-class Link3d {
-    int x, y, z;
+public class Link3d {
+	public int x, y, z;
 }

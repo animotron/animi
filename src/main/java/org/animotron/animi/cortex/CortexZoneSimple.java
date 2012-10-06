@@ -35,7 +35,7 @@ import java.awt.image.BufferedImage;
 public class CortexZoneSimple implements Layer {
 
     String name;
-    NeuronComplex[][] col;        // State of complex neurons (outputs cortical columns)
+    public NeuronComplex[][] col;        // State of complex neurons (outputs cortical columns)
     int width;              //
     int height;             //
 

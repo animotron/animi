@@ -28,8 +28,8 @@ package org.animotron.animi.cortex;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-class NeuronComplex {
-    boolean active;
-    int sum;                // Number of active neurons
-    Link3d[] s_links;       // Links of synapses connects cortex neurons with neurons of cortical columns
+public class NeuronComplex {
+	public boolean active;
+    public int sum;                // Number of active neurons
+    public Link3d[] s_links;       // Links of synapses connects cortex neurons with neurons of cortical columns
 }

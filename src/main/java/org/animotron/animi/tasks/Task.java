@@ -2,7 +2,7 @@
  *  Copyright (C) 2012 The Animo Project
  *  http://animotron.org
  *
- *  This file is part of Animotron.
+ *  This file is part of Animi.
  *
  *  Animotron is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -18,15 +18,15 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.cortex;
+package org.animotron.animi.tasks;
+
+import org.animotron.animi.cortex.Layer;
 
 /**
- * Neuron link on the surfarce with a cortex reference
- * 
- * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
- * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ *
  */
-public class Link2dZone extends Link2d {
-	public CortexZoneSimple zone;
+public interface Task<L extends Layer> {
+
+	public abstract void process(L layer, int x, int y);
 }

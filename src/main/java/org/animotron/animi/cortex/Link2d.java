@@ -27,7 +27,7 @@ package org.animotron.animi.cortex;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-class Link2d {
-    int x, y;
-    boolean cond;
+public class Link2d {
+	public int x, y;
+	public boolean cond;
 }

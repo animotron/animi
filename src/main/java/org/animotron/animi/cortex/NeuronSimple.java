@@ -28,15 +28,15 @@ package org.animotron.animi.cortex;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-class NeuronSimple {
-    boolean occupy, active;
-    int n_on;               // Number of active cycles after activation
-    int n_act;              // Number of cycles after activation
-    double p_on;            // Average number of active neighbors at activation moment
-    double p_off_m;         // Average number of active neighbors when calm and activity of neighbors more p_on
-    int n_off_m;            // Number of passive cycles after activation when activity of neighbors more p_on
-    Link2dZone[] s_links;   // Links of synapses connects cortex neurons with projecting nerve bundle
-    Link2d[] a_links;       // Axonal connections with nearest cortical columns
-    int n1;                 // Counter for links of synapses
-    int n2;                 // Counter for axonal connections
+public class NeuronSimple {
+	public boolean occupy, active;
+	public int n_on;               // Number of active cycles after activation
+	public int n_act;              // Number of cycles after activation
+	public double p_on;            // Average number of active neighbors at activation moment
+	public double p_off_m;         // Average number of active neighbors when calm and activity of neighbors more p_on
+	public int n_off_m;            // Number of passive cycles after activation when activity of neighbors more p_on
+	public Link2dZone[] s_links;   // Links of synapses connects cortex neurons with projecting nerve bundle
+	public Link2d[] a_links;       // Axonal connections with nearest cortical columns
+	public int n1;                 // Counter for links of synapses
+	public int n2;                 // Counter for axonal connections
 }

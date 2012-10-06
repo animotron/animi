@@ -21,6 +21,10 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.Utils;
+import org.animotron.animi.tasks.Activate;
+import org.animotron.animi.tasks.Recognition;
+import org.animotron.animi.tasks.Remember;
+import org.animotron.animi.tasks.Task;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -36,26 +40,26 @@ import java.awt.image.BufferedImage;
 public class CortexZoneComplex extends CortexZoneSimple {
 
 	Mapping[] in_zones;
-	int deep;
+	public int deep;
 	
 	/** Number of synaptic connections of the all simple neurons **/
-	int ns_links;
+	public int ns_links;
 	/** Number of axonal connections of the all simple neurons **/
-	int nas_links;
+	public int nas_links;
 	/** Number of synaptic connections of the complex neuron **/
-	int nsc_links;
+	public int nsc_links;
 	/** Excitation threshold of cortical column **/
-	double k_active;
+	public double k_active;
 	/** Min number of active synapses to remember **/
-	int k_mem;
+	public int k_mem;
 	/** Matching percent for the active/passive elements required for recognition **/
-	double k_det1, k_det2;
+	public double k_det1, k_det2;
 	/** Number of cycles to turn on the possibility of forgetting **/
-	int n_act_min;
+	public int n_act_min;
 	/** Ratio threshold of forgetting **/
-	double k_non;
+	public double k_non;
 	/** Memory **/
-	NeuronSimple[][][] s;
+	public NeuronSimple[][][] s;
 
 	CortexZoneComplex(String name, int width, int height, int deep,
 			int nas_links, double k_active, double k_mem, double k_det1,
@@ -309,148 +313,31 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		return a;
 	}
     
-    public void cycle (int x1, int y1, int x2, int y2, Action action) {
+    public void cycle (int x1, int y1, int x2, int y2, Task<CortexZoneComplex> task) {
         for (int x = x1; x < x2; x++) {
             for (int y = y1; y < y2; y++) {
-                action.process(x, y);
+                task.process(this, x, y);
             }
         }
     }
 
     //Граничные нейроны не задействованы.
+    //Такт 1. Активация колонок (узнавание)
     public void cycle1() {
-        cycle(1, 1, width - 1, height - 1, activateNeurone);
-        cycle(1, 1, width - 1, height - 1, activateColumn);
+        cycle(1, 1, width - 1, height - 1, activate);
+        cycle(1, 1, width - 1, height - 1, recognition);
     }
 
     //Граничные нейроны не задействованы.
+    //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     public void cycle2() {
         cycle(1, 1, width - 1, height - 1, remember);
     }
 
-    private interface Action {
-        public abstract void process(int x, int y);
-    }
-    
-    private Action activateNeurone = new Action() {
-        @Override
-        //Активация простых нейронов при узнавании запомненной картины
-        public void process (final int x, final int y) {
-            int sum = 0;
-            int sum_on_on = 0, sum_on_off = 0, sum_off_on = 0, sum_off_off = 0;
-            double k1 = 0, k2 = 0;
+    private Activate activate = new Activate();
 
-            final NeuronComplex cn = col[x][y];
-            for (int z = 0; z < deep; z++) {
-            	final NeuronSimple sn = s[x][y][z];
-                if (sn.occupy) {
-                    sum_on_on = 0; sum_on_off = 0; sum_off_on = 0; sum_off_off = 0;
-                    for (int i = 0; i < ns_links; i++) {
-                    	final Link2dZone link = sn.s_links[i];
-                        if (link.zone.col[link.x][link.y].active) {
-                            if (link.cond)
-                                sum_on_on++;
-                            else
-                                sum_on_off++;
+    private Recognition recognition = new Recognition();
 
-                        } else {
-                            if (link.cond)
-                                sum_off_on++;
-                            else
-                                sum_off_off++;
-                        }
-                    }
-                    k1 = 0;
-                    if (sum_on_on != 0)
-                        k1 = (double) sum_on_on / (sum_on_on + sum_off_on);
+    private Remember remember = new Remember();
 
-                    k2 = 0;
-                    if (sum_off_off != 0)
-                        k2 = (double) sum_off_off / (sum_on_off + sum_off_off);
-
-                    sn.active = k1 > k_det1 && k2 > k_det2;
-                    if (sn.active) {
-                        sum++;
-                    }
-                }
-            }
-            cn.sum = sum;
-        }
-    };
-
-    //Такт 1. Активация колонок (узнавание)
-    private Action activateColumn = new Action()  {
-        @Override
-        //активация колонок если набралась критическая масса активности нейронов обвязки
-        public void process(final int x, final int y) {
-            int sum = 0;
-            final NeuronComplex cn = col[x][y];
-            for (int i = 0; i < nsc_links; i++) {
-                final Link3d link = cn.s_links[i];
-                if (s[link.x][link.y][link.z].active) {
-                    sum++;
-                }
-            }
-            cn.active = sum / (double)nsc_links > k_active;
-        }
-    };
-
-    //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
-    private Action remember = new Action()  {
-        @Override
-        public void process(final int x, final int y) {
-            int sumact = 0;
-
-            for (int z = 0; z < deep; z++) {
-                final NeuronSimple sn = s[x][y][z];
-                //Вычисляем кол-во активных соседей
-                sumact = 0;
-                for (int i = x - 1; i <= x + 1; i++)
-                    for (int j = y - 1; j <= y + 1; j++)
-                        sumact += col[i][j].sum;
-                if (sn.occupy) {
-                    //Нейрон занят. Изменяем информацию об активности.
-                    if (sn.active) {
-                        //изменяем среднее кол-во активных соседей в состоянии активности
-                        sn.p_on = (sn.p_on * sn.n_on + sumact) / (sn.n_on + 1);
-                        sn.n_on++;
-                    } else {
-                        if (sumact > sn.p_on) {
-                            //изменяем среднее кол-во активных соседей в состоянии покоя в случаях, 
-                            //когда их больше чем при собственной активности нейрона
-                            sn.p_off_m = (sn.p_off_m * sn.n_off_m + sumact) / (sn.n_off_m + 1);
-                            sn.n_off_m++;
-                        }
-                    }
-                    sn.n_act++;
-                    //проверяем условие забывания и обнуляем нейрон если оно выполняется
-                    if (sn.n_act > n_act_min && sn.n_off_m > sn.n_on * k_non) {
-                        sn.occupy = false;
-                    }
-                } else {
-                    //Нейрон свободен. Проверяем основание для записи и записываем если выполняется.
-                    int sum = 0;
-                    for (int i = 0; i < ns_links; i++) {
-                        final Link2dZone link = sn.s_links[i];
-                        if (link.zone != null)
-                            if (link.zone.col[link.x][link.y].active)
-                                sum++;
-                    }
-                    if (sum > k_mem) {
-                        //запоминаем состояние
-                        sn.occupy = true;
-                        sn.n_on = 1;
-                        sn.n_act = 0;
-                        sn.p_on = sumact;
-                        sn.p_off_m = 0;
-                        sn.n_off_m = 0;
-                        for (int i = 0; i < ns_links; i++) {
-                            final Link2dZone link = sn.s_links[i];
-                            link.cond = link.zone.col[link.x][link.y].active;
-                        }
-                    }
-                }
-            }
-        }
-    };
 }

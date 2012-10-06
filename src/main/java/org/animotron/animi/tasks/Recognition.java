@@ -2,7 +2,7 @@
  *  Copyright (C) 2012 The Animo Project
  *  http://animotron.org
  *
- *  This file is part of Animotron.
+ *  This file is part of Animi.
  *
  *  Animotron is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -18,15 +18,29 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.cortex;
+package org.animotron.animi.tasks;
+
+import org.animotron.animi.cortex.CortexZoneComplex;
+import org.animotron.animi.cortex.Link3d;
+import org.animotron.animi.cortex.NeuronComplex;
 
 /**
- * Neuron link on the surfarce with a cortex reference
- * 
- * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
- * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ *
  */
-public class Link2dZone extends Link2d {
-	public CortexZoneSimple zone;
+public class Recognition implements Task<CortexZoneComplex> {
+
+    @Override
+    public void process(final CortexZoneComplex layer, final int x, final int y) {
+        int sum = 0;
+        final NeuronComplex cn = layer.col[x][y];
+        for (int i = 0; i < layer.nsc_links; i++) {
+            final Link3d link = cn.s_links[i];
+            if (layer.s[link.x][link.y][link.z].active) {
+                sum++;
+            }
+        }
+        cn.active = sum / (double)layer.nsc_links > layer.k_active;
+    }
+
 }

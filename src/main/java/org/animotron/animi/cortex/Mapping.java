@@ -27,10 +27,10 @@ package org.animotron.animi.cortex;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-class Mapping {
-    CortexZoneSimple zone;       // Projecting zone
-    int ns_links;           // Number of synaptic connections for the zone
-    double disp_links;      // Grouping parameter. Describe a size of sensor field
+public class Mapping {
+	public CortexZoneSimple zone;       // Projecting zone
+    public int ns_links;           // Number of synaptic connections for the zone
+    public double disp_links;      // Grouping parameter. Describe a size of sensor field
 
     public Mapping(CortexZoneSimple zone, int ns_links, double disp_links) {
         this.zone = zone;
