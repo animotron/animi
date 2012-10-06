@@ -18,17 +18,20 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.tasks;
+package org.animotron.animi.acts;
 
 import org.animotron.animi.cortex.CortexZoneComplex;
 import org.animotron.animi.cortex.Link3d;
 import org.animotron.animi.cortex.NeuronComplex;
 
 /**
+ * Активация колонок (узнавание)
+ * 
+ * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
+ * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
- *
  */
-public class Recognition implements Task<CortexZoneComplex> {
+public class Recognition implements Act<CortexZoneComplex> {
 
     @Override
     public void process(final CortexZoneComplex layer, final int x, final int y) {

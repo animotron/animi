@@ -18,15 +18,17 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.tasks;
+package org.animotron.animi.acts;
 
 import org.animotron.animi.cortex.Layer;
 
 /**
+ * 
+ * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
+ * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
- *
  */
-public interface Task<L extends Layer> {
+public interface Act<L extends Layer> {
 
 	public abstract void process(L layer, int x, int y);
 }

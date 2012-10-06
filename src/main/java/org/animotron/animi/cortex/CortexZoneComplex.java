@@ -21,10 +21,10 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.Utils;
-import org.animotron.animi.tasks.Activate;
-import org.animotron.animi.tasks.Recognition;
-import org.animotron.animi.tasks.Remember;
-import org.animotron.animi.tasks.Task;
+import org.animotron.animi.acts.Activation;
+import org.animotron.animi.acts.Act;
+import org.animotron.animi.acts.Recognition;
+import org.animotron.animi.acts.Remember;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -313,7 +313,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		return a;
 	}
     
-    public void cycle (int x1, int y1, int x2, int y2, Task<CortexZoneComplex> task) {
+    public void cycle (int x1, int y1, int x2, int y2, Act<CortexZoneComplex> task) {
         for (int x = x1; x < x2; x++) {
             for (int y = y1; y < y2; y++) {
                 task.process(this, x, y);
@@ -324,7 +324,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Граничные нейроны не задействованы.
     //Такт 1. Активация колонок (узнавание)
     public void cycle1() {
-        cycle(1, 1, width - 1, height - 1, activate);
+        cycle(1, 1, width - 1, height - 1, activation);
         cycle(1, 1, width - 1, height - 1, recognition);
     }
 
@@ -334,7 +334,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
         cycle(1, 1, width - 1, height - 1, remember);
     }
 
-    private Activate activate = new Activate();
+    private Activation activation = new Activation();
 
     private Recognition recognition = new Recognition();
 
