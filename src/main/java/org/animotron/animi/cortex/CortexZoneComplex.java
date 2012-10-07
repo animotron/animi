@@ -51,7 +51,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	/** Excitation threshold of cortical column **/
 	public double k_active;
 	/** Min number of active synapses to remember **/
-	public int k_mem;
+	public double k_mem;
 	/** Matching percent for the active/passive elements required for recognition **/
 	public double k_det1, k_det2;
 	/** Number of cycles to turn on the possibility of forgetting **/
@@ -62,7 +62,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public NeuronSimple[][][] s;
 
 	CortexZoneComplex(String name, int width, int height, int deep,
-			int nas_links, double k_active, double k_mem, double k_det1,
+			int nas_links, double k_active, double k_det1,
 			double k_det2, int n_act_min, double k_non, Mapping[] in_zones) {
 
 		super(name, width, height);
@@ -70,15 +70,17 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		this.s = new NeuronSimple[width][height][deep];
 		this.in_zones = in_zones;
 
-		ns_links = 0;
-		for (Mapping i : in_zones) {
-			ns_links += i.ns_links;
+
+        this.k_mem = 0;
+        this.ns_links = 0;
+        for (Mapping i : in_zones) {
+            this.ns_links += i.ns_links;
+            this.k_mem += i.sigma;
 		}
 
 		this.nas_links = nas_links;
 		this.nsc_links = nas_links * deep;
 		this.k_active = k_active;
-		this.k_mem = (int) Math.round(ns_links * k_mem);
 		this.k_det1 = k_det1;
 		this.k_det2 = k_det2;
 		this.n_act_min = n_act_min;
@@ -107,9 +109,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		// Создание синаптических связей симпл нейронов.
 		// Связи распределяются случайным образом.
 		// Плотность связей убывает экспоненциально с удалением от колонки.
-		double X, S, Y, dX, dY;
 		double x_in_nerv, y_in_nerv;
-		int lx, ly;
 		for (Mapping m : in_zones) {
 
 			boolean[][] nerv_links = new boolean[m.zone.width][m.zone.height];
@@ -133,16 +133,17 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						// нормально распределенной величины
 						// DispLink - дисперсия связей
 						for (int i = 0; i < m.ns_links; i++) {
+                            int lx, ly;
 							do {
+                                double X, Y, S;
                                 do {
                                     X = 2.0 * Math.random() - 1;
                                     Y = 2.0 * Math.random() - 1;
                                     S = X * X + Y * Y;
-                                } while (!(S < 1 && S > 0));
-
+                                } while (S > 1 || S == 0);
                                 S = Math.sqrt(-2 * Math.log(S) / S);
-                                dX = X * S * m.zone.width * m.disp_links;
-                                dY = Y * S * m.zone.height * m.disp_links;
+                                double dX = X * S * m.sigma;
+                                double dY = Y * S * m.sigma;
                                 lx = (int) Math.round(x_in_nerv + dX);
                                 ly = (int) Math.round(y_in_nerv + dY);
 
@@ -239,7 +240,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	}
 
 	
-	int boxSize = 10;
+	int boxSize = 12;
 	int maxX = width * boxSize;
 	int maxY = height * boxSize;
 	BufferedImage image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);

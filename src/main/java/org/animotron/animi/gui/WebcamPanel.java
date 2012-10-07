@@ -128,7 +128,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 		//simulate
 		if (true) {
 			simulator = new SimulatorRectAnime(
-                    Retina.WIDTH, Retina.HEIGHT, 100, 0.05,
+                    Retina.WIDTH, Retina.HEIGHT, 100, 0.005,
                     new int[][] {
                             {80, 80},
                             {Retina.WIDTH - 80, 80},

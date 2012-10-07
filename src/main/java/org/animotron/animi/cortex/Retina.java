@@ -188,7 +188,7 @@ public class Retina {
 
                     case 3:
 
-                        if (SC / SP > K_cont || SP / SC > K_cont) 
+                        if (SC / SP > K_cont || SP / SC > K_cont)
                         	NL.set(ix,iy,true);
 
                         break;

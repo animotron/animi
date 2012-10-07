@@ -30,12 +30,12 @@ package org.animotron.animi.cortex;
 public class Mapping {
 	public CortexZoneSimple zone;       // Projecting zone
     public int ns_links;           // Number of synaptic connections for the zone
-    public double disp_links;      // Grouping parameter. Describe a size of sensor field
+    public double sigma;      // Grouping parameter. Describe a size of sensor field
 
-    public Mapping(CortexZoneSimple zone, int ns_links, double disp_links) {
+    public Mapping(CortexZoneSimple zone, double sigma) {
         this.zone = zone;
-        this.ns_links = ns_links;
-        this.disp_links = disp_links;
+        this.sigma = sigma;
+        this.ns_links = (int) Math.round(Math.PI * sigma * sigma);
     }
 
     public String toString() {
