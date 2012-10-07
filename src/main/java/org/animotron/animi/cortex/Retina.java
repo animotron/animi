@@ -32,8 +32,8 @@ import java.awt.image.BufferedImage;
 public class Retina {
 
 	//Сетчатка
-    public static final int WIDTH = 320;
-	public static final int HEIGHT = 240;
+    public static final int WIDTH = 160;
+	public static final int HEIGHT = 120;
 	
 	/* x */
 	private int width;
@@ -147,55 +147,57 @@ public class Retina {
 
         		OnOffReceptiveField mSensPol = sensorField[ix][iy];
 
-                NL.set(ix,iy,false);
+                NL.set(ix, iy, preprocessed[ix][iy] > 0);
 
-                SC = 0;
-                for (int j = 0; j < onOff.numInCenter(); j++) {
-
-                    SC += preprocessed[mSensPol.center[j][0]][mSensPol.center[j][1]];
-                }
-
-                SP = 0;
-                for (int j = 0; j < onOff.numInPeref(); j++) {
-
-                    SP += preprocessed[mSensPol.periphery[j][0]][mSensPol.periphery[j][1]];
-                }
-
-                SA = ((SP + SC) / (double)(onOff.numInCenter() + onOff.numInPeref()));
-
-                K_cont = KContr1 + SA * (KContr2 - KContr1) / Level_Bright;
-
-                if (K_cont < KContr3) K_cont = KContr3;
-
-                SC = SC / onOff.numInCenter();
-                SP = SP / onOff.numInPeref();
-
-                if (SA > Lelel_min) {
-                	switch (mSensPol.type) {
-                    case 1:
-
-                        if (SC / SP > K_cont)
-                        	NL.set(ix,iy,true);
-
-						break;
-
-                    case 2:
-
-                        if (SP / SC > K_cont)
-                        	NL.set(ix,iy,true);
-
-                        break;
-
-                    case 3:
-
-                        if (SC / SP > K_cont || SP / SC > K_cont)
-                        	NL.set(ix,iy,true);
-
-                        break;
-					default:
-						break;
-					}
-                }
+//                NL.set(ix,iy,false);
+//
+//                SC = 0;
+//                for (int j = 0; j < onOff.numInCenter(); j++) {
+//
+//                    SC += preprocessed[mSensPol.center[j][0]][mSensPol.center[j][1]];
+//                }
+//
+//                SP = 0;
+//                for (int j = 0; j < onOff.numInPeref(); j++) {
+//
+//                    SP += preprocessed[mSensPol.periphery[j][0]][mSensPol.periphery[j][1]];
+//                }
+//
+//                SA = ((SP + SC) / (double)(onOff.numInCenter() + onOff.numInPeref()));
+//
+//                K_cont = KContr1 + SA * (KContr2 - KContr1) / Level_Bright;
+//
+//                if (K_cont < KContr3) K_cont = KContr3;
+//
+//                SC = SC / onOff.numInCenter();
+//                SP = SP / onOff.numInPeref();
+//
+//                if (SA > Lelel_min) {
+//                	switch (mSensPol.type) {
+//                    case 1:
+//
+//                        if (SC / SP > K_cont)
+//                        	NL.set(ix,iy,true);
+//
+//						break;
+//
+//                    case 2:
+//
+//                        if (SP / SC > K_cont)
+//                        	NL.set(ix,iy,true);
+//
+//                        break;
+//
+//                    case 3:
+//
+//                        if (SC / SP > K_cont || SP / SC > K_cont)
+//                        	NL.set(ix,iy,true);
+//
+//                        break;
+//					default:
+//						break;
+//					}
+//                }
         	}
         }
     }

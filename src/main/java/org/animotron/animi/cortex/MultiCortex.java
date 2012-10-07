@@ -28,8 +28,8 @@ package org.animotron.animi.cortex;
  */
 public class MultiCortex {
 
-	public static final int VISUAL_FIELD_WIDTH = 96;
-	public static final int VISUAL_FIELD_HEIGHT = 72;
+	public static final int VISUAL_FIELD_WIDTH = 160;
+	public static final int VISUAL_FIELD_HEIGHT = 120;
 
     public boolean active = false;
     
@@ -49,7 +49,7 @@ public class MultiCortex {
         z_viscor = new CortexZoneComplex("Prime visual cortex", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT, 10,
                 9, 0, 0.6, 0.6, 10, 2,
                 new Mapping[]{
-                        new Mapping(z_video, 1.92)
+                        new Mapping(z_video, 1.5)
                 }
         );
 

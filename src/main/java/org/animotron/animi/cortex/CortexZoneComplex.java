@@ -61,7 +61,12 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	/** Memory **/
 	public NeuronSimple[][][] s;
 
-	CortexZoneComplex(String name, int width, int height, int deep,
+    private int boxSize;
+    private int maxX;
+    private int maxY;
+    private BufferedImage image;
+
+    CortexZoneComplex(String name, int width, int height, int deep,
 			int nas_links, double k_active, double k_det1,
 			double k_det2, int n_act_min, double k_non, Mapping[] in_zones) {
 
@@ -73,12 +78,18 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
         this.k_mem = 0;
         this.ns_links = 0;
+        this.boxSize = 1;
         for (Mapping i : in_zones) {
             this.ns_links += i.ns_links;
-            this.k_mem += 2.0 * i.sigma;
+            this.k_mem += i.sigma;
+            this.boxSize = (int) Math.max(this.boxSize, 6 * i.sigma);
 		}
 
-		this.nas_links = nas_links;
+        this.maxX = width * boxSize;
+        this.maxY = height * boxSize;
+        this.image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
+
+        this.nas_links = nas_links;
 		this.nsc_links = nas_links * deep;
 		this.k_active = k_active;
 		this.k_det1 = k_det1;
@@ -134,7 +145,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						// DispLink - дисперсия связей
 						for (int i = 0; i < m.ns_links; i++) {
                             int lx, ly;
-							do {
+                            if (i == 0) {
+                                lx = (int) Math.round(x_in_nerv);
+                                ly = (int) Math.round(y_in_nerv);
+                            } else do {
                                 double X, Y, S;
                                 do {
                                     X = 2.0 * Math.random() - 1;
@@ -240,11 +254,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	}
 
 	
-	int boxSize = 12;
-	int maxX = width * boxSize;
-	int maxY = height * boxSize;
-	BufferedImage image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
-
 	public BufferedImage getColumnRFimage() {
 		Graphics g = image.getGraphics();
 		g.setColor(Color.BLACK);
