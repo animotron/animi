@@ -169,10 +169,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
                                 if (ly < 1)
                                     ly = 1;
 
-                                if (lx > m.zone.width - 1)
+                                if (lx > m.zone.width - 2)
                                     lx = m.zone.width - 2;
 
-                                if (ly > m.zone.height - 1)
+                                if (ly > m.zone.height - 2)
                                     ly = m.zone.height - 2;
 
                             // Проверка на повтор связи
