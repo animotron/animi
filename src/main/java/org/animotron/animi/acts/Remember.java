@@ -33,10 +33,23 @@ import org.animotron.animi.cortex.NeuronSimple;
  */
 public class Remember implements Act<CortexZoneComplex> {
 
+    /** Min number of active synapses to remember **/
+    public double k_mem;
+    /** Number of cycles to turn on the possibility of forgetting **/
+    public int n_act_min;
+    /** Ratio threshold of forgetting **/
+    public double k_non;
+
+    public Remember(double k_mem, int n_act_min, double k_non) {
+        this.k_mem = k_mem;
+        this.n_act_min = n_act_min;
+        this.k_non = k_non;
+    }
+
     @Override
     public void process(CortexZoneComplex layer, final int x, final int y) {
         int sumact = 0;
-
+        double k_mem = this.k_mem * layer.ns_links;
         for (int z = 0; z < layer.deep; z++) {
             final NeuronSimple sn = layer.s[x][y][z];
             //Вычисляем кол-во активных соседей
@@ -60,7 +73,7 @@ public class Remember implements Act<CortexZoneComplex> {
                 }
                 sn.n_act++;
                 //проверяем условие забывания и обнуляем нейрон если оно выполняется
-                if (sn.n_act > layer.n_act_min && sn.n_off_m > sn.n_on * layer.k_non) {
+                if (sn.n_act > n_act_min && sn.n_off_m > sn.n_on * k_non) {
                     sn.occupy = false;
                 }
             } else {
@@ -72,7 +85,7 @@ public class Remember implements Act<CortexZoneComplex> {
                         if (link.zone.col[link.x][link.y].active)
                             sum++;
                 }
-                if (sum > layer.k_mem) {
+                if (sum > k_mem) {
                     //запоминаем состояние
                     sn.occupy = true;
                     sn.n_on = 1;

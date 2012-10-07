@@ -32,10 +32,10 @@ public class Mapping {
     public int ns_links;           // Number of synaptic connections for the zone
     public double sigma;      // Grouping parameter. Describe a size of sensor field
 
-    public Mapping(CortexZoneSimple zone, double sigma) {
+    public Mapping(CortexZoneSimple zone, int ns_links, double sigma) {
         this.zone = zone;
         this.sigma = sigma;
-        this.ns_links = (int) Math.round(Math.PI * sigma * sigma);
+        this.ns_links = ns_links;
     }
 
     public String toString() {

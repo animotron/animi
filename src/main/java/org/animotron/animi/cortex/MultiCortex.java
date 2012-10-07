@@ -47,9 +47,8 @@ public class MultiCortex {
 
         System.out.println("z_viscor");
         z_viscor = new CortexZoneComplex("Prime visual cortex", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT, 10,
-                9, 0, 0.6, 0.6, 10, 2,
                 new Mapping[]{
-                        new Mapping(z_video, 1.5)
+                        new Mapping(z_video, 8, 1.9)
                 }
         );
 

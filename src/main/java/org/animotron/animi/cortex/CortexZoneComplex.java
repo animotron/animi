@@ -45,19 +45,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	/** Number of synaptic connections of the all simple neurons **/
 	public int ns_links;
 	/** Number of axonal connections of the all simple neurons **/
-	public int nas_links;
+	public int nas_links = 9;
 	/** Number of synaptic connections of the complex neuron **/
 	public int nsc_links;
-	/** Excitation threshold of cortical column **/
-	public double k_active;
-	/** Min number of active synapses to remember **/
-	public double k_mem;
-	/** Matching percent for the active/passive elements required for recognition **/
-	public double k_det1, k_det2;
-	/** Number of cycles to turn on the possibility of forgetting **/
-	public int n_act_min;
-	/** Ratio threshold of forgetting **/
-	public double k_non;
 	/** Memory **/
 	public NeuronSimple[][][] s;
 
@@ -66,9 +56,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     private int maxY;
     private BufferedImage image;
 
-    CortexZoneComplex(String name, int width, int height, int deep,
-			int nas_links, double k_active, double k_det1,
-			double k_det2, int n_act_min, double k_non, Mapping[] in_zones) {
+    CortexZoneComplex(String name, int width, int height, int deep, Mapping[] in_zones) {
 
 		super(name, width, height);
 		this.deep = deep;
@@ -76,12 +64,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		this.in_zones = in_zones;
 
 
-        this.k_mem = 0;
         this.ns_links = 0;
         this.boxSize = 1;
         for (Mapping i : in_zones) {
             this.ns_links += i.ns_links;
-            this.k_mem += i.sigma;
             this.boxSize = (int) Math.max(this.boxSize, 6 * i.sigma);
 		}
 
@@ -89,13 +75,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
         this.maxY = height * boxSize;
         this.image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
 
-        this.nas_links = nas_links;
 		this.nsc_links = nas_links * deep;
-		this.k_active = k_active;
-		this.k_det1 = k_det1;
-		this.k_det2 = k_det2;
-		this.n_act_min = n_act_min;
-		this.k_non = k_non;
 
 		// Инициализация синаптических связей простых нейронов
 		for (int x = 0; x < width; x++) {
@@ -121,9 +101,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		// Связи распределяются случайным образом.
 		// Плотность связей убывает экспоненциально с удалением от колонки.
 		double x_in_nerv, y_in_nerv;
+
 		for (Mapping m : in_zones) {
 
-			boolean[][] nerv_links = new boolean[m.zone.width][m.zone.height];
+            boolean[][] nerv_links = new boolean[m.zone.width][m.zone.height];
+
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
 
@@ -143,12 +125,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						// преобразование Бокса — Мюллера для получения
 						// нормально распределенной величины
 						// DispLink - дисперсия связей
+
 						for (int i = 0; i < m.ns_links; i++) {
                             int lx, ly;
-                            if (i == 0) {
-                                lx = (int) Math.round(x_in_nerv);
-                                ly = (int) Math.round(y_in_nerv);
-                            } else do {
+                            do {
                                 double X, Y, S;
                                 do {
                                     X = 2.0 * Math.random() - 1;
@@ -344,10 +324,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
         cycle(1, 1, width - 1, height - 1, remember);
     }
 
-    private Activation activation = new Activation();
+    private Activation activation = new Activation(0.6, 0.6);
 
-    private Recognition recognition = new Recognition();
+    private Recognition recognition = new Recognition(0);
 
-    private Remember remember = new Remember();
+    private Remember remember = new Remember(0.05, 10, 2);
 
 }

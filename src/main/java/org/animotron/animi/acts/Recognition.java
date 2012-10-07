@@ -33,8 +33,16 @@ import org.animotron.animi.cortex.NeuronComplex;
  */
 public class Recognition implements Act<CortexZoneComplex> {
 
+    /** Excitation threshold of cortical column **/
+    private double k_active;
+
+    public Recognition (double k_active) {
+        this.k_active = k_active;
+    }
+
     @Override
     public void process(final CortexZoneComplex layer, final int x, final int y) {
+        double k_active = this.k_active * layer.nsc_links;
         int sum = 0;
         final NeuronComplex cn = layer.col[x][y];
         for (int i = 0; i < layer.nsc_links; i++) {
@@ -43,7 +51,7 @@ public class Recognition implements Act<CortexZoneComplex> {
                 sum++;
             }
         }
-        cn.active = sum / (double)layer.nsc_links > layer.k_active;
+        cn.active = sum > k_active;
     }
 
 }

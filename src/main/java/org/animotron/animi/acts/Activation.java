@@ -34,6 +34,14 @@ import org.animotron.animi.cortex.NeuronSimple;
  */
 public class Activation implements Act<CortexZoneComplex> {
 
+    /** Matching percent for the active/passive elements required for recognition **/
+    private double k_det1, k_det2;
+
+    public Activation (double k_det1, double k_det2) {
+        this.k_det1 = k_det1;
+        this.k_det2 = k_det1;
+    }
+
     @Override
     public void process(CortexZoneComplex layer, final int x, final int y) {
         int sum = 0;
@@ -68,7 +76,7 @@ public class Activation implements Act<CortexZoneComplex> {
                 if (sum_off_off != 0)
                     k2 = (double) sum_off_off / (sum_on_off + sum_off_off);
 
-                sn.active = k1 > layer.k_det1 && k2 > layer.k_det2;
+                sn.active = k1 > k_det1 && k2 > k_det2;
                 
                 if (sn.active) sum++;
             }
