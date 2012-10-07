@@ -39,7 +39,7 @@ public class Activation implements Act<CortexZoneComplex> {
 
     public Activation (double k_det1, double k_det2) {
         this.k_det1 = k_det1;
-        this.k_det2 = k_det1;
+        this.k_det2 = k_det2;
     }
 
     @Override

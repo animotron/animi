@@ -40,7 +40,7 @@ import java.awt.image.BufferedImage;
 public class CortexZoneComplex extends CortexZoneSimple {
 
     private Activation activation = new Activation(0.6, 0.6);
-    private Recognition recognition = new Recognition(0);
+    private Recognition recognition = new Recognition(0.1);
     private Remember remember = new Remember(0.05, 10, 2);
 
 
