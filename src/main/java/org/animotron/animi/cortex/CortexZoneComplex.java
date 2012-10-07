@@ -75,7 +75,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
         this.ns_links = 0;
         for (Mapping i : in_zones) {
             this.ns_links += i.ns_links;
-            this.k_mem += i.sigma;
+            this.k_mem += 2.0 * i.sigma;
 		}
 
 		this.nas_links = nas_links;
