@@ -39,7 +39,12 @@ import java.awt.image.BufferedImage;
  */
 public class CortexZoneComplex extends CortexZoneSimple {
 
-	Mapping[] in_zones;
+    private Activation activation = new Activation(0.6, 0.6);
+    private Recognition recognition = new Recognition(0);
+    private Remember remember = new Remember(0.05, 10, 2);
+
+
+    Mapping[] in_zones;
 	public int deep;
 	
 	/** Number of synaptic connections of the all simple neurons **/
@@ -323,11 +328,5 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public void cycle2() {
         cycle(1, 1, width - 1, height - 1, remember);
     }
-
-    private Activation activation = new Activation(0.6, 0.6);
-
-    private Recognition recognition = new Recognition(0);
-
-    private Remember remember = new Remember(0.05, 10, 2);
 
 }
