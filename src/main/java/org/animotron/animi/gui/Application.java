@@ -32,6 +32,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.animotron.animi.Imageable;
 import org.animotron.animi.cortex.MultiCortex;
 import org.animotron.animi.cortex.Retina;
 import org.animotron.animi.simulator.RectAnime;
@@ -46,10 +47,11 @@ public class Application extends JFrame {
 
 	private WebcamPanel camView = null;
 	
-	private Button btInit = null;
-	private Button btRun = null;
-	private Button btPause = null;
-	private Button btResume = null;
+	private JMenuItem miInit = null;
+	private JMenuItem miRun = null;
+	private JMenuItem miPause = null;
+	private JMenuItem miResume = null;
+	private JMenuItem miStop = null;
 	
 	protected static MultiCortex cortexs = null;
 	
@@ -67,7 +69,7 @@ public class Application extends JFrame {
  
         //Set up the GUI.
         desktop = new JDesktopPane(); //a specialized layered pane
-        createFrame(); //create first "window"
+        createRetinaFrame(); //create first "window"
         setContentPane(desktop);
         setJMenuBar(createMenuBar());
  
@@ -80,7 +82,7 @@ public class Application extends JFrame {
                 stop();
             }
 
-            @Override
+			@Override
             public void windowDeiconified(WindowEvent e) {
                 resume();
             }
@@ -91,70 +93,6 @@ public class Application extends JFrame {
             }
         });
 
-        //setLayout(new GridLayout(2,2,2,2));
-
-//        JPanel tools = new JPanel();
-//        add(tools, NORTH);
-//        
-//        btInit = new Button("initialize");
-//        btInit.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//
-//                btInit.setEnabled(false);
-//                
-//                camView.pause();
-//
-//                //задание параметров зон коры и структуры связей
-//                //BrainInit
-//                //инициализация зон коры
-//                //CortexInit
-//                //Начальный сброс "хорошо - плохо"
-//                cortexs = new MultiCortex();
-//
-//                btPause.setEnabled(true);
-//                
-//                camView.resume();
-//                btRun.setEnabled(true);
-//            }
-//        });
-//        tools.add(btInit);
-//
-//        btRun = new Button("run");
-//        btRun.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//            	cortexs.active = true;
-//            	btRun.setEnabled(true);
-//            }
-//        });
-//        btRun.setEnabled(false);
-//        tools.add(btRun);
-//
-//        btPause = new Button("pause");
-//        btPause.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                pause();
-//                btPause.setEnabled(false);
-//                btResume.setEnabled(true);
-//            }
-//        });
-//        btPause.setEnabled(false);
-//        tools.add(btPause);
-//
-//        btResume = new Button("resume");
-//        btResume.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                resume();
-//                btResume.setEnabled(false);
-//                btPause.setEnabled(true);
-//            }
-//        });
-//        btResume.setEnabled(false);
-//        tools.add(btResume);
-//        
 //        //constants control
 //        //минимальное соотношение средней контрасности переферии и центра сенсорного поля, 
 //        //необходимое для активации контрастность для темных элементов (0)
@@ -170,11 +108,6 @@ public class Application extends JFrame {
 //
         setBounds(0, 0, 800, 600);
         setLocationByPlatform(true);
-
-//        pack();
-//
-//		setVisible(true);
-        
 	}
 	
     protected JMenuBar createMenuBar() {
@@ -186,7 +119,7 @@ public class Application extends JFrame {
         menuBar.add(menu);
  
         //Set up the first menu item.
-        JMenuItem menuItem = new JMenuItem("Webcam");
+        JMenuItem menuItem = new JMenuItem("Retina");
         menuItem.setMnemonic(KeyEvent.VK_N);
         menuItem.setAccelerator(
     		KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK)
@@ -194,42 +127,11 @@ public class Application extends JFrame {
         menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-	            createFrame();
+	            createRetinaFrame();
 			}
 		});
         menu.add(menuItem);
  
-        //Set up the first menu item.
-        menuItem = new JMenuItem("Retina");
-        menuItem.setMnemonic(KeyEvent.VK_N);
-        menuItem.setAccelerator(
-    		KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK)
-		);
-        menuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-		        VisualizeMatrix frame = 
-	        		new VisualizeMatrix(
-        				new RectAnime(
-    	                    Retina.WIDTH, Retina.HEIGHT, 50, 0.05,
-    	                    new int[][] {
-	                            {40, 40},
-	                            {Retina.WIDTH - 40, 40},
-	                            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-	                            {40, Retina.HEIGHT - 40},
-	                            {40, 40}
-    	                    }
-        	            )
-	        		);
-		        frame.setVisible(true); //necessary as of 1.3
-		        desktop.add(frame);
-		        try {
-		            frame.setSelected(true);
-		        } catch (java.beans.PropertyVetoException e1) {}
-			}
-		});
-        menu.add(menuItem);
-
         //Set up the second menu item.
         menuItem = new JMenuItem("Quit");
         menuItem.setMnemonic(KeyEvent.VK_Q);
@@ -245,9 +147,126 @@ public class Application extends JFrame {
         });
         menu.add(menuItem);
  
+        //control
+        menu = new JMenu("Control");
+        menu.setMnemonic(KeyEvent.VK_D);
+        menuBar.add(menu);
+ 
+        miInit = addMenu(menu, "init", KeyEvent.VK_I, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+	            init();
+			}
+		});
+
+        miRun = addMenu(menu, "run", KeyEvent.VK_R, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+	            run();
+			}
+		});
+        miRun.setEnabled(false);
+
+        miPause = addMenu(menu, "pause", KeyEvent.VK_P, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+	            pause();
+			}
+		});
+        miPause.setEnabled(false);
+
+        miResume = addMenu(menu, "resume", KeyEvent.VK_E, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+	            resume();
+			}
+		});
+        miResume.setEnabled(false);
+
+        miStop = addMenu(menu, "stop", KeyEvent.VK_S, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+	            stop();
+			}
+		});
+        miStop.setEnabled(false);
+
         return menuBar;
     }
+    
+    private JMenuItem addMenu(JMenu menu, String name, int key, ActionListener listener) {
+    	JMenuItem menuItem = new JMenuItem(name);
+        menuItem.setMnemonic(key);
+        menuItem.setAccelerator(
+    		KeyStroke.getKeyStroke(key, ActionEvent.ALT_MASK)
+		);
+        menuItem.addActionListener(listener);
+        menu.add(menuItem);
+        
+        return menuItem;
+    }
+    
+    private void init() {
+//    	camView.resume();
+    	//задание параметров зон коры и структуры связей
+    	//BrainInit
+    	//инициализация зон коры
+    	//CortexInit
+    	//Начальный сброс "хорошо - плохо"
+    	cortexs = new MultiCortex();
+
+//    	camView.resume();
+
+    	miInit.setEnabled(false);
+    	
+    	miRun.setEnabled(true);
+    	
+    	miPause.setEnabled(false);
+    	miResume.setEnabled(false);
+    	
+    	miStop.setEnabled(false);
+    }
+    
+    private void run() {
+    	cortexs.active = true;
+    	
+    	miInit.setEnabled(false);
+    	
+    	miRun.setEnabled(false);
+    	
+    	miPause.setEnabled(true);
+    	miResume.setEnabled(false);
+    	
+    	miStop.setEnabled(true);
+    }
+    
+    private void pause() {
+		cortexs.active = false; 
+		
+		miPause.setEnabled(false);
+		miResume.setEnabled(true);
+    }
+    
+    private void resume() {
+		cortexs.active = true; 
+		
+		miResume.setEnabled(false);
+		miPause.setEnabled(true);
+    }
 	
+    private void stop() {
+		cortexs.active = false; 
+		
+		miInit.setEnabled(true);
+		
+		miRun.setEnabled(false);
+		
+		miPause.setEnabled(false);
+		miResume.setEnabled(false);
+		
+		miStop.setEnabled(false);
+	}
+
 	private void addDoubleSlider(String name, final String constName, JPanel tools) {
 		final Field field;
 		double value;
@@ -362,32 +381,26 @@ public class Application extends JFrame {
         tools.add(panel);
 	}
 
-	private void resume() {
-		cortexs.active = true; 
-//		if (camView != null)
-//			camView.resume();
-	}
-
-	private void pause() {
-		cortexs.active = false; 
-//		if (camView != null)
-//			camView.pause();
-	}
-
-	private void stop() {
-//		if (camView != null)
-//			camView.stop();
-		cortexs.active = false; 
-	}
+	Imageable stimulator = 
+		new RectAnime(
+            Retina.WIDTH, Retina.HEIGHT, 50, 0.05,
+            new int[][] {
+                {40, 40},
+                {Retina.WIDTH - 40, 40},
+                {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+                {40, Retina.HEIGHT - 40},
+                {40, 40}
+            }
+        );
 
     //Create a new internal frame.
-    protected void createFrame() {
-        WebcamPanel frame = new WebcamPanel();
+    protected void createRetinaFrame() {
+        VisualizeMatrix frame = new VisualizeMatrix( stimulator );
         frame.setVisible(true); //necessary as of 1.3
         desktop.add(frame);
         try {
             frame.setSelected(true);
-        } catch (java.beans.PropertyVetoException e) {}
+        } catch (java.beans.PropertyVetoException e1) {}
     }
  
     /**

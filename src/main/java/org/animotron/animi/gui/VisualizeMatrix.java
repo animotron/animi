@@ -28,8 +28,6 @@ import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 
 import org.animotron.animi.Imageable;
-import org.animotron.animi.cortex.Retina;
-import org.animotron.animi.simulator.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -37,6 +35,8 @@ import org.animotron.animi.simulator.*;
  */
 public class VisualizeMatrix extends JInternalFrame {
 	
+	private static final long serialVersionUID = -592610047528698167L;
+
 	private final Repainter repainter;
 
 	private ImageCanvas canvas = new ImageCanvas();
@@ -52,7 +52,7 @@ public class VisualizeMatrix extends JInternalFrame {
 		    
 		setLocation(100, 100);
 		BufferedImage img = simulator.getImage();
-	    setSize(img.getWidth(), img.getHeight());
+	    setSize(img.getWidth()+10, img.getHeight()+10);
 
 		setOpaque(true);
 		setDoubleBuffered(true);
