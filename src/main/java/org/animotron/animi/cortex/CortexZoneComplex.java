@@ -221,6 +221,22 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			}
 		}
 	}
+    
+//    public static final String SImage = "SImage";
+    public static final String ColumnRFimage = "ColumnRFimage";
+    public static final String OccupyImage = "OccupyImage";
+    
+    public BufferedImage getImage(String imageID) {
+//    	if (SImage.equals(imageID))
+//    		return getSImage();
+//    	else 
+//		if (ColumnRFimage.equals(imageID))
+    		return getColumnRFimage();
+		
+//		if (OccupyImage.equals(imageID))
+//    		return getOccupyImage();
+    }
+
 
 	// Картинка активных нейронов по колонкам
 	public BufferedImage[] getSImage() {

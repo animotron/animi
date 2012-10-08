@@ -33,6 +33,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.animotron.animi.Imageable;
+import org.animotron.animi.cortex.CortexZoneSimple;
 import org.animotron.animi.cortex.MultiCortex;
 import org.animotron.animi.cortex.Retina;
 import org.animotron.animi.simulator.RectAnime;
@@ -67,9 +68,9 @@ public class Application extends JFrame {
                   screenSize.width  - inset*2,
                   screenSize.height - inset*2);
  
-        //Set up the GUI.
-        desktop = new JDesktopPane(); //a specialized layered pane
-        createRetinaFrame(); //create first "window"
+        desktop = new JDesktopPane();
+        createFrame(stimulator, null);
+        
         setContentPane(desktop);
         setJMenuBar(createMenuBar());
  
@@ -127,7 +128,7 @@ public class Application extends JFrame {
         menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-	            createRetinaFrame();
+	            createFrame(stimulator, null);
 			}
 		});
         menu.add(menuItem);
@@ -214,6 +215,10 @@ public class Application extends JFrame {
     	//CortexInit
     	//Начальный сброс "хорошо - плохо"
     	cortexs = new MultiCortex();
+    	
+        for (CortexZoneSimple zone : cortexs.zones) {
+        	createFrame(zone, null);
+        }
 
 //    	camView.resume();
 
@@ -394,8 +399,8 @@ public class Application extends JFrame {
         );
 
     //Create a new internal frame.
-    protected void createRetinaFrame() {
-        VisualizeMatrix frame = new VisualizeMatrix( stimulator, null );
+    protected void createFrame(Imageable simulator, String imageID) {
+        VisualizeMatrix frame = new VisualizeMatrix( simulator, imageID );
         frame.setVisible(true); //necessary as of 1.3
         desktop.add(frame);
         try {

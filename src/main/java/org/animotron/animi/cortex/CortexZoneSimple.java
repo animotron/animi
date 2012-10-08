@@ -53,7 +53,7 @@ public class CortexZoneSimple implements Layer {
         }
     }
 
-    public BufferedImage getColImage() {
+    public BufferedImage getImage(String ID) {
     	int c;
     	
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);

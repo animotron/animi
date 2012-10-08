@@ -20,11 +20,13 @@
  */
 package org.animotron.animi.cortex;
 
+import org.animotron.animi.Imageable;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public interface Layer {
+public interface Layer extends Imageable {
 	
 	int width();
 	int height();
