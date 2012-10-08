@@ -48,7 +48,7 @@ public class OvalAnime implements Imageable {
         this.height = height;
 	}
 	
-	public BufferedImage getImage() {
+	public BufferedImage getImage(String imageID) {
         step();
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();

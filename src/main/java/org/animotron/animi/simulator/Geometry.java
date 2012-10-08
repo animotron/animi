@@ -39,7 +39,7 @@ public class Geometry implements Imageable {
 		image = new BufferedImage(Retina.WIDTH, Retina.HEIGHT, BufferedImage.TYPE_INT_RGB);
 	}
 	
-	public BufferedImage getImage() {
+	public BufferedImage getImage(String imageID) {
 		step();
 		
 		Graphics g = image.getGraphics();

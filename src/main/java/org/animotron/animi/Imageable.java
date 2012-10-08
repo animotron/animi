@@ -28,5 +28,5 @@ import java.awt.image.BufferedImage;
  */
 public interface Imageable {
 
-	public BufferedImage getImage();
+	public BufferedImage getImage(String ID);
 }

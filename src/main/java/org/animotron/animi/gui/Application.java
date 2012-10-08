@@ -395,7 +395,7 @@ public class Application extends JFrame {
 
     //Create a new internal frame.
     protected void createRetinaFrame() {
-        VisualizeMatrix frame = new VisualizeMatrix( stimulator );
+        VisualizeMatrix frame = new VisualizeMatrix( stimulator, null );
         frame.setVisible(true); //necessary as of 1.3
         desktop.add(frame);
         try {

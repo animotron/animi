@@ -43,7 +43,7 @@ public class VisualizeMatrix extends JInternalFrame {
 	
 	private BufferedImage image = null;
 	
-	public VisualizeMatrix(Imageable simulator) {
+	public VisualizeMatrix(Imageable simulator, String imageID) {
 	    super("V",
 	            true, //resizable
 	            true, //closable
@@ -51,7 +51,7 @@ public class VisualizeMatrix extends JInternalFrame {
 	            true);//iconifiable
 		    
 		setLocation(100, 100);
-		BufferedImage img = simulator.getImage();
+		BufferedImage img = simulator.getImage(imageID);
 	    setSize(img.getWidth()+10, img.getHeight()+10);
 
 		setOpaque(true);
@@ -59,10 +59,14 @@ public class VisualizeMatrix extends JInternalFrame {
 
 		getContentPane().add(canvas);
 		
-		repainter = new Repainter(canvas, simulator);
+		repainter = new Repainter(canvas, simulator, imageID);
 		repainter.start();
 	}
 	
+	public VisualizeMatrix(Imageable simulator) {
+		this(simulator, null);
+	}
+
 	private volatile boolean paused = false;
 
 	/**
@@ -100,11 +104,13 @@ public class VisualizeMatrix extends JInternalFrame {
     private class Repainter extends Thread {
 
     	Imageable simulator;
+    	String imageID;
     	JComponent component;
 
-		public Repainter(JComponent comp, Imageable sim) {
+		public Repainter(JComponent comp, Imageable sim, String imageId) {
 			component = comp;
 			simulator = sim;
+			imageID = imageId;
 			
 			setDaemon(true);
 		}
@@ -120,8 +126,7 @@ public class VisualizeMatrix extends JInternalFrame {
 						}
 					}
 					if (simulator != null) {
-						System.out.println("get image");
-						image = simulator.getImage();
+						image = simulator.getImage(imageID);
 						component.repaint();
 					}
                     

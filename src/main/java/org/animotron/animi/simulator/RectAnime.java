@@ -59,7 +59,7 @@ public class RectAnime implements Imageable {
         };
     }
 	
-	public BufferedImage getImage() {
+	public BufferedImage getImage(String imageID) {
         step();
         at = new AffineTransform();
         at.rotate(dt, p[0].getX(), p[0].getY());

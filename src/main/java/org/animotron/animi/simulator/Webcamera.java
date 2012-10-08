@@ -53,7 +53,7 @@ public class Webcamera implements Imageable, WebcamListener {
 	}
 
 	@Override
-	public BufferedImage getImage() {
+	public BufferedImage getImage(String imageID) {
 		return webcam.getImage();
 	}
 
