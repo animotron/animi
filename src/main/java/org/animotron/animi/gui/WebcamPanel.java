@@ -25,29 +25,20 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.JInternalFrame;
 
-import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamEvent;
-import com.github.sarxos.webcam.WebcamListener;
-import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
-
-import org.animotron.animi.cortex.CortexZoneComplex;
-import org.animotron.animi.cortex.CortexZoneSimple;
+import org.animotron.animi.Imageable;
 import org.animotron.animi.cortex.Retina;
-import org.animotron.animi.simulator.Simulator;
-import org.animotron.animi.simulator.SimulatorRectAnime;
+import org.animotron.animi.simulator.*;
 
 import static org.animotron.animi.gui.Application.cortexs;
 
 /**
  * 
- * @author Bartosz Firyn (SarXos)
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class WebcamPanel extends JPanel implements WebcamListener, MouseListener {
+public class WebcamPanel extends JInternalFrame implements MouseListener {
 
 	private static final long serialVersionUID = 5792962512394656227L;
 
@@ -57,9 +48,6 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
     private long frame = 0;
     private long t0 = System.currentTimeMillis();
     private long count = 0;
-
-    // convert the original colored image to grayscale
-//    ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_sRGB), ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 
     private class Repainter extends Thread {
 
@@ -72,7 +60,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 		@Override
 		public void run() {
 			//super.run();
-            while (simulator != null || webcam.isOpen()) {
+            while (simulator != null) {
 				try {
 					if (paused) {
 						synchronized (this) {
@@ -81,8 +69,6 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 					}
 					if (simulator != null) {
 						image = simulator.getImage();
-					} else {
-						image = webcam.getImage();
 					}
 
                     if (cortexs != null && image != null) {
@@ -95,7 +81,7 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
                     	}
                     }
                     
-                    //Thread.sleep(1000 / frequency);
+                    Thread.sleep(1000 / frequency);
 				} catch (Throwable e) {
 					e.printStackTrace();
 				} finally {
@@ -116,18 +102,26 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 		}
 	}
     
-    private Simulator simulator;
+    private Imageable simulator;
 
-	private Webcam webcam = null;
     private BufferedImage image = null;
     private BufferedImage buffer = new BufferedImage(2000, 2000, BufferedImage.TYPE_INT_RGB);
     private Repainter repainter = null;
 
 	public WebcamPanel() {
 		
+	    super("Webcam",
+	            true, //resizable
+	            true, //closable
+	            false, //maximizable
+	            true);//iconifiable
+	    
+	    setLocation(10, 10);
+	    setSize(Retina.WIDTH, Retina.HEIGHT);
+		
 		//simulate
-		if (true) {
-			simulator = new SimulatorRectAnime(
+		if (false) {
+			simulator = new RectAnime(
                     Retina.WIDTH, Retina.HEIGHT, 50, 0.05,
                     new int[][] {
                             {40, 40},
@@ -139,35 +133,18 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
             );
 			repainter = new Repainter();
 			repainter.start();
+		} else {
+			simulator = new Webcamera();
+			repainter = new Repainter();
+			repainter.start();
 		}
-
-		SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-
-            	if (simulator == null) {
-	                Webcam.setDriver(new OpenImajDriver());
-	                webcam = Webcam.getDefault();
-	                if (webcam == null) {
-	                    System.out.println("No webcams found...");
-	                    System.exit(1);
-	                }
-	                webcam.setViewSize(new Dimension(Retina.WIDTH, Retina.HEIGHT));
-	                webcam.addWebcamListener(WebcamPanel.this);
-	
-	                if (!webcam.isOpen()) {
-	                    webcam.open();
-	                }
-            	}
-            }
-        });
 		
 		addMouseListener(this);
 	}
 	
     @Override
 	protected void paintComponent(Graphics _g) {
+//    	System.out.println("paintComponent");
     	
 //    	buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
     	Graphics g = buffer.getGraphics();
@@ -189,169 +166,90 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
     	int zoomX = image.getWidth();//3;
 		int zoomY = image.getHeight();//3;
         g.drawImage(
-    		image.getScaledInstance(zoomX, zoomY, Image.SCALE_SMOOTH),
+    		image,
+//    		image.getScaledInstance(zoomX, zoomY, Image.SCALE_SMOOTH),
     		x, y, null
 		);
         x += zoomX + 2;
 
-        if (cortexs != null) {
-//	        BufferedImage retina = cortexs.retina.getImage();
-//	        g.drawImage(
-//        		retina.getScaledInstance(zoomX, zoomY, Image.SCALE_SMOOTH),
-//        		x, y, null
-//    		);
-//	        x += zoomX + 2;
-	        
-	        for (CortexZoneSimple zone : cortexs.zones) {
-	        	
-                g.drawString(zone.toString(), x, textY);
-                
-                BufferedImage img = zone.getColImage();
-                g.drawImage(
-//            		img.getScaledInstance(img.getWidth()*2, img.getHeight()*2, Image.SCALE_AREA_AVERAGING),
-            		img,
-            		x, y, null
-        		);
-    	        x += img.getWidth() + 2;
-                
-                if (zone instanceof CortexZoneComplex) {
-                    x = 0;
-                    y += zoomY + 2;
-
-                    CortexZoneComplex cz = (CortexZoneComplex) zone;
-
-    	        	y += getFontMetrics(getFont()).getHeight();
-    	        	textY = y;
-                    g.drawString("входной слой от выходных колонок", x, textY);
-
-                    BufferedImage RFimg = cz.getColumnRFimage();
-                    g.drawImage(
-                    		RFimg,
-//                    		RFimg.getScaledInstance(RFimg.getWidth()*2, RFimg.getHeight()*2, Image.SCALE_AREA_AVERAGING),
-                    		x, y, null);
-                    x += RFimg.getWidth() + 2;
-                }
-            }
-        }
-        
-        if (zoomPoint != null) {
-        	zoomX = zoomPoint.x;
-        	zoomY = zoomPoint.y;
-
-        	BufferedImage zoomer = new BufferedImage(40, 40, BufferedImage.TYPE_INT_RGB);
-        	int zoomerX = 0, zoomerY = 0;
-        	for (int zX = zoomX - 20; zX <= zoomX + 20; zX++) {
-        		zoomerY = 0;
-            	for (int zY = zoomY - 20; zY <= zoomY + 20; zY++) {
-            		if (zX > buffer.getWidth() && zY > buffer.getHeight()) {
-
-        				zoomer.setRGB(zoomerX, zoomerY, Color.BLACK.getRGB());
-            		} else
-	            		try {
-	            			zoomer.setRGB(zoomerX, zoomerY, buffer.getRGB(zX, zY));
-	            		} catch (Exception e) {
-
-	            			try {
-	            				zoomer.setRGB(zoomerX, zoomerY, Color.BLACK.getRGB());
-	            			} catch (Exception e1) {
-							}
-						}
-            		zoomerY++;
-            	}
-            	zoomerX++;
-        	}
-        	int zoomFactor = 10;
-        	g.drawImage(
-//    			zoomer, 
-    			zoomer.getScaledInstance(
-					zoomer.getWidth()*zoomFactor, 
-					zoomer.getHeight()*zoomFactor, 
-					Image.SCALE_AREA_AVERAGING
-				),
-    			getWidth() - (zoomer.getWidth()*zoomFactor), 0, null);
-        }
-        _g.drawImage(buffer, 0, 0, null);
-    }
-
-//	@Override
-//	protected void paintComponent(Graphics g) {
-//
-//		super.paintComponent(g);
-//
-//		if (image == null) {
-//			return;
-//		}
-//
-//		int x = image.getWidth()/3;
-//		int y = image.getHeight()/3;
-//        g.drawImage(
-//    		image.getScaledInstance(x, y, Image.SCALE_SMOOTH),
-//    		0, 0, null
-//		);
-//
 //        if (cortexs != null) {
-//	        BufferedImage retina = cortexs.retina.getImage();
-//	        g.drawImage(
-//        		retina.getScaledInstance(x, y, Image.SCALE_SMOOTH),
-//        		x+2, 0, null
-//    		);
-//	
-//	        y += 2;
+////	        BufferedImage retina = cortexs.retina.getImage();
+////	        g.drawImage(
+////        		retina.getScaledInstance(zoomX, zoomY, Image.SCALE_SMOOTH),
+////        		x, y, null
+////    		);
+////	        x += zoomX + 2;
 //	        
 //	        for (CortexZoneSimple zone : cortexs.zones) {
-//                x = 0;
 //	        	
-//	        	y += getFontMetrics(getFont()).getHeight();
-//	        	int textY = y;
 //                g.drawString(zone.toString(), x, textY);
 //                
-//                y += 2;
-//	        	
 //                BufferedImage img = zone.getColImage();
 //                g.drawImage(
-//            		img.getScaledInstance(img.getWidth()*2, img.getHeight()*2, Image.SCALE_AREA_AVERAGING),
+////            		img.getScaledInstance(img.getWidth()*2, img.getHeight()*2, Image.SCALE_AREA_AVERAGING),
+//            		img,
 //            		x, y, null
 //        		);
+//    	        x += img.getWidth() + 2;
 //                
-//                x += img.getWidth() * 2 + 3;
-////                if (zone instanceof CortexZoneComplex) {
-////                    CortexZoneComplex cz = (CortexZoneComplex) zone;
-////
-////        	        g2d.drawString("активные нейроны по колонкам", x, textY);
-////
-////                    for (BufferedImage image : cz.getSImage()) {
-////                        g.drawImage(image, x, y, null);
-////                        x += cz.width() + 2;
-////                    }
-////        	        g2d.drawString("занятые нейроны по колонкам", x, textY);
-////                    for (BufferedImage image : cz.getOccupyImage()) {
-////                        g.drawImage(image, x, y, null);
-////                        x += cz.width() + 2;
-////                    }
-////                }
-//                y += img.getHeight()*2 + 2;
+//                if (zone instanceof CortexZoneComplex) {
+//                    x = 0;
+//                    y += zoomY + 2;
+//
+//                    CortexZoneComplex cz = (CortexZoneComplex) zone;
+//
+//    	        	y += getFontMetrics(getFont()).getHeight();
+//    	        	textY = y;
+//                    g.drawString("входной слой от выходных колонок", x, textY);
+//
+//                    BufferedImage RFimg = cz.getColumnRFimage();
+//                    g.drawImage(
+//                    		RFimg,
+////                    		RFimg.getScaledInstance(RFimg.getWidth()*2, RFimg.getHeight()*2, Image.SCALE_AREA_AVERAGING),
+//                    		x, y, null);
+//                    x += RFimg.getWidth() + 2;
+//                }
 //            }
 //        }
-//    }
-
-	@Override
-	public void webcamOpen(WebcamEvent we) {
-		if (repainter == null) {
-			repainter = new Repainter();
-		}
-		repainter.start();
-		setPreferredSize(webcam.getViewSize());
-	}
-
-	@Override
-	public void webcamClosed(WebcamEvent we) {
-		try {
-			repainter.join();
-			repainter = null;
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+//        
+//        if (zoomPoint != null) {
+//        	zoomX = zoomPoint.x;
+//        	zoomY = zoomPoint.y;
+//
+//        	BufferedImage zoomer = new BufferedImage(40, 40, BufferedImage.TYPE_INT_RGB);
+//        	int zoomerX = 0, zoomerY = 0;
+//        	for (int zX = zoomX - 20; zX <= zoomX + 20; zX++) {
+//        		zoomerY = 0;
+//            	for (int zY = zoomY - 20; zY <= zoomY + 20; zY++) {
+//            		if (zX > buffer.getWidth() && zY > buffer.getHeight()) {
+//
+//        				zoomer.setRGB(zoomerX, zoomerY, Color.BLACK.getRGB());
+//            		} else
+//	            		try {
+//	            			zoomer.setRGB(zoomerX, zoomerY, buffer.getRGB(zX, zY));
+//	            		} catch (Exception e) {
+//
+//	            			try {
+//	            				zoomer.setRGB(zoomerX, zoomerY, Color.BLACK.getRGB());
+//	            			} catch (Exception e1) {
+//							}
+//						}
+//            		zoomerY++;
+//            	}
+//            	zoomerX++;
+//        	}
+//        	int zoomFactor = 10;
+//        	g.drawImage(
+////    			zoomer, 
+//    			zoomer.getScaledInstance(
+//					zoomer.getWidth()*zoomFactor, 
+//					zoomer.getHeight()*zoomFactor, 
+//					Image.SCALE_AREA_AVERAGING
+//				),
+//    			getWidth() - (zoomer.getWidth()*zoomFactor), 0, null);
+//        }
+        _g.drawImage(buffer, 0, 0, this);
+    }
 
 	private volatile boolean paused = false;
 
@@ -380,10 +278,6 @@ public class WebcamPanel extends JPanel implements WebcamListener, MouseListener
 		System.out.println("resumed");
 	}
 	
-	public void stop() {
-		webcam.close();
-	}
-
 	/**
 	 * @return Rendering frequency (in Hz or FPS).
 	 */

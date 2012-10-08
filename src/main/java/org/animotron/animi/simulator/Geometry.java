@@ -24,17 +24,18 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
+import org.animotron.animi.Imageable;
 import org.animotron.animi.cortex.Retina;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class SimulatorGeometry implements Simulator {
+public class Geometry implements Imageable {
 	
 	private BufferedImage image;
 
-	public SimulatorGeometry() {
+	public Geometry() {
 		image = new BufferedImage(Retina.WIDTH, Retina.HEIGHT, BufferedImage.TYPE_INT_RGB);
 	}
 	

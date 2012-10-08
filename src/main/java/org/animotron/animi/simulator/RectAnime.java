@@ -25,11 +25,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
+import org.animotron.animi.Imageable;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class SimulatorRectAnime implements Simulator {
+public class RectAnime implements Imageable {
 
 	private BufferedImage image;
     private int[][] anime;
@@ -42,7 +44,7 @@ public class SimulatorRectAnime implements Simulator {
     Point2D[] p;
     private int a;
 
-    public SimulatorRectAnime(int width, int height, int a, double dt, int[][] anime) {
+    public RectAnime(int width, int height, int a, double dt, int[][] anime) {
         this.a = a;
         this.dt = dt;
         this.anime = anime;

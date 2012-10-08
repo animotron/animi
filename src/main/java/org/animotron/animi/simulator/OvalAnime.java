@@ -23,11 +23,13 @@ package org.animotron.animi.simulator;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import org.animotron.animi.Imageable;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class SimulatorOvalAnime implements Simulator {
+public class OvalAnime implements Imageable {
 
 	private BufferedImage image;
     private int[][] anime;
@@ -39,7 +41,7 @@ public class SimulatorOvalAnime implements Simulator {
     private int a;
     private int X, Y;
 
-    public SimulatorOvalAnime(int width, int height, int a, int[][] anime) {
+    public OvalAnime(int width, int height, int a, int[][] anime) {
         this.a = a;
         this.anime = anime;
         this.width = width;

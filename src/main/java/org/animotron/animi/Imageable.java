@@ -18,7 +18,7 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.simulator;
+package org.animotron.animi;
 
 import java.awt.image.BufferedImage;
 
@@ -26,7 +26,7 @@ import java.awt.image.BufferedImage;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public interface Simulator {
+public interface Imageable {
 
 	public BufferedImage getImage();
 }

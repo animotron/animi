@@ -23,6 +23,7 @@ package org.animotron.animi.gui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Field;
@@ -32,14 +33,14 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.animotron.animi.cortex.MultiCortex;
-
-import static java.awt.BorderLayout.*;
+import org.animotron.animi.cortex.Retina;
+import org.animotron.animi.simulator.RectAnime;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class Application extends JFrame implements Runnable {
+public class Application extends JFrame {
 	
 	private static final long serialVersionUID = 3243253015790558286L;
 
@@ -52,13 +53,27 @@ public class Application extends JFrame implements Runnable {
 	
 	protected static MultiCortex cortexs = null;
 	
-	private Application() {}
+	JDesktopPane desktop;
 	
-	@Override
-	public void run() {
+	private Application() {
+		
 		setTitle("Animi");
+		
+        int inset = 50;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setBounds(inset, inset,
+                  screenSize.width  - inset*2,
+                  screenSize.height - inset*2);
+ 
+        //Set up the GUI.
+        desktop = new JDesktopPane(); //a specialized layered pane
+        createFrame(); //create first "window"
+        setContentPane(desktop);
+        setJMenuBar(createMenuBar());
+ 
+        //Make dragging a little faster but perhaps uglier.
+        desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
@@ -78,89 +93,160 @@ public class Application extends JFrame implements Runnable {
 
         //setLayout(new GridLayout(2,2,2,2));
 
-        JPanel tools = new JPanel();
-        add(tools, NORTH);
-        
-        btInit = new Button("initialize");
-        btInit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                btInit.setEnabled(false);
-                
-                camView.pause();
-
-                //задание параметров зон коры и структуры связей
-                //BrainInit
-                //инициализация зон коры
-                //CortexInit
-                //Начальный сброс "хорошо - плохо"
-                cortexs = new MultiCortex();
-
-                btPause.setEnabled(true);
-                
-                camView.resume();
-                btRun.setEnabled(true);
-            }
-        });
-        tools.add(btInit);
-
-        btRun = new Button("run");
-        btRun.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	cortexs.active = true;
-            	btRun.setEnabled(true);
-            }
-        });
-        btRun.setEnabled(false);
-        tools.add(btRun);
-
-        btPause = new Button("pause");
-        btPause.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pause();
-                btPause.setEnabled(false);
-                btResume.setEnabled(true);
-            }
-        });
-        btPause.setEnabled(false);
-        tools.add(btPause);
-
-        btResume = new Button("resume");
-        btResume.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                resume();
-                btResume.setEnabled(false);
-                btPause.setEnabled(true);
-            }
-        });
-        btResume.setEnabled(false);
-        tools.add(btResume);
-        
-        //constants control
-        //минимальное соотношение средней контрасности переферии и центра сенсорного поля, 
-        //необходимое для активации контрастность для темных элементов (0)
-		addDoubleSlider("соот.  переферии и центра", "KContr1", tools);
-		//контрастность для светлых элементов
-		addDoubleSlider("контрастность для светлых", "KContr2", tools);
-		addDoubleSlider("минимальная контрастность", "KContr3", tools);
-		
-		addIntSlider("Bright Level","Level_Bright",tools);
-
-		camView = new WebcamPanel();
-        add(camView, CENTER);
-
+//        JPanel tools = new JPanel();
+//        add(tools, NORTH);
+//        
+//        btInit = new Button("initialize");
+//        btInit.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//
+//                btInit.setEnabled(false);
+//                
+//                camView.pause();
+//
+//                //задание параметров зон коры и структуры связей
+//                //BrainInit
+//                //инициализация зон коры
+//                //CortexInit
+//                //Начальный сброс "хорошо - плохо"
+//                cortexs = new MultiCortex();
+//
+//                btPause.setEnabled(true);
+//                
+//                camView.resume();
+//                btRun.setEnabled(true);
+//            }
+//        });
+//        tools.add(btInit);
+//
+//        btRun = new Button("run");
+//        btRun.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//            	cortexs.active = true;
+//            	btRun.setEnabled(true);
+//            }
+//        });
+//        btRun.setEnabled(false);
+//        tools.add(btRun);
+//
+//        btPause = new Button("pause");
+//        btPause.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                pause();
+//                btPause.setEnabled(false);
+//                btResume.setEnabled(true);
+//            }
+//        });
+//        btPause.setEnabled(false);
+//        tools.add(btPause);
+//
+//        btResume = new Button("resume");
+//        btResume.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                resume();
+//                btResume.setEnabled(false);
+//                btPause.setEnabled(true);
+//            }
+//        });
+//        btResume.setEnabled(false);
+//        tools.add(btResume);
+//        
+//        //constants control
+//        //минимальное соотношение средней контрасности переферии и центра сенсорного поля, 
+//        //необходимое для активации контрастность для темных элементов (0)
+//		addDoubleSlider("соот.  переферии и центра", "KContr1", tools);
+//		//контрастность для светлых элементов
+//		addDoubleSlider("контрастность для светлых", "KContr2", tools);
+//		addDoubleSlider("минимальная контрастность", "KContr3", tools);
+//		
+//		addIntSlider("Bright Level","Level_Bright",tools);
+//
+//		camView = new WebcamPanel();
+//        add(camView, CENTER);
+//
         setBounds(0, 0, 800, 600);
         setLocationByPlatform(true);
 
-        pack();
-
-		setVisible(true);
-
+//        pack();
+//
+//		setVisible(true);
+        
 	}
+	
+    protected JMenuBar createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+ 
+        //Set up the lone menu.
+        JMenu menu = new JMenu("File");
+        menu.setMnemonic(KeyEvent.VK_D);
+        menuBar.add(menu);
+ 
+        //Set up the first menu item.
+        JMenuItem menuItem = new JMenuItem("Webcam");
+        menuItem.setMnemonic(KeyEvent.VK_N);
+        menuItem.setAccelerator(
+    		KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK)
+		);
+        menuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+	            createFrame();
+			}
+		});
+        menu.add(menuItem);
+ 
+        //Set up the first menu item.
+        menuItem = new JMenuItem("Retina");
+        menuItem.setMnemonic(KeyEvent.VK_N);
+        menuItem.setAccelerator(
+    		KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK)
+		);
+        menuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+		        VisualizeMatrix frame = 
+	        		new VisualizeMatrix(
+        				new RectAnime(
+    	                    Retina.WIDTH, Retina.HEIGHT, 50, 0.05,
+    	                    new int[][] {
+	                            {40, 40},
+	                            {Retina.WIDTH - 40, 40},
+	                            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+	                            {40, Retina.HEIGHT - 40},
+	                            {40, 40}
+    	                    }
+        	            )
+	        		);
+		        frame.setVisible(true); //necessary as of 1.3
+		        desktop.add(frame);
+		        try {
+		            frame.setSelected(true);
+		        } catch (java.beans.PropertyVetoException e1) {}
+			}
+		});
+        menu.add(menuItem);
+
+        //Set up the second menu item.
+        menuItem = new JMenuItem("Quit");
+        menuItem.setMnemonic(KeyEvent.VK_Q);
+        menuItem.setAccelerator(
+    		KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.ALT_MASK)
+		);
+        menuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+		        System.exit(0);
+			}
+        	
+        });
+        menu.add(menuItem);
+ 
+        return menuBar;
+    }
 	
 	private void addDoubleSlider(String name, final String constName, JPanel tools) {
 		final Field field;
@@ -278,23 +364,57 @@ public class Application extends JFrame implements Runnable {
 
 	private void resume() {
 		cortexs.active = true; 
-		if (camView != null)
-			camView.resume();
+//		if (camView != null)
+//			camView.resume();
 	}
 
 	private void pause() {
 		cortexs.active = false; 
-		if (camView != null)
-			camView.pause();
+//		if (camView != null)
+//			camView.pause();
 	}
 
 	private void stop() {
-		if (camView != null)
-			camView.stop();
+//		if (camView != null)
+//			camView.stop();
 		cortexs.active = false; 
 	}
 
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Application());
-	}
+    //Create a new internal frame.
+    protected void createFrame() {
+        WebcamPanel frame = new WebcamPanel();
+        frame.setVisible(true); //necessary as of 1.3
+        desktop.add(frame);
+        try {
+            frame.setSelected(true);
+        } catch (java.beans.PropertyVetoException e) {}
+    }
+ 
+    /**
+     * Create the GUI and show it.  For thread safety,
+     * this method should be invoked from the
+     * event-dispatching thread.
+     */
+    private static void createAndShowGUI() {
+        //Make sure we have nice window decorations.
+        JFrame.setDefaultLookAndFeelDecorated(true);
+ 
+        //Create and set up the window.
+        Application frame = new Application();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ 
+        //Display the window.
+        frame.setVisible(true);
+        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+    }
+ 
+    public static void main(String[] args) {
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI();
+            }
+        });
+    }
 }
