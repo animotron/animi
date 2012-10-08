@@ -23,13 +23,11 @@ package org.animotron.animi.simulator;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import org.animotron.animi.Imageable;
-
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class OvalAnime implements Imageable {
+public class OvalAnime extends Stimulator {
 
 	private BufferedImage image;
     private int[][] anime;

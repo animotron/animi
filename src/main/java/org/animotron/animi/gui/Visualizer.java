@@ -20,7 +20,6 @@
  */
 package org.animotron.animi.gui;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -33,7 +32,7 @@ import org.animotron.animi.Imageable;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class VisualizeMatrix extends JInternalFrame {
+public class Visualizer extends JInternalFrame {
 	
 	private static final long serialVersionUID = -592610047528698167L;
 
@@ -43,8 +42,8 @@ public class VisualizeMatrix extends JInternalFrame {
 	
 	private BufferedImage image = null;
 	
-	public VisualizeMatrix(Imageable simulator, String imageID) {
-	    super("V",
+	public Visualizer(Imageable simulator, String imageID) {
+	    super(simulator.getImageName(imageID),
 	            true, //resizable
 	            true, //closable
 	            false, //maximizable
@@ -54,8 +53,8 @@ public class VisualizeMatrix extends JInternalFrame {
 		BufferedImage img = simulator.getImage(imageID);
 	    setSize(img.getWidth()+10, img.getHeight()+10);
 
-		setOpaque(true);
-		setDoubleBuffered(true);
+//		setOpaque(true);
+//		setDoubleBuffered(true);
 
 		getContentPane().add(canvas);
 		
@@ -63,7 +62,7 @@ public class VisualizeMatrix extends JInternalFrame {
 		repainter.start();
 	}
 	
-	public VisualizeMatrix(Imageable simulator) {
+	public Visualizer(Imageable simulator) {
 		this(simulator, null);
 	}
 
@@ -102,6 +101,8 @@ public class VisualizeMatrix extends JInternalFrame {
 	}
 	
     private class Repainter extends Thread {
+    	
+    	int frequency = 2;
 
     	Imageable simulator;
     	String imageID;
@@ -130,7 +131,7 @@ public class VisualizeMatrix extends JInternalFrame {
 						component.repaint();
 					}
                     
-//                    Thread.sleep(1000 / frequency);
+                    Thread.sleep(1000 / frequency);
 				} catch (Throwable e) {
                 }
 			}

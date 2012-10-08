@@ -37,6 +37,7 @@ import org.animotron.animi.cortex.CortexZoneSimple;
 import org.animotron.animi.cortex.MultiCortex;
 import org.animotron.animi.cortex.Retina;
 import org.animotron.animi.simulator.RectAnime;
+import org.animotron.animi.simulator.Stimulator;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -46,15 +47,13 @@ public class Application extends JFrame {
 	
 	private static final long serialVersionUID = 3243253015790558286L;
 
-	private WebcamPanel camView = null;
-	
 	private JMenuItem miInit = null;
 	private JMenuItem miRun = null;
 	private JMenuItem miPause = null;
 	private JMenuItem miResume = null;
 	private JMenuItem miStop = null;
 	
-	protected static MultiCortex cortexs = null;
+	public static MultiCortex cortexs = null;
 	
 	JDesktopPane desktop;
 	
@@ -219,6 +218,7 @@ public class Application extends JFrame {
         for (CortexZoneSimple zone : cortexs.zones) {
         	createFrame(zone, null);
         }
+        stimulator.start();
 
 //    	camView.resume();
 
@@ -386,7 +386,7 @@ public class Application extends JFrame {
         tools.add(panel);
 	}
 
-	Imageable stimulator = 
+	Stimulator stimulator = 
 		new RectAnime(
             Retina.WIDTH, Retina.HEIGHT, 50, 0.05,
             new int[][] {
@@ -399,8 +399,8 @@ public class Application extends JFrame {
         );
 
     //Create a new internal frame.
-    protected void createFrame(Imageable simulator, String imageID) {
-        VisualizeMatrix frame = new VisualizeMatrix( simulator, imageID );
+    protected void createFrame(Imageable imageable, String imageID) {
+        Visualizer frame = new Visualizer( imageable, imageID );
         frame.setVisible(true); //necessary as of 1.3
         desktop.add(frame);
         try {

@@ -66,6 +66,10 @@ public class CortexZoneSimple implements Layer {
         return image;
     }
     
+    public String getImageName(String ID) {
+    	return toString();
+    }
+
     public String toString() {
     	return name;
     }

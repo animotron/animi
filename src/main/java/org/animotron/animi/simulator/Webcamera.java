@@ -23,8 +23,6 @@ package org.animotron.animi.simulator;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
-import org.animotron.animi.Imageable;
-
 import com.github.sarxos.webcam.*;
 import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
 
@@ -32,7 +30,7 @@ import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class Webcamera implements Imageable, WebcamListener {
+public class Webcamera extends Stimulator implements WebcamListener {
 	
 	private Webcam webcam = null;
 

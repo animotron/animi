@@ -25,13 +25,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
-import org.animotron.animi.Imageable;
-
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class RectAnime implements Imageable {
+public class RectAnime extends Stimulator {
 
 	private BufferedImage image;
     private int[][] anime;
