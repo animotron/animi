@@ -21,12 +21,17 @@
 package org.animotron.animi.gui;
 
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 
 import org.animotron.animi.Imageable;
+import org.animotron.animi.cortex.CortexZoneComplex;
+import org.animotron.animi.simulator.Stimulator;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -36,6 +41,7 @@ public class Visualizer extends JInternalFrame {
 	
 	private static final long serialVersionUID = -592610047528698167L;
 
+	private Imageable simulator;
 	private final Repainter repainter;
 
 	private ImageCanvas canvas = new ImageCanvas();
@@ -43,14 +49,16 @@ public class Visualizer extends JInternalFrame {
 	private BufferedImage image = null;
 	
 	public Visualizer(Imageable simulator, String imageID) {
-	    super(simulator.getImageName(imageID),
+	    super(simulator.getImageName(),
 	            true, //resizable
 	            true, //closable
 	            false, //maximizable
 	            true);//iconifiable
+	    
+	    this.simulator = simulator;
 		    
 		setLocation(100, 100);
-		BufferedImage img = simulator.getImage(imageID);
+		BufferedImage img = simulator.getImage();
 	    setSize(img.getWidth()+10, img.getHeight()+10);
 
 //		setOpaque(true);
@@ -58,83 +66,68 @@ public class Visualizer extends JInternalFrame {
 
 		getContentPane().add(canvas);
 		
-		repainter = new Repainter(canvas, simulator, imageID);
+		repainter = new Repainter(canvas, imageID);
 		repainter.start();
 	}
 	
-	public Visualizer(Imageable simulator) {
+	public Visualizer(Stimulator simulator) {
 		this(simulator, null);
 	}
-
-	private volatile boolean paused = false;
-
-	/**
-	 * Pause rendering.
-	 */
-	public void pause() {
-		if (paused) {
-			return;
-		}
-		paused = true;
-		System.out.println("paused");
-	}
-
-	/**
-	 * Resume rendering.
-	 */
-	public void resume() {
-		if (!paused) {
-			return;
-		}
-		synchronized (repainter) {
-			repainter.notifyAll();
-		}
-		paused = false;
-		System.out.println("resumed");
-	}
-
 	
 	private class ImageCanvas extends JComponent {
+
+		private static final long serialVersionUID = -6516267401181020599L;
+		
+		public ImageCanvas() {
+			addMouseListener(new MouseListener() {
+				
+				@Override
+				public void mouseReleased(MouseEvent e) {
+				}
+				
+				@Override
+				public void mousePressed(MouseEvent e) {
+					if (simulator instanceof CortexZoneComplex) {
+						CortexZoneComplex zone = (CortexZoneComplex) simulator;
+						Point p = e.getPoint();
+					}
+				}
+				
+				@Override
+				public void mouseExited(MouseEvent e) {
+				}
+				
+				@Override
+				public void mouseEntered(MouseEvent e) {
+				}
+				
+				@Override
+				public void mouseClicked(MouseEvent e) {
+				}
+			});
+		}
+
 		public void paint(Graphics g) {
 			g.drawImage(image, 0, 0, this);
 		}
 	}
 	
-    private class Repainter extends Thread {
+    private class Repainter extends org.animotron.animi.gui.Repainter {
     	
-    	int frequency = 2;
-
-    	Imageable simulator;
     	String imageID;
-    	JComponent component;
 
-		public Repainter(JComponent comp, Imageable sim, String imageId) {
-			component = comp;
-			simulator = sim;
+		public Repainter(JComponent comp, String imageId) {
+			super(comp);
 			imageID = imageId;
-			
-			setDaemon(true);
 		}
 
 		@Override
-		public void run() {
-			//super.run();
-            while (simulator != null) {
-				try {
-					if (paused) {
-						synchronized (this) {
-							this.wait();
-						}
-					}
-					if (simulator != null) {
-						image = simulator.getImage(imageID);
-						component.repaint();
-					}
-                    
-                    Thread.sleep(1000 / frequency);
-				} catch (Throwable e) {
-                }
-			}
+		protected void prepareImage() {
+			if (simulator instanceof Stimulator) {
+				image = ((Stimulator) simulator).getUserImage();
+				
+			} else
+				image = simulator.getImage();
 		}
 	}
 }

@@ -22,6 +22,8 @@ package org.animotron.animi.simulator;
 
 import static org.animotron.animi.gui.Application.cortexs;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import org.animotron.animi.Imageable;
@@ -32,6 +34,8 @@ import org.animotron.animi.Imageable;
  */
 public abstract class Stimulator implements Runnable, Imageable {
 	
+	protected BufferedImage image;
+
 	private int frequency = 60; // Hz
 
     private long fps;
@@ -40,6 +44,12 @@ public abstract class Stimulator implements Runnable, Imageable {
     private long count = 0;
 
     private boolean run = true;
+    
+    protected Stimulator() {}
+
+    protected Stimulator(int frequency) {
+    	this.frequency = frequency;
+	}
     
 	@Override
 	public void run() {
@@ -50,7 +60,7 @@ public abstract class Stimulator implements Runnable, Imageable {
 						this.wait();
 					}
 				}
-				final BufferedImage image = getImage(null);
+				final BufferedImage image = getImage();
 
                 if (cortexs != null && image != null) {
                 	cortexs.retina.process(image);
@@ -62,7 +72,8 @@ public abstract class Stimulator implements Runnable, Imageable {
                 	}
                 }
                 
-                Thread.sleep(1000 / frequency);
+                if (frequency != 0)
+                	Thread.sleep(1000 / frequency);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			} finally {
@@ -106,7 +117,43 @@ public abstract class Stimulator implements Runnable, Imageable {
 	
 
 	@Override
-	public String getImageName(String ID) {
+	public String getImageName() {
 		return this.getClass().getSimpleName();
 	}
+
+	public BufferedImage getImage() {
+        step();
+        
+        //workaround
+        BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics g = img.getGraphics();
+
+    	drawImage(g);
+        
+        return img;
+	}
+	
+	public BufferedImage getUserImage() {
+        //workaround
+        BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+        Graphics g = img.getGraphics();
+
+    	drawImage(g);
+    	drawUImage(g);
+        
+    	return img;
+	}
+
+	protected abstract void drawImage(Graphics g);
+	
+	protected void drawUImage(Graphics g) {
+		int textY = g.getFontMetrics(g.getFont()).getHeight();
+
+        g.setColor(Color.WHITE);
+
+        g.drawString(fps + " fps; "+count+" cycles;", 0, textY);
+	}
+
+	protected abstract void step();
 }

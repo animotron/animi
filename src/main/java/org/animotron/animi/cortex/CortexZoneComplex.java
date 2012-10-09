@@ -20,6 +20,8 @@
  */
 package org.animotron.animi.cortex;
 
+import org.animotron.animi.Imageable;
+import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.Utils;
 import org.animotron.animi.acts.Activation;
 import org.animotron.animi.acts.Act;
@@ -43,7 +45,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
     private Recognition recognition = new Recognition(0.1);
     private Remember remember = new Remember(0.05, 10, 2);
 
-
     Mapping[] in_zones;
 	public int deep;
 	
@@ -56,11 +57,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	/** Memory **/
 	public NeuronSimple[][][] s;
 
-    private int boxSize;
-    private int maxX;
-    private int maxY;
-    private BufferedImage image;
-
     CortexZoneComplex(String name, int width, int height, int deep, Mapping[] in_zones) {
 
 		super(name, width, height);
@@ -68,21 +64,18 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		this.s = new NeuronSimple[width][height][deep];
 		this.in_zones = in_zones;
 
-
-        this.ns_links = 0;
-        this.boxSize = 1;
+		this.ns_links = 0;
         for (Mapping i : in_zones) {
             this.ns_links += i.ns_links;
-            this.boxSize = (int) Math.max(this.boxSize, 6 * i.sigma);
 		}
-
-        this.maxX = width * boxSize;
-        this.maxY = height * boxSize;
-        this.image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
 
 		this.nsc_links = nas_links * deep;
 
-		// Инициализация синаптических связей простых нейронов
+	    activation = new Activation(0.6, 0.6);
+	    recognition = new Recognition(0.1);
+	    remember = new Remember(0.05, 10, 2);
+
+	    // Инициализация синаптических связей простых нейронов
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				for (int z = 0; z < deep; z++) {
@@ -222,22 +215,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 	}
     
-//    public static final String SImage = "SImage";
-    public static final String ColumnRFimage = "ColumnRFimage";
-    public static final String OccupyImage = "OccupyImage";
-    
-    public BufferedImage getImage(String imageID) {
-//    	if (SImage.equals(imageID))
-//    		return getSImage();
-//    	else 
-//		if (ColumnRFimage.equals(imageID))
-    		return getColumnRFimage();
-		
-//		if (OccupyImage.equals(imageID))
-//    		return getOccupyImage();
-    }
-
-
 	// Картинка активных нейронов по колонкам
 	public BufferedImage[] getSImage() {
 		BufferedImage[] a = new BufferedImage[deep];
@@ -254,58 +231,81 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		return a;
 	}
 
-	
-	public BufferedImage getColumnRFimage() {
-		Graphics g = image.getGraphics();
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, maxX, maxY);
+	class ColumnRF_Image implements Imageable {
+		
+	    private int boxSize;
+	    private int maxX;
+	    private int maxY;
+	    private BufferedImage image;
 
-		int pX, pY = 0;
-
-//		g.setColor(Color.YELLOW);
-
-		for (int x = 1; x < width - 1; x++) {
-			for (int y = 1; y < height - 1; y++) {
-				
-//				g.drawLine(x*boxSize, 0, x*boxSize, maxY);
-//				g.drawLine(0, y*boxSize, maxX, y*boxSize);
-
-				final NeuronComplex cn = col[x][y];
-
-                for (int i = 0; i < nsc_links; i++) {
-                	final Link3d cl = cn.s_links[i];
-                    if (s[cl.x][cl.y][cl.z].occupy) {
-                    	
-                    	final NeuronSimple sn = s[cl.x][cl.y][cl.z];
-                    	if (sn.occupy) {
-                    		
-                    		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
-                            for (int j = 0; j < ns_links; j++) {
-                                final Link2dZone sl = sn.s_links[j];
-                                if (sl.cond) {
-                                	minX = Math.min(minX, sl.x);
-                                	minY = Math.min(minY, sl.y);
-                                }
-                            }
-                            for (int j = 0; j < ns_links; j++) {
-                                final Link2dZone sl = sn.s_links[j];
-                                if (sl.cond) {
-                                	if (sl.x - minX < boxSize && sl.y - minY < boxSize) {
-										pX = x*boxSize + (sl.x - minX);
-										pY = y*boxSize + (sl.y - minY);
-				                    	
-				                    	int c = Utils.calcGrey(image, pX, pY);
-										c += 50;
-										image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-                                	}
-                                }
-                            }
-                    	}
-                    }
-                }
+		ColumnRF_Image() {
+	        boxSize = 1;
+	        for (Mapping i : in_zones) {
+	            boxSize = (int) Math.max(boxSize, 6 * i.sigma);
 			}
+
+	        maxX = width * boxSize;
+	        maxY = height * boxSize;
+	        
+	        image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
 		}
-		return image;
+	
+		public String getImageName() {
+			return "input from output";
+		}
+
+		public BufferedImage getImage() {
+			Graphics g = image.getGraphics();
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, maxX, maxY);
+	
+			int pX, pY = 0;
+	
+	//		g.setColor(Color.YELLOW);
+	
+			for (int x = 1; x < width - 1; x++) {
+				for (int y = 1; y < height - 1; y++) {
+					
+	//				g.drawLine(x*boxSize, 0, x*boxSize, maxY);
+	//				g.drawLine(0, y*boxSize, maxX, y*boxSize);
+	
+					final NeuronComplex cn = col[x][y];
+	
+	                for (int i = 0; i < nsc_links; i++) {
+	                	final Link3d cl = cn.s_links[i];
+	                    if (s[cl.x][cl.y][cl.z].occupy) {
+	                    	
+	                    	final NeuronSimple sn = s[cl.x][cl.y][cl.z];
+	                    	if (sn.occupy) {
+	                    		
+	                    		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+	                            for (int j = 0; j < ns_links; j++) {
+	                                final Link2dZone sl = sn.s_links[j];
+	                                if (sl.cond) {
+	                                	minX = Math.min(minX, sl.x);
+	                                	minY = Math.min(minY, sl.y);
+	                                }
+	                            }
+	                            for (int j = 0; j < ns_links; j++) {
+	                                final Link2dZone sl = sn.s_links[j];
+	                                if (sl.cond) {
+	                                	if (sl.x - minX < boxSize && sl.y - minY < boxSize) {
+											pX = x*boxSize + (sl.x - minX);
+											pY = y*boxSize + (sl.y - minY);
+					                    	
+					                    	int c = Utils.calcGrey(image, pX, pY);
+											c += 50;
+											image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+	                                	}
+	                                }
+	                            }
+	                    	}
+	                    }
+	                }
+				}
+			}
+			return image;
+		}
 	}
 
 	// Картинка суммы занятых нейронов в колонке

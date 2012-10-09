@@ -53,7 +53,7 @@ public class CortexZoneSimple implements Layer {
         }
     }
 
-    public BufferedImage getImage(String ID) {
+    public BufferedImage getImage() {
     	int c;
     	
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -66,7 +66,7 @@ public class CortexZoneSimple implements Layer {
         return image;
     }
     
-    public String getImageName(String ID) {
+    public String getImageName() {
     	return toString();
     }
 

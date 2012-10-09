@@ -20,10 +20,8 @@
  */
 package org.animotron.animi.acts;
 
-import org.animotron.animi.cortex.CortexZoneComplex;
-import org.animotron.animi.cortex.Link2dZone;
-import org.animotron.animi.cortex.NeuronComplex;
-import org.animotron.animi.cortex.NeuronSimple;
+import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.cortex.*;
 
 /**
  * Активация простых нейронов при узнавании запомненной картины
@@ -35,7 +33,10 @@ import org.animotron.animi.cortex.NeuronSimple;
 public class Activation implements Act<CortexZoneComplex> {
 
     /** Matching percent for the active/passive elements required for recognition **/
-    private double k_det1, k_det2;
+    @RuntimeParam(name="active matching")
+    private double k_det1;
+    @RuntimeParam(name="passive matching")
+    private double k_det2;
 
     public Activation (double k_det1, double k_det2) {
         this.k_det1 = k_det1;

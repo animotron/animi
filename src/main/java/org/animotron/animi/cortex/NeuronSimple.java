@@ -20,6 +20,8 @@
  */
 package org.animotron.animi.cortex;
 
+import org.animotron.animi.RuntimeParam;
+
 
 /**
  * Simple neuron
@@ -29,14 +31,46 @@ package org.animotron.animi.cortex;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class NeuronSimple {
-	public boolean occupy, active;
-	public int n_on;               // Number of active cycles after activation
-	public int n_act;              // Number of cycles after activation
-	public double p_on;            // Average number of active neighbors at activation moment
-	public double p_off_m;         // Average number of active neighbors when calm and activity of neighbors more p_on
-	public int n_off_m;            // Number of passive cycles after activation when activity of neighbors more p_on
-	public Link2dZone[] s_links;   // Links of synapses connects cortex neurons with projecting nerve bundle
-	public Link2d[] a_links;       // Axonal connections with nearest cortical columns
-	public int n1;                 // Counter for links of synapses
-	public int n2;                 // Counter for axonal connections
+	
+	@RuntimeParam(name="active")
+	public boolean active;
+
+	@RuntimeParam(name="occupy")
+	public boolean occupy;
+	
+	/** Number of active cycles after activation **/
+	@RuntimeParam(name="active cycles after activation")
+	public int n_on;
+	
+	/** Number of cycles after activation **/
+	@RuntimeParam(name="cycles after activation")
+	public int n_act;
+	
+	/** Average number of active neighbors at activation moment **/
+	@RuntimeParam(name="average number of active neighbors at activation moment")
+	public double p_on;
+	
+	/** Average number of active neighbors when calm and activity of neighbors more p_on **/
+	@RuntimeParam(name="Average number of active neighbors when calm and activity of neighbors more p_on")
+	public double p_off_m;
+	
+	/** Number of passive cycles after activation when activity of neighbors more p_on **/
+	@RuntimeParam(name="Number of passive cycles after activation when activity of neighbors more p_on")
+	public int n_off_m;
+	
+	/** Links of synapses connects cortex neurons with projecting nerve bundle **/
+//	@RuntimeParam(name="")
+	public Link2dZone[] s_links;
+	
+	/** Axonal connections with nearest cortical columns **/
+//	@RuntimeParam(name="")
+	public Link2d[] a_links;
+	
+	/** Counter for links of synapses **/
+//	@RuntimeParam(name="")
+	public int n1;
+	
+	/** Counter for axonal connections **/
+//	@RuntimeParam(name="")
+	public int n2;
 }

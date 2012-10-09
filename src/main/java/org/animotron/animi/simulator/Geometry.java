@@ -32,16 +32,11 @@ import org.animotron.animi.cortex.Retina;
  */
 public class Geometry extends Stimulator {
 	
-	private BufferedImage image;
-
 	public Geometry() {
 		image = new BufferedImage(Retina.WIDTH, Retina.HEIGHT, BufferedImage.TYPE_INT_RGB);
 	}
 	
-	public BufferedImage getImage(String imageID) {
-		step();
-		
-		Graphics g = image.getGraphics();
+	public void drawImage(Graphics g) {
 		g.setColor(Color.WHITE);
 		g.drawRect(100, 100, 100, 100);
 		g.fillRect(250, 100, 100, 100);
@@ -50,10 +45,8 @@ public class Geometry extends Stimulator {
 		
 		g.drawOval(100, 250, 100, 100);
 		g.fillOval(250, 250, 100, 100);
-
-		return image;
 	}
 	
-	private void step() {
+	public void step() {
 	}
 }

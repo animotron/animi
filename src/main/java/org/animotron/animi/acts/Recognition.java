@@ -20,9 +20,8 @@
  */
 package org.animotron.animi.acts;
 
-import org.animotron.animi.cortex.CortexZoneComplex;
-import org.animotron.animi.cortex.Link3d;
-import org.animotron.animi.cortex.NeuronComplex;
+import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.cortex.*;
 
 /**
  * Активация колонок (узнавание)
@@ -34,6 +33,7 @@ import org.animotron.animi.cortex.NeuronComplex;
 public class Recognition implements Act<CortexZoneComplex> {
 
     /** Excitation threshold of cortical column **/
+	@RuntimeParam(name="excitation threshold")
     private double k_active;
 
     public Recognition (double k_active) {

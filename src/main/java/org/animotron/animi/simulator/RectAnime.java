@@ -31,23 +31,24 @@ import java.awt.image.BufferedImage;
  */
 public class RectAnime extends Stimulator {
 
-	private BufferedImage image;
     private int[][] anime;
-    private int width;
-    private int height;
+
     private int i = 0;
     private double dx, dy, dt;
     private double l = 0;
     private AffineTransform at;
     Point2D[] p;
-    private int a;
+    private Polygon polygon = null;
+
+//    private int a;
 
     public RectAnime(int width, int height, int a, double dt, int[][] anime) {
-        this.a = a;
+    	super(0);
+    	
+//        this.a = a;
         this.dt = dt;
         this.anime = anime;
-        this.width = width;
-        this.height = height;
+
         this.p = new Point2D[] {
                 new Point(anime[0][0], anime[0][1]),
                 new Point(anime[0][0] - a / 2, anime[0][1] - a / 2),
@@ -55,29 +56,18 @@ public class RectAnime extends Stimulator {
                 new Point(anime[0][0] + a / 2, anime[0][1] + a / 2),
                 new Point(anime[0][0] - a / 2, anime[0][1] + a / 2)
         };
+
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 	
-	public BufferedImage getImage(String imageID) {
-        step();
-        at = new AffineTransform();
-        at.rotate(dt, p[0].getX(), p[0].getY());
-        at.translate(dx, dy);
-        Polygon polygon = new Polygon();
-        for (int i = 0; i < p.length; i++) {
-            Point2D q = at.transform(p[i], null);
-            if (i > 0) {
-                polygon.addPoint((int) Math.round(q.getX()), (int) Math.round(q.getY()));
-            }
-            p[i] = q;
-        }
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics g = image.getGraphics();
+	public void drawImage(Graphics g) {
         g.setColor(Color.WHITE);
-        g.drawPolygon(polygon);
-        return image;
+		
+        if (polygon != null)
+			g.drawPolygon(polygon);
 	}
-	
-	private void step() {
+
+	protected void step() {
         if (l <= 0) {
             int j = Math.min(i + 1, anime.length - 1);
             dx = anime[j][0] - anime[i][0];
@@ -87,6 +77,18 @@ public class RectAnime extends Stimulator {
             i = j == anime.length - 1 ? 0 : j;
         } else {
             l--;
+        }
+        
+        at = new AffineTransform();
+        at.rotate(dt, p[0].getX(), p[0].getY());
+        at.translate(dx, dy);
+        polygon = new Polygon();
+        for (int i = 0; i < p.length; i++) {
+            Point2D q = at.transform(p[i], null);
+            if (i > 0) {
+                polygon.addPoint((int) Math.round(q.getX()), (int) Math.round(q.getY()));
+            }
+            p[i] = q;
         }
     }
 

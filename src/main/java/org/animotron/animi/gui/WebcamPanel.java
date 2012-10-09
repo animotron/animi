@@ -68,7 +68,7 @@ public class WebcamPanel extends JInternalFrame implements MouseListener {
 						}
 					}
 					if (simulator != null) {
-						image = simulator.getImage(null);
+						image = simulator.getImage();
 					}
 
                     if (cortexs != null && image != null) {
