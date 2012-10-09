@@ -109,9 +109,10 @@ public class RunningParamsFrame implements Imageable {
 		}
 		x = 0;
 		y += textY;
-		g.drawRect(x, y, 399, 399);
+		BufferedImage img = drawRF();
+		g.drawRect(x, y, x+2+img.getWidth(), y+2+img.getHeight());
 		g.drawImage(
-				drawRF().getScaledInstance(1000, 1000, Image.SCALE_AREA_AVERAGING),
+				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
 
 		return image;
@@ -120,22 +121,35 @@ public class RunningParamsFrame implements Imageable {
 	private BufferedImage drawRF() {
         BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
         
-		int pX, pY;
+		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+
+        for (int i = 0; i < zone.nsc_links; i++) {
+        	final Link3d cl = cn.s_links[i];
+            if (zone.s[cl.x][cl.y][cl.z].occupy) {
+            	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
+            	if (sn.occupy) {
+                    for (int j = 0; j < zone.ns_links; j++) {
+                        final Link2dZone sl = sn.s_links[j];
+                        if (sl.cond) {
+                        	minX = Math.min(minX, sl.x);
+                        	minY = Math.min(minY, sl.y);
+
+                        	maxX = Math.max(maxX, sl.x);
+                        	maxY = Math.max(maxY, sl.y);
+                        }
+                    }
+            	}
+            }
+        }
+
+        int pX, pY;
         for (int i = 0; i < zone.nsc_links; i++) {
         	final Link3d cl = cn.s_links[i];
             if (zone.s[cl.x][cl.y][cl.z].occupy) {
             	
             	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
             	if (sn.occupy) {
-            		
-            		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
-                    for (int j = 0; j < zone.ns_links; j++) {
-                        final Link2dZone sl = sn.s_links[j];
-                        if (sl.cond) {
-                        	minX = Math.min(minX, sl.x);
-                        	minY = Math.min(minY, sl.y);
-                        }
-                    }
                     for (int j = 0; j < zone.ns_links; j++) {
                         final Link2dZone sl = sn.s_links[j];
                         if (sl.cond) {
@@ -150,7 +164,7 @@ public class RunningParamsFrame implements Imageable {
             	}
             }
         }
-        return image;
+        return image.getSubimage(0, 0, maxX, maxY);
 	}
 	
 	private String getName(Field f) {
