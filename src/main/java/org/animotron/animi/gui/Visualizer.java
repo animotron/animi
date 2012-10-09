@@ -48,7 +48,7 @@ public class Visualizer extends JInternalFrame {
 	
 	private BufferedImage image = null;
 	
-	public Visualizer(Imageable simulator, String imageID) {
+	public Visualizer(Imageable simulator) {
 	    super(simulator.getImageName(),
 	            true, //resizable
 	            true, //closable
@@ -66,12 +66,8 @@ public class Visualizer extends JInternalFrame {
 
 		getContentPane().add(canvas);
 		
-		repainter = new Repainter(canvas, imageID);
+		repainter = new Repainter(canvas);
 		repainter.start();
-	}
-	
-	public Visualizer(Stimulator simulator) {
-		this(simulator, null);
 	}
 	
 	private class ImageCanvas extends JComponent {
@@ -114,11 +110,8 @@ public class Visualizer extends JInternalFrame {
 	
     private class Repainter extends org.animotron.animi.gui.Repainter {
     	
-    	String imageID;
-
-		public Repainter(JComponent comp, String imageId) {
+		public Repainter(JComponent comp) {
 			super(comp);
-			imageID = imageId;
 		}
 
 		@Override

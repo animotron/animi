@@ -230,6 +230,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 		return a;
 	}
+	
+	ColumnRF_Image CRF = null;
+	
+	public Imageable getCRF() {
+		if (CRF == null)
+			CRF = new ColumnRF_Image();
+		
+		return CRF;
+	}
 
 	class ColumnRF_Image implements Imageable {
 		

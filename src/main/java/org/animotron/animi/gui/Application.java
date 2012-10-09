@@ -33,6 +33,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.animotron.animi.Imageable;
+import org.animotron.animi.cortex.CortexZoneComplex;
 import org.animotron.animi.cortex.CortexZoneSimple;
 import org.animotron.animi.cortex.MultiCortex;
 import org.animotron.animi.cortex.Retina;
@@ -68,7 +69,7 @@ public class Application extends JFrame {
                   screenSize.height - inset*2);
  
         desktop = new JDesktopPane();
-        createFrame(stimulator, null);
+        createFrame(stimulator);
         
         setContentPane(desktop);
         setJMenuBar(createMenuBar());
@@ -127,7 +128,7 @@ public class Application extends JFrame {
         menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-	            createFrame(stimulator, null);
+	            createFrame(stimulator);
 			}
 		});
         menu.add(menuItem);
@@ -216,7 +217,13 @@ public class Application extends JFrame {
     	cortexs = new MultiCortex();
     	
         for (CortexZoneSimple zone : cortexs.zones) {
-        	createFrame(zone, null);
+        	if (zone instanceof CortexZoneComplex) {
+				CortexZoneComplex z = (CortexZoneComplex) zone;
+
+				createFrame(z);
+				createFrame(z.getCRF());
+			} else
+				createFrame(zone);
         }
         stimulator.start();
 
@@ -399,8 +406,8 @@ public class Application extends JFrame {
         );
 
     //Create a new internal frame.
-    protected void createFrame(Imageable imageable, String imageID) {
-        Visualizer frame = new Visualizer( imageable, imageID );
+    protected void createFrame(Imageable imageable) {
+        Visualizer frame = new Visualizer( imageable );
         frame.setVisible(true); //necessary as of 1.3
         desktop.add(frame);
         try {
