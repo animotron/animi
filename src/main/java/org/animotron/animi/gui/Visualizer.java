@@ -84,8 +84,8 @@ public class Visualizer extends JInternalFrame {
 				public void mousePressed(MouseEvent e) {
 					Object obj = simulator.whatAt(e.getPoint());
 					//hack
-					if (obj instanceof NeuronComplex) {
-						Application._.createFrame(new RunningParamsFrame((NeuronComplex) obj));
+					if (obj.getClass().isArray()) {
+						Application._.createFrame(new RunningParamsFrame((Object[])obj));
 					}
 				}
 				

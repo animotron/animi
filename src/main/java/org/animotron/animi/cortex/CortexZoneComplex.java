@@ -21,7 +21,6 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.Imageable;
-import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.Utils;
 import org.animotron.animi.acts.Activation;
 import org.animotron.animi.acts.Act;
@@ -320,7 +319,13 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		@Override
 		public Object whatAt(Point point) {
 			try {
-				return col[Math.round(point.x / boxSize)][Math.round(point.y / boxSize)];
+				return 
+					new Object[] {
+						CortexZoneComplex.this, new Point(
+								Math.round(point.x / boxSize), 
+								Math.round(point.y / boxSize)
+							)
+					};
 			} catch (Exception e) {
 			}
 			return null;
