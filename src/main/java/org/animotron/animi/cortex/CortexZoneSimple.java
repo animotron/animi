@@ -23,6 +23,7 @@ package org.animotron.animi.cortex;
 import org.animotron.animi.Utils;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 /**
@@ -65,7 +66,13 @@ public class CortexZoneSimple implements Layer {
         }
         return image;
     }
-    
+
+
+	@Override
+	public Object whatAt(Point point) {
+		return col[point.x][point.y];
+	}
+
     public String getImageName() {
     	return toString();
     }

@@ -91,5 +91,4 @@ public class RectAnime extends Stimulator {
             p[i] = q;
         }
     }
-
 }

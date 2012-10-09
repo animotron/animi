@@ -24,6 +24,7 @@ import static org.animotron.animi.gui.Application.cortexs;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import org.animotron.animi.Imageable;
@@ -156,4 +157,10 @@ public abstract class Stimulator implements Runnable, Imageable {
 	}
 
 	protected abstract void step();
+	
+
+	@Override
+	public Object whatAt(Point point) {
+		return null;
+	}
 }

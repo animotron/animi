@@ -20,6 +20,7 @@
  */
 package org.animotron.animi;
 
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 /**
@@ -31,4 +32,6 @@ public interface Imageable {
 	public String getImageName();
 
 	public BufferedImage getImage();
+
+	public Object whatAt(Point point);
 }

@@ -30,6 +30,7 @@ import org.animotron.animi.acts.Remember;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 /**
@@ -314,6 +315,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 				}
 			}
 			return image;
+		}
+
+		@Override
+		public Object whatAt(Point point) {
+			try {
+				return col[Math.round(point.x / boxSize)][Math.round(point.y / boxSize)];
+			} catch (Exception e) {
+			}
+			return null;
 		}
 	}
 

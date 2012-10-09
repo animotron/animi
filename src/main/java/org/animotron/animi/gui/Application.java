@@ -47,6 +47,8 @@ import org.animotron.animi.simulator.Stimulator;
 public class Application extends JFrame {
 	
 	private static final long serialVersionUID = 3243253015790558286L;
+	
+	static Application _ = null;
 
 	private JMenuItem miInit = null;
 	private JMenuItem miRun = null;
@@ -59,6 +61,8 @@ public class Application extends JFrame {
 	JDesktopPane desktop;
 	
 	private Application() {
+		
+		_ = this;
 		
 		setTitle("Animi");
 		

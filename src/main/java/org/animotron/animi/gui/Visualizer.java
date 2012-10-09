@@ -21,7 +21,6 @@
 package org.animotron.animi.gui;
 
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -30,7 +29,7 @@ import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 
 import org.animotron.animi.Imageable;
-import org.animotron.animi.cortex.CortexZoneComplex;
+import org.animotron.animi.cortex.NeuronComplex;
 import org.animotron.animi.simulator.Stimulator;
 
 /**
@@ -83,9 +82,10 @@ public class Visualizer extends JInternalFrame {
 				
 				@Override
 				public void mousePressed(MouseEvent e) {
-					if (simulator instanceof CortexZoneComplex) {
-						CortexZoneComplex zone = (CortexZoneComplex) simulator;
-						Point p = e.getPoint();
+					Object obj = simulator.whatAt(e.getPoint());
+					//hack
+					if (obj instanceof NeuronComplex) {
+						Application._.createFrame(new RunningParamsFrame((NeuronComplex) obj));
 					}
 				}
 				

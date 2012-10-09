@@ -22,8 +22,11 @@ package org.animotron.animi.gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.animotron.animi.Imageable;
 import org.animotron.animi.RuntimeParam;
@@ -36,15 +39,16 @@ import org.animotron.animi.cortex.NeuronComplex;
 public class RunningParamsFrame implements Imageable {
 	
 	NeuronComplex sn;
+	List<Field> fds = new ArrayList<Field>();
 	
 	public RunningParamsFrame(NeuronComplex sn) {
 		this.sn = sn;
 		
 		Field[] fields = sn.getClass().getFields();
 		for (int i = 0; i < fields.length; i++) {
-			RuntimeParam ann = fields[i].getAnnotation(RuntimeParam.class);
-			if (ann != null)
-				System.out.println(ann.name());
+			Field field = fields[i];
+			if (field.isAnnotationPresent(RuntimeParam.class))
+				fds.add(field);
 		}
 	}
 
@@ -57,14 +61,37 @@ public class RunningParamsFrame implements Imageable {
 	public BufferedImage getImage() {
 		BufferedImage image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
-
-		int textY = g.getFontMetrics(g.getFont()).getHeight();
-
         g.setColor(Color.WHITE);
 
-        g.drawString("!!! fps; !!! cycles;", 0, textY);		
-        
-        return image;
+		int textY = g.getFontMetrics(g.getFont()).getHeight();
+		int x = 0, y = 0;
+		
+		for (Field f : fds) {
+			y += textY;
+	        g.drawString(getName(f), x, y);		
+
+	        y += textY;
+	        g.drawString(getValue(f), x, y);		
+		}
+
+		return image;
+	}
+	
+	private String getName(Field f) {
+		return f.getAnnotation(RuntimeParam.class).name();
+	}
+
+	private String getValue(Field f) {
+		try {
+			return f.get(sn).toString();
+		} catch (Exception e) {
+		}
+		return "???";
+	}
+
+	@Override
+	public Object whatAt(Point point) {
+		return null;
 	}
 
 }
