@@ -113,12 +113,12 @@ public class PFInitialization extends JInternalFrame {
 		Field[] fields = clazz.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			Field field = fields[i];
-			System.out.println(field.getName());
+//			System.out.println(field.getName());
 			if (field.isAnnotationPresent(InitParam.class)) {
 				addField(gbc, field, obj);
 			
 			} else if (field.isAnnotationPresent(Params.class)) {
-				System.out.println("# "+field.getName());
+//				System.out.println("# "+field.getName());
 				addSep(gbc, field.getName());
 				scan(gbc, field, obj);
 			}
@@ -135,9 +135,33 @@ public class PFInitialization extends JInternalFrame {
         gbc.gridwidth = 1;
 	}
 
-	private void addField(GridBagConstraints gbc, Field f, Object obj) {
+	private void addField(GridBagConstraints gbc, final Field f, final Object obj) {
 
-        JTextField text = new JTextField(getValue(f, obj));
+        final JTextField text = new JTextField(getValue(f, obj));
+        text.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String type = f.getType().getName();
+				if ("int".equals(type)) {
+					f.setAccessible(true);
+					try {
+						f.set(obj, Integer.valueOf(text.getText()));
+					} catch (Exception e1) {
+						text.setText(getValue(f, obj));
+					}
+				} else if ("double".equals(type)) {
+						f.setAccessible(true);
+						try {
+							f.set(obj, Double.valueOf(text.getText()));
+						} catch (Exception e1) {
+							text.setText(getValue(f, obj));
+						}
+				} else {
+					System.out.println("unknown type "+type);
+				}
+					
+			}
+		});
 		
 		JLabel label = new JLabel(getName(f));
 
@@ -147,12 +171,6 @@ public class PFInitialization extends JInternalFrame {
 
         gbc.gridx++;
         panel.add(text, gbc);
-
-    //		group.addGroup(
-//			layout.createParallelGroup(Alignment.BASELINE)
-//				.addComponent(label)
-//				.addComponent(text)
-//		);
 	}
 
 	private String getName(Field f) {
