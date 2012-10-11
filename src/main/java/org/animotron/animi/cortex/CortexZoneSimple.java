@@ -36,14 +36,19 @@ import java.awt.image.BufferedImage;
 public class CortexZoneSimple implements Layer {
 
     String name;
-    public NeuronComplex[][] col;        // State of complex neurons (outputs cortical columns)
-    int width;              //
-    int height;             //
+    MultiCortex mc;
+    /** State of complex neurons (outputs cortical columns) **/
+    public NeuronComplex[][] col;
 
-    public CortexZoneSimple(String name, int width, int height) {
+    public CortexZoneSimple(String name, MultiCortex mc) {
         this.name = name;
-        this.width = width;
-        this.height = height;
+        this.mc = mc;
+    }
+    
+    public void init() {
+        int width = mc.VISUAL_FIELD_WIDTH;
+        int height = mc.VISUAL_FIELD_HEIGHT;
+        
         this.col = new NeuronComplex[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -55,7 +60,10 @@ public class CortexZoneSimple implements Layer {
     }
 
     public BufferedImage getImage() {
-    	int c;
+        int width = mc.VISUAL_FIELD_WIDTH;
+        int height = mc.VISUAL_FIELD_HEIGHT;
+
+        int c;
     	
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < width; x++) {
@@ -82,16 +90,15 @@ public class CortexZoneSimple implements Layer {
     }
 
     public int width() {
-        return width;
+        return mc.VISUAL_FIELD_WIDTH;
     }
 
     public int height() {
-        return height;
+        return mc.VISUAL_FIELD_HEIGHT;
     }
 
 	@Override
 	public void process() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override

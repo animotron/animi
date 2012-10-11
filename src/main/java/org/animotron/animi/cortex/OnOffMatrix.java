@@ -41,10 +41,9 @@ public class OnOffMatrix {
     int[][] matrix;
     
     public OnOffMatrix() {
-    	initialize();
     };
     
-    private void initialize() {
+    public void initialize() {
 //    	radius = 4;
 //    			
 //    	regionSize = 8;

@@ -42,7 +42,7 @@ import org.animotron.animi.cortex.NeuronSimple;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class RunningParamsFrame implements Imageable {
+public class PFActual implements Imageable {
 	
 	CortexZoneComplex zone;
 	Point point;
@@ -50,7 +50,7 @@ public class RunningParamsFrame implements Imageable {
 	List<Field> cnFds = new ArrayList<Field>();
 	List<Field> snFds = new ArrayList<Field>();
 	
-	public RunningParamsFrame(Object[] objs) {
+	public PFActual(Object[] objs) {
 		zone = (CortexZoneComplex) objs[0];
 		point = (Point) objs[1];
 		cn = zone.col[point.x][point.y];
@@ -168,7 +168,8 @@ public class RunningParamsFrame implements Imageable {
 	}
 	
 	private String getName(Field f) {
-		return f.getAnnotation(RuntimeParam.class).name();
+		return f.getName();
+//		return f.getAnnotation(RuntimeParam.class).name();
 	}
 
 	private String getValue(Field f, Object obj) {

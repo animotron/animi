@@ -29,7 +29,6 @@ import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 
 import org.animotron.animi.Imageable;
-import org.animotron.animi.cortex.NeuronComplex;
 import org.animotron.animi.simulator.Stimulator;
 
 /**
@@ -85,7 +84,7 @@ public class Visualizer extends JInternalFrame {
 					Object obj = simulator.whatAt(e.getPoint());
 					//hack
 					if (obj.getClass().isArray()) {
-						Application._.createFrame(new RunningParamsFrame((Object[])obj));
+						Application._.createFrame(new PFActual((Object[])obj));
 					}
 				}
 				

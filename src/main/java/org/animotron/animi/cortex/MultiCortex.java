@@ -20,6 +20,9 @@
  */
 package org.animotron.animi.cortex;
 
+import org.animotron.animi.InitParam;
+import org.animotron.animi.Params;
+
 
 /**
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
@@ -28,28 +31,38 @@ package org.animotron.animi.cortex;
  */
 public class MultiCortex {
 
-	public static final int VISUAL_FIELD_WIDTH = 160;
-	public static final int VISUAL_FIELD_HEIGHT = 120;
+	@InitParam(name="width")
+	public int VISUAL_FIELD_WIDTH = 160;
+	@InitParam(name="height")
+	public int VISUAL_FIELD_HEIGHT = 120;
 
     public boolean active = false;
     
     public Retina retina;
 
-    public CortexZoneSimple z_video, z_good, z_bad;
-    public CortexZoneComplex z_viscor, z_asscor;
+    @Params
+    public CortexZoneSimple z_video;
+    @Params
+    public CortexZoneComplex z_viscor;
+//  @Params
+//  public CortexZoneComplex z_asscor;
+//  @Params
+//  public CortexZoneSimple z_good;
+//  @Params
+//  public CortexZoneSimple z_bad;
 
     public CortexZoneSimple [] zones;
 
     public MultiCortex() {
 
         System.out.println("z_video");
-        z_video = new CortexZoneSimple("Input visual layer", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT);
+        z_video = new CortexZoneSimple("Input visual layer", this);
 
         System.out.println("z_viscor");
-        z_viscor = new CortexZoneComplex("Prime visual cortex", VISUAL_FIELD_WIDTH, VISUAL_FIELD_HEIGHT, 10,
-                new Mapping[]{
-                        new Mapping(z_video, 8, 1.9)
-                }
+        z_viscor = new CortexZoneComplex("Prime visual cortex", this, 10,
+            new Mapping[]{
+                new Mapping(z_video, 8, 1.9)
+            }
         );
 
 //        System.out.println("z_good");
@@ -77,7 +90,13 @@ public class MultiCortex {
 
     }
 
-    //Такт 1. Активация колонок (узнавание)
+
+	public void init() {
+		z_video.init();
+		z_viscor.init();
+	}
+
+	//Такт 1. Активация колонок (узнавание)
     public void cycle1() {
         //Последовательность активации зон коры определяется их номером
         z_viscor.cycle1();

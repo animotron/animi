@@ -220,6 +220,18 @@ public class Application extends JFrame {
     	//Начальный сброс "хорошо - плохо"
     	cortexs = new MultiCortex();
     	
+    	PFInitialization form = new PFInitialization(this, cortexs);
+    	form.setVisible(true);
+        desktop.add(form);
+        try {
+        	form.setSelected(true);
+        } catch (java.beans.PropertyVetoException e1) {}
+    }
+    
+    protected void initialize() {
+    	
+    	cortexs.init();
+    	
         for (CortexZoneSimple zone : cortexs.zones) {
         	if (zone instanceof CortexZoneComplex) {
 				CortexZoneComplex z = (CortexZoneComplex) zone;
@@ -419,7 +431,12 @@ public class Application extends JFrame {
         } catch (java.beans.PropertyVetoException e1) {}
     }
  
-    /**
+	public void closeFrame(JInternalFrame frame) {
+		desktop.remove(frame);
+		frame.dispose();
+	}
+
+	/**
      * Create the GUI and show it.  For thread safety,
      * this method should be invoked from the
      * event-dispatching thread.
