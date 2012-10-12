@@ -56,9 +56,8 @@ public class Visualizer extends JInternalFrame {
 	    
 	    this.simulator = simulator;
 	    
-	    if (simulator instanceof InternalFrameListener) {
+	    if (simulator instanceof InternalFrameListener)
 	    	addInternalFrameListener((InternalFrameListener) simulator);
-		}
 		    
 		setLocation(100, 100);
 		BufferedImage img = simulator.getImage();

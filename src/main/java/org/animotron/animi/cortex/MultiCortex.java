@@ -20,7 +20,6 @@
  */
 package org.animotron.animi.cortex;
 
-import org.animotron.animi.InitParam;
 import org.animotron.animi.Params;
 
 
@@ -56,7 +55,7 @@ public class MultiCortex {
         System.out.println("z_viscor");
         z_viscor = new CortexZoneComplex("Prime visual cortex", this, 10,
             new Mapping[]{
-                new Mapping(z_video, 8, 1.9)
+                new Mapping(z_video, 50, 0.02)
             }
         );
 

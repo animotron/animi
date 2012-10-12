@@ -34,9 +34,9 @@ public class Activation implements Act<CortexZoneComplex> {
 
     /** Matching percent for the active/passive elements required for recognition **/
     @InitParam(name="active matching")
-    private double k_det1;
+    public double k_det1;
     @InitParam(name="passive matching")
-    private double k_det2;
+    public double k_det2;
 
     public Activation (double k_det1, double k_det2) {
         this.k_det1 = k_det1;

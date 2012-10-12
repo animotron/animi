@@ -46,23 +46,24 @@ import java.util.List;
 public class CortexZoneComplex extends CortexZoneSimple {
 
 	@Params
-    private Activation activation = new Activation(0.6, 0.6);
-
-	@Params
-    private Recognition recognition = new Recognition(0.1);
-
-	@Params
-    private Remember remember = new Remember(0.05, 10, 2);
-	
-    Mapping[] in_zones;
+	public Mapping[] in_zones;
     
+	@Params
+	public Activation activation = new Activation(0.6, 0.6);
+
+	@Params
+	public Recognition recognition = new Recognition(0.1);
+
+	@Params
+	public Remember remember = new Remember(0.05, 10, 2);
+	
 	@InitParam(name="deep")
 	public int deep;
 	
 	/** Number of synaptic connections of the all simple neurons **/
 	public int ns_links;
 	/** Number of axonal connections of the all simple neurons **/
-	public int nas_links = 9;
+	protected int nas_links = 9;
 	/** Number of synaptic connections of the complex neuron **/
 	public int nsc_links;
 	/** Memory **/

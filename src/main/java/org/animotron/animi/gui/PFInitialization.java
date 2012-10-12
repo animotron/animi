@@ -109,10 +109,20 @@ public class PFInitialization extends JInternalFrame {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
+		
 		Class<?> clazz = obj.getClass();
 		
-		Field[] fields = clazz.getDeclaredFields();
+		if (clazz.isArray()) {
+			Object[] objs = ((Object[])obj);
+			for (int i = 0; i < objs.length; i++) {
+				Object o = objs[i];
+				addSep(gbc, o.toString());
+				scan(gbc, null, o);
+			}
+			return;
+		}
+
+		Field[] fields = clazz.getFields();
 		for (int i = 0; i < fields.length; i++) {
 			Field field = fields[i];
 //			System.out.println(field.getName());
