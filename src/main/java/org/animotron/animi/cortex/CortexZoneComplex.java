@@ -148,7 +148,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
                             do {
                                 do {
 	                                if (count > m.ns_links * 2) {
-	                                	sigma *= 2;
+	                                	sigma *= 1.5;
 	                                	count = 0;
 	                                }
 	                                count++;
