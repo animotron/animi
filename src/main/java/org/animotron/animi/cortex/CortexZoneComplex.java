@@ -297,21 +297,13 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	                    	
 	                    	final NeuronSimple sn = s[cl.x][cl.y][cl.z];
 	                    	if (sn.occupy) {
-	                    		
-	                    		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
 	                            for (int j = 0; j < ns_links; j++) {
 	                                final Link2dZone sl = sn.s_links[j];
 	                                if (sl.cond) {
-	                                	minX = Math.min(minX, sl.x);
-	                                	minY = Math.min(minY, sl.y);
-	                                }
-	                            }
-	                            for (int j = 0; j < ns_links; j++) {
-	                                final Link2dZone sl = sn.s_links[j];
-	                                if (sl.cond) {
-	                                	if (sl.x - minX < boxSize && sl.y - minY < boxSize) {
-											pX = x*boxSize + (sl.x - minX);
-											pY = y*boxSize + (sl.y - minY);
+										pX = x*boxSize + (boxSize / 2) + (sl.x - cl.x);
+										pY = y*boxSize + (boxSize / 2) + (sl.y - cl.y);
+	                                	if (pX > x*boxSize && pX < (x*boxSize+boxSize) 
+	                                			&& pY > y*boxSize && pY < (y*boxSize+boxSize)) {
 					                    	
 					                    	int c = Utils.calcGrey(image, pX, pY);
 											c += 50;
