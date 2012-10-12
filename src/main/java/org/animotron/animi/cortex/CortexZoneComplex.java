@@ -117,6 +117,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		// Плотность связей убывает экспоненциально с удалением от колонки.
 		double x_in_nerv, y_in_nerv;
         double X, Y, S;
+        double sigma;
 
 		for (Mapping m : in_zones) {
 
@@ -130,7 +131,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					x_in_nerv = x * m.zone.width() / (double) width();
 					y_in_nerv = y * m.zone.height() / (double) height();
 
-                    double sigma = ((m.zone.width() + m.zone.height()) / 2) * m.disp;
+                    sigma = ((m.zone.width() + m.zone.height()) / 2) * m.disp;
 
                     for (int z = 0; z < deep; z++) {
 						// Обнуление массива занятости связей
@@ -165,7 +166,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	                                lx = (int) Math.round(x_in_nerv + dX);
 	                                ly = (int) Math.round(y_in_nerv + dY);
 	
-                                } while (lx < 1 && ly < 1 && lx > m.zone.width() - 1 && ly > m.zone.height() - 1);
+	                                //определяем, что не вышли за границы поля колонок
+	                                //колонки по периметру не задействованы
+                                } while (!(lx >= 1 && ly >= 1 && lx < m.zone.width() - 1 && ly < m.zone.height() - 1));
 
                             // Проверка на повтор связи
 							} while (nerv_links[lx][ly]);

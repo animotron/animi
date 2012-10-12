@@ -35,6 +35,7 @@ public class Mapping {
 	@InitParam(name="ns_links")
     public int ns_links;           // Number of synaptic connections for the zone
     
+	/** дисперсия связей **/
 	@InitParam(name="disp")
 	public double disp;      // Grouping parameter. Describe a size of sensor field
 
