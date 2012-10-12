@@ -27,6 +27,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
+import javax.swing.event.InternalFrameListener;
 
 import org.animotron.animi.Imageable;
 import org.animotron.animi.simulator.Stimulator;
@@ -54,6 +55,10 @@ public class Visualizer extends JInternalFrame {
 	            true);//iconifiable
 	    
 	    this.simulator = simulator;
+	    
+	    if (simulator instanceof InternalFrameListener) {
+	    	addInternalFrameListener((InternalFrameListener) simulator);
+		}
 		    
 		setLocation(100, 100);
 		BufferedImage img = simulator.getImage();

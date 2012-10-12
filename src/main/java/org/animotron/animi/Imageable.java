@@ -34,4 +34,8 @@ public interface Imageable {
 	public BufferedImage getImage();
 
 	public Object whatAt(Point point);
+
+	public void focusGained(Point point);
+
+	public void focusLost(Point point);
 }

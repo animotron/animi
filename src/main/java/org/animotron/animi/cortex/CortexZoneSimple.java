@@ -105,4 +105,12 @@ public class CortexZoneSimple implements Layer {
 	public void set(int x, int y, boolean b) {
 		col[x][y].active = b;
 	}
+
+	@Override
+	public void focusGained(Point point) {
+	}
+
+	@Override
+	public void focusLost(Point point) {
+	}
 }

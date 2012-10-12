@@ -32,6 +32,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Complex cortex zone
@@ -257,6 +259,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	    private int maxX;
 	    private int maxY;
 	    private BufferedImage image;
+	    
+	    private List<Point> watching = new ArrayList<Point>();
+	    private Point atFocus = null;
 
 		ColumnRF_Image() {
 	        boxSize = 1;
@@ -281,7 +286,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 			int pX, pY = 0;
 	
-	//		g.setColor(Color.YELLOW);
+			g.setColor(Color.YELLOW);
+			for (Point p : watching) {
+				if (atFocus == p) {
+					g.setColor(Color.RED);
+					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
+					g.setColor(Color.YELLOW);
+				} else
+					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
+			}
 	
 			for (int x = 1; x < width() - 1; x++) {
 				for (int y = 1; y < height() - 1; y++) {
@@ -322,16 +335,27 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		@Override
 		public Object whatAt(Point point) {
 			try {
-				return 
-					new Object[] {
-						CortexZoneComplex.this, new Point(
-								Math.round(point.x / boxSize), 
-								Math.round(point.y / boxSize)
-							)
-					};
+				Point pos = new Point(
+						Math.round(point.x / boxSize), 
+						Math.round(point.y / boxSize)
+				);
+				
+				watching.add(pos);
+				
+				return new Object[] { CortexZoneComplex.this, pos };
 			} catch (Exception e) {
 			}
 			return null;
+		}
+
+		@Override
+		public void focusGained(Point point) {
+			atFocus = point;
+		}
+
+		@Override
+		public void focusLost(Point point) {
+			atFocus = null;
 		}
 	}
 

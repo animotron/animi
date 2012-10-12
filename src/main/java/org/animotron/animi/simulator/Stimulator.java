@@ -163,4 +163,12 @@ public abstract class Stimulator implements Runnable, Imageable {
 	public Object whatAt(Point point) {
 		return null;
 	}
+	
+	@Override
+	public void focusGained(Point point) {
+	}
+
+	@Override
+	public void focusLost(Point point) {
+	}
 }

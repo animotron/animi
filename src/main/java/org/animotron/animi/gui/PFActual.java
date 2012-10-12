@@ -24,10 +24,15 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 
 import org.animotron.animi.Imageable;
 import org.animotron.animi.RuntimeParam;
@@ -42,19 +47,12 @@ import org.animotron.animi.cortex.NeuronSimple;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class PFActual implements Imageable {
-	
-	CortexZoneComplex zone;
-	Point point;
-	NeuronComplex cn;
-	List<Field> cnFds = new ArrayList<Field>();
-	List<Field> snFds = new ArrayList<Field>();
-	
-	public PFActual(Object[] objs) {
-		zone = (CortexZoneComplex) objs[0];
-		point = (Point) objs[1];
-		cn = zone.col[point.x][point.y];
-		
+public class PFActual implements Imageable, InternalFrameListener {
+
+	static List<Field> cnFds = new ArrayList<Field>();
+	static List<Field> snFds = new ArrayList<Field>();
+
+	static {
 		Field[] fields = NeuronComplex.class.getFields();
 		for (int i = 0; i < fields.length; i++) {
 			Field field = fields[i];
@@ -68,6 +66,16 @@ public class PFActual implements Imageable {
 			if (field.isAnnotationPresent(RuntimeParam.class))
 				snFds.add(field);
 		}
+	}
+	
+	CortexZoneComplex zone;
+	Point point;
+	NeuronComplex cn;
+	
+	public PFActual(Object[] objs) {
+		zone = (CortexZoneComplex) objs[0];
+		point = (Point) objs[1];
+		cn = zone.col[point.x][point.y];
 	}
 
 	@Override
@@ -185,4 +193,43 @@ public class PFActual implements Imageable {
 		return null;
 	}
 
+	@Override
+	public void focusGained(Point point) {
+	}
+
+	@Override
+	public void focusLost(Point point) {
+	}
+
+	@Override
+	public void internalFrameOpened(InternalFrameEvent e) {
+		zone.getCRF().focusGained(point);
+	}
+
+	@Override
+	public void internalFrameClosing(InternalFrameEvent e) {
+		zone.getCRF().focusLost(point);
+	}
+
+	@Override
+	public void internalFrameClosed(InternalFrameEvent e) {
+	}
+
+	@Override
+	public void internalFrameIconified(InternalFrameEvent e) {
+	}
+
+	@Override
+	public void internalFrameDeiconified(InternalFrameEvent e) {
+	}
+
+	@Override
+	public void internalFrameActivated(InternalFrameEvent e) {
+		zone.getCRF().focusGained(point);
+	}
+
+	@Override
+	public void internalFrameDeactivated(InternalFrameEvent e) {
+		zone.getCRF().focusLost(point);
+	}
 }
