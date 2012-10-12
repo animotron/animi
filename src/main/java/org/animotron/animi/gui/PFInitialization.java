@@ -24,6 +24,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.lang.reflect.Field;
 
 import javax.swing.*;
@@ -63,7 +64,7 @@ public class PFInitialization extends JInternalFrame {
         scan(gbc, null, mc);
 		
 		JButton btInit = new JButton("Init");
-        btInit.setSelected(true);
+		btInit.setMnemonic(KeyEvent.VK_I);
         btInit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -73,6 +74,7 @@ public class PFInitialization extends JInternalFrame {
 		});
 
         JButton btCancel = new JButton("Cancel");
+        btCancel.setMnemonic(KeyEvent.VK_C);
         btCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
