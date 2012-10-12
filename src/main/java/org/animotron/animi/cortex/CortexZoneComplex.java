@@ -21,6 +21,7 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.Imageable;
+import org.animotron.animi.InitParam;
 import org.animotron.animi.Params;
 import org.animotron.animi.Utils;
 import org.animotron.animi.acts.Activation;
@@ -54,6 +55,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
     private Remember remember = new Remember(0.05, 10, 2);
 	
     Mapping[] in_zones;
+    
+	@InitParam(name="width")
 	public int deep;
 	
 	/** Number of synaptic connections of the all simple neurons **/

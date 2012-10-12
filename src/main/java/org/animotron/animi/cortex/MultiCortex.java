@@ -31,11 +31,6 @@ import org.animotron.animi.Params;
  */
 public class MultiCortex {
 
-	@InitParam(name="width")
-	public int VISUAL_FIELD_WIDTH = 160;
-	@InitParam(name="height")
-	public int VISUAL_FIELD_HEIGHT = 120;
-
     public boolean active = false;
     
     public Retina retina;

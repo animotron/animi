@@ -20,6 +20,7 @@
  */
 package org.animotron.animi.cortex;
 
+import org.animotron.animi.InitParam;
 import org.animotron.animi.Utils;
 
 import java.awt.Color;
@@ -39,6 +40,11 @@ public class CortexZoneSimple implements Layer {
     MultiCortex mc;
     /** State of complex neurons (outputs cortical columns) **/
     public NeuronComplex[][] col;
+    
+	@InitParam(name="width")
+	public int width = 160;
+	@InitParam(name="height")
+	public int height = 120;
 
     public CortexZoneSimple(String name, MultiCortex mc) {
         this.name = name;
@@ -46,9 +52,6 @@ public class CortexZoneSimple implements Layer {
     }
     
     public void init() {
-        int width = mc.VISUAL_FIELD_WIDTH;
-        int height = mc.VISUAL_FIELD_HEIGHT;
-        
         this.col = new NeuronComplex[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -60,9 +63,6 @@ public class CortexZoneSimple implements Layer {
     }
 
     public BufferedImage getImage() {
-        int width = mc.VISUAL_FIELD_WIDTH;
-        int height = mc.VISUAL_FIELD_HEIGHT;
-
         int c;
     	
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -90,11 +90,11 @@ public class CortexZoneSimple implements Layer {
     }
 
     public int width() {
-        return mc.VISUAL_FIELD_WIDTH;
+        return width;
     }
 
     public int height() {
-        return mc.VISUAL_FIELD_HEIGHT;
+        return height;
     }
 
 	@Override
