@@ -20,6 +20,8 @@
  */
 package org.animotron.animi.cortex;
 
+import org.animotron.animi.InitParam;
+
 /**
  * Projection description of the one zone to another
  * 
@@ -29,12 +31,16 @@ package org.animotron.animi.cortex;
  */
 public class Mapping {
 	public CortexZoneSimple zone;       // Projecting zone
+	
+	@InitParam(name="ns_links")
     public int ns_links;           // Number of synaptic connections for the zone
-    public double sigma;      // Grouping parameter. Describe a size of sensor field
+    
+	@InitParam(name="disp")
+	public double disp;      // Grouping parameter. Describe a size of sensor field
 
-    public Mapping(CortexZoneSimple zone, int ns_links, double sigma) {
+    public Mapping(CortexZoneSimple zone, int ns_links, double disp) {
         this.zone = zone;
-        this.sigma = sigma;
+        this.disp = disp;
         this.ns_links = ns_links;
     }
 

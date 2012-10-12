@@ -56,7 +56,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
     Mapping[] in_zones;
     
-	@InitParam(name="width")
+	@InitParam(name="deep")
 	public int deep;
 	
 	/** Number of synaptic connections of the all simple neurons **/
@@ -115,6 +115,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		// Связи распределяются случайным образом.
 		// Плотность связей убывает экспоненциально с удалением от колонки.
 		double x_in_nerv, y_in_nerv;
+        double X, Y, S;
 
 		for (Mapping m : in_zones) {
 
@@ -128,7 +129,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					x_in_nerv = x * m.zone.width() / (double) width();
 					y_in_nerv = y * m.zone.height() / (double) height();
 
-					for (int z = 0; z < deep; z++) {
+                    double sigma = ((m.zone.width() + m.zone.height()) / 2) * m.disp;
+
+                    for (int z = 0; z < deep; z++) {
 						// Обнуление массива занятости связей
 						for (int n1 = 0; n1 < m.zone.width(); n1++) {
 							for (int n2 = 0; n2 < m.zone.height(); n2++) {
@@ -139,35 +142,29 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						// преобразование Бокса — Мюллера для получения
 						// нормально распределенной величины
 						// DispLink - дисперсия связей
-
+						int count = 0;
 						for (int i = 0; i < m.ns_links; i++) {
                             int lx, ly;
                             do {
-                                double X, Y, S;
                                 do {
-                                    X = 2.0 * Math.random() - 1;
-                                    Y = 2.0 * Math.random() - 1;
-                                    S = X * X + Y * Y;
-                                } while (S > 1 || S == 0);
-                                S = Math.sqrt(-2 * Math.log(S) / S);
-                                double dX = X * S * m.sigma;
-                                double dY = Y * S * m.sigma;
-                                lx = (int) Math.round(x_in_nerv + dX);
-                                ly = (int) Math.round(y_in_nerv + dY);
-
-                                // колонки по периметру не задействованы
-
-                                if (lx < 1)
-                                    lx = 1;
-
-                                if (ly < 1)
-                                    ly = 1;
-
-                                if (lx > m.zone.width() - 2)
-                                    lx = m.zone.width() - 2;
-
-                                if (ly > m.zone.height() - 2)
-                                    ly = m.zone.height() - 2;
+	                                if (count > m.ns_links * 2) {
+	                                	sigma *= 2;
+	                                	count = 0;
+	                                }
+	                                count++;
+	                                	
+	                                do {
+	                                    X = 2.0 * Math.random() - 1;
+	                                    Y = 2.0 * Math.random() - 1;
+	                                    S = X * X + Y * Y;
+	                                } while (S > 1 || S == 0);
+	                                S = Math.sqrt(-2 * Math.log(S) / S);
+	                                double dX = X * S * sigma;
+	                                double dY = Y * S * sigma;
+	                                lx = (int) Math.round(x_in_nerv + dX);
+	                                ly = (int) Math.round(y_in_nerv + dY);
+	
+                                } while (lx < 1 && ly < 1 && lx > m.zone.width() - 1 && ly > m.zone.height() - 1);
 
                             // Проверка на повтор связи
 							} while (nerv_links[lx][ly]);
@@ -268,8 +265,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		ColumnRF_Image() {
 	        boxSize = 1;
-	        for (Mapping i : in_zones) {
-	            boxSize = (int) Math.max(boxSize, 6 * i.sigma);
+	        for (Mapping m : in_zones) {
+	            boxSize = (int) Math.max(boxSize, ((m.zone.width() + m.zone.height()) / 2) * m.disp);
 			}
 
 	        maxX = width() * boxSize;
