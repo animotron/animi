@@ -36,7 +36,7 @@ public class LineAnime extends AbstractAnime {
         this.p = new Point2D[] {
                 new Point(anime[0][0], anime[0][1]),
                 new Point(anime[0][0] - a / 2, anime[0][1] - a / 2),
-                new Point(anime[1][0] + a / 2, anime[1][1] + a / 2)
+                new Point(anime[0][0] + a / 2, anime[0][1] + a / 2)
         };
 
     }
