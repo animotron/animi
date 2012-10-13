@@ -26,6 +26,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 
 import javax.swing.*;
@@ -39,6 +41,10 @@ import org.animotron.animi.cortex.MultiCortex;
 import org.animotron.animi.cortex.Retina;
 import org.animotron.animi.simulator.*;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
@@ -49,7 +55,7 @@ public class Application extends JFrame {
 	
 	static Application _ = null;
 
-	private JMenuItem miInit = null;
+//	private JMenuItem miInit = null;
 	private JMenuItem miRun = null;
 	private JMenuItem miPause = null;
 	private JMenuItem miResume = null;
@@ -156,7 +162,8 @@ public class Application extends JFrame {
         menu.setMnemonic(KeyEvent.VK_D);
         menuBar.add(menu);
  
-        miInit = addMenu(menu, "init", KeyEvent.VK_I, new ActionListener() {
+//        miInit = 
+		addMenu(menu, "init", KeyEvent.VK_I, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 	            init();
@@ -210,6 +217,59 @@ public class Application extends JFrame {
         return menuItem;
     }
     
+    protected JToolBar createToolBar() {
+    	JToolBar bar = new JToolBar();
+    	
+    	final Kryo kryo = new Kryo();
+    	
+        JButton button = new JButton("Load");
+        button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Input input = new Input(new FileInputStream("file.bin"));
+					cortexs = kryo.readObject(input, MultiCortex.class);
+					input.close();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+        bar.add(button);
+        
+        button = new JButton("Save");
+        button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (cortexs != null) {
+					boolean was = cortexs.active;
+					cortexs.prepareForSerialization();
+					try {
+						if (was) Thread.sleep(1000);
+						
+						Output output = new Output(new FileOutputStream("file.bin"));
+						kryo.writeObject(output, cortexs);
+						output.close();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					cortexs.active = was;
+				}
+			}
+		});
+        bar.add(button);
+
+        return bar;
+    }
+
+    protected JPanel createStatusBar() {
+    	JPanel bar = new JPanel();
+    	
+    	return bar;
+    }
+    
     private void init() {
 //    	camView.resume();
     	//задание параметров зон коры и структуры связей
@@ -217,7 +277,8 @@ public class Application extends JFrame {
     	//инициализация зон коры
     	//CortexInit
     	//Начальный сброс "хорошо - плохо"
-    	cortexs = new MultiCortex();
+    	if (cortexs == null)
+    		cortexs = new MultiCortex();
     	
     	PFInitialization form = new PFInitialization(this, cortexs);
     	form.setVisible(true);
@@ -244,8 +305,6 @@ public class Application extends JFrame {
 
 //    	camView.resume();
 
-    	miInit.setEnabled(false);
-    	
     	miRun.setEnabled(true);
     	
     	miPause.setEnabled(false);
@@ -255,43 +314,47 @@ public class Application extends JFrame {
     }
     
     private void run() {
-    	cortexs.active = true;
+    	if (cortexs != null) {
+			cortexs.active = true;
+			
+			miRun.setEnabled(false);
+			
+			miPause.setEnabled(true);
+			miResume.setEnabled(false);
     	
-    	miInit.setEnabled(false);
-    	
-    	miRun.setEnabled(false);
-    	
-    	miPause.setEnabled(true);
-    	miResume.setEnabled(false);
-    	
-    	miStop.setEnabled(true);
+			miStop.setEnabled(true);
+    	}
     }
     
     private void pause() {
-		cortexs.active = false; 
-		
-		miPause.setEnabled(false);
-		miResume.setEnabled(true);
+    	if (cortexs != null) {
+			cortexs.active = false; 
+			
+			miPause.setEnabled(false);
+			miResume.setEnabled(true);
+    	}
     }
     
     private void resume() {
-		cortexs.active = true; 
-		
-		miResume.setEnabled(false);
-		miPause.setEnabled(true);
+    	if (cortexs != null) {
+			cortexs.active = true; 
+			
+			miResume.setEnabled(false);
+			miPause.setEnabled(true);
+    	}
     }
 	
     private void stop() {
-		cortexs.active = false; 
-		
-		miInit.setEnabled(true);
-		
-		miRun.setEnabled(false);
-		
-		miPause.setEnabled(false);
-		miResume.setEnabled(false);
-		
-		miStop.setEnabled(false);
+    	if (cortexs != null) {
+			cortexs.active = false; 
+			
+			miRun.setEnabled(false);
+			
+			miPause.setEnabled(false);
+			miResume.setEnabled(false);
+			
+			miStop.setEnabled(false);
+    	}
 	}
 
 	private void addDoubleSlider(String name, final String constName, JPanel tools) {
