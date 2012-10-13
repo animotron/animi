@@ -30,25 +30,10 @@ import java.awt.image.BufferedImage;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public class RectAnime implements Figure {
-
-    private int[][] anime;
-
-    private int i = 0;
-    private double dx, dy, dt;
-    private double l = 0;
-    private AffineTransform at;
-    Point2D[] p;
-    private Polygon polygon = null;
-
-//    private int a;
+public class RectAnime extends AbstractAnime {
 
     public RectAnime(int a, double dt, int[][] anime) {
-
-//        this.a = a;
-        this.dt = dt;
-        this.anime = anime;
-
+        super(dt, anime);
         this.p = new Point2D[] {
                 new Point(anime[0][0], anime[0][1]),
                 new Point(anime[0][0] - a / 2, anime[0][1] - a / 2),
@@ -61,33 +46,12 @@ public class RectAnime implements Figure {
 	
 	public void drawImage(Graphics g) {
         g.setColor(Color.WHITE);
-		
-        if (polygon != null)
-			g.drawPolygon(polygon);
-	}
-
-	public void step() {
-        if (l <= 0) {
-            int j = Math.min(i + 1, anime.length - 1);
-            dx = anime[j][0] - anime[i][0];
-            dy = anime[j][1] - anime[i][1];
-            l = Math.sqrt(dx * dx + dy * dy);
-            dx /= l; dy /= l;
-            i = j == anime.length - 1 ? 0 : j;
-        } else {
-            l--;
-        }
-        
-        at = new AffineTransform();
-        at.rotate(dt, p[0].getX(), p[0].getY());
-        at.translate(dx, dy);
-        polygon = new Polygon();
+        Polygon polygon = new Polygon();
         for (int i = 0; i < p.length; i++) {
-            Point2D q = at.transform(p[i], null);
             if (i > 0) {
-                polygon.addPoint((int) Math.round(q.getX()), (int) Math.round(q.getY()));
+                polygon.addPoint((int) Math.round(p[i].getX()), (int) Math.round(p[i].getY()));
             }
-            p[i] = q;
         }
     }
+
 }
