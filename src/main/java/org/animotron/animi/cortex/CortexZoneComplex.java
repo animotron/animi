@@ -123,15 +123,20 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
             boolean[][] nerv_links = new boolean[m.zone.width()][m.zone.height()];
 
-			for (int x = 0; x < width(); x++) {
-				for (int y = 0; y < height(); y++) {
+            int sigmaX = (int) (m.disp * m.zone.width());
+            int sigmaY = (int) (m.disp * m.zone.height());
+
+            for (int x = sigmaX; x < width()-sigmaX; x++) {
+				for (int y = sigmaY; y < height()-sigmaY; y++) {
+					System.out.println("x = "+x+" y = "+y);
 
 					// Определение координат текущего нейрона в масштабе
 					// проецируемой зоны
 					x_in_nerv = x * m.zone.width() / (double) width();
 					y_in_nerv = y * m.zone.height() / (double) height();
+//					System.out.println("x_in_nerv = "+x_in_nerv+" y_in_nerv = "+y_in_nerv);
 
-                    sigma = ((m.zone.width() + m.zone.height()) / 2) * m.disp;
+                    sigma = m.disp * ((m.zone.width() + m.zone.height()) / 2);
 
                     for (int z = 0; z < deep; z++) {
 						// Обнуление массива занятости связей
@@ -149,8 +154,13 @@ public class CortexZoneComplex extends CortexZoneSimple {
                             int lx, ly;
                             do {
                                 do {
-	                                if (count > m.ns_links * 2) {
+	                                if (count > m.ns_links * 3) {
+	                                	if (Double.isInfinite(sigma)) {
+	                                		System.out.println("initialization failed @ x = "+x+" y = "+y);
+	                                		System.exit(1);
+	                                	}
 	                                	sigma *= 1.5;
+//	        							System.out.println(""+i+" of "+m.ns_links+" ("+sigma+")");
 	                                	count = 0;
 	                                }
 	                                count++;
@@ -169,6 +179,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	                                //определяем, что не вышли за границы поля колонок
 	                                //колонки по периметру не задействованы
                                 } while (!(lx >= 1 && ly >= 1 && lx < m.zone.width() - 1 && ly < m.zone.height() - 1));
+
+//                                System.out.println("lx = "+lx+" ly = "+ly);
 
                             // Проверка на повтор связи
 							} while (nerv_links[lx][ly]);
