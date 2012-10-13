@@ -113,4 +113,8 @@ public class CortexZoneSimple implements Layer {
 	@Override
 	public void focusLost(Point point) {
 	}
+
+	@Override
+	public void closed(Point point) {
+	}
 }

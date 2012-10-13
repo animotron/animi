@@ -38,4 +38,6 @@ public interface Imageable {
 	public void focusGained(Point point);
 
 	public void focusLost(Point point);
+
+	public void closed(Point point);
 }
