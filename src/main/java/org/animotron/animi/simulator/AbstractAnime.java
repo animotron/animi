@@ -21,47 +21,46 @@
 package org.animotron.animi.simulator;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public class OvalAnime implements Figure {
+public abstract class AbstractAnime implements Figure {
 
     private int[][] anime;
 
     private int i = 0;
-    private double x, y, dx, dy;
+    private double dx, dy, dt;
     private double l = 0;
-    private int a;
-    private int X, Y;
+    private AffineTransform at;
+    Point2D[] p;
 
-    public OvalAnime(int a, int[][] anime) {
-        this.a = a;
+    public AbstractAnime(double dt, int[][] anime) {
+        this.dt = dt;
         this.anime = anime;
     }
 	
-	public void drawImage(Graphics g) {
-        g.setColor(Color.WHITE);
-        g.drawOval(X - a / 2, Y - a / 2, a, a);
-	}
-
 	public void step() {
         if (l <= 0) {
-            x = X = anime[i][0];
-            y = Y = anime[i][1];
             int j = Math.min(i + 1, anime.length - 1);
-            dx = anime[j][0] - x;
-            dy = anime[j][1] - y;
+            dx = anime[j][0] - anime[i][0];
+            dy = anime[j][1] - anime[i][1];
             l = Math.sqrt(dx * dx + dy * dy);
             dx /= l; dy /= l;
             i = j == anime.length - 1 ? 0 : j;
         } else {
-            x += dx; y += dy;
-            X = (int) Math.round(x);
-            Y = (int) Math.round(y);
             l--;
+        }
+        at = new AffineTransform();
+        at.rotate(dt, p[0].getX(), p[0].getY());
+        at.translate(dx, dy);
+        for (int i = 0; i < p.length; i++) {
+            Point2D q = at.transform(p[i], null);
+            p[i] = q;
         }
     }
 }
