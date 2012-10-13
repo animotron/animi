@@ -44,6 +44,7 @@ public class PFInitialization extends JInternalFrame {
 	private static final long serialVersionUID = -2223763417833552625L;
 	
 	JPanel panel;
+	boolean readOnly;
 
 	public PFInitialization(final Application app, MultiCortex mc) {
 	    super("Initialization params",
@@ -51,6 +52,8 @@ public class PFInitialization extends JInternalFrame {
 	            false, //closable
 	            false, //maximizable
 	            false);//iconifiable
+	    
+	    readOnly = mc.active;
 	    
 	    panel = new JPanel();
 	    
@@ -66,6 +69,7 @@ public class PFInitialization extends JInternalFrame {
         scan(gbc, null, mc);
 		
 		JButton btInit = new JButton("Init");
+		btInit.setEnabled(!readOnly);
 		btInit.setMnemonic(KeyEvent.VK_I);
         btInit.addActionListener(new ActionListener() {
 			@Override
@@ -152,6 +156,7 @@ public class PFInitialization extends JInternalFrame {
 	private void addField(GridBagConstraints gbc, final Field f, final Object obj) {
 
         final JTextField text = new JTextField(getValue(f, obj));
+        text.setEditable(!readOnly);
         text.addFocusListener(new FocusListener() {
 			
 			@Override

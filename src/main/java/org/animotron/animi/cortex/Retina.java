@@ -48,6 +48,10 @@ public class Retina {
 	
 	private OnOffMatrix onOff = new OnOffMatrix();
 	
+	public Retina() {
+		this(WIDTH, HEIGHT);
+	}
+
 	public Retina(int width, int height) {
 		this.width = width;
 		this.height = height;

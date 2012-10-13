@@ -36,7 +36,9 @@ public class Recognition implements Act<CortexZoneComplex> {
 	@InitParam(name="excitation threshold")
 	public double k_active;
 
-    public Recognition (double k_active) {
+    public Recognition () {}
+
+	public Recognition (double k_active) {
         this.k_active = k_active;
     }
 

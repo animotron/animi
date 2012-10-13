@@ -69,7 +69,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	/** Memory **/
 	public NeuronSimple[][][] s;
 
-    CortexZoneComplex(String name, MultiCortex mc, int deep, Mapping[] in_zones) {
+    CortexZoneComplex() {
+		super();
+    }
+
+	CortexZoneComplex(String name, MultiCortex mc, int deep, Mapping[] in_zones) {
 
 		super(name, mc);
 		this.in_zones = in_zones;
@@ -258,6 +262,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			a[z] = image;
 		}
 		return a;
+	}
+	
+	public void prepareForSerialization() {
+		CRF = null;
 	}
 	
 	ColumnRF_Image CRF = null;

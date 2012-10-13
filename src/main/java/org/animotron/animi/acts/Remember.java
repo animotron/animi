@@ -44,6 +44,8 @@ public class Remember implements Act<CortexZoneComplex> {
 	@InitParam(name="Ratio threshold of forgetting")
     public double k_non;
 
+    public Remember () {}
+    
     public Remember(double k_mem, int n_act_min, double k_non) {
         this.k_mem = k_mem;
         this.n_act_min = n_act_min;

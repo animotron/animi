@@ -39,6 +39,8 @@ public class Mapping {
 	@InitParam(name="disp")
 	public double disp;      // Grouping parameter. Describe a size of sensor field
 
+	Mapping () {}
+	
     public Mapping(CortexZoneSimple zone, int ns_links, double disp) {
         this.zone = zone;
         this.disp = disp;

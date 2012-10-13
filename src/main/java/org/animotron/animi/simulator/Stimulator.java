@@ -69,14 +69,12 @@ public class Stimulator implements Runnable, Imageable {
 				}
 				final BufferedImage image = getImage();
 
-                if (cortexs != null && image != null) {
+                if (cortexs != null && cortexs.active && image != null) {
                 	cortexs.retina.process(image);
                 	
-                	if (cortexs.active) {
-                		cortexs.cycle1();
-                		cortexs.cycle2();
-                		count++;
-                	}
+            		cortexs.cycle1();
+            		cortexs.cycle2();
+            		count++;
                 }
                 
                 if (frequency != 0)

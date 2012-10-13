@@ -46,6 +46,11 @@ public class CortexZoneSimple implements Layer {
 	@InitParam(name="height")
 	public int height = 120;
 
+    CortexZoneSimple() {
+    	name = null;
+    	mc = null;
+    }
+
     public CortexZoneSimple(String name, MultiCortex mc) {
         this.name = name;
         this.mc = mc;
