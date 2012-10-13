@@ -282,7 +282,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		ColumnRF_Image() {
 	        boxSize = 1;
 	        for (Mapping m : in_zones) {
-	            boxSize = (int) Math.max(boxSize, ((m.zone.width() + m.zone.height()) / 2) * m.disp);
+	            boxSize = (int) Math.max(boxSize, ((m.zone.width() + m.zone.height()) / 2) * m.disp * 3);
 			}
 
 	        maxX = width() * boxSize;
