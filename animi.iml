@@ -13,12 +13,78 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="jdk" jdkName="JavaSE-1.6" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="library" name="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER" level="application" />
+    <orderEntry type="library" name="Maven: com.github.sarxos:webcam-capture:0.3.4-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.jhlabs:filters:2.0.235" level="project" />
+    <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.6.1" level="project" />
+    <orderEntry type="library" name="Maven: com.google.android.tools:dx:1.7" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.4" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:0.9.18" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:0.9.18" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.felix:org.osgi.core:1.4.0" level="project" />
+    <orderEntry type="library" name="Maven: com.github.sarxos:webcam-capture-driver-openimaj:0.3.4" level="project" />
+    <orderEntry type="library" name="Maven: org.openimaj:core-video-capture:1.0.6-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.openimaj:core-video:1.0.6-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.openimaj:core-image:1.0.6-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.openimaj:core:1.0.6-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.openimaj:core-citation:1.0.6-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.openimaj:core-aop-support:1.0.6-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.jbibtex:jbibtex:r16" level="project" />
+    <orderEntry type="library" name="Maven: javassist:javassist:3.12.1.GA" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.14" level="project" />
+    <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.6.1" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.2" level="project" />
+    <orderEntry type="library" name="Maven: colt:colt:1.2.0" level="project" />
+    <orderEntry type="library" name="Maven: concurrent:concurrent:1.3.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.2" level="project" />
+    <orderEntry type="library" name="Maven: com.esotericsoftware.kryo:kryo:2.17" level="project" />
+    <orderEntry type="library" name="Maven: com.esotericsoftware.reflectasm:reflectasm:shaded:1.07" level="project" />
+    <orderEntry type="library" name="Maven: org.ow2.asm:asm:4.0" level="project" />
+    <orderEntry type="library" name="Maven: com.esotericsoftware.minlog:minlog:1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.objenesis:objenesis:1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ant:ant:1.8.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ant:ant-launcher:1.8.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.2" level="project" />
+    <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.1.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.6" level="project" />
+    <orderEntry type="library" name="Maven: org.openimaj:core-math:1.0.6-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: jama:jama:1.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.matrix-toolkits-java:mtj:0.9.14" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.netlib-java:netlib-java:0.9.3" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.f2j:arpack_combined_all:0.1" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.jafama:JaFaMa:1.2" level="project" />
+    <orderEntry type="library" name="Maven: jgrapht:jgrapht:0.8.2" level="project" />
+    <orderEntry type="library" name="Maven: ch.akuhn.matrix:MatrixLib:1.0-OpenIMAJ-Fixes" level="project" />
+    <orderEntry type="library" name="Maven: gov.sandia.foundry:gov-sandia-cognition-common-core:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: com.thoughtworks.xstream:xstream:1.3.1" level="project" />
+    <orderEntry type="library" name="Maven: xpp3:xpp3_min:1.1.4c" level="project" />
+    <orderEntry type="library" name="Maven: gov.sandia.foundry:gov-sandia-cognition-common-data:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: gov.sandia.foundry:gov-sandia-cognition-learning-core:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: gov.sandia.foundry:gov-sandia-cognition-text-core:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: gov.sandia.foundry:porter-stemmer:1.4" level="project" />
+    <orderEntry type="library" name="Maven: gov.sandia.foundry:gov-sandia-cognition-framework-core:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: gov.sandia.foundry:gov-sandia-cognition-framework-learning:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-math:2.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.sanselan:sanselan:0.97-incubator" level="project" />
+    <orderEntry type="library" name="Maven: com.caffeineowl.graphics:BezierUtils:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: javax.media:jai-core:1.1.3" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.media:jai-codec:1.1.3" level="project" />
+    <orderEntry type="library" name="Maven: com.twelvemonkeys.imageio:imageio-jpeg:3.0-20120907" level="project" />
+    <orderEntry type="library" name="Maven: com.twelvemonkeys.imageio:imageio-core:3.0-20120907" level="project" />
+    <orderEntry type="library" name="Maven: com.twelvemonkeys.common:common-io:3.0-20120907" level="project" />
+    <orderEntry type="library" name="Maven: com.twelvemonkeys.common:common-lang:3.0-20120907" level="project" />
+    <orderEntry type="library" name="Maven: com.twelvemonkeys.common:common-image:3.0-20120907" level="project" />
+    <orderEntry type="library" name="Maven: org.mockito:mockito-all:1.8.5" level="project" />
+    <orderEntry type="library" name="Maven: com.twelvemonkeys.imageio:imageio-metadata:3.0-20120907" level="project" />
+    <orderEntry type="library" name="Maven: org.openimaj:core-audio:1.0.6-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.openimaj.content:animation:1.0.6-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.10" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
   </component>
 </module>
 

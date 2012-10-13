@@ -31,12 +31,11 @@ import org.animotron.animi.Imageable;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public abstract class Stimulator implements Runnable, Imageable {
+public class Stimulator implements Runnable, Imageable {
 	
-	protected BufferedImage image;
-
 	private int frequency = 60; // Hz
 
     private long fps;
@@ -45,10 +44,17 @@ public abstract class Stimulator implements Runnable, Imageable {
     private long count = 0;
 
     private boolean run = true;
-    
-    protected Stimulator() {}
+    private Figure[] figures;
+    private int width, height;
 
-    protected Stimulator(int frequency) {
+    public Stimulator(int width, int height, Figure[] figures) {
+        this.width = width;
+        this.height = height;
+        this.figures = figures;
+    }
+
+    protected Stimulator(int width, int height, Figure[] figures, int frequency) {
+        this(width, height, figures);
     	this.frequency = frequency;
 	}
     
@@ -123,31 +129,36 @@ public abstract class Stimulator implements Runnable, Imageable {
 	}
 
 	public BufferedImage getImage() {
-        step();
+
+        for (Figure i : figures) {
+            i.step();
+        }
         
         //workaround
-        BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();
 
-    	drawImage(g);
-        
+        for (Figure i : figures) {
+            i.drawImage(g);
+        }
+
         return img;
 	}
 	
 	public BufferedImage getUserImage() {
         //workaround
-        BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
         Graphics g = img.getGraphics();
 
-    	drawImage(g);
-    	drawUImage(g);
+        for (Figure i : figures) {
+            i.drawImage(g);
+        }
+        drawUImage(g);
         
     	return img;
 	}
 
-	protected abstract void drawImage(Graphics g);
-	
 	protected void drawUImage(Graphics g) {
 		int textY = g.getFontMetrics(g.getFont()).getHeight();
 
@@ -155,9 +166,6 @@ public abstract class Stimulator implements Runnable, Imageable {
 
         g.drawString(fps + " fps; "+count+" cycles;", 0, textY);
 	}
-
-	protected abstract void step();
-	
 
 	@Override
 	public Object whatAt(Point point) {

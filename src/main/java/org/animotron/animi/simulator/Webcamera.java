@@ -22,6 +22,7 @@ package org.animotron.animi.simulator;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 import com.github.sarxos.webcam.*;
 import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
@@ -30,11 +31,12 @@ import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class Webcamera extends Stimulator implements WebcamListener {
+public class Webcamera implements Figure, WebcamListener {
 	
 	private Webcam webcam = null;
+    private BufferedImage image;
 
-	public Webcamera() {
+    public Webcamera() {
         Webcam.setDriver(new OpenImajDriver());
         webcam = Webcam.getDefault();
         if (webcam == null) {
@@ -52,7 +54,7 @@ public class Webcamera extends Stimulator implements WebcamListener {
 
 	@Override
 	public void drawImage(Graphics g) {
-		g.drawImage(webcam.getImage(), 0, 0, null);
+		g.drawImage(image, 0, 0, null);
 	}
 
 	public void start() {
@@ -76,6 +78,8 @@ public class Webcamera extends Stimulator implements WebcamListener {
 	}
 
 	@Override
-	protected void step() {
+	public void step() {
+        image = webcam.getImage();
 	}
+
 }

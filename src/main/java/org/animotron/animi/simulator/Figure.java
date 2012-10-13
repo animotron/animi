@@ -20,31 +20,21 @@
  */
 package org.animotron.animi.simulator;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Point;
+import org.animotron.animi.Imageable;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import org.animotron.animi.cortex.Retina;
+import static org.animotron.animi.gui.Application.cortexs;
 
 /**
- * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public class Geometry implements Figure {
-	
-	public void drawImage(Graphics g) {
-		g.setColor(Color.WHITE);
-		g.drawRect(100, 100, 100, 100);
-		g.fillRect(250, 100, 100, 100);
+public interface Figure {
 
-		g.drawLine(400, 100, 450, 200);
-		
-		g.drawOval(100, 250, 100, 100);
-		g.fillOval(250, 250, 100, 100);
-	}
-	
-	public void step() {
-	}
+	public void drawImage(Graphics g);
+
+	public void step();
+
 }

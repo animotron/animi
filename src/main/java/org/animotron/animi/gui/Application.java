@@ -37,6 +37,7 @@ import org.animotron.animi.cortex.CortexZoneComplex;
 import org.animotron.animi.cortex.CortexZoneSimple;
 import org.animotron.animi.cortex.MultiCortex;
 import org.animotron.animi.cortex.Retina;
+import org.animotron.animi.simulator.Figure;
 import org.animotron.animi.simulator.RectAnime;
 import org.animotron.animi.simulator.Stimulator;
 
@@ -409,17 +410,21 @@ public class Application extends JFrame {
         tools.add(panel);
 	}
 
-	Stimulator stimulator = 
-		new RectAnime(
-            Retina.WIDTH, Retina.HEIGHT, 50, 0.05,
-            new int[][] {
-                {40, 40},
-                {Retina.WIDTH - 40, 40},
-                {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-                {40, Retina.HEIGHT - 40},
-                {40, 40}
+	Stimulator stimulator = new Stimulator(
+            Retina.WIDTH, Retina.HEIGHT,
+            new Figure[] {
+                    new RectAnime(
+                            50, 0.05,
+                            new int[][] {
+                                    {40, 40},
+                                    {Retina.WIDTH - 40, 40},
+                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+                                    {40, Retina.HEIGHT - 40},
+                                    {40, 40}
+                            }
+                    )
             }
-        );
+    );
 
     //Create a new internal frame.
     protected void createFrame(Imageable imageable) {

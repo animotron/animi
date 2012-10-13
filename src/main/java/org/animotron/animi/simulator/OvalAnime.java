@@ -27,7 +27,7 @@ import java.awt.image.BufferedImage;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class OvalAnime extends Stimulator {
+public class OvalAnime implements Figure {
 
     private int[][] anime;
 
@@ -37,11 +37,9 @@ public class OvalAnime extends Stimulator {
     private int a;
     private int X, Y;
 
-    public OvalAnime(int width, int height, int a, int[][] anime) {
+    public OvalAnime(int a, int[][] anime) {
         this.a = a;
         this.anime = anime;
-
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 	
 	public void drawImage(Graphics g) {
@@ -49,7 +47,7 @@ public class OvalAnime extends Stimulator {
         g.fillOval(X - a / 2, Y - a / 2, a, a);
 	}
 
-	protected void step() {
+	public void step() {
         if (l <= 0) {
             x = X = anime[i][0];
             y = Y = anime[i][1];

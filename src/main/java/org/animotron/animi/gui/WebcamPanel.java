@@ -120,9 +120,12 @@ public class WebcamPanel extends JInternalFrame implements MouseListener {
 	    setSize(Retina.WIDTH, Retina.HEIGHT);
 		
 		//simulate
+
+        Figure[] figures;
+
 		if (false) {
-			simulator = new RectAnime(
-                    Retina.WIDTH, Retina.HEIGHT, 50, 0.05,
+			figures = new Figure[] {new RectAnime(
+                    50, 0.05,
                     new int[][] {
                             {40, 40},
                             {Retina.WIDTH - 40, 40},
@@ -130,16 +133,17 @@ public class WebcamPanel extends JInternalFrame implements MouseListener {
                             {40, Retina.HEIGHT - 40},
                             {40, 40}
                     }
-            );
-			repainter = new Repainter();
-			repainter.start();
+            )};
 		} else {
-			simulator = new Webcamera();
-			repainter = new Repainter();
-			repainter.start();
+			figures = new Figure[] {new Webcamera()};
 		}
-		
-		addMouseListener(this);
+
+        simulator = new Stimulator(Retina.WIDTH, Retina.HEIGHT, figures);
+
+        repainter = new Repainter();
+        repainter.start();
+
+        addMouseListener(this);
 	}
 	
     @Override

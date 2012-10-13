@@ -27,9 +27,10 @@ import java.awt.image.BufferedImage;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public class RectAnime extends Stimulator {
+public class RectAnime implements Figure {
 
     private int[][] anime;
 
@@ -42,9 +43,8 @@ public class RectAnime extends Stimulator {
 
 //    private int a;
 
-    public RectAnime(int width, int height, int a, double dt, int[][] anime) {
-    	super(0);
-    	
+    public RectAnime(int a, double dt, int[][] anime) {
+
 //        this.a = a;
         this.dt = dt;
         this.anime = anime;
@@ -57,7 +57,6 @@ public class RectAnime extends Stimulator {
                 new Point(anime[0][0] - a / 2, anime[0][1] + a / 2)
         };
 
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 	
 	public void drawImage(Graphics g) {
@@ -67,7 +66,7 @@ public class RectAnime extends Stimulator {
 			g.drawPolygon(polygon);
 	}
 
-	protected void step() {
+	public void step() {
         if (l <= 0) {
             int j = Math.min(i + 1, anime.length - 1);
             dx = anime[j][0] - anime[i][0];
