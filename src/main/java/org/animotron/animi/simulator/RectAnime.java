@@ -52,6 +52,7 @@ public class RectAnime extends AbstractAnime {
                 polygon.addPoint((int) Math.round(p[i].getX()), (int) Math.round(p[i].getY()));
             }
         }
+        g.drawPolygon(polygon);
     }
 
 }

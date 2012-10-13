@@ -411,6 +411,46 @@ public class Application extends JFrame {
 	Stimulator stimulator = new Stimulator(
             Retina.WIDTH, Retina.HEIGHT,
             new Figure[] {
+                    new LineAnime(
+                            30, -0.03,
+                            new int[][] {
+                                    {40, 40},
+                                    {Retina.WIDTH - 40, 40},
+                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+                                    {40, Retina.HEIGHT - 40},
+                                    {40, 40}
+                            }
+                    ),
+                    new LineAnime(
+                            30, 0.03,
+                            new int[][] {
+                                    {Retina.WIDTH - 40, 40},
+                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+                                    {40, Retina.HEIGHT - 40},
+                                    {40, 40},
+                                    {Retina.WIDTH - 40, 40},
+                            }
+                    ),
+                    new LineAnime(
+                            30, -0.07,
+                            new int[][] {
+                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+                                    {40, Retina.HEIGHT - 40},
+                                    {40, 40},
+                                    {Retina.WIDTH - 40, 40},
+                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40}
+                            }
+                    ),
+                    new LineAnime(
+                            30, 0.07,
+                            new int[][] {
+                                    {40, Retina.HEIGHT - 40},
+                                    {40, 40},
+                                    {Retina.WIDTH - 40, 40},
+                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+                                    {40, Retina.HEIGHT - 40}
+                            }
+                    ),
                     new OvalAnime(30,
                             new int[][] {
                                     {50, 50},
@@ -424,9 +464,9 @@ public class Application extends JFrame {
                             50, 0.05,
                             new int[][] {
                                     {40, 40},
-                                    {Retina.WIDTH - 40, 40},
-                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
                                     {40, Retina.HEIGHT - 40},
+                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+                                    {Retina.WIDTH - 40, 40},
                                     {40, 40}
                             }
                     )
