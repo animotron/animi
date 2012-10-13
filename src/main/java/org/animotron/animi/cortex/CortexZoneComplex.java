@@ -128,7 +128,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
             for (int x = sigmaX; x < width()-sigmaX; x++) {
 				for (int y = sigmaY; y < height()-sigmaY; y++) {
-					System.out.println("x = "+x+" y = "+y);
+//					System.out.println("x = "+x+" y = "+y);
 
 					// Определение координат текущего нейрона в масштабе
 					// проецируемой зоны
@@ -372,6 +372,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		@Override
 		public void focusLost(Point point) {
 			atFocus = null;
+		}
+
+		@Override
+		public void closed(Point point) {
+			watching.remove(point);
 		}
 	}
 

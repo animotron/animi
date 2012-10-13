@@ -179,4 +179,8 @@ public class Stimulator implements Runnable, Imageable {
 	@Override
 	public void focusLost(Point point) {
 	}
+	
+	@Override
+	public void closed(Point point) {
+	}
 }
