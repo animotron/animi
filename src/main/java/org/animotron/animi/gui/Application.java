@@ -231,6 +231,8 @@ public class Application extends JFrame {
 					Input input = new Input(new FileInputStream("file.bin"));
 					cortexs = kryo.readObject(input, MultiCortex.class);
 					input.close();
+
+					run();
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -245,6 +247,7 @@ public class Application extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (cortexs != null) {
 					boolean was = cortexs.active;
+					pause();
 					cortexs.prepareForSerialization();
 					try {
 						if (was) Thread.sleep(1000);
@@ -255,7 +258,6 @@ public class Application extends JFrame {
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
-					cortexs.active = was;
 				}
 			}
 		});

@@ -105,7 +105,6 @@ public class MultiCortex {
     }
 
 	public void prepareForSerialization() {
-		active = false;
 //		z_video.prepareForSerialization();
 		z_viscor.prepareForSerialization();
 	}
