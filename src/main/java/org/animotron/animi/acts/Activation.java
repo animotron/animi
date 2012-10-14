@@ -20,7 +20,7 @@
  */
 package org.animotron.animi.acts;
 
-import org.animotron.animi.InitParam;
+import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 
 /**
@@ -33,9 +33,9 @@ import org.animotron.animi.cortex.*;
 public class Activation implements Act<CortexZoneComplex> {
 
     /** Matching percent for the active/passive elements required for recognition **/
-    @InitParam(name="active matching")
+	@RuntimeParam(name="active matching")
     public double k_det1;
-    @InitParam(name="passive matching")
+	@RuntimeParam(name="passive matching")
     public double k_det2;
 
     Activation() {}

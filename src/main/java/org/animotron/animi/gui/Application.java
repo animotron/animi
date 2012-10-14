@@ -28,17 +28,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.lang.reflect.Field;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.animotron.animi.Imageable;
-import org.animotron.animi.cortex.CortexZoneComplex;
-import org.animotron.animi.cortex.CortexZoneSimple;
-import org.animotron.animi.cortex.MultiCortex;
-import org.animotron.animi.cortex.Retina;
+import org.animotron.animi.cortex.*;
 import org.animotron.animi.simulator.*;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -359,120 +353,6 @@ public class Application extends JFrame {
     	}
 	}
 
-	private void addDoubleSlider(String name, final String constName, JPanel tools) {
-		final Field field;
-		double value;
-		try {
-			field = MultiCortex.class.getDeclaredField(constName);
-			value = field.getDouble(MultiCortex.class);
-		} catch (Exception ex) {
-			return;
-		}
-		
-        JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createLineBorder(Color.black));
-
-        GridBagLayout layout = new GridBagLayout();
-		panel.setLayout(layout);
-		
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridwidth = 2;
-		
-        panel.add(new JLabel(name), c);
-
-        final JLabel label = new JLabel();
-        JSlider slider = new JSlider(JSlider.HORIZONTAL, 50, 200, (int)Math.round(value * 100));
-        slider.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				JSlider source = (JSlider)e.getSource();
-				try {
-					field.setDouble(MultiCortex.class, source.getValue() / 100.0);
-			        label.setText(String.valueOf(field.get(MultiCortex.class)));
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		});
-
-        label.setText(String.valueOf(value));
-        label.setLabelFor(slider);
-		c.gridwidth = 1;
-		c.gridx = 0;
-		c.gridy = 1;
-        panel.add(label, c);
-
-        //Turn on labels at major tick marks.
-		slider.setMajorTickSpacing(10);
-		slider.setMinorTickSpacing(5);
-		slider.setPaintTicks(true);
-		c.gridx = 1;
-		c.gridy = 1;
-		panel.add(slider, c);
-		
-        tools.add(panel);
-	}
-
-	private void addIntSlider(String name, final String constName, JPanel tools) {
-		final Field field;
-		int value;
-		try {
-			field = MultiCortex.class.getDeclaredField(constName);
-			value = field.getInt(MultiCortex.class);
-		} catch (Exception ex) {
-			return;
-		}
-		
-        JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createLineBorder(Color.black));
-
-        GridBagLayout layout = new GridBagLayout();
-		panel.setLayout(layout);
-		
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridwidth = 2;
-		
-        panel.add(new JLabel(name), c);
-
-        final JLabel label = new JLabel();
-        JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 255, value);
-        slider.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				JSlider source = (JSlider)e.getSource();
-				try {
-					field.setInt(MultiCortex.class, source.getValue());
-			        label.setText(String.valueOf(field.get(MultiCortex.class)));
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		});
-
-        label.setText(String.valueOf(value));
-        label.setLabelFor(slider);
-		c.gridwidth = 1;
-		c.gridx = 0;
-		c.gridy = 1;
-        panel.add(label, c);
-
-        //Turn on labels at major tick marks.
-		slider.setMajorTickSpacing(10);
-		slider.setMinorTickSpacing(5);
-		slider.setPaintTicks(true);
-		c.gridx = 1;
-		c.gridy = 1;
-		panel.add(slider, c);
-		
-        tools.add(panel);
-	}
-
 	Stimulator stimulator = new Stimulator(
             Retina.WIDTH, Retina.HEIGHT,
             new Figure[] {
@@ -549,6 +429,7 @@ public class Application extends JFrame {
     }
  
 	public void closeFrame(JInternalFrame frame) {
+		frame.setVisible(false);
 		desktop.remove(frame);
 		frame.dispose();
 	}

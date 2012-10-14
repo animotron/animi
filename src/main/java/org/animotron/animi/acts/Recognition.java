@@ -20,7 +20,7 @@
  */
 package org.animotron.animi.acts;
 
-import org.animotron.animi.InitParam;
+import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 
 /**
@@ -33,7 +33,7 @@ import org.animotron.animi.cortex.*;
 public class Recognition implements Act<CortexZoneComplex> {
 
     /** Excitation threshold of cortical column **/
-	@InitParam(name="excitation threshold")
+	@RuntimeParam(name="excitation threshold")
 	public double k_active;
 
     public Recognition () {}

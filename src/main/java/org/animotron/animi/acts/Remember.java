@@ -21,6 +21,7 @@
 package org.animotron.animi.acts;
 
 import org.animotron.animi.InitParam;
+import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 
 /**
@@ -33,15 +34,15 @@ import org.animotron.animi.cortex.*;
 public class Remember implements Act<CortexZoneComplex> {
 
     /** Min number of active synapses to remember **/
-	@InitParam(name="Min number of active synapses to remember")
+	@RuntimeParam(name="Min number of active synapses to remember")
     public double k_mem;
 
 	/** Number of cycles to turn on the possibility of forgetting **/
-	@InitParam(name="Number of cycles to turn on the possibility of forgetting")
+	@RuntimeParam(name="Number of cycles to turn on the possibility of forgetting")
     public int n_act_min;
 
 	/** Ratio threshold of forgetting **/
-	@InitParam(name="Ratio threshold of forgetting")
+	@RuntimeParam(name="Ratio threshold of forgetting")
     public double k_non;
 
     public Remember () {}

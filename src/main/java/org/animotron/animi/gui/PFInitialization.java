@@ -33,6 +33,7 @@ import javax.swing.*;
 
 import org.animotron.animi.InitParam;
 import org.animotron.animi.Params;
+import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.MultiCortex;
 
 /**
@@ -132,7 +133,7 @@ public class PFInitialization extends JInternalFrame {
 		for (int i = 0; i < fields.length; i++) {
 			Field field = fields[i];
 //			System.out.println(field.getName());
-			if (field.isAnnotationPresent(InitParam.class)) {
+			if (field.isAnnotationPresent(InitParam.class) || field.isAnnotationPresent(RuntimeParam.class)) {
 				addField(gbc, field, obj);
 			
 			} else if (field.isAnnotationPresent(Params.class)) {
@@ -156,7 +157,8 @@ public class PFInitialization extends JInternalFrame {
 	private void addField(GridBagConstraints gbc, final Field f, final Object obj) {
 
         final JTextField text = new JTextField(getValue(f, obj));
-        text.setEditable(!readOnly);
+        if (f.isAnnotationPresent(InitParam.class))
+        	text.setEditable(!readOnly);
         text.addFocusListener(new FocusListener() {
 			
 			@Override
