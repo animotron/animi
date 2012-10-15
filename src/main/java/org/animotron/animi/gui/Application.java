@@ -65,6 +65,9 @@ public class Application extends JFrame {
 		
 		setTitle("Animi");
 		
+		Container c = getContentPane();
+		setLayout(new BorderLayout());
+		
         int inset = 50;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds(inset, inset,
@@ -74,8 +77,11 @@ public class Application extends JFrame {
         desktop = new JDesktopPane();
         createFrame(stimulator);
         
-        setContentPane(desktop);
         setJMenuBar(createMenuBar());
+        
+        c.add(createToolBar(),BorderLayout.NORTH);
+        c.add(desktop, BorderLayout.CENTER);
+        c.add(createStatusBar(),BorderLayout.SOUTH);
  
         //Make dragging a little faster but perhaps uglier.
         desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
