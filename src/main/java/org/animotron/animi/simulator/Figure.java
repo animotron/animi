@@ -20,12 +20,7 @@
  */
 package org.animotron.animi.simulator;
 
-import org.animotron.animi.Imageable;
-
 import java.awt.*;
-import java.awt.image.BufferedImage;
-
-import static org.animotron.animi.gui.Application.cortexs;
 
 /**
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>

@@ -21,7 +21,6 @@
 package org.animotron.animi.simulator;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>

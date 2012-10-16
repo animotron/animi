@@ -22,10 +22,6 @@ package org.animotron.animi.simulator;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-
-import org.animotron.animi.cortex.Retina;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
