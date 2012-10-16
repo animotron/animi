@@ -32,6 +32,8 @@ public class MultiCortex {
 
     public boolean active = false;
     
+    public long count = 0;
+    
     public Retina retina;
 
     @Params
@@ -90,8 +92,16 @@ public class MultiCortex {
 		z_viscor.init();
 	}
 
+    public void process() {
+    	cycle1();
+    	cycle2();
+    	count++;
+    }
+
 	//Такт 1. Активация колонок (узнавание)
     public void cycle1() {
+		count++;
+
         //Последовательность активации зон коры определяется их номером
         z_viscor.cycle1();
         //z_asscor.cycle1();

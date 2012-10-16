@@ -41,7 +41,6 @@ public class Stimulator implements Runnable, Imageable {
     private long fps;
     private long frame = 0;
     private long t0 = System.currentTimeMillis();
-    private long count = 0;
 
     private boolean run = true;
     private Figure[] figures;
@@ -72,9 +71,7 @@ public class Stimulator implements Runnable, Imageable {
                 if (cortexs != null && cortexs.active && image != null) {
                 	cortexs.retina.process(image);
                 	
-            		cortexs.cycle1();
-            		cortexs.cycle2();
-            		count++;
+            		cortexs.process();
                 }
                 
                 if (frequency != 0)
@@ -162,7 +159,7 @@ public class Stimulator implements Runnable, Imageable {
 
         g.setColor(Color.WHITE);
 
-        g.drawString(fps + " fps; "+count+" cycles;", 0, textY);
+        g.drawString(fps + " fps; "+cortexs.count+" cycles;", 0, textY);
 	}
 
 	@Override
