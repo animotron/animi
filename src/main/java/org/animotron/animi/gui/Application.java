@@ -231,6 +231,8 @@ public class Application extends JFrame {
 					Input input = new Input(new FileInputStream("file.bin"));
 					cortexs = kryo.readObject(input, MultiCortex.class);
 					input.close();
+					
+					createViews();
 
 					run();
 				} catch (Exception ex) {
@@ -294,16 +296,7 @@ public class Application extends JFrame {
     	
     	cortexs.init();
     	
-        for (CortexZoneSimple zone : cortexs.zones) {
-        	if (zone instanceof CortexZoneComplex) {
-				CortexZoneComplex z = (CortexZoneComplex) zone;
-
-				createFrame(z);
-				createFrame(z.getCRF());
-			} else
-				createFrame(zone);
-        }
-        stimulator.start();
+    	createViews();
 
 //    	camView.resume();
 
@@ -315,9 +308,25 @@ public class Application extends JFrame {
     	miStop.setEnabled(false);
     }
     
+    private void createViews() {
+    	clearFrames();
+        createFrame(stimulator);
+
+        for (CortexZoneSimple zone : cortexs.zones) {
+        	if (zone instanceof CortexZoneComplex) {
+				CortexZoneComplex z = (CortexZoneComplex) zone;
+
+				createFrame(z);
+				createFrame(z.getCRF());
+			} else
+				createFrame(zone);
+        }
+    }
+    
     private void run() {
     	if (cortexs != null) {
 			cortexs.active = true;
+	        stimulator.start();
 			
 			miRun.setEnabled(false);
 			
@@ -432,6 +441,10 @@ public class Application extends JFrame {
         try {
             frame.setSelected(true);
         } catch (java.beans.PropertyVetoException e1) {}
+    }
+    
+    private void clearFrames() {
+    	desktop.removeAll();
     }
  
 	public void closeFrame(JInternalFrame frame) {
