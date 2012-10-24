@@ -28,11 +28,11 @@ import org.animotron.animi.Imageable;
  */
 public interface Layer extends Imageable {
 	
+	//neural image size & set methods
 	int width();
 	int height();
 	
-    public void process();
-
     void set(int x, int y, boolean b);
-
+	
+    public void process();
 }
