@@ -137,19 +137,19 @@ public class Retina {
     public static int Level_Bright = 100;
     public static int Lelel_min = 10;// * N_Col;
 
-    public void process(BufferedImage image) {
+    public void process(BufferedImage physicalImage) {
 
     	//preprocessing
     	for (int x = 0; x < width; x++)
         	for (int y = 0; y < height; y++)
-        		preprocessed[x][y] = Utils.calcGrey(image, x, y);
+        		preprocessed[x][y] = Utils.calcGrey(physicalImage, x, y);
         
-    	double SP, SC, SA;
-        double K_cont;
+//    	double SP, SC, SA;
+//        double K_cont;
         for (int ix = 0; ix < NL.width(); ix++) {
         	for (int iy = 0; iy < NL.height(); iy++) {
 
-        		OnOffReceptiveField mSensPol = sensorField[ix][iy];
+//        		OnOffReceptiveField mSensPol = sensorField[ix][iy];
 
                 NL.set(ix, iy, preprocessed[ix][iy] > 0);
 
