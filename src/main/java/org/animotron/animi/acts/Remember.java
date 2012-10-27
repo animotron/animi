@@ -20,92 +20,120 @@
  */
 package org.animotron.animi.acts;
 
-import org.animotron.animi.InitParam;
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 
 /**
- * Запоминание  и переоценка параметров стабильности нейрона
+ * Запоминание
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class Remember implements Act<CortexZoneComplex> {
-
-    /** Min number of active synapses to remember **/
-	@RuntimeParam(name="Min number of active synapses to remember")
-    public double k_mem;
-
-	/** Number of cycles to turn on the possibility of forgetting **/
-	@RuntimeParam(name="Number of cycles to turn on the possibility of forgetting")
-    public int n_act_min;
-
-	/** Ratio threshold of forgetting **/
-	@RuntimeParam(name="Ratio threshold of forgetting")
-    public double k_non;
+	
+	@RuntimeParam(name="")
+	//порог запоминания
+	private double mRecLevel = 0.3;
 
     public Remember () {}
     
-    public Remember(double k_mem, int n_act_min, double k_non) {
-        this.k_mem = k_mem;
-        this.n_act_min = n_act_min;
-        this.k_non = k_non;
-    }
-
     @Override
     public void process(CortexZoneComplex layer, final int x, final int y) {
-        int sumact = 0;
-        double k_mem = this.k_mem * layer.ns_links;
-        for (int z = 0; z < layer.deep; z++) {
-            final NeuronSimple sn = layer.s[x][y][z];
-            //Вычисляем кол-во активных соседей
-            sumact = 0;
-            for (int i = x - 1; i <= x + 1; i++)
-                for (int j = y - 1; j <= y + 1; j++)
-                    sumact += layer.col[i][j].sum;
-            if (sn.occupy) {
-                //Нейрон занят. Изменяем информацию об активности.
-                if (sn.active) {
-                    //изменяем среднее кол-во активных соседей в состоянии активности
-                    sn.p_on = (sn.p_on * sn.n_on + sumact) / (sn.n_on + 1);
-                    sn.n_on++;
-                } else {
-                    if (sumact > sn.p_on) {
-                        //изменяем среднее кол-во активных соседей в состоянии покоя в случаях, 
-                        //когда их больше чем при собственной активности нейрона
-                        sn.p_off_m = (sn.p_off_m * sn.n_off_m + sumact) / (sn.n_off_m + 1);
-                        sn.n_off_m++;
-                    }
-                }
-                sn.n_act++;
-                //проверяем условие забывания и обнуляем нейрон если оно выполняется
-                if (sn.n_act > n_act_min && sn.n_off_m > sn.n_on * k_non) {
-                    sn.occupy = false;
-                }
-            } else {
-                //Нейрон свободен. Проверяем основание для записи и записываем если выполняется.
-                int sum = 0;
-                for (int i = 0; i < layer.ns_links; i++) {
-                    final Link2dZone link = sn.s_links[i];
-                    if (link.zone != null)
-                        if (link.zone.col[link.x][link.y].active)
-                            sum++;
-                }
-                if (sum > k_mem) {
-                    //запоминаем состояние
-                    sn.occupy = true;
-                    sn.n_on = 1;
-                    sn.n_act = 0;
-                    sn.p_on = sumact;
-                    sn.p_off_m = 0;
-                    sn.n_off_m = 0;
-                    for (int i = 0; i < layer.ns_links; i++) {
-                        final Link2dZone link = sn.s_links[i];
-                        link.cond = link.zone.col[link.x][link.y].active;
-                    }
-                }
-            }
-        }
+    	NeuronComplex cn = layer.col[x][y];
+
+    	NeuronSimple _sn_ = null;
+    	
+    	//есть ли свободные и есть ли добро на запоминание (интервал запоминания)
+    	boolean found = false;
+    	for (int i = 0; i < cn.s_links.length; i++) {
+    		Link3d l = cn.s_links[i];
+    		_sn_ = layer.s[l.x][l.y][l.z];
+    		if (!_sn_.occupy) {
+    			found = true;
+    			break;
+    		}
+    	}
+    	if (!found) return;
+    	
+    	//суммируем минусовку с реципторного слоя колоник
+    	NeuronSimple sn = null;
+    	double maxSnActive = 0;
+    	
+    	double activeF = 0;
+    	double active = 0;
+    	for (int i = 0; i < cn.s_links.length; i++) {
+    		Link3d sl = cn.s_links[i];
+    		NeuronSimple _sn = layer.s[sl.x][sl.y][sl.z];
+    		
+        	double snActive = 0;
+    		for (int k = 0; k < _sn.n1; k++) {
+    			Link2dZone inL = _sn.s_links[k];
+    			
+    			NeuronComplex in = inL.zone.col[inL.x][inL.y];
+    			
+    			activeF += in.active;
+    			active += in.minus;
+    			snActive += in.minus;
+    		}
+    		if (snActive > maxSnActive) {
+    			maxSnActive = snActive;
+    			sn = _sn;
+    		}
+    	}
+    	
+		//поверка по порогу
+    	if (activeF > 0 && (active < mRecLevel && sn != null))
+			return;
+		
+    	if (sn == null) {
+    		sn = _sn_;
+    		for (int k = 0; k < sn.n1; k++) {
+    			Link2dZone inL = sn.s_links[k];
+    			
+    			NeuronComplex in = inL.zone.col[inL.x][inL.y];
+    			inL.w = in.active;
+
+    			//занулить минусовку простого нейрона
+    			in.minus = 0;
+    		}
+    	} else {
+	    	
+			//перебираем свободные простые нейроны комплексного нейрона
+			//сумма сигнала синепсов простых неровнов с минусовки
+			//находим максимальный простой нейрон и им запоминаем (от минусовки)
+	    	
+	    	//вес синапса ставим по остаточному всечению
+			for (int k = 0; k < sn.n1; k++) {
+				Link2dZone inL = sn.s_links[k];
+				
+				NeuronComplex in = inL.zone.col[inL.x][inL.y];
+				inL.w = in.minus;
+	
+				//занулить минусовку простого нейрона
+				in.minus = 0;
+			}
+    	}
+    	
+    	
+    	//присвоить веса сложного нейрона таким образом, чтобы 
+    	
+    	//текущая активность / на сумму активности (комплекстные нейроны)
+		active = 0;
+		for (int k = 0; k < sn.n2; k++) {
+			Link2d cnL = sn.a_links[k];
+			
+			active += layer.col[cnL.x][cnL.y].active;
+		}
+    	
+		for (int k = 0; k < sn.n2; k++) {
+			Link2d cnL = sn.a_links[k];
+			
+			if (active != 0)
+				cnL.w = layer.col[cnL.x][cnL.y].active / active;
+			else
+				cnL.w = 1;
+			//UNDERSTAND: перераспределять ли веса?
+		}
     }
 }

@@ -20,6 +20,9 @@
  */
 package org.animotron.animi.cortex;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.animotron.animi.RuntimeParam;
 
 /**
@@ -32,13 +35,37 @@ import org.animotron.animi.RuntimeParam;
 public class NeuronComplex {
 	
 	@RuntimeParam(name="active")
-	public boolean active;
+	public double active = 0;
 	
-	/** Number of active neurons **/
-	@RuntimeParam(name="Number of active neurons")
-    public int sum;
+	@RuntimeParam(name="backProjection")
+	public double backProjection = 0;
+
+	@RuntimeParam(name="minus")
+	public double minus = 0;
+	
+	//	/** Number of active neurons **/
+//	@RuntimeParam(name="Number of active neurons")
+//    public double sum;
 
 	/** Links of synapses connects cortex neurons with neurons of cortical columns **/
 //	@RuntimeParam(name="")
     public Link3d[] s_links;
+    
+    public Map<NeuronComplex, Double> Qs = new HashMap<NeuronComplex, Double>();
+
+	public void putQ(NeuronComplex cn, double q) {
+		Qs.put(cn, q);
+	}
+	
+	public double getQ(NeuronComplex cn) {
+		if (Qs.containsKey(cn))
+			return Qs.get(cn);
+		
+		return 0;
+	}
+	
+	public void clean() {
+		active = 0;
+		Qs.clear();
+	}
 }

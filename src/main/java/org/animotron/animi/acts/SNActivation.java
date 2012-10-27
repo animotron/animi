@@ -20,40 +20,32 @@
  */
 package org.animotron.animi.acts;
 
-import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 
 /**
- * Активация колонок (узнавание)
+ * Активация простых нейронов при узнавании запомненной картины
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Recognition implements Act<CortexZoneComplex> {
+public class SNActivation implements Act<CortexZoneComplex> {
 
-    /** Excitation threshold of cortical column **/
-	@RuntimeParam(name="excitation threshold")
-	public double k_active;
-
-    public Recognition () {}
-
-	public Recognition (double k_active) {
-        this.k_active = k_active;
-    }
+	public SNActivation() {}
 
     @Override
-    public void process(final CortexZoneComplex layer, final int x, final int y) {
-        double k_active = this.k_active * layer.nsc_links;
-        int sum = 0;
-        final NeuronComplex cn = layer.col[x][y];
-        for (int i = 0; i < layer.nsc_links; i++) {
-            final Link3d link = cn.s_links[i];
-            if (layer.s[link.x][link.y][link.z].active) {
-                sum++;
-            }
-        }
-        cn.active = sum > k_active;
-    }
+    public void process(CortexZoneComplex layer, final int x, final int y) {
 
+        for (int z = 0; z < layer.deep; z++) {
+        	NeuronSimple sn = layer.s[x][y][z];
+        	sn.active = 0; //UNDERSTAND: do we need previous value
+
+        	if (sn.occupy) {
+	        	for (int j = 0; j < sn.n1; j++) {
+	        		Link2dZone link = sn.s_links[j];
+	        		sn.active += link.zone.col[link.x][link.y].active * link.w;
+	        	}
+        	}
+        }
+    }
 }

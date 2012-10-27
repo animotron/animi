@@ -20,14 +20,8 @@
  */
 package org.animotron.animi.cortex;
 
-import org.animotron.animi.Imageable;
-import org.animotron.animi.InitParam;
-import org.animotron.animi.Params;
-import org.animotron.animi.Utils;
-import org.animotron.animi.acts.Activation;
-import org.animotron.animi.acts.Act;
-import org.animotron.animi.acts.Recognition;
-import org.animotron.animi.acts.Remember;
+import org.animotron.animi.*;
+import org.animotron.animi.acts.*;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -48,14 +42,13 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	@Params
 	public Mapping[] in_zones;
     
-	@Params
-	public Activation activation = new Activation(0.6, 0.6);
+	public SNActivation snActivation = new SNActivation();
+	public CNActivation cnActivation = new CNActivation();
+
+	public Subtraction subtraction = new Subtraction();
 
 	@Params
-	public Recognition recognition = new Recognition(0.1);
-
-	@Params
-	public Remember remember = new Remember(0.05, 10, 2);
+	public Remember remember = new Remember();
 	
 	@InitParam(name="deep")
 	public int deep;
@@ -74,7 +67,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
     }
 
 	CortexZoneComplex(String name, MultiCortex mc, int deep, Mapping[] in_zones) {
-
 		super(name, mc);
 		this.in_zones = in_zones;
 		this.deep = deep;
@@ -83,18 +75,14 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public void init() {
     	super.init();
     	
-		this.s = new NeuronSimple[width()][height()][deep];
+		s = new NeuronSimple[width()][height()][deep];
 
-		this.ns_links = 0;
+		ns_links = 0;
         for (Mapping i : in_zones) {
-            this.ns_links += i.ns_links;
+            ns_links += i.ns_links;
 		}
 
-		this.nsc_links = nas_links * deep;
-
-//	    activation = new Activation(0.6, 0.6);
-//	    recognition = new Recognition(0.1);
-//	    remember = new Remember(0.05, 10, 2);
+		nsc_links = nas_links * deep;
 
 	    // Инициализация синаптических связей простых нейронов
 		for (int x = 0; x < width(); x++) {
@@ -103,15 +91,14 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 					NeuronSimple sn = s[x][y][z] = new NeuronSimple();
 					sn.s_links = new Link2dZone[ns_links];
-					for (int i = 0; i < ns_links; i++)
+					for (int i = 0; i < ns_links; i++) {
 						sn.s_links[i] = new Link2dZone();
+					}
 
 					sn.a_links = new Link2d[nas_links];
-					for (int i = 0; i < nas_links; i++)
+					for (int i = 0; i < nas_links; i++) {
 						sn.a_links[i] = new Link2d();
-
-					sn.occupy = sn.active = false;
-					sn.n1 = sn.n2 = 0;
+					}
 				}
 			}
 		}
@@ -121,18 +108,18 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		// Плотность связей убывает экспоненциально с удалением от колонки.
 		double x_in_nerv, y_in_nerv;
         double X, Y, S;
-        double sigma;
+        double _sigma, sigma;
 
 		for (Mapping m : in_zones) {
 
             boolean[][] nerv_links = new boolean[m.zone.width()][m.zone.height()];
 
-            int sigmaX = (int) (m.disp * m.zone.width());
-            int sigmaY = (int) (m.disp * m.zone.height());
+//            int sigmaX = (int) (m.disp * m.zone.width());
+//            int sigmaY = (int) (m.disp * m.zone.height());
 
-            for (int x = sigmaX; x < width()-sigmaX; x++) {
-				for (int y = sigmaY; y < height()-sigmaY; y++) {
-//					System.out.println("x = "+x+" y = "+y);
+            for (int x = 0; x < width(); x++) {
+				for (int y = 0; y < height(); y++) {
+					System.out.println("x = "+x+" y = "+y);
 
 					// Определение координат текущего нейрона в масштабе
 					// проецируемой зоны
@@ -140,7 +127,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					y_in_nerv = y * m.zone.height() / (double) height();
 //					System.out.println("x_in_nerv = "+x_in_nerv+" y_in_nerv = "+y_in_nerv);
 
-                    sigma = m.disp * ((m.zone.width() + m.zone.height()) / 2);
+                    _sigma = m.disp * ((m.zone.width() + m.zone.height()) / 2);
+                    sigma = _sigma;
 
                     for (int z = 0; z < deep; z++) {
 						// Обнуление массива занятости связей
@@ -163,7 +151,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	                                		System.out.println("initialization failed @ x = "+x+" y = "+y);
 	                                		System.exit(1);
 	                                	}
-	                                	sigma *= 1.5;
+	                                	sigma += _sigma;
 //	        							System.out.println(""+i+" of "+m.ns_links+" ("+sigma+")");
 	                                	count = 0;
 	                                }
@@ -212,10 +200,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 				NeuronComplex sn = col[x][y];
 
 				sn.s_links = new Link3d[nsc_links];
-				for (int i = 0; i < nsc_links; i++)
+				for (int i = 0; i < nsc_links; i++) {
 					sn.s_links[i] = new Link3d();
-
-				sn.active = false;
+				}
 			}
 		}
 
@@ -226,6 +213,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 				n = 0;
 
+				//XXX: disparse
 				for (int i = x - 1; i <= x + 1; i++) {
 					for (int j = y - 1; j <= y + 1; j++) {
 						for (int k = 0; k < deep; k++) {
@@ -255,7 +243,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			BufferedImage image = new BufferedImage(width(), height(), BufferedImage.TYPE_INT_ARGB);
 			for (int x = 0; x < width(); x++) {
 				for (int y = 0; y < height(); y++) {
-					int c = s[x][y][z].active ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
+					int c = s[x][y][z].active > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
 					image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
 				}
 			}
@@ -336,7 +324,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	                    	if (sn.occupy) {
 	                            for (int j = 0; j < ns_links; j++) {
 	                                final Link2dZone sl = sn.s_links[j];
-	                                if (sl.cond) {
+	                                if (sl.w > 0) {
 										pX = x*boxSize + (boxSize / 2) + (sl.x - cl.x);
 										pY = y*boxSize + (boxSize / 2) + (sl.y - cl.y);
 	                                	if (pX > x*boxSize && pX < (x*boxSize+boxSize) 
@@ -414,15 +402,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
     //Граничные нейроны не задействованы.
     //Такт 1. Активация колонок (узнавание)
-    public void cycle1() {
-        cycle(1, 1, width() - 1, height() - 1, activation);
-        cycle(1, 1, width() - 1, height() - 1, recognition);
+    public void cycleActivation() {
+        cycle(1, 1, width() - 1, height() - 1, snActivation);
+        cycle(1, 1, width() - 1, height() - 1, cnActivation);
     }
 
     //Граничные нейроны не задействованы.
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     public void cycle2() {
+        cycle(1, 1, width() - 1, height() - 1, subtraction);
         cycle(1, 1, width() - 1, height() - 1, remember);
     }
-
 }

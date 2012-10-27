@@ -41,7 +41,7 @@ public class Retina {
 	private int height;
 	
 	//Числовое представление сетчатки. Черно-белая картинка.
-	private int preprocessed[][];
+	private double preprocessed[][];
 	
 //	private int receptiveField[][] = null;
 	private OnOffReceptiveField[][] sensorField;
@@ -56,7 +56,7 @@ public class Retina {
 		this.width = width;
 		this.height = height;
 		
-		preprocessed = new int[width][height];
+		preprocessed = new double[width][height];
 	}
 	
 	private Layer NL = null;
@@ -142,7 +142,7 @@ public class Retina {
     	//preprocessing
     	for (int x = 0; x < width; x++)
         	for (int y = 0; y < height; y++)
-        		preprocessed[x][y] = Utils.calcGrey(physicalImage, x, y);
+        		preprocessed[x][y] = Utils.calcGrey(physicalImage, x, y) / 255;
         
 //    	double SP, SC, SA;
 //        double K_cont;
@@ -151,7 +151,7 @@ public class Retina {
 
 //        		OnOffReceptiveField mSensPol = sensorField[ix][iy];
 
-                NL.set(ix, iy, preprocessed[ix][iy] > 0);
+                NL.set(ix, iy, preprocessed[ix][iy]);
 
 //                NL.set(ix,iy,false);
 //
@@ -219,7 +219,7 @@ public class Retina {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int c = preprocessed[x][y];
+                int c = (int)(preprocessed[x][y] * 255);
                 image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
             }
         }

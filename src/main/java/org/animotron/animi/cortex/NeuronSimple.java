@@ -33,10 +33,10 @@ import org.animotron.animi.RuntimeParam;
 public class NeuronSimple {
 	
 	@RuntimeParam(name="active")
-	public boolean active;
+	public double active = 0;
 
 	@RuntimeParam(name="occupy")
-	public boolean occupy;
+	public boolean occupy = false;
 	
 	/** Number of active cycles after activation **/
 	@RuntimeParam(name="active cycles after activation")
@@ -60,17 +60,19 @@ public class NeuronSimple {
 	
 	/** Links of synapses connects cortex neurons with projecting nerve bundle **/
 //	@RuntimeParam(name="")
+	/** incoming links **/
 	public Link2dZone[] s_links;
 	
 	/** Axonal connections with nearest cortical columns **/
 //	@RuntimeParam(name="")
+	/** outgoing links **/
 	public Link2d[] a_links;
 	
 	/** Counter for links of synapses **/
 //	@RuntimeParam(name="")
-	public int n1;
+	public int n1 = 0;
 	
 	/** Counter for axonal connections **/
 //	@RuntimeParam(name="")
-	public int n2;
+	public int n2 = 0;
 }

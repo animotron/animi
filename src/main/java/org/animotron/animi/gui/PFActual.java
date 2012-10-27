@@ -129,13 +129,13 @@ public class PFActual implements Imageable, InternalFrameListener {
             	if (sn.occupy) {
                     for (int j = 0; j < zone.ns_links; j++) {
                         final Link2dZone sl = sn.s_links[j];
-                        if (sl.cond) {
+//                        if (sl.cond) {
                         	minX = Math.min(minX, sl.x);
                         	minY = Math.min(minY, sl.y);
 
                         	maxX = Math.max(maxX, sl.x);
                         	maxY = Math.max(maxY, sl.y);
-                        }
+//                        }
                     }
             	}
             }
@@ -152,7 +152,7 @@ public class PFActual implements Imageable, InternalFrameListener {
             	if (sn.occupy) {
                     for (int j = 0; j < zone.ns_links; j++) {
                         final Link2dZone sl = sn.s_links[j];
-                        if (sl.cond) {
+//                        if (sl.cond) {
 							pX = (boxSize / 2) + (sl.x - cl.x);
 							pY = (boxSize / 2) + (sl.y - cl.y);
                         	if (pX >= 0 && pX < boxSize 
@@ -161,7 +161,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		                    	int c = Utils.calcGrey(image, pX, pY);
 								c += 50;
 								image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-                        	}
+//                        	}
                         }
                     }
             	}

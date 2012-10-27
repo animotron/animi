@@ -29,4 +29,8 @@ package org.animotron.animi.cortex;
  */
 public class Link3d {
 	public int x, y, z;
+	
+	public double w = 0;
+	
+	public double stability = 0;
 }

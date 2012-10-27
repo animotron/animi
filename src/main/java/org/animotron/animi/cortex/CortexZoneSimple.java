@@ -38,6 +38,7 @@ public class CortexZoneSimple implements Layer {
 
     String name;
     MultiCortex mc;
+    
     /** State of complex neurons (outputs cortical columns) **/
     public NeuronComplex[][] col;
     
@@ -57,12 +58,10 @@ public class CortexZoneSimple implements Layer {
     }
     
     public void init() {
-        this.col = new NeuronComplex[width][height];
+        col = new NeuronComplex[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                NeuronComplex cn = new NeuronComplex();
-                cn.active = false;
-                this.col[x][y] = cn;
+                col[x][y] = new NeuronComplex();
             }
         }
     }
@@ -73,7 +72,7 @@ public class CortexZoneSimple implements Layer {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                c = col[x][y].active ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
+                c = col[x][y].active > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
                 image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
             }
         }
@@ -107,7 +106,7 @@ public class CortexZoneSimple implements Layer {
 	}
 
 	@Override
-	public void set(int x, int y, boolean b) {
+	public void set(int x, int y, double b) {
 		col[x][y].active = b;
 	}
 

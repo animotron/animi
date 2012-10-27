@@ -100,10 +100,8 @@ public class MultiCortex {
 
 	//Такт 1. Активация колонок (узнавание)
     public void cycle1() {
-		count++;
-
         //Последовательность активации зон коры определяется их номером
-        z_viscor.cycle1();
+        z_viscor.cycleActivation();
         //z_asscor.cycle1();
     }
 
