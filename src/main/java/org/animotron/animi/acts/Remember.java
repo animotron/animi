@@ -32,8 +32,8 @@ import org.animotron.animi.cortex.*;
  */
 public class Remember implements Act<CortexZoneComplex> {
 	
-	@RuntimeParam(name="")
 	//порог запоминания
+	@RuntimeParam(name="mRecLevel")
 	private double mRecLevel = 0.3;
 
     public Remember () {}
@@ -114,7 +114,7 @@ public class Remember implements Act<CortexZoneComplex> {
 				in.minus = 0;
 			}
     	}
-    	
+    	sn.occupy = true;
     	
     	//присвоить веса сложного нейрона таким образом, чтобы 
     	
