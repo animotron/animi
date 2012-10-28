@@ -110,7 +110,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		x = 0;
 		y += textY;
 		BufferedImage img = drawRF();
-		g.drawRect(x, y, x+2+(img.getWidth()*10), y+2+(img.getHeight()*10));
+		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
 		g.drawImage(
 				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
@@ -119,7 +119,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		y += 2+img.getHeight()*10;
 
 		img = drawTotalRF();
-		g.drawRect(x, y, x+2+(img.getWidth()*10), y+2+(img.getHeight()*10));
+		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
 		g.drawImage(
 				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
