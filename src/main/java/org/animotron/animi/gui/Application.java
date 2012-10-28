@@ -380,6 +380,16 @@ public class Application extends JFrame {
             						{4, Retina.HEIGHT - 4},
             						{4, 4}
             				}
+    				),
+            		new LineAnime(
+            				10, -.03,
+            				new int[][] {
+            						{Retina.WIDTH - 4, Retina.HEIGHT - 4},
+            						{4, Retina.HEIGHT - 4},
+            						{4, 4},
+            						{Retina.WIDTH - 4, 4},
+            						{Retina.WIDTH - 4, Retina.HEIGHT - 4}
+            				}
     				)
 //                    new LineAnime(
 //                            30, -0.03,
