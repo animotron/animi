@@ -85,7 +85,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		int x = 0, y = 0;
 		
 		y += textY;
-		g.drawString("column [ "+x+" : "+y+" ]", x, y);		
+		g.drawString("column [ "+point.x+" : "+point.y+" ]", x, y);		
 
 		for (Field f : cnFds) {
 			y += textY;
@@ -145,35 +145,39 @@ public class PFActual implements Imageable, InternalFrameListener {
 		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
 
         for (Link cl : cn.s_links) {
-        	final NeuronSimple sn = (NeuronSimple) cl.dendrite;
-        	if (sn.occupy) {
-                for (Link sl : sn.s_links) {
-                    	minX = Math.min(minX, sl.dendrite.x);
-                    	minY = Math.min(minY, sl.dendrite.y);
+            for (Link sl : cl.dendrite.s_links) {
+            	minX = Math.min(minX, sl.dendrite.x);
+            	minY = Math.min(minY, sl.dendrite.y);
 
-                    	maxX = Math.max(maxX, sl.dendrite.x);
-                    	maxY = Math.max(maxY, sl.dendrite.y);
-                }
+            	maxX = Math.max(maxX, sl.dendrite.x);
+            	maxY = Math.max(maxY, sl.dendrite.y);
             }
         }
         int boxSize = Math.max(maxX - minX, maxY - minY);
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
-        int pX, pY;
-        for (Link cl : cn.s_links) {
-        	final NeuronSimple sn = (NeuronSimple) cl.dendrite;
-        	if (sn.occupy) {
-                for (Link sl : sn.s_links) {
+		int pX, pY = 0;
+		for (Link cl : cn.s_links) {
+			
+        	final Neuron sn = cl.dendrite;
+
+        	if (sn.isOccupy()) {
+				for (Link sl : sn.s_links) {
+
                     if (sl.w > 0) {
-						pX = (boxSize / 2) + (sl.dendrite.x - cl.axon.x);
-						pY = (boxSize / 2) + (sl.dendrite.y - cl.axon.y);
-		            	if (pX >= 0 && pX < boxSize 
-		            			&& pY >= 0 && pY < boxSize) {
-		                	
-		                	int c = Utils.calcGrey(image, pX, pY);
-							c += 255 * sl.w + cl.w;
+						
+                    	pX = (boxSize / 2) + (sl.dendrite.x - cn.x);
+						pY = (boxSize / 2) + (sl.dendrite.y - cn.y);
+                    	
+						if (       pX >= 0 
+                    			&& pX < boxSize 
+                    			&& pY >= 0 
+                    			&& pY < boxSize) {
+	                    	
+	                    	int c = Utils.calcGrey(image, pX, pY);
+							c += 255 * sl.w * cl.w;
 							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-		                }
+                    	}
                     }
                 }
         	}

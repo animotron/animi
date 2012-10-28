@@ -285,8 +285,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			for (int x = 1; x < width() - 1; x++) {
 				for (int y = 1; y < height() - 1; y++) {
 					
-	//				g.drawLine(x*boxSize, 0, x*boxSize, maxY);
-	//				g.drawLine(0, y*boxSize, maxX, y*boxSize);
+//					g.drawLine(x*boxSize, 0, x*boxSize, maxY);
+//					g.drawLine(0, y*boxSize, maxX, y*boxSize);
 	
 					final NeuronComplex cn = col[x][y];
 	
@@ -328,9 +328,14 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						Math.round(point.y / boxSize)
 				);
 				
-				watching.add(pos);
-				
-				return new Object[] { CortexZoneComplex.this, pos };
+				if (pos.x > 1 && pos.x < width && pos.y > 1 && pos.y < height) {
+					
+					watching.add(pos);
+					
+					System.out.println("x = "+pos.x+" y = "+pos.y);
+					
+					return new Object[] { CortexZoneComplex.this, pos };
+				}
 			} catch (Exception e) {
 			}
 			return null;
