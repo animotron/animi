@@ -93,19 +93,27 @@ public class PFActual implements Imageable, InternalFrameListener {
 		}
 		
 		for (Field f : snFds) {
-			y += textY;
-	        x = 0;
-			for (int z = 0; z < zone.deep; z++) {
-				final NeuronSimple sn = zone.s[point.x][point.y][z];
-				
-				String str = getValue(f, sn);
-				if (str.length() > 3)
-					str = str.substring(0, 3);
-				
-		        g.drawString(str, x, y);		
-				x += 35;
+			for (int dx = -1; dx <= 1; dx++) {
+				for (int dy = -1; dy <= 1; dy++) {
+					y += textY;
+			        x = 0;
+			        
+			        g.drawString(""+(point.x+dx)+" - "+(point.y+dy), x, y);		
+					y += textY;
+					
+					for (int z = 0; z < zone.deep; z++) {
+						final NeuronSimple sn = zone.s[point.x+dx][point.y+dy][z];
+						
+						String str = getValue(f, sn);
+						if (str.length() > 3)
+							str = str.substring(0, 3);
+						
+				        g.drawString(str, x, y);		
+						x += 35;
+					}
+			        g.drawString(getName(f), x, y);		
+				}
 			}
-	        g.drawString(getName(f), x, y);		
 		}
 		x = 0;
 		y += textY;
