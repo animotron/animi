@@ -28,30 +28,16 @@ import java.awt.geom.Point2D;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public class LineAnime extends AbstractAnime {
+public class HLineAnime extends LineAnime {
 
-    public LineAnime(int a, double dt, int[][] anime) {
+    public HLineAnime(int a, double dt, int[][] anime) {
         super(dt, anime);
         this.p = new Point2D[] {
                 new Point(anime[0][0], anime[0][1]),
-                new Point(anime[0][0] - a / 2, anime[0][1] - a / 2),
-                new Point(anime[0][0] + a / 2, anime[0][1] + a / 2)
+                new Point(anime[0][0] - a / 2, anime[0][1]),
+                new Point(anime[0][0] + a / 2, anime[0][1])
         };
 
     }
-
-    protected LineAnime(double dt, int[][] anime) {
-        super(dt, anime);
-    }
-
-    public void drawImage(Graphics g) {
-        g.setColor(Color.WHITE);
-
-        g.drawLine(
-                (int) Math.round(p[1].getX()), (int) Math.round(p[1].getY()),
-                (int) Math.round(p[2].getX()), (int) Math.round(p[2].getY())
-        );
-		
-	}
-
+	
 }
