@@ -146,16 +146,16 @@ public class PFActual implements Imageable, InternalFrameListener {
         	if (sn.occupy) {
                 for (int j = 0; j < zone.ns_links; j++) {
                     final Link2dZone sl = sn.s_links[j];
-                    if (sl.w > 0) {
+//                    if (sl.w > 0) {
 						pX = (boxSize / 2) + (sl.x - cl.x);
 						pY = (boxSize / 2) + (sl.y - cl.y);
 		            	if (pX >= 0 && pX < boxSize 
 		            			&& pY >= 0 && pY < boxSize) {
 		                	
 		                	int c = Utils.calcGrey(image, pX, pY);
-							c += 255 * sl.w;
+							c += 50;//255 * sl.w;
 							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-		                }
+//		                }
                     }
                 }
         	}
