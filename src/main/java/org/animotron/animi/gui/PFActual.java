@@ -114,6 +114,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 						x += 35;
 					}
 			        g.drawString(getName(f), x, y);		
+					y += textY;
 				}
 			}
 		}
