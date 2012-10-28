@@ -84,18 +84,18 @@ public class Remember implements Act<CortexZoneComplex> {
 			return;
     	}
 		
-    	if (sn == null) {
-    		sn = _sn_;
-    		for (int k = 0; k < sn.n1; k++) {
-    			Link2dZone inL = sn.s_links[k];
-    			
-    			NeuronComplex in = inL.zone.col[inL.x][inL.y];
-    			inL.w = in.active;
-
-    			//занулить минусовку простого нейрона
-    			in.minus = 0;
-    		}
-    	} else {
+//    	if (sn == null) {
+//    		sn = _sn_;
+//    		for (int k = 0; k < sn.n1; k++) {
+//    			Link2dZone inL = sn.s_links[k];
+//    			
+//    			NeuronComplex in = inL.zone.col[inL.x][inL.y];
+//    			inL.w = in.active;
+//
+//    			//занулить минусовку простого нейрона
+////    			in.minus = 0;
+//    		}
+//    	} else {
 	    	
 			//перебираем свободные простые нейроны комплексного нейрона
 			//сумма сигнала синепсов простых неровнов с минусовки
@@ -109,9 +109,9 @@ public class Remember implements Act<CortexZoneComplex> {
 				inL.w = in.minus;
 	
 				//занулить минусовку простого нейрона
-				in.minus = 0;
+//				in.minus = 0;
 			}
-    	}
+//    	}
     	sn.occupy = true;
     	
     	//присвоить веса сложного нейрона таким образом, чтобы 

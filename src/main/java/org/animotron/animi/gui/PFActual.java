@@ -77,7 +77,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 	@Override
 	public BufferedImage getImage() {
-		BufferedImage image = new BufferedImage(400, 400, BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(400, 600, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         g.setColor(Color.WHITE);
 
@@ -110,7 +110,16 @@ public class PFActual implements Imageable, InternalFrameListener {
 		x = 0;
 		y += textY;
 		BufferedImage img = drawRF();
-		g.drawRect(x, y, x+2+img.getWidth()*10, y+2+img.getHeight()*2);
+		g.drawRect(x, y, x+2+(img.getWidth()*10), y+2+(img.getHeight()*10));
+		g.drawImage(
+				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
+				x+1, y+1, null);
+
+		x = 0;
+		y += 2+img.getHeight()*10;
+
+		img = drawTotalRF();
+		g.drawRect(x, y, x+2+(img.getWidth()*10), y+2+(img.getHeight()*10));
 		g.drawImage(
 				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
@@ -163,6 +172,51 @@ public class PFActual implements Imageable, InternalFrameListener {
         return image;
 	}
 	
+	private BufferedImage drawTotalRF() {
+		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+
+        for (int i = 0; i < zone.nsc_links; i++) {
+        	final Link3d cl = cn.s_links[i];
+        	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
+//        	if (sn.occupy) {
+                for (int j = 0; j < zone.ns_links; j++) {
+                    final Link2dZone sl = sn.s_links[j];
+                    	minX = Math.min(minX, sl.x);
+                    	minY = Math.min(minY, sl.y);
+
+                    	maxX = Math.max(maxX, sl.x);
+                    	maxY = Math.max(maxY, sl.y);
+                }
+//            }
+        }
+        int boxSize = Math.max(maxX - minX, maxY - minY);
+        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
+
+        int pX, pY;
+        for (int i = 0; i < zone.nsc_links; i++) {
+        	final Link3d cl = cn.s_links[i];
+        	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
+//        	if (sn.occupy) {
+                for (int j = 0; j < zone.ns_links; j++) {
+                    final Link2dZone sl = sn.s_links[j];
+//                    if (sl.w > 0) {
+						pX = (boxSize / 2) + (sl.x - cl.x);
+						pY = (boxSize / 2) + (sl.y - cl.y);
+		            	if (pX >= 0 && pX < boxSize 
+		            			&& pY >= 0 && pY < boxSize) {
+		                	
+		                	int c = Utils.calcGrey(image, pX, pY);
+							c += 50;//255 * sl.w;
+							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+//		                }
+                    }
+                }
+//        	}
+        }
+        return image;
+	}
+
 //	private BufferedImage drawRF() {
 //		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
 //		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;

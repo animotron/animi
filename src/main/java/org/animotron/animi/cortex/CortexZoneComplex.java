@@ -316,22 +316,22 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 					final NeuronComplex cn = col[x][y];
 	
-	                for (int i = 0; i < nsc_links; i++) {
+	                for (int i = 0; i < cn.s_links.length; i++) {
 	                	final Link3d cl = cn.s_links[i];
                     	final NeuronSimple sn = s[cl.x][cl.y][cl.z];
                     	if (sn.occupy) {
-                            for (int j = 0; j < ns_links; j++) {
+                            for (int j = 0; j < sn.s_links.length; j++) {
                                 final Link2dZone sl = sn.s_links[j];
-//                                if (sl.w > 0) {
+                                if (sl.w > 0) {
 									pX = x*boxSize + (boxSize / 2) + (sl.x - cl.x);
 									pY = y*boxSize + (boxSize / 2) + (sl.y - cl.y);
                                 	if (pX > x*boxSize && pX < (x*boxSize+boxSize) 
                                 			&& pY > y*boxSize && pY < (y*boxSize+boxSize)) {
 				                    	
 				                    	int c = Utils.calcGrey(image, pX, pY);
-										c += 50;//255 * sl.w;
+										c += 255 * sl.w;
 										image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-//                                	}
+                                	}
                                 }
                             }
                     	}
