@@ -77,7 +77,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 	@Override
 	public BufferedImage getImage() {
-		BufferedImage image = new BufferedImage(400, 600, BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(400, 900, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         g.setColor(Color.WHITE);
 
@@ -92,15 +92,15 @@ public class PFActual implements Imageable, InternalFrameListener {
 	        g.drawString(getValue(f, cn), x, y);		
 		}
 		
-		for (Field f : snFds) {
-			for (int dx = -1; dx <= 1; dx++) {
-				for (int dy = -1; dy <= 1; dy++) {
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int dy = -1; dy <= 1; dy++) {
+		        g.drawString(""+dx+" : "+dy, x, y);		
+				y += textY;
+				
+				for (Field f : snFds) {
 					y += textY;
 			        x = 0;
 			        
-			        g.drawString(""+(point.x+dx)+" - "+(point.y+dy), x, y);		
-					y += textY;
-					
 					for (int z = 0; z < zone.deep; z++) {
 						final NeuronSimple sn = zone.s[point.x+dx][point.y+dy][z];
 						
