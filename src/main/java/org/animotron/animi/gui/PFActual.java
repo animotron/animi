@@ -84,6 +84,9 @@ public class PFActual implements Imageable, InternalFrameListener {
 		int textY = g.getFontMetrics(g.getFont()).getHeight();
 		int x = 0, y = 0;
 		
+		y += textY;
+		g.drawString("column [ "+x+" : "+y+" ]", x, y);		
+
 		for (Field f : cnFds) {
 			y += textY;
 	        g.drawString(getName(f), x, y);		
@@ -96,8 +99,8 @@ public class PFActual implements Imageable, InternalFrameListener {
 			for (int dy = -1; dy <= 1; dy++) {
 
 		        x = 0;
-				g.drawString(""+dx+" : "+dy, x, y);		
 				y += textY;
+				g.drawString(""+dx+" : "+dy, x, y);		
 				
 				for (Field f : snFds) {
 					y += textY;
@@ -114,7 +117,6 @@ public class PFActual implements Imageable, InternalFrameListener {
 						x += 35;
 					}
 			        g.drawString(getName(f), x, y);		
-					y += textY;
 				}
 			}
 		}
@@ -162,7 +164,7 @@ public class PFActual implements Imageable, InternalFrameListener {
         	final NeuronSimple sn = (NeuronSimple) cl.dendrite;
         	if (sn.occupy) {
                 for (Link sl : sn.s_links) {
-//                    if (sl.w > 0) {
+                    if (sl.w > 0) {
 						pX = (boxSize / 2) + (sl.dendrite.x - cl.axon.x);
 						pY = (boxSize / 2) + (sl.dendrite.y - cl.axon.y);
 		            	if (pX >= 0 && pX < boxSize 
@@ -171,7 +173,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		                	int c = Utils.calcGrey(image, pX, pY);
 							c += 255 * sl.w + cl.w;
 							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-//		                }
+		                }
                     }
                 }
         	}
