@@ -169,7 +169,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		            			&& pY >= 0 && pY < boxSize) {
 		                	
 		                	int c = Utils.calcGrey(image, pX, pY);
-							c += 50;//255 * sl.w;
+							c += 255 * sl.w + cl.w;
 							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
 //		                }
                     }
