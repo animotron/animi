@@ -24,19 +24,19 @@ package org.animotron.animi.cortex;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class Link {
+public class Link<D extends Neuron, A extends Neuron> {
 	
 	//Dendrite terminal
-	public Neuron dendrite;
+	public D dendrite;
 	
 	//Axon terminal
-	public Neuron axon;
+	public A axon;
 
 	public double w = 0;
 	
 	public double stability = 0;
 
-	protected Link(Neuron dendrite, Neuron axon) {
+	protected Link(D dendrite, A axon) {
 		this.dendrite = dendrite;
 		dendrite.addAxon(this);
 

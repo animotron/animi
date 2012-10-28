@@ -30,8 +30,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
-
 /**
  * Complex cortex zone
  * 
@@ -173,7 +171,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 							nerv_links[lx][ly] = true;
 
 							// Создаем синаптическую связь
-							new Link(m.zone.getCol(lx, ly), s[x][y][z]);
+							new Link<NeuronComplex, NeuronSimple>(m.zone.getCol(lx, ly), s[x][y][z]);
 						}
 					}
 				}
@@ -195,19 +193,16 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //			}
 //		}
 
-		int n;
 		// колонки по периметру не задействованы
 		for (int x = 1; x < width() - 1; x++) {
 			for (int y = 1; y < height() - 1; y++) {
-
-				n = 0;
 
 				//XXX: disparse
 				for (int i = x - 1; i <= x + 1; i++) {
 					for (int j = y - 1; j <= y + 1; j++) {
 						for (int k = 0; k < deep; k++) {
 
-							new Link(s[i][j][k], col[x][y]);
+							new Link<NeuronSimple, NeuronComplex>(s[i][j][k], col[x][y]);
 						}
 					}
 				}
@@ -295,15 +290,12 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 					final NeuronComplex cn = col[x][y];
 	
-					Link cl = null;
-					Link sl = null;
-					for (FastList.Node<Link> cNode = cn.s_links.head(), cEnd = cn.s_links.tail(); (cNode = cNode.getNext()) != cEnd;) {
-						cl = cNode.getValue();
-
+					for (Link cl : cn.s_links) {
+						
                     	final Neuron sn = cl.dendrite;
+
                     	if (sn.isOccupy()) {
-        					for (FastList.Node<Link> sNode = sn.s_links.head(), end = sn.s_links.tail(); (sNode = sNode.getNext()) != end;) {
-        						sl = sNode.getValue();
+        					for (Link sl : sn.s_links) {
 
                                 if (sl.w > 0) {
 									

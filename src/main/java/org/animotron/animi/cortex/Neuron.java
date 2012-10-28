@@ -39,11 +39,13 @@ public class Neuron {
 
 	/** Links of synapses connects cortex neurons with projecting nerve bundle **/
 	/** incoming links **/
-	public FastList<Link> s_links = new FastList<Link>();
+	public FastList<Link<? extends Neuron, ? extends Neuron>> s_links = 
+			new FastList<Link<? extends Neuron, ? extends Neuron>>();
 	
 	/** Axonal connections with nearest cortical columns **/
 	/** outgoing links **/
-	public FastList<Link> a_links = new FastList<Link>();
+	public FastList<Link<? extends Neuron, ? extends Neuron>> a_links = 
+			new FastList<Link<? extends Neuron, ? extends Neuron>>();
 	
 	public Neuron(int x, int y) {
 		this.x = x;
@@ -51,12 +53,12 @@ public class Neuron {
 	}
 
 	//called by Link only!
-	protected void addSynapse(Link link) {
+	protected void addSynapse(Link<? extends Neuron, ? extends Neuron> link) {
 		s_links.add(link);
 	}
 
 	//called by Link only!
-	protected void addAxon(Link link) {
+	protected void addAxon(Link<? extends Neuron, ? extends Neuron> link) {
 		a_links.add(link);
 	}
 
