@@ -34,7 +34,7 @@ public class Remember implements Act<CortexZoneComplex> {
 	
 	//порог запоминания
 	@RuntimeParam(name="mRecLevel")
-	private double mRecLevel = 0.3;
+	public double mRecLevel = 0.2;
 
     public Remember () {}
     
