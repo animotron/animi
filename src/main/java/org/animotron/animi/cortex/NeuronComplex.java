@@ -51,21 +51,7 @@ public class NeuronComplex {
 //	@RuntimeParam(name="")
     public Link3d[] s_links;
     
-//    public Map<NeuronComplex, Double> Qs = new HashMap<NeuronComplex, Double>();
-//
-//	public void putQ(NeuronComplex cn, double q) {
-//		Qs.put(cn, q);
-//	}
-//	
-//	public double getQ(NeuronComplex cn) {
-//		if (Qs.containsKey(cn))
-//			return Qs.get(cn);
-//		
-//		return 0;
-//	}
-	
 	public void clean() {
 		active = 0;
-//		Qs.clear();
 	}
 }

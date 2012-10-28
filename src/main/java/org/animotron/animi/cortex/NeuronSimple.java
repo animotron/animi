@@ -38,26 +38,6 @@ public class NeuronSimple {
 	@RuntimeParam(name="occupy")
 	public boolean occupy = false;
 	
-	/** Number of active cycles after activation **/
-	@RuntimeParam(name="active cycles after activation")
-	public int n_on;
-	
-	/** Number of cycles after activation **/
-	@RuntimeParam(name="cycles after activation")
-	public int n_act;
-	
-	/** Average number of active neighbors at activation moment **/
-	@RuntimeParam(name="average number of active neighbors at activation moment")
-	public double p_on;
-	
-	/** Average number of active neighbors when calm and activity of neighbors more p_on **/
-	@RuntimeParam(name="Average number of active neighbors when calm and activity of neighbors more p_on")
-	public double p_off_m;
-	
-	/** Number of passive cycles after activation when activity of neighbors more p_on **/
-	@RuntimeParam(name="Number of passive cycles after activation when activity of neighbors more p_on")
-	public int n_off_m;
-	
 	/** Links of synapses connects cortex neurons with projecting nerve bundle **/
 //	@RuntimeParam(name="")
 	/** incoming links **/

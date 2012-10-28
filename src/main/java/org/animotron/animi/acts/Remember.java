@@ -60,8 +60,6 @@ public class Remember implements Act<CortexZoneComplex> {
     	NeuronSimple sn = null;
     	double maxSnActive = 0;
     	
-    	double activeF = 0;
-    	double active = 0;
     	for (int i = 0; i < cn.s_links.length; i++) {
     		Link3d sl = cn.s_links[i];
     		NeuronSimple _sn = layer.s[sl.x][sl.y][sl.z];
@@ -72,8 +70,6 @@ public class Remember implements Act<CortexZoneComplex> {
     			
     			NeuronComplex in = inL.zone.col[inL.x][inL.y];
     			
-    			activeF += in.active;
-    			active += in.minus;
     			snActive += in.minus;
     		}
     		if (snActive > maxSnActive) {
@@ -83,8 +79,10 @@ public class Remember implements Act<CortexZoneComplex> {
     	}
     	
 		//поверка по порогу
-    	if (activeF > 0 && (active < mRecLevel && sn != null))
+//    	if (activeF > 0 && (active < mRecLevel && sn != null))
+    	if (maxSnActive < mRecLevel) {
 			return;
+    	}
 		
     	if (sn == null) {
     		sn = _sn_;
@@ -119,7 +117,7 @@ public class Remember implements Act<CortexZoneComplex> {
     	//присвоить веса сложного нейрона таким образом, чтобы 
     	
     	//текущая активность / на сумму активности (комплекстные нейроны)
-		active = 0;
+		double active = 0;
 		for (int k = 0; k < sn.n2; k++) {
 			Link2d cnL = sn.a_links[k];
 			

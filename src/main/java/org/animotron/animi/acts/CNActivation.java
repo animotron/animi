@@ -39,7 +39,6 @@ public class CNActivation implements Act<CortexZoneComplex> {
     	
     	cn.active = 0;
     	cn.backProjection = 0;
-    	cn.minus = 0;
     	for (int i = 0; i < cn.s_links.length; i++) {
     		Link3d link = cn.s_links[i];
 
