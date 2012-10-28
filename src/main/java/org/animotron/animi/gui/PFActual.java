@@ -94,7 +94,9 @@ public class PFActual implements Imageable, InternalFrameListener {
 		
 		for (int dx = -1; dx <= 1; dx++) {
 			for (int dy = -1; dy <= 1; dy++) {
-		        g.drawString(""+dx+" : "+dy, x, y);		
+
+		        x = 0;
+				g.drawString(""+dx+" : "+dy, x, y);		
 				y += textY;
 				
 				for (Field f : snFds) {
