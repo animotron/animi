@@ -39,22 +39,20 @@ public class Subtraction implements Act<CortexZoneComplex> {
     	NeuronComplex cn = layer.col[x][y];
     	if (cn.active > 0) {
     		
-    		for (int j = 0; j < cn.s_links.length; j++) {
-    			Link3d scn = cn.s_links[j];
+    		for (Link scn : cn.s_links) {
     			
-    			NeuronSimple sn = layer.s[scn.x][scn.y][scn.z];
+    			NeuronSimple sn = (NeuronSimple) scn.dendrite;
     			
-    			for (int i = 0; i < sn.n1; i++) {
-    				Link2dZone ssn = sn.s_links[i];
+    			for (Link ssn : sn.s_links) {
     				
         			double q = 0;
-    	    		for (int k = 0; k < cn.s_links.length; k++) {
-    	    			q += ssn.w * cn.s_links[k].w;
+    	    		for (Link l : cn.s_links) {
+    	    			q += ssn.w * l.w;
     	    		}
     				
-    				NeuronComplex col = ssn.zone.col[ssn.x][ssn.y];
+    				NeuronComplex col = (NeuronComplex) ssn.dendrite;
     				
-//    				cn.putQ(col, q);
+    				//XXX: store to reuse //cn.putQ(col, q);
     				
     				double delta = cn.active / q;
     				

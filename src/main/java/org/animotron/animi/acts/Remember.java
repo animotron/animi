@@ -46,9 +46,8 @@ public class Remember implements Act<CortexZoneComplex> {
     	
     	//есть ли свободные и есть ли добро на запоминание (интервал запоминания)
     	boolean found = false;
-    	for (int i = 0; i < cn.s_links.length; i++) {
-    		Link3d l = cn.s_links[i];
-    		_sn_ = layer.s[l.x][l.y][l.z];
+    	for (Link l : cn.s_links) {
+    		_sn_ = (NeuronSimple) l.dendrite;
     		if (!_sn_.occupy) {
     			found = true;
     			break;
@@ -60,18 +59,17 @@ public class Remember implements Act<CortexZoneComplex> {
     	NeuronSimple sn = null;
     	double maxSnActive = 0;
     	
-    	for (int i = 0; i < cn.s_links.length; i++) {
-    		Link3d sl = cn.s_links[i];
-    		NeuronSimple _sn = layer.s[sl.x][sl.y][sl.z];
+    	for (Link sl : cn.s_links) {
+    		NeuronSimple _sn = (NeuronSimple) sl.dendrite;
     		
         	double snActive = 0;
-    		for (int k = 0; k < _sn.n1; k++) {
-    			Link2dZone inL = _sn.s_links[k];
+    		for (Link inL : _sn.s_links) {
     			
-    			NeuronComplex in = inL.zone.col[inL.x][inL.y];
+    			NeuronComplex in = (NeuronComplex) inL.dendrite;
     			
     			snActive += in.minus;
     		}
+    		
     		if (snActive > maxSnActive) {
     			maxSnActive = snActive;
     			sn = _sn;
@@ -80,58 +78,42 @@ public class Remember implements Act<CortexZoneComplex> {
     	
 		//поверка по порогу
 //    	if (activeF > 0 && (active < mRecLevel && sn != null))
-    	if (sn == null || maxSnActive / sn.n1 < mRecLevel) {
+    	if (sn == null || maxSnActive / sn.a_links.size() < mRecLevel) {
 			return;
     	}
 		
-//    	if (sn == null) {
-//    		sn = _sn_;
-//    		for (int k = 0; k < sn.n1; k++) {
-//    			Link2dZone inL = sn.s_links[k];
-//    			
-//    			NeuronComplex in = inL.zone.col[inL.x][inL.y];
-//    			inL.w = in.active;
-//
-//    			//занулить минусовку простого нейрона
-////    			in.minus = 0;
-//    		}
-//    	} else {
-	    	
-			//перебираем свободные простые нейроны комплексного нейрона
-			//сумма сигнала синепсов простых неровнов с минусовки
-			//находим максимальный простой нейрон и им запоминаем (от минусовки)
-	    	
-	    	//вес синапса ставим по остаточному всечению
-			for (int k = 0; k < sn.n1; k++) {
-				Link2dZone inL = sn.s_links[k];
-				
-				NeuronComplex in = inL.zone.col[inL.x][inL.y];
-				inL.w = in.minus;
-	
-				//занулить минусовку простого нейрона
-				in.minus = 0;
-			}
-//    	}
+		//перебираем свободные простые нейроны комплексного нейрона
+		//сумма сигнала синепсов простых неровнов с минусовки
+		//находим максимальный простой нейрон и им запоминаем (от минусовки)
+    	
+    	//вес синапса ставим по остаточному всечению
+		for (Link inL : sn.s_links) {
+			
+			NeuronComplex in = (NeuronComplex) inL.dendrite;
+			inL.w = in.minus;
+
+			//занулить минусовку простого нейрона
+			in.minus = 0;
+		}
     	sn.occupy = true;
     	
     	//присвоить веса сложного нейрона таким образом, чтобы 
     	
     	//текущая активность / на сумму активности (комплекстные нейроны)
 		double active = 0;
-		for (int k = 0; k < sn.n2; k++) {
-			Link2d cnL = sn.a_links[k];
+		for (Link cnL : sn.a_links) {
 			
-			active += layer.col[cnL.x][cnL.y].active;
+			active += cnL.axon.active;
 		}
     	
-		for (int k = 0; k < sn.n2; k++) {
-			Link2d cnL = sn.a_links[k];
+		for (Link cnL : sn.a_links) {
 			
+			//UNDERSTAND: перераспределять ли веса?
 			if (active != 0)
-				cnL.w = layer.col[cnL.x][cnL.y].active / active;
+				cnL.w = cnL.axon.active / active;
 			else
 				cnL.w = 1;
-			//UNDERSTAND: перераспределять ли веса?
 		}
+		
     }
 }

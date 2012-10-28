@@ -43,9 +43,9 @@ public class CortexZoneSimple implements Layer {
     public NeuronComplex[][] col;
     
 	@InitParam(name="width")
-	public int width = 160;
+	public int width = 32;
 	@InitParam(name="height")
-	public int height = 120;
+	public int height = 32;
 
     CortexZoneSimple() {
     	name = null;
@@ -61,7 +61,7 @@ public class CortexZoneSimple implements Layer {
         col = new NeuronComplex[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                col[x][y] = new NeuronComplex();
+                col[x][y] = new NeuronComplex(x,y);
             }
         }
     }
@@ -122,5 +122,9 @@ public class CortexZoneSimple implements Layer {
 
 	@Override
 	public void closed(Point point) {
+	}
+
+	public NeuronComplex getCol(int x, int y) {
+		return col[x][y];
 	}
 }

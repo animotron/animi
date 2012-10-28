@@ -62,6 +62,14 @@
             <artifactId>kryo</artifactId>
             <version>2.20</version>
         </dependency>
+        
+        <!-- fast map, list ... -->
+		<dependency>
+			<groupId>javolution</groupId>
+			<artifactId>javolution</artifactId>
+			<version>5.5.1</version>
+		</dependency>
+        
 
         <dependency>
             <groupId>junit</groupId>

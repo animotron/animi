@@ -29,11 +29,6 @@ package org.animotron.animi.cortex;
  */
 public class Link2d {
 	public int x, y;
-//	public boolean cond;
+
 	public double w = 0;
-	
-//	/** усредненный вес */
-//	public int average_w = 0;
-//	/** достоверность **/
-//	public int reliability = 0;
 }

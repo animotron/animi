@@ -32,8 +32,8 @@ import java.awt.image.BufferedImage;
 public class Retina {
 
 	//Сетчатка
-    public static final int WIDTH = 160;
-	public static final int HEIGHT = 120;
+    public static final int WIDTH = 32;
+	public static final int HEIGHT = 32;
 	
 	/* x */
 	private int width;

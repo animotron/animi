@@ -131,17 +131,15 @@ public class PFActual implements Imageable, InternalFrameListener {
 		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
 		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
 
-        for (int i = 0; i < zone.nsc_links; i++) {
-        	final Link3d cl = cn.s_links[i];
-        	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
+        for (Link cl : cn.s_links) {
+        	final NeuronSimple sn = (NeuronSimple) cl.dendrite;
         	if (sn.occupy) {
-                for (int j = 0; j < zone.ns_links; j++) {
-                    final Link2dZone sl = sn.s_links[j];
-                    	minX = Math.min(minX, sl.x);
-                    	minY = Math.min(minY, sl.y);
+                for (Link sl : sn.s_links) {
+                    	minX = Math.min(minX, sl.dendrite.x);
+                    	minY = Math.min(minY, sl.dendrite.y);
 
-                    	maxX = Math.max(maxX, sl.x);
-                    	maxY = Math.max(maxY, sl.y);
+                    	maxX = Math.max(maxX, sl.dendrite.x);
+                    	maxY = Math.max(maxY, sl.dendrite.y);
                 }
             }
         }
@@ -149,15 +147,13 @@ public class PFActual implements Imageable, InternalFrameListener {
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
         int pX, pY;
-        for (int i = 0; i < zone.nsc_links; i++) {
-        	final Link3d cl = cn.s_links[i];
-        	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
+        for (Link cl : cn.s_links) {
+        	final NeuronSimple sn = (NeuronSimple) cl.dendrite;
         	if (sn.occupy) {
-                for (int j = 0; j < zone.ns_links; j++) {
-                    final Link2dZone sl = sn.s_links[j];
+                for (Link sl : sn.s_links) {
 //                    if (sl.w > 0) {
-						pX = (boxSize / 2) + (sl.x - cl.x);
-						pY = (boxSize / 2) + (sl.y - cl.y);
+						pX = (boxSize / 2) + (sl.dendrite.x - cl.axon.x);
+						pY = (boxSize / 2) + (sl.dendrite.y - cl.axon.y);
 		            	if (pX >= 0 && pX < boxSize 
 		            			&& pY >= 0 && pY < boxSize) {
 		                	
@@ -176,17 +172,15 @@ public class PFActual implements Imageable, InternalFrameListener {
 		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
 		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
 
-        for (int i = 0; i < zone.nsc_links; i++) {
-        	final Link3d cl = cn.s_links[i];
-        	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
+        for (Link cl : cn.s_links) {
+        	final NeuronSimple sn = (NeuronSimple) cl.dendrite;
 //        	if (sn.occupy) {
-                for (int j = 0; j < zone.ns_links; j++) {
-                    final Link2dZone sl = sn.s_links[j];
-                    	minX = Math.min(minX, sl.x);
-                    	minY = Math.min(minY, sl.y);
+                for (Link sl : sn.s_links) {
+                	minX = Math.min(minX, sl.dendrite.x);
+                	minY = Math.min(minY, sl.dendrite.y);
 
-                    	maxX = Math.max(maxX, sl.x);
-                    	maxY = Math.max(maxY, sl.y);
+                	maxX = Math.max(maxX, sl.dendrite.x);
+                	maxY = Math.max(maxY, sl.dendrite.y);
                 }
 //            }
         }
@@ -194,15 +188,13 @@ public class PFActual implements Imageable, InternalFrameListener {
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
         int pX, pY;
-        for (int i = 0; i < zone.nsc_links; i++) {
-        	final Link3d cl = cn.s_links[i];
-        	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
+        for (Link cl : cn.s_links) {
+        	final NeuronSimple sn = (NeuronSimple) cl.dendrite;
 //        	if (sn.occupy) {
-                for (int j = 0; j < zone.ns_links; j++) {
-                    final Link2dZone sl = sn.s_links[j];
+                for (Link sl : sn.s_links) {
 //                    if (sl.w > 0) {
-						pX = (boxSize / 2) + (sl.x - cl.x);
-						pY = (boxSize / 2) + (sl.y - cl.y);
+                    	pX = (boxSize / 2) + (sl.dendrite.x - cl.axon.x);
+						pY = (boxSize / 2) + (sl.dendrite.y - cl.axon.y);
 		            	if (pX >= 0 && pX < boxSize 
 		            			&& pY >= 0 && pY < boxSize) {
 		                	

@@ -21,6 +21,7 @@
 package org.animotron.animi.gui;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -107,7 +108,11 @@ public class Visualizer extends JInternalFrame {
 		}
 
 		public void paint(Graphics g) {
+//			if (image == null) return;
 			g.drawImage(image, 0, 0, this);
+//			g.drawImage(
+//				image.getScaledInstance(image.getWidth()*10, image.getHeight()*10, Image.SCALE_AREA_AVERAGING),
+//				0, 0, this);
 		}
 	}
 	

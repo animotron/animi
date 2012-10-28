@@ -30,29 +30,19 @@ import org.animotron.animi.RuntimeParam;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class NeuronSimple {
+public class NeuronSimple extends Neuron {
 	
-	@RuntimeParam(name="active")
-	public double active = 0;
-
+	int z;
+	
 	@RuntimeParam(name="occupy")
 	public boolean occupy = false;
 	
-	/** Links of synapses connects cortex neurons with projecting nerve bundle **/
-//	@RuntimeParam(name="")
-	/** incoming links **/
-	public Link2dZone[] s_links;
-	
-	/** Axonal connections with nearest cortical columns **/
-//	@RuntimeParam(name="")
-	/** outgoing links **/
-	public Link2d[] a_links;
-	
-	/** Counter for links of synapses **/
-//	@RuntimeParam(name="")
-	public int n1 = 0;
-	
-	/** Counter for axonal connections **/
-//	@RuntimeParam(name="")
-	public int n2 = 0;
+	public NeuronSimple(int x, int y, int z) {
+		super(x,y);
+		this.z = z;
+	}
+
+	public boolean isOccupy() {
+		return occupy;
+	}
 }

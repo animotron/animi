@@ -41,9 +41,8 @@ public class SNActivation implements Act<CortexZoneComplex> {
         	sn.active = 0; //UNDERSTAND: do we need previous value
 
         	if (sn.occupy) {
-	        	for (int j = 0; j < sn.n1; j++) {
-	        		Link2dZone link = sn.s_links[j];
-	        		sn.active += link.zone.col[link.x][link.y].active * link.w;
+	        	for (Link link : sn.s_links) {
+	        		sn.active += link.dendrite.active * link.w;
 	        	}
         	}
         }

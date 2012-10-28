@@ -2,7 +2,7 @@
  *  Copyright (C) 2012 The Animo Project
  *  http://animotron.org
  *
- *  This file is part of Animotron.
+ *  This file is part of Animi.
  *
  *  Animotron is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -20,24 +20,47 @@
  */
 package org.animotron.animi.cortex;
 
+import javolution.util.FastList;
+
 import org.animotron.animi.RuntimeParam;
 
 /**
- * Complex neuron
- * 
- * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
- * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ *
  */
-public class NeuronComplex extends Neuron {
+public class Neuron {
 	
-	@RuntimeParam(name="backProjection")
-	public double backProjection = 0;
+	@RuntimeParam(name="active")
+	public double active = 0;
+	
+	public int x;
+	
+	public int y;
 
-	@RuntimeParam(name="minus")
-	public double minus = 0;
+	/** Links of synapses connects cortex neurons with projecting nerve bundle **/
+	/** incoming links **/
+	public FastList<Link> s_links = new FastList<Link>();
+	
+	/** Axonal connections with nearest cortical columns **/
+	/** outgoing links **/
+	public FastList<Link> a_links = new FastList<Link>();
+	
+	public Neuron(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
 
-	public NeuronComplex(int x, int y) {
-		super(x,y);
+	//called by Link only!
+	protected void addSynapse(Link link) {
+		s_links.add(link);
+	}
+
+	//called by Link only!
+	protected void addAxon(Link link) {
+		a_links.add(link);
+	}
+
+	public boolean isOccupy() {
+		return false;
 	}
 }

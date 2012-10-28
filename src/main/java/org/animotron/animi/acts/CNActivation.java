@@ -37,12 +37,13 @@ public class CNActivation implements Act<CortexZoneComplex> {
     public void process(CortexZoneComplex layer, final int x, final int y) {
     	NeuronComplex cn = layer.col[x][y];
     	
+    	double active = 0;
+    	
     	cn.active = 0;
     	cn.backProjection = 0;
-    	for (int i = 0; i < cn.s_links.length; i++) {
-    		Link3d link = cn.s_links[i];
+    	for (Link link : cn.s_links) {
 
-    		double active = layer.s[link.x][link.y][link.z].active * link.w;
+    		active = link.dendrite.active * link.w;
 
     		link.stability += active;
     		

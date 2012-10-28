@@ -30,6 +30,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import javolution.util.FastList;
+
 /**
  * Complex cortex zone
  * 
@@ -59,6 +61,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	protected int nas_links = 9;
 	/** Number of synaptic connections of the complex neuron **/
 	public int nsc_links;
+	
 	/** Memory **/
 	public NeuronSimple[][][] s;
 
@@ -88,17 +91,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		for (int x = 0; x < width(); x++) {
 			for (int y = 0; y < height(); y++) {
 				for (int z = 0; z < deep; z++) {
-
-					NeuronSimple sn = s[x][y][z] = new NeuronSimple();
-					sn.s_links = new Link2dZone[ns_links];
-					for (int i = 0; i < ns_links; i++) {
-						sn.s_links[i] = new Link2dZone();
-					}
-
-					sn.a_links = new Link2d[nas_links];
-					for (int i = 0; i < nas_links; i++) {
-						sn.a_links[i] = new Link2d();
-					}
+					s[x][y][z] = new NeuronSimple(x,y,z);
 				}
 			}
 		}
@@ -119,7 +112,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
             for (int x = 0; x < width(); x++) {
 				for (int y = 0; y < height(); y++) {
-					System.out.println("x = "+x+" y = "+y);
+//					System.out.println("x = "+x+" y = "+y);
 
 					// Определение координат текущего нейрона в масштабе
 					// проецируемой зоны
@@ -180,11 +173,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 							nerv_links[lx][ly] = true;
 
 							// Создаем синаптическую связь
-							NeuronSimple n = s[x][y][z];
-							n.s_links[n.n1].x = lx;
-							n.s_links[n.n1].y = ly;
-							n.s_links[n.n1].zone = m.zone;
-							n.n1++;
+							new Link(m.zone.getCol(lx, ly), s[x][y][z]);
 						}
 					}
 				}
@@ -195,16 +184,16 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		// и, соответственно, синаптических сложных нейронов.
 		// В простейшем случае каждый простой нейрон сязан с девятью колонками,
 		// образующими квадрат с центров в этом нейроне.
-		for (int x = 0; x < width(); x++) {
-			for (int y = 0; y < height(); y++) {
-				NeuronComplex sn = col[x][y];
-
-				sn.s_links = new Link3d[nsc_links];
-				for (int i = 0; i < nsc_links; i++) {
-					sn.s_links[i] = new Link3d();
-				}
-			}
-		}
+//		for (int x = 0; x < width(); x++) {
+//			for (int y = 0; y < height(); y++) {
+//				NeuronComplex sn = col[x][y];
+//
+//				sn.s_links = new Link[nsc_links];
+//				for (int i = 0; i < nsc_links; i++) {
+//					sn.s_links[i] = new Link();
+//				}
+//			}
+//		}
 
 		int n;
 		// колонки по периметру не задействованы
@@ -218,17 +207,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					for (int j = y - 1; j <= y + 1; j++) {
 						for (int k = 0; k < deep; k++) {
 
-							NeuronComplex cn = col[x][y];
-
-							cn.s_links[n].x = i;
-							cn.s_links[n].y = j;
-							cn.s_links[n].z = k;
-							n++;
-
-							NeuronSimple sn = s[i][j][k];
-							sn.a_links[sn.n2].x = x;
-							sn.a_links[sn.n2].y = y;
-							sn.n2++;
+							new Link(s[i][j][k], col[x][y]);
 						}
 					}
 				}
@@ -316,20 +295,28 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 					final NeuronComplex cn = col[x][y];
 	
-	                for (int i = 0; i < cn.s_links.length; i++) {
-	                	final Link3d cl = cn.s_links[i];
-                    	final NeuronSimple sn = s[cl.x][cl.y][cl.z];
-                    	if (sn.occupy) {
-                            for (int j = 0; j < sn.s_links.length; j++) {
-                                final Link2dZone sl = sn.s_links[j];
+					Link cl = null;
+					Link sl = null;
+					for (FastList.Node<Link> cNode = cn.s_links.head(), cEnd = cn.s_links.tail(); (cNode = cNode.getNext()) != cEnd;) {
+						cl = cNode.getValue();
+
+                    	final Neuron sn = cl.dendrite;
+                    	if (sn.isOccupy()) {
+        					for (FastList.Node<Link> sNode = sn.s_links.head(), end = sn.s_links.tail(); (sNode = sNode.getNext()) != end;) {
+        						sl = sNode.getValue();
+
                                 if (sl.w > 0) {
-									pX = x*boxSize + (boxSize / 2) + (sl.x - cl.x);
-									pY = y*boxSize + (boxSize / 2) + (sl.y - cl.y);
-                                	if (pX > x*boxSize && pX < (x*boxSize+boxSize) 
-                                			&& pY > y*boxSize && pY < (y*boxSize+boxSize)) {
+									
+                                	pX = x*boxSize + (boxSize / 2) + (sl.dendrite.x - x);
+									pY = y*boxSize + (boxSize / 2) + (sl.dendrite.y - y);
+                                	
+									if (       pX > x*boxSize 
+                                			&& pX < (x*boxSize+boxSize) 
+                                			&& pY > y*boxSize 
+                                			&& pY < (y*boxSize+boxSize)) {
 				                    	
 				                    	int c = Utils.calcGrey(image, pX, pY);
-										c += 255 * sl.w;
+										c += 255 * sl.w * cl.w;
 										image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
                                 	}
                                 }

@@ -2,7 +2,7 @@
  *  Copyright (C) 2012 The Animo Project
  *  http://animotron.org
  *
- *  This file is part of Animotron.
+ *  This file is part of Animi.
  *
  *  Animotron is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -20,24 +20,27 @@
  */
 package org.animotron.animi.cortex;
 
-import org.animotron.animi.RuntimeParam;
-
 /**
- * Complex neuron
- * 
- * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
- * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ *
  */
-public class NeuronComplex extends Neuron {
+public class Link {
 	
-	@RuntimeParam(name="backProjection")
-	public double backProjection = 0;
+	//Dendrite terminal
+	public Neuron dendrite;
+	
+	//Axon terminal
+	public Neuron axon;
 
-	@RuntimeParam(name="minus")
-	public double minus = 0;
+	public double w = 0;
+	
+	public double stability = 0;
 
-	public NeuronComplex(int x, int y) {
-		super(x,y);
+	protected Link(Neuron dendrite, Neuron axon) {
+		this.dendrite = dendrite;
+		dendrite.addAxon(this);
+
+		this.axon = axon;
+		axon.addSynapse(this);
 	}
 }

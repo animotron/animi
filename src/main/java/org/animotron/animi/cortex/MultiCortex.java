@@ -57,7 +57,7 @@ public class MultiCortex {
         System.out.println("z_viscor");
         z_viscor = new CortexZoneComplex("Prime visual cortex", this, 10,
             new Mapping[]{
-                new Mapping(z_video, 50, 0.02)
+                new Mapping(z_video, 10, 0.02)
             }
         );
 
@@ -83,7 +83,6 @@ public class MultiCortex {
         retina.setNextLayer(z_video);
 
         System.out.println("done.");
-
     }
 
 
@@ -109,7 +108,7 @@ public class MultiCortex {
     public void cycle2() {
         //Последовательность активации зон коры определяется их номером
         z_viscor.cycle2();
-        //z_asscor.cycle2();
+//        z_asscor.cycle2();
     }
 
 	public void prepareForSerialization() {

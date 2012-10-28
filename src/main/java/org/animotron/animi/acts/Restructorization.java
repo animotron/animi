@@ -39,27 +39,24 @@ public class Restructorization implements Act<CortexZoneComplex> {
     	for (int z = 0; z < layer.deep; z++) {
     		NeuronSimple sn = layer.s[x][y][z];
     		if (sn.active > 0) {
-    			for (int i = 0; i < sn.n2; i++) {
-    				Link2d link = sn.a_links[i];
+    			for (Link link : sn.a_links) {
     				
     				if (link.w > 0) {
-	    				NeuronComplex cn = layer.col[link.x][link.y];
+	    				NeuronComplex cn = (NeuronComplex) link.axon;
 	    				
 	    				double sum = 0, delta = 0;
 
-        		    	for (int j = 0; j < cn.s_links.length; j++) {
-	        				Link3d l = cn.s_links[j];
+        		    	for (Link l : cn.s_links) {
 	        				
-	        				if (l.x == x && l.y == y && l.z == z)
+	        				if (l.dendrite == sn)
 	    	    				delta = cn.active * sn.active / l.stability;
 	        				else
 	        					sum += l.stability;
 	        			}
         		    	
-        		    	for (int j = 0; j < cn.s_links.length; j++) {
-	        				Link3d l = cn.s_links[j];
+        		    	for (Link l : cn.s_links) {
 	        				
-	        				if (l.x == x && l.y == y && l.z == z)
+	        				if (l.dendrite == sn)
 	    	    				l.w += delta;
 	        				else {
 	        					l.w -= delta * l.stability / sum;
