@@ -375,20 +375,20 @@ public class Application extends JFrame {
             				10, 0,
             				new int[][] {
             						{4, 4},
-            						{Retina.WIDTH - 4, 4},
-            						{Retina.WIDTH - 4, Retina.HEIGHT - 4},
-            						{4, Retina.HEIGHT - 4},
+            						{Retina.WIDTH - 8, 4},
+            						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+            						{4, Retina.HEIGHT - 8},
             						{4, 4}
             				}
     				),
             		new LineAnime(
             				10, -.03,
             				new int[][] {
-            						{Retina.WIDTH - 4, Retina.HEIGHT - 4},
-            						{4, Retina.HEIGHT - 4},
+            						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+            						{4, Retina.HEIGHT - 8},
             						{4, 4},
-            						{Retina.WIDTH - 4, 4},
-            						{Retina.WIDTH - 4, Retina.HEIGHT - 4}
+            						{Retina.WIDTH - 8, 4},
+            						{Retina.WIDTH - 8, Retina.HEIGHT - 8}
             				}
     				)
 //                    new LineAnime(
