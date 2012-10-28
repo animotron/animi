@@ -80,7 +80,7 @@ public class Remember implements Act<CortexZoneComplex> {
     	
 		//поверка по порогу
 //    	if (activeF > 0 && (active < mRecLevel && sn != null))
-    	if (maxSnActive < mRecLevel) {
+    	if (sn == null || maxSnActive / sn.n1 < mRecLevel) {
 			return;
     	}
 		
@@ -109,7 +109,7 @@ public class Remember implements Act<CortexZoneComplex> {
 				inL.w = in.minus;
 	
 				//занулить минусовку простого нейрона
-//				in.minus = 0;
+				in.minus = 0;
 			}
 //    	}
     	sn.occupy = true;
