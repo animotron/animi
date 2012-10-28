@@ -124,20 +124,16 @@ public class PFActual implements Imageable, InternalFrameListener {
 
         for (int i = 0; i < zone.nsc_links; i++) {
         	final Link3d cl = cn.s_links[i];
-            if (zone.s[cl.x][cl.y][cl.z].occupy) {
-            	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
-            	if (sn.occupy) {
-                    for (int j = 0; j < zone.ns_links; j++) {
-                        final Link2dZone sl = sn.s_links[j];
-//                        if (sl.cond) {
-                        	minX = Math.min(minX, sl.x);
-                        	minY = Math.min(minY, sl.y);
+        	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
+        	if (sn.occupy) {
+                for (int j = 0; j < zone.ns_links; j++) {
+                    final Link2dZone sl = sn.s_links[j];
+                    	minX = Math.min(minX, sl.x);
+                    	minY = Math.min(minY, sl.y);
 
-                        	maxX = Math.max(maxX, sl.x);
-                        	maxY = Math.max(maxY, sl.y);
-//                        }
-                    }
-            	}
+                    	maxX = Math.max(maxX, sl.x);
+                    	maxY = Math.max(maxY, sl.y);
+                }
             }
         }
         int boxSize = Math.max(maxX - minX, maxY - minY);
@@ -146,26 +142,23 @@ public class PFActual implements Imageable, InternalFrameListener {
         int pX, pY;
         for (int i = 0; i < zone.nsc_links; i++) {
         	final Link3d cl = cn.s_links[i];
-            if (zone.s[cl.x][cl.y][cl.z].occupy) {
-            	
-            	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
-            	if (sn.occupy) {
-                    for (int j = 0; j < zone.ns_links; j++) {
-                        final Link2dZone sl = sn.s_links[j];
-//                        if (sl.cond) {
-							pX = (boxSize / 2) + (sl.x - cl.x);
-							pY = (boxSize / 2) + (sl.y - cl.y);
-                        	if (pX >= 0 && pX < boxSize 
-                        			&& pY >= 0 && pY < boxSize) {
-		                    	
-		                    	int c = Utils.calcGrey(image, pX, pY);
-								c += 50;
-								image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-//                        	}
-                        }
+        	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
+        	if (sn.occupy) {
+                for (int j = 0; j < zone.ns_links; j++) {
+                    final Link2dZone sl = sn.s_links[j];
+                    if (sl.w > 0) {
+						pX = (boxSize / 2) + (sl.x - cl.x);
+						pY = (boxSize / 2) + (sl.y - cl.y);
+		            	if (pX >= 0 && pX < boxSize 
+		            			&& pY >= 0 && pY < boxSize) {
+		                	
+		                	int c = Utils.calcGrey(image, pX, pY);
+							c += 255 * sl.w;
+							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+		                }
                     }
-            	}
-            }
+                }
+        	}
         }
         return image;
 	}

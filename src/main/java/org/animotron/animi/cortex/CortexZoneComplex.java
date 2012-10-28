@@ -318,26 +318,23 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 	                for (int i = 0; i < nsc_links; i++) {
 	                	final Link3d cl = cn.s_links[i];
-	                    if (s[cl.x][cl.y][cl.z].occupy) {
-	                    	
-	                    	final NeuronSimple sn = s[cl.x][cl.y][cl.z];
-	                    	if (sn.occupy) {
-	                            for (int j = 0; j < ns_links; j++) {
-	                                final Link2dZone sl = sn.s_links[j];
-	                                if (sl.w > 0) {
-										pX = x*boxSize + (boxSize / 2) + (sl.x - cl.x);
-										pY = y*boxSize + (boxSize / 2) + (sl.y - cl.y);
-	                                	if (pX > x*boxSize && pX < (x*boxSize+boxSize) 
-	                                			&& pY > y*boxSize && pY < (y*boxSize+boxSize)) {
-					                    	
-					                    	int c = Utils.calcGrey(image, pX, pY);
-											c += 50;
-											image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-	                                	}
-	                                }
-	                            }
-	                    	}
-	                    }
+                    	final NeuronSimple sn = s[cl.x][cl.y][cl.z];
+                    	if (sn.occupy) {
+                            for (int j = 0; j < ns_links; j++) {
+                                final Link2dZone sl = sn.s_links[j];
+                                if (sl.w > 0) {
+									pX = x*boxSize + (boxSize / 2) + (sl.x - cl.x);
+									pY = y*boxSize + (boxSize / 2) + (sl.y - cl.y);
+                                	if (pX > x*boxSize && pX < (x*boxSize+boxSize) 
+                                			&& pY > y*boxSize && pY < (y*boxSize+boxSize)) {
+				                    	
+				                    	int c = Utils.calcGrey(image, pX, pY);
+										c += 255 * sl.w;
+										image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+                                	}
+                                }
+                            }
+                    	}
 	                }
 				}
 			}
