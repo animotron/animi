@@ -371,46 +371,66 @@ public class Application extends JFrame {
 	Stimulator stimulator = new Stimulator(
             Retina.WIDTH, Retina.HEIGHT,
             new Figure[] {
-            		new HLineAnime(
-    				10, 0,
-    				new int[][] {
-    						{4, 4},
-    						{Retina.WIDTH - 8, 4},
-    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-    						{4, Retina.HEIGHT - 8},
-    						{4, 4}
-    				}
-			),
-            		new VLineAnime(
-    				10, 0,
-    				new int[][] {
-    						{Retina.WIDTH - 8, 4},
-    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-    						{4, Retina.HEIGHT - 8},
-    						{4, 4},
-    						{Retina.WIDTH - 8, 4},
-    				}
-			),
-            		new HLineAnime(
-    				10, 0,
-    				new int[][] {
-    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-    						{4, Retina.HEIGHT - 8},
-    						{4, 4},
-    						{Retina.WIDTH - 8, 4},
-    						{Retina.WIDTH - 8, Retina.HEIGHT - 8}
-    				}
-			),
-        		new VLineAnime(
-    				10, 0,
-    				new int[][] {
-    						{4, Retina.HEIGHT - 8},
-    						{4, 4},
-    						{Retina.WIDTH - 8, 4},
-    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-    						{4, Retina.HEIGHT - 8}
-    				}
-			)
+                    new HLineAnime(
+                            Retina.WIDTH - 4, 0,
+                            new int[][] {
+                                    {Retina.WIDTH / 2, 2},
+                                    {Retina.WIDTH / 2, Retina.HEIGHT - 3},
+                                    {Retina.WIDTH / 2, 2}
+                            }
+                    ),
+
+                    new HLineAnime(
+                            Retina.WIDTH - 4, 0,
+                            new int[][] {
+                                    {Retina.WIDTH / 2, 3},
+                                    {Retina.WIDTH / 2, Retina.HEIGHT - 2},
+                                    {Retina.WIDTH / 2, 3}
+                            }
+                    )
+
+
+
+//            		new HLineAnime(
+//    				10, 0,
+//    				new int[][] {
+//    						{4, 4},
+//    						{Retina.WIDTH - 8, 4},
+//    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+//    						{4, Retina.HEIGHT - 8},
+//    						{4, 4}
+//    				}
+//			),
+//            		new VLineAnime(
+//    				10, 0,
+//    				new int[][] {
+//    						{Retina.WIDTH - 8, 4},
+//    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+//    						{4, Retina.HEIGHT - 8},
+//    						{4, 4},
+//    						{Retina.WIDTH - 8, 4},
+//    				}
+//			),
+//            		new HLineAnime(
+//    				10, 0,
+//    				new int[][] {
+//    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+//    						{4, Retina.HEIGHT - 8},
+//    						{4, 4},
+//    						{Retina.WIDTH - 8, 4},
+//    						{Retina.WIDTH - 8, Retina.HEIGHT - 8}
+//    				}
+//			),
+//        		new VLineAnime(
+//    				10, 0,
+//    				new int[][] {
+//    						{4, Retina.HEIGHT - 8},
+//    						{4, 4},
+//    						{Retina.WIDTH - 8, 4},
+//    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+//    						{4, Retina.HEIGHT - 8}
+//    				}
+//			)
 
             		
 //            		new LineAnime(
