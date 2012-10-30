@@ -49,9 +49,9 @@ public class Restructorization implements Act<CortexZoneComplex> {
         		    	for (Link l : cn.s_links) {
 	        				
 	        				if (l.dendrite == sn)
-	    	    				delta = cn.active * sn.active / l.stability;
-	        				else
-	        					sum += Math.abs( l.stability );
+	    	    				delta = cn.active * sn.active;
+
+        					sum += Math.abs( l.stability );
 	        			}
         		    	
         		    	if (sum == 0) {
@@ -59,15 +59,16 @@ public class Restructorization implements Act<CortexZoneComplex> {
 //        		    		System.out.println("WARNING: sum of stability == 0");
         		    	}
         		    	
+        		    	delta /= sum;
+        		    	
         		    	for (Link l : cn.s_links) {
 	        				if (l.dendrite == sn)
 	    	    				l.w += delta;
-	        				else if (sum != 0) {
-	        					l.w -= delta * l.stability / sum;
-	        					if (l.w < 0) { 
-	        						l.w = 0;
-	        					}
-	        				}
+
+        					l.w -= delta * l.stability / sum;
+        					if (l.w < 0) { 
+        						l.w = 0;
+        					}
 	        			}
     				}
     			}
