@@ -47,6 +47,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 	public Subtraction subtraction = new Subtraction();
 
+	public Restructorization restructorization = new Restructorization();
+
 	@Params
 	public Remember remember = new Remember();
 	
@@ -391,6 +393,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Граничные нейроны не задействованы.
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     public void cycle2() {
+        cycle(1, 1, width() - 1, height() - 1, restructorization);
         cycle(1, 1, width() - 1, height() - 1, subtraction);
         cycle(1, 1, width() - 1, height() - 1, remember);
     }
