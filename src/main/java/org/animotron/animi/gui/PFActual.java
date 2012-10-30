@@ -77,6 +77,12 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 	@Override
 	public BufferedImage getImage() {
+		
+		calcBoxSize();
+		
+		//actual
+		//minus
+		
 		BufferedImage image = new BufferedImage(400, 900, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         g.setColor(Color.WHITE);
@@ -100,7 +106,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 		        x = 0;
 				y += textY;
-				g.drawString(""+dx+" : "+dy, x, y);		
+				g.drawString(""+dx+" : "+dy, x, y);
 				
 				for (Field f : snFds) {
 					y += textY;
@@ -113,8 +119,10 @@ public class PFActual implements Imageable, InternalFrameListener {
 						if (str.length() > 3)
 							str = str.substring(0, 3);
 						
+				        g.setColor(sn.isOccupy() ? Color.WHITE : Color.YELLOW);
 				        g.drawString(str, x, y);		
 						x += 35;
+				        g.setColor(Color.WHITE);
 					}
 			        g.drawString(getName(f), x, y);		
 				}
@@ -122,6 +130,12 @@ public class PFActual implements Imageable, InternalFrameListener {
 		}
 		x = 0;
 		y += textY;
+
+		int rY = y;
+		
+		y += textY;
+        g.drawString("RF", x, y);
+        
 		BufferedImage img = drawRF();
 		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
 		g.drawImage(
@@ -131,7 +145,34 @@ public class PFActual implements Imageable, InternalFrameListener {
 		x = 0;
 		y += 2+img.getHeight()*10;
 
+		y += textY;
+        g.drawString("Total RF", x, y);
+
 		img = drawTotalRF();
+		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
+		g.drawImage(
+				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
+				x+1, y+1, null);
+
+		
+		y = rY; x = boxSize*10 + 2;
+		
+		y += textY;
+        g.drawString("In", x, y);
+
+		img = drawIn();
+		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
+		g.drawImage(
+				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
+				x+1, y+1, null);
+
+		x = boxSize*10 + 2;
+		y += 2+img.getHeight()*10;
+
+		y += textY;
+        g.drawString("Minus", x, y);
+
+		img = drawMinus();
 		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
 		g.drawImage(
 				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
@@ -139,8 +180,10 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 		return image;
 	}
+	
+	int boxSize = 0;
 
-	private BufferedImage drawRF() {
+	private void calcBoxSize() {
 		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
 		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
 
@@ -153,7 +196,10 @@ public class PFActual implements Imageable, InternalFrameListener {
             	maxY = Math.max(maxY, sl.dendrite.y);
             }
         }
-        int boxSize = Math.max(maxX - minX, maxY - minY);
+        boxSize = Math.max(maxX - minX, maxY - minY);
+	}
+
+	private BufferedImage drawRF() {
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
 		int pX, pY = 0;
@@ -186,22 +232,6 @@ public class PFActual implements Imageable, InternalFrameListener {
 	}
 	
 	private BufferedImage drawTotalRF() {
-		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
-		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
-
-        for (Link cl : cn.s_links) {
-        	final NeuronSimple sn = (NeuronSimple) cl.dendrite;
-//        	if (sn.occupy) {
-                for (Link sl : sn.s_links) {
-                	minX = Math.min(minX, sl.dendrite.x);
-                	minY = Math.min(minY, sl.dendrite.y);
-
-                	maxX = Math.max(maxX, sl.dendrite.x);
-                	maxY = Math.max(maxY, sl.dendrite.y);
-                }
-//            }
-        }
-        int boxSize = Math.max(maxX - minX, maxY - minY);
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
         int pX, pY;
@@ -226,54 +256,67 @@ public class PFActual implements Imageable, InternalFrameListener {
         return image;
 	}
 
-//	private BufferedImage drawRF() {
-//		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
-//		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
-//
-//        for (int i = 0; i < zone.nsc_links; i++) {
-//        	final Link3d cl = cn.s_links[i];
-//            if (zone.s[cl.x][cl.y][cl.z].occupy) {
-//            	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
-//            	if (sn.occupy) {
-//                    for (int j = 0; j < zone.ns_links; j++) {
-//                        final Link2dZone sl = sn.s_links[j];
-//                        if (sl.cond) {
-//                        	minX = Math.min(minX, sl.x);
-//                        	minY = Math.min(minY, sl.y);
-//
-//                        	maxX = Math.max(maxX, sl.x);
-//                        	maxY = Math.max(maxY, sl.y);
-//                        }
-//                    }
-//            	}
-//            }
-//        }
-//        BufferedImage image = new BufferedImage(maxX - minX + 2, maxY - minY + 2, BufferedImage.TYPE_INT_ARGB);
-//
-//        int pX, pY;
-//        for (int i = 0; i < zone.nsc_links; i++) {
-//        	final Link3d cl = cn.s_links[i];
-//            if (zone.s[cl.x][cl.y][cl.z].occupy) {
-//            	
-//            	final NeuronSimple sn = zone.s[cl.x][cl.y][cl.z];
-//            	if (sn.occupy) {
-//                    for (int j = 0; j < zone.ns_links; j++) {
-//                        final Link2dZone sl = sn.s_links[j];
-//                        if (sl.cond) {
-//							pX = (sl.x - minX);
-//							pY = (sl.y - minY);
-//	                    	
-//	                    	int c = Utils.calcGrey(image, pX, pY);
-//							c += 50;
-//							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-//                        }
-//                    }
-//            	}
-//            }
-//        }
-//        return image;//.getSubimage(0, 0, maxX, maxY);
-//	}
-	
+	private BufferedImage drawIn() {
+        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
+
+		int pX, pY = 0;
+		for (Link cl : cn.s_links) {
+			
+        	final Neuron sn = cl.dendrite;
+
+			for (Link sl : sn.s_links) {
+
+                if (sl.w > 0) {
+					
+                	pX = (boxSize / 2) + (sl.dendrite.x - cn.x);
+					pY = (boxSize / 2) + (sl.dendrite.y - cn.y);
+                	
+					if (       pX >= 0 
+                			&& pX < boxSize 
+                			&& pY >= 0 
+                			&& pY < boxSize) {
+                    	
+                    	int c = Utils.calcGrey(image, pX, pY);
+						c += 255 * sl.dendrite.active;
+						System.out.println(""+sl.w+" "+cl.w);
+						image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+                	}
+                }
+        	}
+        }
+        return image;
+	}
+
+	private BufferedImage drawMinus() {
+        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
+
+		int pX, pY = 0;
+		for (Link cl : cn.s_links) {
+			
+        	final Neuron sn = cl.dendrite;
+
+			for (Link sl : sn.s_links) {
+
+                if (sl.w > 0) {
+					
+                	pX = (boxSize / 2) + (sl.dendrite.x - cn.x);
+					pY = (boxSize / 2) + (sl.dendrite.y - cn.y);
+                	
+					if (       pX >= 0 
+                			&& pX < boxSize 
+                			&& pY >= 0 
+                			&& pY < boxSize) {
+                    	
+                    	int c = Utils.calcGrey(image, pX, pY);
+						c += 255 * ((NeuronComplex)sl.dendrite).minus;
+						image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+                	}
+                }
+        	}
+        }
+        return image;
+	}
+
 	private String getName(Field f) {
 		return f.getName();
 //		return f.getAnnotation(RuntimeParam.class).name();
