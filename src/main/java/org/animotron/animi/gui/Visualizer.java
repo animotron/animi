@@ -22,7 +22,6 @@ package org.animotron.animi.gui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -71,8 +70,6 @@ public class Visualizer extends JInternalFrame {
 	    	addInternalFrameListener((InternalFrameListener) simulator);
 
 		BufferedImage img = simulator.getImage();
-		System.out.println(img.getWidth());
-		System.out.println(img.getHeight());
 
 		Dimension size = new Dimension(img.getWidth()+20, img.getHeight()+40);
 	    
@@ -87,9 +84,6 @@ public class Visualizer extends JInternalFrame {
 		    
 		    smallP.y += getSize().height + 10;
 	    }
-
-//		setOpaque(true);
-//		setDoubleBuffered(true);
 
 		getContentPane().add(canvas);
 		
