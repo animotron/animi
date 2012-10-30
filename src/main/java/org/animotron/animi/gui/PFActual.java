@@ -222,6 +222,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 	                    	
 	                    	int c = Utils.calcGrey(image, pX, pY);
 							c += 255 * sl.w * cl.w;
+							if (c > 255) c = 255;
 							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
                     	}
                     }
@@ -237,21 +238,18 @@ public class PFActual implements Imageable, InternalFrameListener {
         int pX, pY;
         for (Link cl : cn.s_links) {
         	final NeuronSimple sn = (NeuronSimple) cl.dendrite;
-//        	if (sn.occupy) {
-                for (Link sl : sn.s_links) {
-//                    if (sl.w > 0) {
-                    	pX = (boxSize / 2) + (sl.dendrite.x - cl.axon.x);
-						pY = (boxSize / 2) + (sl.dendrite.y - cl.axon.y);
-		            	if (pX >= 0 && pX < boxSize 
-		            			&& pY >= 0 && pY < boxSize) {
-		                	
-		                	int c = Utils.calcGrey(image, pX, pY);
-							c += 50;//255 * sl.w;
-							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-//		                }
-                    }
+            for (Link sl : sn.s_links) {
+            	pX = (boxSize / 2) + (sl.dendrite.x - cl.axon.x);
+				pY = (boxSize / 2) + (sl.dendrite.y - cl.axon.y);
+            	if (pX >= 0 && pX < boxSize 
+            			&& pY >= 0 && pY < boxSize) {
+                	
+                	int c = Utils.calcGrey(image, pX, pY);
+					c += 50;//255 * sl.w;
+					if (c > 255) c = 255;
+					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
                 }
-//        	}
+            }
         }
         return image;
 	}
@@ -276,7 +274,10 @@ public class PFActual implements Imageable, InternalFrameListener {
                 	
                 	int c = Utils.calcGrey(image, pX, pY);
 					c += 255 * sl.dendrite.active;
+					if (c > 255) c = 255;
 					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+				} else {
+					System.out.println("WRONG "+pX+" "+pY);
                 }
         	}
         }

@@ -311,6 +311,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 				                    	
 				                    	int c = Utils.calcGrey(image, pX, pY);
 										c += 255 * sl.w * cl.w;
+										if (c > 255) c = 255;
 										image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
                                 	}
                                 }
