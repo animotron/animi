@@ -158,7 +158,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		y = rY; x = boxSize*10 + 2;
 		
 		y += textY;
-        g.drawString("In", x, y);
+        g.drawString("Original", x, y);
 
 		img = drawIn();
 		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
@@ -297,21 +297,18 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 			for (Link sl : sn.s_links) {
 
-                if (sl.w > 0) {
-					
-                	pX = (boxSize / 2) + (sl.dendrite.x - cn.x);
-					pY = (boxSize / 2) + (sl.dendrite.y - cn.y);
+            	pX = (boxSize / 2) + (sl.dendrite.x - cn.x);
+				pY = (boxSize / 2) + (sl.dendrite.y - cn.y);
+            	
+				if (       pX >= 0 
+            			&& pX < boxSize 
+            			&& pY >= 0 
+            			&& pY < boxSize) {
                 	
-					if (       pX >= 0 
-                			&& pX < boxSize 
-                			&& pY >= 0 
-                			&& pY < boxSize) {
-                    	
-                    	int c = Utils.calcGrey(image, pX, pY);
-						c += 255 * ((NeuronComplex)sl.dendrite).minus;
-						image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-                	}
-                }
+                	int c = Utils.calcGrey(image, pX, pY);
+					c += 255 * ((NeuronComplex)sl.dendrite).minus;
+					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+            	}
         	}
         }
         return image;
