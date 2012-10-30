@@ -50,10 +50,10 @@ public class Application extends JFrame {
 	static Application _ = null;
 
 //	private JMenuItem miInit = null;
-	private JMenuItem miRun = null;
-	private JMenuItem miPause = null;
-	private JMenuItem miResume = null;
-	private JMenuItem miStop = null;
+//	private JMenuItem miRun = null;
+//	private JMenuItem miPause = null;
+//	private JMenuItem miResume = null;
+//	private JMenuItem miStop = null;
 	
 	public static MultiCortex cortexs = null;
 	
@@ -89,12 +89,12 @@ public class Application extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                stop();
+                pause();
             }
 
 			@Override
             public void windowDeiconified(WindowEvent e) {
-                resume();
+                run();
             }
 
             @Override
@@ -158,64 +158,47 @@ public class Application extends JFrame {
         menu.add(menuItem);
  
         //control
-        menu = new JMenu("Control");
-        menu.setMnemonic(KeyEvent.VK_D);
-        menuBar.add(menu);
- 
-//        miInit = 
-		addMenu(menu, "init", KeyEvent.VK_I, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-	            init();
-			}
-		});
-
-        miRun = addMenu(menu, "run", KeyEvent.VK_R, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-	            run();
-			}
-		});
-        miRun.setEnabled(false);
-
-        miPause = addMenu(menu, "pause", KeyEvent.VK_P, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-	            pause();
-			}
-		});
-        miPause.setEnabled(false);
-
-        miResume = addMenu(menu, "resume", KeyEvent.VK_E, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-	            resume();
-			}
-		});
-        miResume.setEnabled(false);
-
-        miStop = addMenu(menu, "stop", KeyEvent.VK_S, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-	            stop();
-			}
-		});
-        miStop.setEnabled(false);
+//        menu = new JMenu("Control");
+//        menu.setMnemonic(KeyEvent.VK_D);
+//        menuBar.add(menu);
+// 
+//		addMenu(menu, "init", KeyEvent.VK_I, new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//	            init();
+//			}
+//		});
+//
+//        miRun = addMenu(menu, "run", KeyEvent.VK_R, new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//	            run();
+//			}
+//		});
+//        miRun.setEnabled(false);
+//
+//        miPause = addMenu(menu, "pause", KeyEvent.VK_P, new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//	            pause();
+//			}
+//		});
+//        miPause.setEnabled(false);
 
         return menuBar;
     }
     
-    private JMenuItem addMenu(JMenu menu, String name, int key, ActionListener listener) {
-    	JMenuItem menuItem = new JMenuItem(name);
-        menuItem.setMnemonic(key);
-        menuItem.setAccelerator(
-    		KeyStroke.getKeyStroke(key, ActionEvent.ALT_MASK)
-		);
-        menuItem.addActionListener(listener);
-        menu.add(menuItem);
-        
-        return menuItem;
-    }
+//    private JMenuItem addMenu(JMenu menu, String name, int key, ActionListener listener) {
+//    	JMenuItem menuItem = new JMenuItem(name);
+//        menuItem.setMnemonic(key);
+//        menuItem.setAccelerator(
+//    		KeyStroke.getKeyStroke(key, ActionEvent.ALT_MASK)
+//		);
+//        menuItem.addActionListener(listener);
+//        menu.add(menuItem);
+//        
+//        return menuItem;
+//    }
     
     protected JToolBar createToolBar() {
     	JToolBar bar = new JToolBar();
@@ -264,6 +247,50 @@ public class Application extends JFrame {
 			}
 		});
         bar.add(button);
+        
+        bar.addSeparator();
+
+        button = new JButton("Init");
+        button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				init();
+			}
+        });
+        bar.add(button);
+        
+        bar.addSeparator();
+
+        button = new JButton("Run");
+        button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				run();
+			}
+        });
+        bar.add(button);
+
+        button = new JButton("Step");
+        button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				step();
+			}
+        });
+        bar.add(button);
+
+        button = new JButton("Stop");
+        button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pause();
+			}
+        });
+        bar.add(button);
 
         return bar;
     }
@@ -300,12 +327,12 @@ public class Application extends JFrame {
 
 //    	camView.resume();
 
-    	miRun.setEnabled(true);
-    	
-    	miPause.setEnabled(false);
-    	miResume.setEnabled(false);
-    	
-    	miStop.setEnabled(false);
+//    	miRun.setEnabled(true);
+//    	
+//    	miPause.setEnabled(false);
+//    	miResume.setEnabled(false);
+//    	
+//    	miStop.setEnabled(false);
     }
     
     private void createViews() {
@@ -328,45 +355,31 @@ public class Application extends JFrame {
 			cortexs.active = true;
 	        stimulator.start();
 			
-			miRun.setEnabled(false);
-			
-			miPause.setEnabled(true);
-			miResume.setEnabled(false);
-    	
-			miStop.setEnabled(true);
+//			miRun.setEnabled(false);
+//			
+//			miPause.setEnabled(true);
+//			miResume.setEnabled(false);
+//    	
+//			miStop.setEnabled(true);
     	}
     }
     
+    private void step() {
+    	if (cortexs != null && !cortexs.active) {
+			cortexs.active = true;
+	        stimulator.prosess();
+			cortexs.active = false;
+    	}
+    }
+
     private void pause() {
     	if (cortexs != null) {
 			cortexs.active = false; 
 			
-			miPause.setEnabled(false);
-			miResume.setEnabled(true);
+//			miPause.setEnabled(false);
+//			miResume.setEnabled(true);
     	}
     }
-    
-    private void resume() {
-    	if (cortexs != null) {
-			cortexs.active = true; 
-			
-			miResume.setEnabled(false);
-			miPause.setEnabled(true);
-    	}
-    }
-	
-    private void stop() {
-    	if (cortexs != null) {
-			cortexs.active = false; 
-			
-			miRun.setEnabled(false);
-			
-			miPause.setEnabled(false);
-			miResume.setEnabled(false);
-			
-			miStop.setEnabled(false);
-    	}
-	}
 
 	Stimulator stimulator = new Stimulator(
             Retina.WIDTH, Retina.HEIGHT,

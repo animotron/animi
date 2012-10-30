@@ -66,16 +66,12 @@ public class Stimulator implements Runnable, Imageable {
 						this.wait();
 					}
 				}
-				final BufferedImage image = getImage();
-
-                if (cortexs != null && cortexs.active && image != null) {
-                	cortexs.retina.process(image);
-                	
-            		cortexs.process();
-                }
+				
+				prosess();
                 
                 if (frequency != 0)
                 	Thread.sleep(1000 / frequency);
+
 			} catch (Throwable e) {
 				e.printStackTrace();
 			} finally {
@@ -89,6 +85,16 @@ public class Stimulator implements Runnable, Imageable {
                 }
             }
 		}
+	}
+	
+	public void prosess() {
+		final BufferedImage image = getImage();
+
+        if (cortexs != null && cortexs.active && image != null) {
+        	cortexs.retina.process(image);
+        	
+    		cortexs.process();
+        }
 	}
 	
 	private Thread th = null;
