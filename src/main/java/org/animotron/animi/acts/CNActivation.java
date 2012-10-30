@@ -45,7 +45,7 @@ public class CNActivation implements Act<CortexZoneComplex> {
 
     		active = link.dendrite.active * link.w;
 
-    		link.stability += active;
+    		link.stability += Math.abs( active );
     		
     		cn.active += active;
     	}

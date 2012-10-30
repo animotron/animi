@@ -109,10 +109,12 @@ public class Remember implements Act<CortexZoneComplex> {
 		for (Link cnL : sn.a_links) {
 			
 			//UNDERSTAND: перераспределять ли веса?
-			if (active != 0)
+			if (active != 0) {
 				cnL.w = cnL.axon.active / active;
-			else
+			} else {
 				cnL.w = 1;
+			}
+			cnL.stability = Math.abs( cnL.w );
 		}
 		
     }
