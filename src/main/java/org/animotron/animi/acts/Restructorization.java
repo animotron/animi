@@ -44,14 +44,16 @@ public class Restructorization implements Act<CortexZoneComplex> {
     				if (link.w > 0) {
 	    				NeuronComplex cn = (NeuronComplex) link.axon;
 	    				
-	    				double sum = 0, delta = 0;
+	    				double sum = 0, delta = 0, wSum = 0;
 
         		    	for (Link l : cn.s_links) {
 	        				
-	        				if (l.dendrite == sn)
+	        				if (l.dendrite == sn) {
 	    	    				delta = cn.active * sn.active;
+	        				}
 
-        					sum += Math.abs( l.stability );
+	        				sum += l.stability;
+	        				wSum += Math.abs( l.w );
 	        			}
         		    	
         		    	if (sum == 0) {
@@ -59,14 +61,25 @@ public class Restructorization implements Act<CortexZoneComplex> {
         		    		continue;
         		    	}
         		    	
+        		    	if (Double.isNaN(delta))
+        		    		continue;
+
+        		    	System.out.println("before "+delta);
+        		    	
         		    	delta /= sum;
         		    	
+        		    	if (Double.isNaN(delta))
+        		    		continue;
+        		    	
+        		    	System.out.println("after "+delta);
+
         		    	for (Link l : cn.s_links) {
 	        				if (l.dendrite == sn)
-	    	    				l.w += delta * l.stability;
+	    	    				l.w += delta * Math.abs(l.w) / wSum;
 
-        					l.w -= delta * l.stability;
-        					if (l.w < 0) { 
+        					l.w -= delta * Math.abs(l.w) / wSum;
+        					
+        					if (l.w < 0 || Double.isNaN(l.w)) { 
         						l.w = 0;
         					}
 	        			}
