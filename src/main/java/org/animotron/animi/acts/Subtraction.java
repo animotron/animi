@@ -54,7 +54,11 @@ public class Subtraction implements Act<CortexZoneComplex> {
     				
     				//XXX: store to reuse //cn.putQ(col, q);
     				
-    				double delta = cn.active / q;
+    				double delta = 0;
+    				if (q == 0)
+    					;//System.out.println("WARNING q == 0");
+    				else
+    					delta = cn.active / q;
     				
     				col.backProjection += delta;
     				col.minus -= delta;
