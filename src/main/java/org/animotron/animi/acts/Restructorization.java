@@ -50,12 +50,13 @@ public class Restructorization implements Act<CortexZoneComplex> {
 	        				
 	        				if (l.dendrite == sn)
 	    	    				delta = cn.active * sn.active / l.stability;
-
-        					sum += Math.abs( l.stability );
+	        				else
+	        					sum += Math.abs( l.stability );
 	        			}
         		    	
         		    	if (sum == 0) {
-        		    		System.out.println("WARNING: sum of stability == 0");
+        		    		continue;
+//        		    		System.out.println("WARNING: sum of stability == 0");
         		    	}
         		    	
         		    	for (Link l : cn.s_links) {

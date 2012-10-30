@@ -34,7 +34,6 @@ public class NeuronSimple extends Neuron {
 	
 	int z;
 	
-	@RuntimeParam(name="occupy")
 	public boolean occupy = false;
 	
 	public NeuronSimple(int x, int y, int z) {

@@ -80,9 +80,6 @@ public class PFActual implements Imageable, InternalFrameListener {
 		
 		calcBoxSize();
 		
-		//actual
-		//minus
-		
 		BufferedImage image = new BufferedImage(400, 900, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         g.setColor(Color.WHITE);
@@ -93,41 +90,6 @@ public class PFActual implements Imageable, InternalFrameListener {
 		y += textY;
 		g.drawString("column [ "+point.x+" : "+point.y+" ]", x, y);		
 
-		for (Field f : cnFds) {
-			y += textY;
-	        g.drawString(getName(f), x, y);		
-
-	        y += textY;
-	        g.drawString(getValue(f, cn), x, y);		
-		}
-		
-		for (int dx = -1; dx <= 1; dx++) {
-			for (int dy = -1; dy <= 1; dy++) {
-
-		        x = 0;
-				y += textY;
-				g.drawString(""+dx+" : "+dy, x, y);
-				
-				for (Field f : snFds) {
-					y += textY;
-			        x = 0;
-			        
-					for (int z = 0; z < zone.deep; z++) {
-						final NeuronSimple sn = zone.s[point.x+dx][point.y+dy][z];
-						
-						String str = getValue(f, sn);
-						if (str.length() > 3)
-							str = str.substring(0, 3);
-						
-				        g.setColor(sn.isOccupy() ? Color.WHITE : Color.YELLOW);
-				        g.drawString(str, x, y);		
-						x += 35;
-				        g.setColor(Color.WHITE);
-					}
-			        g.drawString(getName(f), x, y);		
-				}
-			}
-		}
 		x = 0;
 		y += textY;
 
@@ -177,6 +139,70 @@ public class PFActual implements Imageable, InternalFrameListener {
 		g.drawImage(
 				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
+
+
+		x = 0;
+		y += 2+img.getHeight()*10;
+
+		for (Field f : cnFds) {
+			y += textY;
+	        g.drawString(getName(f), x, y);		
+
+	        y += textY;
+	        g.drawString(getValue(f, cn), x, y);		
+		}
+		
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int dy = -1; dy <= 1; dy++) {
+
+		        x = 0;
+				y += textY;
+				g.drawString(""+dx+" : "+dy, x, y);
+				
+				for (Field f : snFds) {
+					y += textY;
+			        x = 0;
+			        
+					for (int z = 0; z < zone.deep; z++) {
+						final NeuronSimple sn = zone.s[point.x+dx][point.y+dy][z];
+
+						String str = getValue(f, sn);
+						if (str.length() > 3)
+							str = str.substring(0, 3);
+						
+						g.setColor(sn.isOccupy() ? Color.WHITE : Color.YELLOW);
+				        g.drawString(str, x, y);		
+						x += 35;
+				        g.setColor(Color.WHITE);
+					}
+			        g.drawString(getName(f), x, y);		
+				}
+		        x = 0;
+				y += textY;
+				for (int z = 0; z < zone.deep; z++) {
+					final NeuronSimple sn = zone.s[point.x+dx][point.y+dy][z];
+			        g.setColor(sn.isOccupy() ? Color.WHITE : Color.YELLOW);
+					
+			        Link lnk = null;
+					for (Link l : sn.a_links) {
+						if (l.axon == cn) {
+							lnk = l;
+							break;
+						}
+					}
+					if (lnk != null) {
+						String str = String.valueOf(lnk.w);
+						if (str.length() > 3)
+							str = str.substring(0, 3);
+					
+						g.drawString(str, x, y);
+					}
+					x += 35;
+			        g.setColor(Color.WHITE);
+				}
+		        g.drawString("w to CN", x, y);		
+			}
+		}
 
 		return image;
 	}
