@@ -251,6 +251,8 @@ public class Application extends JFrame {
         bar.addSeparator();
 
         button = new JButton("Init");
+        button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.ALT_MASK));
+        button.setMnemonic(KeyEvent.VK_I);
         button.addActionListener(new ActionListener() {
 			
 			@Override
@@ -263,6 +265,8 @@ public class Application extends JFrame {
         bar.addSeparator();
 
         button = new JButton("Run");
+        button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.ALT_MASK));
+        button.setMnemonic(KeyEvent.VK_R);
         button.addActionListener(new ActionListener() {
 			
 			@Override
@@ -273,6 +277,8 @@ public class Application extends JFrame {
         bar.add(button);
 
         button = new JButton("Step");
+        button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        button.setMnemonic(KeyEvent.VK_S);
         button.addActionListener(new ActionListener() {
 			
 			@Override
@@ -282,7 +288,9 @@ public class Application extends JFrame {
         });
         bar.add(button);
 
-        button = new JButton("Stop");
+        button = new JButton("Pause");
+        button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.ALT_MASK));
+        button.setMnemonic(KeyEvent.VK_P);
         button.addActionListener(new ActionListener() {
 			
 			@Override
