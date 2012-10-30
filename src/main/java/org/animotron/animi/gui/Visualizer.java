@@ -77,12 +77,26 @@ public class Visualizer extends JInternalFrame {
 			setLocation(bigP.x, bigP.y);
 		    setSize(size);
 		    
-		    bigP.y += getSize().height + 10;
+		    if (bigP.y > 700) {
+		    	bigP.x = 200;
+		    	bigP.y = 500;
+
+		    } else if (bigP.y > 500) {
+		    	bigP.x += 20;
+		    	bigP.y += 20;
+		    	
+		    } else 
+			    bigP.y += getSize().height + 10;
+
 	    } else {
 			setLocation(smallP.x, smallP.y);
 		    setSize(size);
 		    
-		    smallP.y += getSize().height + 10;
+		    if (smallP.y > 700) {
+		    	smallP.y += 20;
+
+		    } else 
+		    	smallP.y += getSize().height + 10;
 	    }
 
 		getContentPane().add(canvas);
