@@ -57,6 +57,7 @@ public class Remember implements Act<CortexZoneComplex> {
     	
     	//суммируем минусовку с реципторного слоя колоник
     	NeuronSimple sn = null;
+    	Link MaxSl = null;
     	double maxSnActive = 0;
     	
     	for (Link sl : cn.s_links) {
@@ -73,6 +74,7 @@ public class Remember implements Act<CortexZoneComplex> {
     		if (snActive > maxSnActive) {
     			maxSnActive = snActive;
     			sn = _sn;
+    			MaxSl = sl;
     		}
     	}
     	
@@ -87,35 +89,43 @@ public class Remember implements Act<CortexZoneComplex> {
 		//находим максимальный простой нейрон и им запоминаем (от минусовки)
     	
     	//вес синапса ставим по остаточному всечению
+    	sn.active = 0;
 		for (Link inL : sn.s_links) {
 			
 			NeuronComplex in = (NeuronComplex) inL.dendrite;
 			inL.w = in.minus;
+			
+    		sn.active += inL.dendrite.active * inL.w;
 
 			//занулить минусовку простого нейрона
 			in.minus = 0;
 		}
     	sn.occupy = true;
+    	MaxSl.stability = sn.active;
+    	
+    	if (cn.active == 0)
+    		cn.active = sn.active;
     	
     	//присвоить веса сложного нейрона таким образом, чтобы 
     	
     	//текущая активность / на сумму активности (комплекстные нейроны)
-		double active = 0;
-		for (Link cnL : sn.a_links) {
-			
-			active += cnL.axon.active;
-		}
+//		double active = 0;
+//		for (Link cnL : sn.a_links) {
+//			
+//			active += cnL.axon.active;
+//		}
+//    	
+//		for (Link cnL : sn.a_links) {
+//			
+//			//UNDERSTAND: перераспределять ли веса?
+//			if (active != 0) {
+//				cnL.w = cnL.axon.active / active;
+//			} else {
+//				cnL.w = 1;
+//			}
+//			cnL.stability = Math.abs( cnL.w );
+//		}
     	
-		for (Link cnL : sn.a_links) {
-			
-			//UNDERSTAND: перераспределять ли веса?
-			if (active != 0) {
-				cnL.w = cnL.axon.active / active;
-			} else {
-				cnL.w = 1;
-			}
-			cnL.stability = Math.abs( cnL.w );
-		}
-		
+    	Restructorization.normalization(cn, sn);
     }
 }

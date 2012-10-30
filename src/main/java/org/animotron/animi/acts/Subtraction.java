@@ -62,6 +62,7 @@ public class Subtraction implements Act<CortexZoneComplex> {
     				
     				col.backProjection += delta;
     				col.minus -= delta;
+//    				if (col.minus < 0) col.minus = 0;
     			}
     		}
     	}

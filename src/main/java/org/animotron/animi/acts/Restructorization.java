@@ -41,51 +41,53 @@ public class Restructorization implements Act<CortexZoneComplex> {
     		if (sn.active > 0) {
     			for (Link link : sn.a_links) {
     				
+    				NeuronComplex cn = (NeuronComplex) link.axon;
     				if (link.w > 0) {
-	    				NeuronComplex cn = (NeuronComplex) link.axon;
-	    				
-	    				double sum = 0, delta = 0, wSum = 0;
-
-        		    	for (Link l : cn.s_links) {
-	        				
-	        				if (l.dendrite == sn) {
-	    	    				delta = cn.active * sn.active;
-	        				}
-
-	        				sum += l.stability;
-	        				wSum += Math.abs( l.w );
-	        			}
-        		    	
-        		    	if (sum == 0) {
-        		    		System.out.println("WARNING: sum of stability == 0");
-        		    		continue;
-        		    	}
-        		    	
-        		    	if (Double.isNaN(delta))
-        		    		continue;
-
-        		    	System.out.println("before "+delta);
-        		    	
-        		    	delta /= sum;
-        		    	
-        		    	if (Double.isNaN(delta))
-        		    		continue;
-        		    	
-        		    	System.out.println("after "+delta);
-
-        		    	for (Link l : cn.s_links) {
-	        				if (l.dendrite == sn)
-	    	    				l.w += delta * Math.abs(l.w) / wSum;
-
-        					l.w -= delta * Math.abs(l.w) / wSum;
-        					
-        					if (l.w < 0 || Double.isNaN(l.w)) { 
-        						l.w = 0;
-        					}
-	        			}
+    					normalization(cn, sn);
     				}
     			}
     		}
     	}
     }
+	public static void normalization(NeuronComplex cn, NeuronSimple sn) {
+		double sum = 0, delta = 0, wSum = 0;
+
+    	for (Link l : cn.s_links) {
+			
+			if (l.dendrite == sn) {
+				delta = cn.active * sn.active;
+			}
+
+			sum += l.stability;
+			wSum += Math.abs( l.w );
+		}
+    	
+    	if (sum == 0) {
+    		System.out.println("WARNING: sum of stability == 0");
+    		return;
+    	}
+    	
+    	if (Double.isNaN(delta))
+    		return;
+
+    	System.out.println("before "+delta);
+    	
+    	delta /= sum;
+    	
+    	if (Double.isNaN(delta))
+    		return;
+    	
+    	System.out.println("after "+delta);
+
+    	for (Link l : cn.s_links) {
+			if (l.dendrite == sn)
+				l.w += delta * Math.abs(l.w) / wSum;
+
+			l.w -= delta * Math.abs(l.w) / wSum;
+			
+			if (l.w < 0 || Double.isNaN(l.w)) { 
+				l.w = 0;
+			}
+		}
+	}
 }
