@@ -196,7 +196,7 @@ public class PFActual implements Imageable, InternalFrameListener {
             	maxY = Math.max(maxY, sl.dendrite.y);
             }
         }
-        boxSize = Math.max(maxX - minX, maxY - minY);
+        boxSize = Math.max(maxX - minX, maxY - minY) + 2;
 	}
 
 	private BufferedImage drawRF() {
@@ -302,9 +302,20 @@ public class PFActual implements Imageable, InternalFrameListener {
             			&& pY >= 0 
             			&& pY < boxSize) {
                 	
-                	int c = Utils.calcGrey(image, pX, pY);
-					c += 255 * ((NeuronComplex)sl.dendrite).minus;
-					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+			        int value = image.getRGB(pX, pX);
+			        int r = Utils.get_red(value);
+			        int g = Utils.get_green(value);
+			        int b = Utils.get_blue(value);
+
+                	double minus = ((NeuronComplex)sl.dendrite).minus;
+                	if (minus > 0) {
+                		r += 255 * ((NeuronComplex)sl.dendrite).minus;
+                		if (r > 255) r = 255;
+                	} else {
+                		g += 255 * -((NeuronComplex)sl.dendrite).minus;
+                		if (g > 255) g = 255;
+                	}
+					image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
             	}
         	}
         }
