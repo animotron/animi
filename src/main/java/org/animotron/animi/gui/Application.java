@@ -382,7 +382,8 @@ public class Application extends JFrame {
 
     private void pause() {
     	if (cortexs != null) {
-			cortexs.active = false; 
+			stimulator.pause();
+			cortexs.active = false;
 			
 //			miPause.setEnabled(false);
 //			miResume.setEnabled(true);
@@ -548,6 +549,8 @@ public class Application extends JFrame {
     
     private void clearFrames() {
     	desktop.removeAll();
+    	Visualizer.reset();
+    	desktop.repaint();
     }
  
 	public void closeFrame(JInternalFrame frame) {
