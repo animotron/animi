@@ -101,7 +101,7 @@ public class Remember implements Act<CortexZoneComplex> {
 			in.minus = 0;
 		}
     	sn.occupy = true;
-    	MaxSl.stability = sn.active;
+    	MaxSl.addStability( sn.active );
     	
     	if (cn.active == 0)
     		cn.active = sn.active;

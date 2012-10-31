@@ -45,7 +45,7 @@ public class CNActivation implements Act<CortexZoneComplex> {
 
     		active = link.synapse.active * link.w;
 
-    		link.stability += Math.abs( active );
+    		link.addStability( active );
     		
     		cn.active += active;
     	}

@@ -43,4 +43,9 @@ public class Link {
 		this.axon = axon;
 		axon.addSynapse(this);
 	}
+	
+	public void addStability(double x) {
+		System.out.println(x);
+		stability += Math.abs(x);
+	}
 }
