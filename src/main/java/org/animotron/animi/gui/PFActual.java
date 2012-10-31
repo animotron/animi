@@ -33,6 +33,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 import org.animotron.animi.*;
+import org.animotron.animi.acts.Subtraction;
 import org.animotron.animi.cortex.*;
 
 /**
@@ -245,11 +246,21 @@ public class PFActual implements Imageable, InternalFrameListener {
                     			&& pX < boxSize 
                     			&& pY >= 0 
                     			&& pY < boxSize) {
-	                    	
-	                    	int c = Utils.calcGrey(image, pX, pY);
-							c += 255 * sl.w * cl.w;
-							if (c > 255) c = 255;
-							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+							
+		        			double sumQ = 0, q = 0;
+		    	    		for (Link l : cn.s_links) {
+		    	    			if (l.synapse == sn)
+		    	    				q = sl.w * l.w;
+		    	    			
+		    	    			sumQ += sl.w * l.w;
+		    	    		}
+
+	                    	if (sumQ != 0) {
+		                    	int c = Utils.calcGrey(image, pX, pY);
+								c += 255 * q / sumQ;
+								if (c > 255) c = 255;
+								image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+	                    	}
                     	}
                     }
                 }
@@ -313,6 +324,8 @@ public class PFActual implements Imageable, InternalFrameListener {
 	private BufferedImage drawMinus() {
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
+        NeuronComplex[][] ms = Subtraction.process(zone, cn.x, cn.y);
+        
 		int pX, pY = 0;
 		for (Link cl : cn.s_links) {
 			
@@ -328,20 +341,25 @@ public class PFActual implements Imageable, InternalFrameListener {
             			&& pY >= 0 
             			&& pY < boxSize) {
                 	
-			        int value = image.getRGB(pX, pY);
-			        int r = Utils.get_red(value);
-			        int g = Utils.get_green(value);
-			        int b = Utils.get_blue(value);
+                	int c = Utils.calcGrey(image, pX, pY);
+					c += 255 * ms[sl.synapse.x][sl.synapse.y].minus;
+					if (c > 255) c = 255;
+					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
 
-                	double minus = ((NeuronComplex)sl.synapse)._minus;
-                	if (minus > 0) {
-                		r += 255 * minus;
-                		if (r > 255) r = 255;
-                	} else {
-                		g += 255 * -minus;
-                		if (g > 255) g = 255;
-                	}
-					image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
+//			        int value = image.getRGB(pX, pY);
+//			        int r = Utils.get_red(value);
+//			        int g = Utils.get_green(value);
+//			        int b = Utils.get_blue(value);
+//
+//                	double minus = ms[sl.synapse.x][sl.synapse.y].minus;
+//                	if (minus > 0) {
+//                		r += 255 * minus;
+//                		if (r > 255) r = 255;
+//                	} else {
+//                		g += 255 * -minus;
+//                		if (g > 255) g = 255;
+//                	}
+//					image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
             	}
         	}
         }

@@ -42,4 +42,16 @@ public class NeuronComplex extends Neuron {
 	public NeuronComplex(int x, int y) {
 		super(x,y);
 	}
+
+	public NeuronComplex(NeuronComplex cn) {
+		super(cn.x, cn.y);
+		active = cn.active;
+
+		s_links = cn.s_links;
+		a_links = cn.a_links;
+
+		backProjection = cn.backProjection;
+		minus = cn.minus;
+		_minus = cn._minus;
+	}
 }

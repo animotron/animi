@@ -34,41 +34,41 @@ public class Subtraction { //implements Act<CortexZoneComplex> {
 	public Subtraction() {}
 
 //    @Override
-    public static void process(CortexZoneComplex layer, final int x, final int y) {
+    public static NeuronComplex[][] process(CortexZoneComplex layer, final int x, final int y) {
+    	
+    	CortexZoneSimple zone = layer.in_zones[0].zone;
+    	NeuronComplex[][] ms = new NeuronComplex[zone.width][zone.height];
+    	for (int _x = 0; _x < zone.width; _x++) {
+        	for (int _y = 0; _y < zone.height; _y++) {
+        		ms[_x][_y] = new NeuronComplex(zone.col[_x][_y]);
+        	}
+    	}
     	
     	NeuronComplex cn = layer.col[x][y];
     	if (cn.active > 0) {
-    		
-    		for (Link scn : cn.s_links) {
-    			
-    			NeuronSimple sn = (NeuronSimple) scn.synapse;
-    			
-    			for (Link ssn : sn.s_links) {
-    				NeuronComplex col = (NeuronComplex) ssn.synapse;
-    				col.minus = col.active;
-    			}
-    		}
 
-    		for (Link scn : cn.s_links) {
-    			
-    			NeuronSimple sn = (NeuronSimple) scn.synapse;
+    		for (Link cnLink : cn.s_links) {
+    			NeuronSimple sn = (NeuronSimple) cnLink.synapse;
     			
     			for (Link ssn : sn.s_links) {
     				
-        			double q = 0;
-    	    		for (Link l : cn.s_links) {
-    	    			q += ssn.w * l.w;
+        			double sumQ = 0, q = 0;
+    	    		for (Link link : cn.s_links) {
+    	    			if (link.synapse == sn)
+    	    				q = ssn.w * link.w;
+    	    			
+    	    			sumQ += ssn.w * link.w;
     	    		}
     				
-    				NeuronComplex col = (NeuronComplex) ssn.synapse;
+    				NeuronComplex col = ms[ssn.synapse.x][ssn.synapse.y];
     				
     				//XXX: store to reuse //cn.putQ(col, q);
     				
     				double delta = 0;
-    				if (q == 0)
+    				if (sumQ == 0)
     					;//System.out.println("WARNING q == 0");
     				else
-    					delta = cn.active / q;
+    					delta = cn.active * q / sumQ;
     				
     				col.backProjection += delta;
     				col.minus -= delta;
@@ -77,5 +77,6 @@ public class Subtraction { //implements Act<CortexZoneComplex> {
     			}
     		}
     	}
+    	return ms;
     }
 }

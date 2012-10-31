@@ -41,8 +41,6 @@ public class Remember implements Act<CortexZoneComplex> {
     @Override
     public void process(CortexZoneComplex layer, final int x, final int y) {
     	
-		Subtraction.process(layer, x, y);
-
     	NeuronComplex cn = layer.col[x][y];
 
     	NeuronSimple _sn_ = null;
@@ -63,15 +61,17 @@ public class Remember implements Act<CortexZoneComplex> {
     	Link maxLink = null;
     	double maxActive = 0;
     	
+		NeuronComplex[][] ms = Subtraction.process(layer, x, y);
+
     	for (Link cnLink : cn.s_links) {
     		NeuronSimple _sn = (NeuronSimple) cnLink.synapse;
     		
         	double snActive = 0;
     		for (Link snLink : _sn.s_links) {
     			
-    			NeuronComplex in = (NeuronComplex) snLink.synapse;
+    			NeuronComplex in = ms[snLink.synapse.x][snLink.synapse.y];
     			
-    			snActive += Math.abs( in.minus );
+    			snActive += in.minus;
     		}
     		
     		if (snActive > maxActive) {
@@ -95,13 +95,13 @@ public class Remember implements Act<CortexZoneComplex> {
     	sn.active = 0;
 		for (Link snLink : sn.s_links) {
 			
-			NeuronComplex in = (NeuronComplex) snLink.synapse;
+			NeuronComplex in = ms[snLink.synapse.x][snLink.synapse.y];
 			snLink.w = in.minus;
 			
     		sn.active += in.active * snLink.w;
 
 			//занулить минусовку простого нейрона
-			in.minus = 0;
+//			in.minus = 0;
 		}
     	sn.occupy = true;
     	maxLink.addStability( sn.active );
