@@ -173,7 +173,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 							nerv_links[lx][ly] = true;
 
 							// Создаем синаптическую связь
-							new Link<NeuronComplex, NeuronSimple>(m.zone.getCol(lx, ly), s[x][y][z]);
+							new Link(m.zone.getCol(lx, ly), s[x][y][z]);
 						}
 					}
 				}
@@ -204,7 +204,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					for (int j = y - 1; j <= y + 1; j++) {
 						for (int k = 0; k < deep; k++) {
 
-							new Link<NeuronSimple, NeuronComplex>(s[i][j][k], col[x][y]);
+							new Link(s[i][j][k], col[x][y]);
 						}
 					}
 				}

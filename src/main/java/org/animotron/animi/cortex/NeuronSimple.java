@@ -20,9 +20,6 @@
  */
 package org.animotron.animi.cortex;
 
-import org.animotron.animi.RuntimeParam;
-
-
 /**
  * Simple neuron
  * 
