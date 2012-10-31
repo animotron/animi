@@ -87,7 +87,7 @@ public class Restructorization implements Act<CortexZoneComplex> {
     		return;
     	
     	System.out.println("=============================================================");
-    	System.out.println(""+delta);
+    	System.out.println("delta = "+delta);
 
     	for (Link link : cn.s_links) {
     		if (!link.synapse.isOccupy())
@@ -101,7 +101,7 @@ public class Restructorization implements Act<CortexZoneComplex> {
 			if (Double.isNaN(link.w)) { 
 				link.w = 0;
 			}
-			System.out.println(link.w);
+			System.out.println("w = "+link.w+" s = "+link.stability);
 		}
 	}
 }
