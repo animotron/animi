@@ -42,7 +42,7 @@ public class SNActivation implements Act<CortexZoneComplex> {
 
         	if (sn.occupy) {
 	        	for (Link link : sn.s_links) {
-	        		sn.active += link.dendrite.active * link.w;
+	        		sn.active += link.synapse.active * link.w;
 	        	}
         	}
         }

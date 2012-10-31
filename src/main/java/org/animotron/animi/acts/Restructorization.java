@@ -54,7 +54,7 @@ public class Restructorization implements Act<CortexZoneComplex> {
 
     	for (Link l : cn.s_links) {
 			
-			if (l.dendrite == sn) {
+			if (l.synapse == sn) {
 				delta = cn.active * sn.active;
 			}
 
@@ -80,7 +80,7 @@ public class Restructorization implements Act<CortexZoneComplex> {
     	System.out.println("after "+delta);
 
     	for (Link l : cn.s_links) {
-			if (l.dendrite == sn)
+			if (l.synapse == sn)
 				l.w += delta * Math.abs(l.w) / wSum;
 
 			l.w -= delta * Math.abs(l.w) / wSum;

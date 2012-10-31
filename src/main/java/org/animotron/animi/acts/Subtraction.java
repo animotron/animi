@@ -41,7 +41,7 @@ public class Subtraction implements Act<CortexZoneComplex> {
     		
     		for (Link scn : cn.s_links) {
     			
-    			NeuronSimple sn = (NeuronSimple) scn.dendrite;
+    			NeuronSimple sn = (NeuronSimple) scn.synapse;
     			
     			for (Link ssn : sn.s_links) {
     				
@@ -50,7 +50,7 @@ public class Subtraction implements Act<CortexZoneComplex> {
     	    			q += ssn.w * l.w;
     	    		}
     				
-    				NeuronComplex col = (NeuronComplex) ssn.dendrite;
+    				NeuronComplex col = (NeuronComplex) ssn.synapse;
     				
     				//XXX: store to reuse //cn.putQ(col, q);
     				

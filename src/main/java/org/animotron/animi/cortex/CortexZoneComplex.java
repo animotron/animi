@@ -294,15 +294,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 					for (Link cl : cn.s_links) {
 						
-                    	final Neuron sn = cl.dendrite;
+                    	final Neuron sn = cl.synapse;
 
                     	if (sn.isOccupy()) {
         					for (Link sl : sn.s_links) {
 
                                 if (sl.w > 0) {
 									
-                                	pX = x*boxSize + (boxSize / 2) + (sl.dendrite.x - x);
-									pY = y*boxSize + (boxSize / 2) + (sl.dendrite.y - y);
+                                	pX = x*boxSize + (boxSize / 2) + (sl.synapse.x - x);
+									pY = y*boxSize + (boxSize / 2) + (sl.synapse.y - y);
                                 	
 									if (       pX > x*boxSize 
                                 			&& pX < (x*boxSize+boxSize) 

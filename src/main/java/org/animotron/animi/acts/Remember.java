@@ -47,7 +47,7 @@ public class Remember implements Act<CortexZoneComplex> {
     	//есть ли свободные и есть ли добро на запоминание (интервал запоминания)
     	boolean found = false;
     	for (Link l : cn.s_links) {
-    		_sn_ = (NeuronSimple) l.dendrite;
+    		_sn_ = (NeuronSimple) l.synapse;
     		if (!_sn_.occupy) {
     			found = true;
     			break;
@@ -61,12 +61,12 @@ public class Remember implements Act<CortexZoneComplex> {
     	double maxSnActive = 0;
     	
     	for (Link sl : cn.s_links) {
-    		NeuronSimple _sn = (NeuronSimple) sl.dendrite;
+    		NeuronSimple _sn = (NeuronSimple) sl.synapse;
     		
         	double snActive = 0;
     		for (Link inL : _sn.s_links) {
     			
-    			NeuronComplex in = (NeuronComplex) inL.dendrite;
+    			NeuronComplex in = (NeuronComplex) inL.synapse;
     			
     			snActive += in.minus;
     		}
@@ -92,10 +92,10 @@ public class Remember implements Act<CortexZoneComplex> {
     	sn.active = 0;
 		for (Link inL : sn.s_links) {
 			
-			NeuronComplex in = (NeuronComplex) inL.dendrite;
+			NeuronComplex in = (NeuronComplex) inL.synapse;
 			inL.w = in.minus;
 			
-    		sn.active += inL.dendrite.active * inL.w;
+    		sn.active += in.active * inL.w;
 
 			//занулить минусовку простого нейрона
 			in.minus = 0;

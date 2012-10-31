@@ -27,7 +27,7 @@ package org.animotron.animi.cortex;
 public class Link<D extends Neuron, A extends Neuron> {
 	
 	//Dendrite terminal
-	public D dendrite;
+	public D synapse;
 	
 	//Axon terminal
 	public A axon;
@@ -36,9 +36,9 @@ public class Link<D extends Neuron, A extends Neuron> {
 	
 	public double stability = 0;
 
-	protected Link(D dendrite, A axon) {
-		this.dendrite = dendrite;
-		dendrite.addAxon(this);
+	protected Link(D synapse, A axon) {
+		this.synapse = synapse;
+		synapse.addAxon(this);
 
 		this.axon = axon;
 		axon.addSynapse(this);

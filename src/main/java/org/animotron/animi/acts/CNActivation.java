@@ -43,7 +43,7 @@ public class CNActivation implements Act<CortexZoneComplex> {
     	cn.backProjection = 0;
     	for (Link link : cn.s_links) {
 
-    		active = link.dendrite.active * link.w;
+    		active = link.synapse.active * link.w;
 
     		link.stability += Math.abs( active );
     		
