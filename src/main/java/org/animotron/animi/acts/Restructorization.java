@@ -52,14 +52,14 @@ public class Restructorization implements Act<CortexZoneComplex> {
 	public static void normalization(NeuronComplex cn, NeuronSimple sn) {
 		double sum = 0, delta = 0, wSum = 0;
 
-    	for (Link l : cn.s_links) {
+    	for (Link link : cn.s_links) {
 			
-			if (l.synapse == sn) {
+			if (link.synapse == sn) {
 				delta = cn.active * sn.active;
 			}
 
-			sum += l.stability;
-			wSum += Math.abs( l.w );
+			sum += link.stability;
+			wSum += Math.abs( link.w );
 		}
     	
     	if (sum == 0) {
@@ -77,17 +77,22 @@ public class Restructorization implements Act<CortexZoneComplex> {
     	if (Double.isNaN(delta))
     		return;
     	
-//    	System.out.println("after "+delta);
+    	System.out.println("=============================================================");
+    	System.out.println(""+delta);
 
-    	for (Link l : cn.s_links) {
-			if (l.synapse == sn)
-				l.w += delta * Math.abs(l.w) / wSum;
+    	for (Link link : cn.s_links) {
+    		if (!link.synapse.isOccupy())
+    			continue;
+    		
+			if (link.synapse == sn)
+				link.w += delta * Math.abs(link.w) / wSum;
 
-			l.w -= delta * Math.abs(l.w) / wSum;
+			link.w -= delta * Math.abs(link.w) / wSum;
 			
-			if (l.w < 0 || Double.isNaN(l.w)) { 
-				l.w = 0;
+			if (link.w < 0 || Double.isNaN(link.w)) { 
+				link.w = 0;
 			}
+			System.out.println(link.w);
 		}
 	}
 }

@@ -45,7 +45,7 @@ public class Link {
 	}
 	
 	public void addStability(double x) {
-		System.out.println(x);
+//		System.out.println(x);
 		stability += Math.abs(x);
 	}
 }
