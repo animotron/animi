@@ -55,7 +55,7 @@ public class Subtraction { //implements Act<CortexZoneComplex> {
     				
         			double q = 0;
     	    		for (Link link : cn.s_links) {
-    	    			q += ssn.w * link.w;
+    	    			q += (ssn.w * link.w) * (ssn.w * link.w);
     	    		}
     				
     				ms[ssn.synapse.x][ssn.synapse.y].q += q;
