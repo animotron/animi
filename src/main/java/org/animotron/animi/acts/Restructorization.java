@@ -71,7 +71,7 @@ public class Restructorization implements Act<CortexZoneComplex> {
     		System.out.println("WARNING: wSum of stability == 0");
         	for (Link link : cn.s_links) {
     			if (link.synapse == sn)
-    				link.w += delta;
+    				link.w += 1;
         	}
     		return;
     	}
