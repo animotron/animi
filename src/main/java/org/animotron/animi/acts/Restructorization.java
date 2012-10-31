@@ -98,7 +98,7 @@ public class Restructorization implements Act<CortexZoneComplex> {
 
 			link.w -= delta * Math.abs(link.w) / wSum;
 			
-			if (Double.isNaN(link.w)) { 
+			if (Double.isNaN(link.w) || link.w < 0) { 
 				link.w = 0;
 			}
 			System.out.println("w = "+link.w+" s = "+link.stability);

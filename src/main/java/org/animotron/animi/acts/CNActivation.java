@@ -50,6 +50,5 @@ public class CNActivation implements Act<CortexZoneComplex> {
     		cn.active += active;
     	}
     	cn.minus = cn.active;
-    	cn._minus = cn.active;
     }
 }

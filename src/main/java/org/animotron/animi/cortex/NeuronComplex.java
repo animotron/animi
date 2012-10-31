@@ -37,7 +37,7 @@ public class NeuronComplex extends Neuron {
 	@RuntimeParam(name="minus")
 	public double minus = 0;
 
-	public double _minus = 0;
+	public double q = 0;
 
 	public NeuronComplex(int x, int y) {
 		super(x,y);
@@ -52,6 +52,6 @@ public class NeuronComplex extends Neuron {
 
 		backProjection = cn.backProjection;
 		minus = cn.minus;
-		_minus = cn._minus;
+		q = cn.q;
 	}
 }

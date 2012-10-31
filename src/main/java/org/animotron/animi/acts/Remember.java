@@ -96,7 +96,7 @@ public class Remember implements Act<CortexZoneComplex> {
 		for (Link snLink : sn.s_links) {
 			
 			NeuronComplex in = ms[snLink.synapse.x][snLink.synapse.y];
-			snLink.w = in.minus;
+			snLink.w = in.active;
 			
     		sn.active += in.active * snLink.w;
 

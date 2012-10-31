@@ -398,7 +398,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			        int c_g = Utils.get_green(value);
 			        int c_b = Utils.get_blue(value);
 
-                	double minus = cn._minus;
+                	double minus = cn.minus;
                 	if (minus > 0) {
                 		c_r += 255 * minus;
                 		if (c_r > 255) c_r = 255;

@@ -47,33 +47,40 @@ public class Subtraction { //implements Act<CortexZoneComplex> {
     	NeuronComplex cn = layer.col[x][y];
     	if (cn.active > 0) {
 
+    		double Q = 0;
     		for (Link cnLink : cn.s_links) {
     			NeuronSimple sn = (NeuronSimple) cnLink.synapse;
     			
     			for (Link ssn : sn.s_links) {
     				
-        			double sumQ = 0, q = 0;
+        			double q = 0;
     	    		for (Link link : cn.s_links) {
-    	    			if (link.synapse == sn)
-    	    				q = ssn.w * link.w;
-    	    			
-    	    			sumQ += ssn.w * link.w;
+    	    			q += ssn.w * link.w;
     	    		}
+    				
+    				ms[ssn.synapse.x][ssn.synapse.y].q += q;
+    				
+    				Q += q;
+    			}
+    		}
+			//XXX: store to reuse //cn.putQ(col, q);
+			if (Q == 0) {
+				System.out.println("WARNING q == 0");
+				return ms;
+			}
+    				
+    		for (Link cnLink : cn.s_links) {
+    			NeuronSimple sn = (NeuronSimple) cnLink.synapse;
+    			
+    			for (Link ssn : sn.s_links) {
     				
     				NeuronComplex col = ms[ssn.synapse.x][ssn.synapse.y];
     				
-    				//XXX: store to reuse //cn.putQ(col, q);
-    				
-    				double delta = 0;
-    				if (sumQ == 0)
-    					;//System.out.println("WARNING q == 0");
-    				else
-    					delta = cn.active * q / sumQ;
+					double delta = cn.active * col.q / Q;
     				
     				col.backProjection += delta;
     				col.minus -= delta;
-    				col._minus -= delta;
-//    				if (col.minus < 0) col.minus = 0;
+    				if (col.minus < 0) col.minus = 0;
     			}
     		}
     	}
