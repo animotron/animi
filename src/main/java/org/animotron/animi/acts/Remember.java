@@ -46,8 +46,8 @@ public class Remember implements Act<CortexZoneComplex> {
     	
     	//есть ли свободные и есть ли добро на запоминание (интервал запоминания)
     	boolean found = false;
-    	for (Link l : cn.s_links) {
-    		_sn_ = (NeuronSimple) l.synapse;
+    	for (Link cnLink : cn.s_links) {
+    		_sn_ = (NeuronSimple) cnLink.synapse;
     		if (!_sn_.occupy) {
     			found = true;
     			break;
@@ -57,30 +57,30 @@ public class Remember implements Act<CortexZoneComplex> {
     	
     	//суммируем минусовку с реципторного слоя колоник
     	NeuronSimple sn = null;
-    	Link MaxSl = null;
-    	double maxSnActive = 0;
+    	Link maxLink = null;
+    	double maxActive = 0;
     	
-    	for (Link sl : cn.s_links) {
-    		NeuronSimple _sn = (NeuronSimple) sl.synapse;
+    	for (Link cnLink : cn.s_links) {
+    		NeuronSimple _sn = (NeuronSimple) cnLink.synapse;
     		
         	double snActive = 0;
-    		for (Link inL : _sn.s_links) {
+    		for (Link snLink : _sn.s_links) {
     			
-    			NeuronComplex in = (NeuronComplex) inL.synapse;
+    			NeuronComplex in = (NeuronComplex) snLink.synapse;
     			
-    			snActive += in.minus;
+    			snActive += Math.abs( in.minus );
     		}
     		
-    		if (snActive > maxSnActive) {
-    			maxSnActive = snActive;
+    		if (snActive > maxActive) {
+    			maxActive = snActive;
     			sn = _sn;
-    			MaxSl = sl;
+    			maxLink = cnLink;
     		}
     	}
     	
 		//поверка по порогу
 //    	if (activeF > 0 && (active < mRecLevel && sn != null))
-    	if (sn == null || maxSnActive / sn.a_links.size() < mRecLevel) {
+    	if (sn == null || maxActive / sn.a_links.size() < mRecLevel) {
 			return;
     	}
 		
@@ -90,18 +90,18 @@ public class Remember implements Act<CortexZoneComplex> {
     	
     	//вес синапса ставим по остаточному всечению
     	sn.active = 0;
-		for (Link inL : sn.s_links) {
+		for (Link snLink : sn.s_links) {
 			
-			NeuronComplex in = (NeuronComplex) inL.synapse;
-			inL.w = in.minus;
+			NeuronComplex in = (NeuronComplex) snLink.synapse;
+			snLink.w = in.minus;
 			
-    		sn.active += in.active * inL.w;
+    		sn.active += in.active * snLink.w;
 
 			//занулить минусовку простого нейрона
 			in.minus = 0;
 		}
     	sn.occupy = true;
-    	MaxSl.addStability( sn.active );
+    	maxLink.addStability( sn.active );
     	
     	if (cn.active == 0)
     		cn.active = sn.active;
