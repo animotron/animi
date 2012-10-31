@@ -75,7 +75,7 @@ public class Application extends JFrame {
                   screenSize.height - inset*2);
  
         desktop = new JDesktopPane();
-        createFrame(stimulator);
+//        createFrame(stimulator);
         
         setJMenuBar(createMenuBar());
         
