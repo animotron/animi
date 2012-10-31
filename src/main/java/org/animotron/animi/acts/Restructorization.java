@@ -70,14 +70,14 @@ public class Restructorization implements Act<CortexZoneComplex> {
     	if (Double.isNaN(delta))
     		return;
 
-    	System.out.println("before "+delta);
+//    	System.out.println("before "+delta);
     	
     	delta /= sum;
     	
     	if (Double.isNaN(delta))
     		return;
     	
-    	System.out.println("after "+delta);
+//    	System.out.println("after "+delta);
 
     	for (Link l : cn.s_links) {
 			if (l.synapse == sn)
