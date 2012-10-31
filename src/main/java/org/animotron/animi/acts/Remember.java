@@ -40,6 +40,9 @@ public class Remember implements Act<CortexZoneComplex> {
     
     @Override
     public void process(CortexZoneComplex layer, final int x, final int y) {
+    	
+		Subtraction.process(layer, x, y);
+
     	NeuronComplex cn = layer.col[x][y];
 
     	NeuronSimple _sn_ = null;

@@ -30,8 +30,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.text.ZoneView;
-
 /**
  * Complex cortex zone
  * 
@@ -467,7 +465,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     public void cycle2() {
         cycle(1, 1, width() - 1, height() - 1, restructorization);
-        cycle(1, 1, width() - 1, height() - 1, subtraction);
+//        cycle(1, 1, width() - 1, height() - 1, subtraction);
         cycle(1, 1, width() - 1, height() - 1, remember);
     }
 }

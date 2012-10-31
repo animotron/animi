@@ -29,16 +29,26 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Subtraction implements Act<CortexZoneComplex> {
+public class Subtraction { //implements Act<CortexZoneComplex> {
 
 	public Subtraction() {}
 
-    @Override
-    public void process(CortexZoneComplex layer, final int x, final int y) {
+//    @Override
+    public static void process(CortexZoneComplex layer, final int x, final int y) {
     	
     	NeuronComplex cn = layer.col[x][y];
     	if (cn.active > 0) {
     		
+    		for (Link scn : cn.s_links) {
+    			
+    			NeuronSimple sn = (NeuronSimple) scn.synapse;
+    			
+    			for (Link ssn : sn.s_links) {
+    				NeuronComplex col = (NeuronComplex) ssn.synapse;
+    				col.minus = col.active;
+    			}
+    		}
+
     		for (Link scn : cn.s_links) {
     			
     			NeuronSimple sn = (NeuronSimple) scn.synapse;
