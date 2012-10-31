@@ -67,6 +67,15 @@ public class Restructorization implements Act<CortexZoneComplex> {
     		return;
     	}
     	
+    	if (wSum == 0) {
+    		System.out.println("WARNING: wSum of stability == 0");
+        	for (Link link : cn.s_links) {
+    			if (link.synapse == sn)
+    				link.w += delta;
+        	}
+    		return;
+    	}
+
     	if (Double.isNaN(delta))
     		return;
 
@@ -89,7 +98,7 @@ public class Restructorization implements Act<CortexZoneComplex> {
 
 			link.w -= delta * Math.abs(link.w) / wSum;
 			
-			if (link.w < 0 || Double.isNaN(link.w)) { 
+			if (Double.isNaN(link.w)) { 
 				link.w = 0;
 			}
 			System.out.println(link.w);
