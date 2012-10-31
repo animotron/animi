@@ -333,12 +333,12 @@ public class PFActual implements Imageable, InternalFrameListener {
 			        int g = Utils.get_green(value);
 			        int b = Utils.get_blue(value);
 
-                	double minus = ((NeuronComplex)sl.synapse).minus;
+                	double minus = ((NeuronComplex)sl.synapse)._minus;
                 	if (minus > 0) {
-                		r += 255 * ((NeuronComplex)sl.synapse).minus;
+                		r += 255 * minus;
                 		if (r > 255) r = 255;
                 	} else {
-                		g += 255 * -((NeuronComplex)sl.synapse).minus;
+                		g += 255 * -minus;
                 		if (g > 255) g = 255;
                 	}
 					image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));

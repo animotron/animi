@@ -110,6 +110,7 @@ public class CortexZoneSimple implements Layer {
 		col[x][y].active = b;
 		col[x][y].backProjection = b;
 		col[x][y].minus = b;
+		col[x][y]._minus = b;
 	}
 
 	@Override

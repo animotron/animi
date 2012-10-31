@@ -30,6 +30,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.text.ZoneView;
+
 /**
  * Complex cortex zone
  * 
@@ -387,38 +389,26 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, width, height);
 	
+			CortexZoneSimple zone = in_zones[0].zone;
 			for (int x = 1; x < width() - 1; x++) {
 				for (int y = 1; y < height() - 1; y++) {
 					
-					final NeuronComplex cn = col[x][y];
-	
-					for (Link cl : cn.s_links) {
-						
-                    	final Neuron sn = cl.synapse;
+					final NeuronComplex cn = zone.col[x][y];
 
-                    	if (sn.isOccupy()) {
-        					for (Link sl : sn.s_links) {
+					int value = image.getRGB(x, y);
+			        int c_r = Utils.get_red(value);
+			        int c_g = Utils.get_green(value);
+			        int c_b = Utils.get_blue(value);
 
-        						int pX = sl.synapse.x;
-        						int pY = sl.synapse.y;
-
-        						int value = image.getRGB(pX, pY);
-        				        int c_r = Utils.get_red(value);
-        				        int c_g = Utils.get_green(value);
-        				        int c_b = Utils.get_blue(value);
-
-        	                	double minus = ((NeuronComplex)sl.synapse).minus;
-        	                	if (minus > 0) {
-        	                		c_r += 255 * ((NeuronComplex)sl.synapse).minus;
-        	                		if (c_r > 255) c_r = 255;
-        	                	} else {
-        	                		c_g += 255 * -((NeuronComplex)sl.synapse).minus;
-        	                		if (c_g > 255) c_g = 255;
-        	                	}
-        						image.setRGB(pX, pY, Utils.create_rgb(255, c_r, c_g, c_b));
-                            }
-                    	}
-	                }
+                	double minus = cn._minus;
+                	if (minus > 0) {
+                		c_r += 255 * minus;
+                		if (c_r > 255) c_r = 255;
+                	} else {
+                		c_g += 255 * -minus;
+                		if (c_g > 255) c_g = 255;
+                	}
+					image.setRGB(x, y, Utils.create_rgb(255, c_r, c_g, c_b));
 				}
 			}
 			return image;
