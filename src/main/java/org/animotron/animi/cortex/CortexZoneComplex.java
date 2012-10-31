@@ -230,6 +230,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 	public void prepareForSerialization() {
 		CRF = null;
+		RRF = null;
 	}
 	
 	ColumnRF_Image CRF = null;
@@ -357,6 +358,87 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		@Override
 		public void closed(Point point) {
 			watching.remove(point);
+		}
+	}
+
+	RRF_Image RRF = null;
+	
+	public Imageable getRRF() {
+		if (RRF == null)
+			RRF = new RRF_Image();
+		
+		return RRF;
+	}
+
+	class RRF_Image implements Imageable {
+		
+	    private BufferedImage image;
+	    
+	    RRF_Image() {
+	        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		}
+	
+		public String getImageName() {
+			return "restored input";
+		}
+
+		public BufferedImage getImage() {
+			Graphics g = image.getGraphics();
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, width, height);
+	
+			for (int x = 1; x < width() - 1; x++) {
+				for (int y = 1; y < height() - 1; y++) {
+					
+					final NeuronComplex cn = col[x][y];
+	
+					for (Link cl : cn.s_links) {
+						
+                    	final Neuron sn = cl.synapse;
+
+                    	if (sn.isOccupy()) {
+        					for (Link sl : sn.s_links) {
+
+        						int pX = sl.synapse.x;
+        						int pY = sl.synapse.y;
+
+        						int value = image.getRGB(pX, pY);
+        				        int c_r = Utils.get_red(value);
+        				        int c_g = Utils.get_green(value);
+        				        int c_b = Utils.get_blue(value);
+
+        	                	double minus = ((NeuronComplex)sl.synapse).minus;
+        	                	if (minus > 0) {
+        	                		c_r += 255 * ((NeuronComplex)sl.synapse).minus;
+        	                		if (c_r > 255) c_r = 255;
+        	                	} else {
+        	                		c_g += 255 * -((NeuronComplex)sl.synapse).minus;
+        	                		if (c_g > 255) c_g = 255;
+        	                	}
+        						image.setRGB(pX, pY, Utils.create_rgb(255, c_r, c_g, c_b));
+                            }
+                    	}
+	                }
+				}
+			}
+			return image;
+		}
+
+		@Override
+		public Object whatAt(Point point) {
+			return null;
+		}
+
+		@Override
+		public void focusGained(Point point) {
+		}
+
+		@Override
+		public void focusLost(Point point) {
+		}
+
+		@Override
+		public void closed(Point point) {
 		}
 	}
 

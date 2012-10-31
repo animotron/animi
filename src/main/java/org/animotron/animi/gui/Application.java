@@ -353,6 +353,7 @@ public class Application extends JFrame {
 
 				createFrame(z);
 				createFrame(z.getCRF());
+				createFrame(z.getRRF());
 			} else
 				createFrame(zone);
         }

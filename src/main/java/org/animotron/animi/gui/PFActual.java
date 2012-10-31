@@ -328,7 +328,7 @@ public class PFActual implements Imageable, InternalFrameListener {
             			&& pY >= 0 
             			&& pY < boxSize) {
                 	
-			        int value = image.getRGB(pX, pX);
+			        int value = image.getRGB(pX, pY);
 			        int r = Utils.get_red(value);
 			        int g = Utils.get_green(value);
 			        int b = Utils.get_blue(value);
