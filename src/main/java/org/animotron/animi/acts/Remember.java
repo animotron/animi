@@ -34,7 +34,7 @@ public class Remember implements Act<CortexZoneComplex> {
 	
 	//порог запоминания
 	@RuntimeParam(name="mRecLevel")
-	public double mRecLevel = 0.2;
+	public double mRecLevel = 0.8;
 
     public Remember () {}
     
@@ -83,9 +83,11 @@ public class Remember implements Act<CortexZoneComplex> {
     	
 		//поверка по порогу
 //    	if (activeF > 0 && (active < mRecLevel && sn != null))
-    	if (sn == null || maxActive / sn.a_links.size() < mRecLevel) {
+    	if (sn == null || maxActive / sn.s_links.size() < mRecLevel) {
 			return;
     	}
+    	
+//    	System.out.println(maxActive / sn.s_links.size());
 		
 		//перебираем свободные простые нейроны комплексного нейрона
 		//сумма сигнала синепсов простых неровнов с минусовки
