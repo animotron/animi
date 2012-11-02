@@ -20,10 +20,8 @@
  */
 package org.animotron.animi.cortex;
 
-import java.util.List;
 import java.util.Map;
 
-import javolution.util.FastList;
 import javolution.util.FastMap;
 
 import org.animotron.animi.RuntimeParam;
@@ -45,7 +43,7 @@ public class NeuronComplex extends Neuron {
 
 	public double q = 0;
 
-	private Map<NeuronComplex, Q> Qs = new FastMap<NeuronComplex, Q>();
+	public Map<NeuronComplex, Q> Qs = new FastMap<NeuronComplex, Q>();
 	
 	public NeuronComplex(int x, int y) {
 		super(x,y);
