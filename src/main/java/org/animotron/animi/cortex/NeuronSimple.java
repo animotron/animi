@@ -20,9 +20,6 @@
  */
 package org.animotron.animi.cortex;
 
-import org.animotron.animi.RuntimeParam;
-
-
 /**
  * Simple neuron
  * 
@@ -33,9 +30,6 @@ import org.animotron.animi.RuntimeParam;
 public class NeuronSimple extends Neuron {
 	
 	int z;
-	
-	@RuntimeParam(name="occupy")
-	public boolean occupy = false;
 	
 	public NeuronSimple(int x, int y, int z) {
 		super(x,y);

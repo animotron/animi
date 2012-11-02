@@ -24,23 +24,28 @@ package org.animotron.animi.cortex;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class Link<D extends Neuron, A extends Neuron> {
+public class Link {
 	
 	//Dendrite terminal
-	public D dendrite;
+	public Neuron synapse;
 	
 	//Axon terminal
-	public A axon;
+	public Neuron axon;
 
 	public double w = 0;
 	
 	public double stability = 0;
 
-	protected Link(D dendrite, A axon) {
-		this.dendrite = dendrite;
-		dendrite.addAxon(this);
+	protected Link(Neuron synapse, Neuron axon) {
+		this.synapse = synapse;
+		synapse.addAxon(this);
 
 		this.axon = axon;
 		axon.addSynapse(this);
+	}
+	
+	public void addStability(double x) {
+//		System.out.println(x);
+		stability += Math.abs(x);
 	}
 }

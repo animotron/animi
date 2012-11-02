@@ -20,8 +20,9 @@
  */
 package org.animotron.animi.gui;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -40,6 +41,14 @@ import org.animotron.animi.simulator.Stimulator;
 public class Visualizer extends JInternalFrame {
 	
 	private static final long serialVersionUID = -592610047528698167L;
+	
+	private static Point smallP = new Point(10, 10);
+	private static Point bigP = new Point(200, 10);
+	
+	public static void reset() {
+		smallP = new Point(10, 10);
+		bigP = new Point(200, 10);
+	}
 
 	private Imageable simulator;
 	private final Repainter repainter;
@@ -59,13 +68,36 @@ public class Visualizer extends JInternalFrame {
 	    
 	    if (simulator instanceof InternalFrameListener)
 	    	addInternalFrameListener((InternalFrameListener) simulator);
-		    
-		setLocation(100, 100);
-		BufferedImage img = simulator.getImage();
-	    setSize(img.getWidth()+10, img.getHeight()+10);
 
-//		setOpaque(true);
-//		setDoubleBuffered(true);
+		BufferedImage img = simulator.getImage();
+
+		Dimension size = new Dimension(img.getWidth()+20, img.getHeight()+40);
+	    
+		if (img.getWidth() > 200) {
+			setLocation(bigP.x, bigP.y);
+		    setSize(size);
+		    
+		    if (bigP.y > 700) {
+		    	bigP.x = 200;
+		    	bigP.y = 500;
+
+		    } else if (bigP.y > 500) {
+		    	bigP.x += 20;
+		    	bigP.y += 20;
+		    	
+		    } else 
+			    bigP.y += getSize().height + 10;
+
+	    } else {
+			setLocation(smallP.x, smallP.y);
+		    setSize(size);
+		    
+		    if (smallP.y > 700) {
+		    	smallP.y += 20;
+
+		    } else 
+		    	smallP.y += getSize().height + 10;
+	    }
 
 		getContentPane().add(canvas);
 		

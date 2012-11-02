@@ -38,11 +38,11 @@ public class SNActivation implements Act<CortexZoneComplex> {
 
         for (int z = 0; z < layer.deep; z++) {
         	NeuronSimple sn = layer.s[x][y][z];
-        	sn.active = 0; //UNDERSTAND: do we need previous value
+        	sn.activity = 0; //UNDERSTAND: do we need previous value
 
         	if (sn.occupy) {
 	        	for (Link link : sn.s_links) {
-	        		sn.active += link.dendrite.active * link.w;
+	        		sn.activity += link.synapse.activity * link.w;
 	        	}
         	}
         }

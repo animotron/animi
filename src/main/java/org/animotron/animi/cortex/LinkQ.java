@@ -20,49 +20,42 @@
  */
 package org.animotron.animi.cortex;
 
-import javolution.util.FastList;
+import java.util.List;
 
-import org.animotron.animi.RuntimeParam;
+import javolution.util.FastList;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class Neuron {
+public class LinkQ {
 	
-	@RuntimeParam(name="activity")
-	public double activity = 0;
+	public NeuronComplex synapse;
+	public NeuronComplex axon;
 	
-	public boolean occupy = false;
+	//** { in , out } **//
+	protected List<Link[]> links = new FastList<Link[]>();
 	
-	public int x;
-	
-	public int y;
+	public LinkQ(Link in, Link out) {
+		this.synapse = (NeuronComplex) in.synapse;
+		this.axon = (NeuronComplex) out.axon;
 
-	/** Links of synapses connects cortex neurons with projecting nerve bundle **/
-	/** incoming links **/
-	public FastList<Link> s_links = new FastList<Link>();
-	
-	/** Axonal connections with nearest cortical columns **/
-	/** outgoing links **/
-	public FastList<Link> a_links = new FastList<Link>();
-	
-	public Neuron(int x, int y) {
-		this.x = x;
-		this.y = y;
+		add(in, out);
 	}
-
-	//called by Link only!
-	protected void addSynapse(Link link) {
-		s_links.add(link);
+	
+	public void add(Link in, Link out) {
+		assert synapse == in.synapse;
+		assert axon == out.axon;
+		
+		links.add(new Link[] {in, out});
 	}
-
-	//called by Link only!
-	protected void addAxon(Link link) {
-		a_links.add(link);
-	}
-
-	public boolean isOccupy() {
-		return occupy;
+	
+	public double q = 0;
+	
+	public double q() {
+//		for (Link[] ls : links) {
+//			q += ls[0].w * ls[1].w;
+//		}
+		return q;
 	}
 }

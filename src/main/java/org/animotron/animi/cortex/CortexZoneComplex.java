@@ -30,6 +30,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import javolution.util.FastList;
+
 /**
  * Complex cortex zone
  * 
@@ -47,6 +49,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 	public Subtraction subtraction = new Subtraction();
 
+	public Restructorization restructorization = new Restructorization();
+
 	@Params
 	public Remember remember = new Remember();
 	
@@ -62,7 +66,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 	/** Memory **/
 	public NeuronSimple[][][] s;
-
+	
     CortexZoneComplex() {
 		super();
     }
@@ -171,7 +175,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 							nerv_links[lx][ly] = true;
 
 							// Создаем синаптическую связь
-							new Link<NeuronComplex, NeuronSimple>(m.zone.getCol(lx, ly), s[x][y][z]);
+							new Link(m.zone.getCol(lx, ly), s[x][y][z]);
 						}
 					}
 				}
@@ -202,12 +206,14 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					for (int j = y - 1; j <= y + 1; j++) {
 						for (int k = 0; k < deep; k++) {
 
-							new Link<NeuronSimple, NeuronComplex>(s[i][j][k], col[x][y]);
+							new Link(s[i][j][k], col[x][y]);
 						}
 					}
 				}
+				col[x][y].init();
 			}
 		}
+		
 	}
     
 	// Картинка активных нейронов по колонкам
@@ -217,7 +223,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			BufferedImage image = new BufferedImage(width(), height(), BufferedImage.TYPE_INT_ARGB);
 			for (int x = 0; x < width(); x++) {
 				for (int y = 0; y < height(); y++) {
-					int c = s[x][y][z].active > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
+					int c = s[x][y][z].activity > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
 					image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
 				}
 			}
@@ -228,6 +234,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 	public void prepareForSerialization() {
 		CRF = null;
+		RRF = null;
 	}
 	
 	ColumnRF_Image CRF = null;
@@ -289,32 +296,25 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //					g.drawLine(0, y*boxSize, maxX, y*boxSize);
 	
 					final NeuronComplex cn = col[x][y];
-	
-					for (Link cl : cn.s_links) {
-						
-                    	final Neuron sn = cl.dendrite;
-
-                    	if (sn.isOccupy()) {
-        					for (Link sl : sn.s_links) {
-
-                                if (sl.w > 0) {
-									
-                                	pX = x*boxSize + (boxSize / 2) + (sl.dendrite.x - x);
-									pY = y*boxSize + (boxSize / 2) + (sl.dendrite.y - y);
+		    		double Q2 = 0;
+		    		for (LinkQ link : cn.Qs.values()) {
+		    			Q2 += link.q * link.q;
+		    		}
+					for (LinkQ link : cn.Qs.values()) {
+                    	pX = x*boxSize + (boxSize / 2) + (link.synapse.x - x);
+						pY = y*boxSize + (boxSize / 2) + (link.synapse.y - y);
                                 	
-									if (       pX > x*boxSize 
-                                			&& pX < (x*boxSize+boxSize) 
-                                			&& pY > y*boxSize 
-                                			&& pY < (y*boxSize+boxSize)) {
+						if (       pX > x*boxSize 
+                    			&& pX < (x*boxSize+boxSize) 
+                    			&& pY > y*boxSize 
+                    			&& pY < (y*boxSize+boxSize)) {
 				                    	
-				                    	int c = Utils.calcGrey(image, pX, pY);
-										c += 255 * sl.w * cl.w;
-										image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-                                	}
-                                }
-                            }
+	                    	int c = Utils.calcGrey(image, pX, pY);
+							c += 255 * link.q * 10;// * Q2;
+							if (c > 255) c = 255;
+							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
                     	}
-	                }
+                    }
 				}
 			}
 			return image;
@@ -324,8 +324,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		public Object whatAt(Point point) {
 			try {
 				Point pos = new Point(
-						Math.round(point.x / boxSize), 
-						Math.round(point.y / boxSize)
+					Math.round(point.x / boxSize), 
+					Math.round(point.y / boxSize)
 				);
 				
 				if (pos.x > 1 && pos.x < width && pos.y > 1 && pos.y < height) {
@@ -354,6 +354,75 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		@Override
 		public void closed(Point point) {
 			watching.remove(point);
+		}
+	}
+
+	RRF_Image RRF = null;
+	
+	public Imageable getRRF() {
+		if (RRF == null)
+			RRF = new RRF_Image();
+		
+		return RRF;
+	}
+
+	class RRF_Image implements Imageable {
+		
+	    private BufferedImage image;
+	    
+	    RRF_Image() {
+	        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		}
+	
+		public String getImageName() {
+			return "restored input";
+		}
+
+		public BufferedImage getImage() {
+			Graphics g = image.getGraphics();
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, width, height);
+	
+			CortexZoneSimple zone = in_zones[0].zone;
+			for (int x = 1; x < width() - 1; x++) {
+				for (int y = 1; y < height() - 1; y++) {
+					
+					final NeuronComplex cn = zone.col[x][y];
+
+					int value = image.getRGB(x, y);
+			        int c_r = Utils.get_red(value);
+			        int c_g = Utils.get_green(value);
+			        int c_b = Utils.get_blue(value);
+
+                	double minus = cn.minus;
+                	if (minus > 0) {
+                		c_r += 255 * minus;
+                		if (c_r > 255) c_r = 255;
+                	} else {
+                		c_g += 255 * -minus;
+                		if (c_g > 255) c_g = 255;
+                	}
+					image.setRGB(x, y, Utils.create_rgb(255, c_r, c_g, c_b));
+				}
+			}
+			return image;
+		}
+
+		@Override
+		public Object whatAt(Point point) {
+			return null;
+		}
+
+		@Override
+		public void focusGained(Point point) {
+		}
+
+		@Override
+		public void focusLost(Point point) {
+		}
+
+		@Override
+		public void closed(Point point) {
 		}
 	}
 
@@ -391,7 +460,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Граничные нейроны не задействованы.
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     public void cycle2() {
-        cycle(1, 1, width() - 1, height() - 1, subtraction);
+        cycle(1, 1, width() - 1, height() - 1, restructorization);
+//        cycle(1, 1, width() - 1, height() - 1, subtraction);
         cycle(1, 1, width() - 1, height() - 1, remember);
     }
 }

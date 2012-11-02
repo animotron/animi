@@ -34,86 +34,37 @@ public class Remember implements Act<CortexZoneComplex> {
 	
 	//порог запоминания
 	@RuntimeParam(name="mRecLevel")
-	public double mRecLevel = 0.2;
+	public double mRecLevel = 0.1;
 
     public Remember () {}
     
     @Override
     public void process(CortexZoneComplex layer, final int x, final int y) {
+    	
     	NeuronComplex cn = layer.col[x][y];
-
-    	NeuronSimple _sn_ = null;
     	
-    	//есть ли свободные и есть ли добро на запоминание (интервал запоминания)
-    	boolean found = false;
-    	for (Link l : cn.s_links) {
-    		_sn_ = (NeuronSimple) l.dendrite;
-    		if (!_sn_.occupy) {
-    			found = true;
-    			break;
-    		}
-    	}
-    	if (!found) return;
-    	
-    	//суммируем минусовку с реципторного слоя колоник
-    	NeuronSimple sn = null;
-    	double maxSnActive = 0;
-    	
-    	for (Link sl : cn.s_links) {
-    		NeuronSimple _sn = (NeuronSimple) sl.dendrite;
+    	if (!cn.isOccupy()) {
     		
-        	double snActive = 0;
-    		for (Link inL : _sn.s_links) {
-    			
-    			NeuronComplex in = (NeuronComplex) inL.dendrite;
-    			
-    			snActive += in.minus;
-    		}
-    		
-    		if (snActive > maxSnActive) {
-    			maxSnActive = snActive;
-    			sn = _sn;
-    		}
-    	}
-    	
-		//поверка по порогу
-//    	if (activeF > 0 && (active < mRecLevel && sn != null))
-    	if (sn == null || maxSnActive / sn.a_links.size() < mRecLevel) {
-			return;
-    	}
-		
-		//перебираем свободные простые нейроны комплексного нейрона
-		//сумма сигнала синепсов простых неровнов с минусовки
-		//находим максимальный простой нейрон и им запоминаем (от минусовки)
-    	
-    	//вес синапса ставим по остаточному всечению
-		for (Link inL : sn.s_links) {
-			
-			NeuronComplex in = (NeuronComplex) inL.dendrite;
-			inL.w = in.minus;
+    		double sumA2 = 0;
+    		double activity = 0;
 
-			//занулить минусовку простого нейрона
-			in.minus = 0;
-		}
-    	sn.occupy = true;
-    	
-    	//присвоить веса сложного нейрона таким образом, чтобы 
-    	
-    	//текущая активность / на сумму активности (комплекстные нейроны)
-		double active = 0;
-		for (Link cnL : sn.a_links) {
-			
-			active += cnL.axon.active;
-		}
-    	
-		for (Link cnL : sn.a_links) {
-			
-			//UNDERSTAND: перераспределять ли веса?
-			if (active != 0)
-				cnL.w = cnL.axon.active / active;
-			else
-				cnL.w = 1;
-		}
-		
+    		for (LinkQ link : cn.Qs.values()) {
+    			activity += link.synapse.activity;
+    			
+    			sumA2 += link.synapse.activity * link.synapse.activity;
+    		}
+
+    		if ((activity / cn.Qs.values().size()) < mRecLevel)
+    			return;
+    		
+    		double sumQ = 0;
+    		for (LinkQ link : cn.Qs.values()) {
+    			link.q = link.synapse.activity / sumA2;
+    			sumQ += link.q;
+    		}
+    		cn.occupy = true;
+    		cn.sumQ = sumQ;
+    	}
+//    	Restructorization.normalization(cn, sn);
     }
 }

@@ -72,7 +72,7 @@ public class CortexZoneSimple implements Layer {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                c = col[x][y].active > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
+                c = col[x][y].activity > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
                 image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
             }
         }
@@ -107,7 +107,7 @@ public class CortexZoneSimple implements Layer {
 
 	@Override
 	public void set(int x, int y, double b) {
-		col[x][y].active = b;
+		col[x][y].activity = b;
 		col[x][y].backProjection = b;
 		col[x][y].minus = b;
 	}

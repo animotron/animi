@@ -30,42 +30,28 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class Restructorization implements Act<CortexZoneComplex> {
+	
+	public double ny = 0.1 / 5;
 
 	public Restructorization() {}
 
     @Override
     public void process(CortexZoneComplex layer, final int x, final int y) {
     	
-    	for (int z = 0; z < layer.deep; z++) {
-    		NeuronSimple sn = layer.s[x][y][z];
-    		if (sn.active > 0) {
-    			for (Link link : sn.a_links) {
-    				
-    				if (link.w > 0) {
-	    				NeuronComplex cn = (NeuronComplex) link.axon;
-	    				
-	    				double sum = 0, delta = 0;
-
-        		    	for (Link l : cn.s_links) {
-	        				
-	        				if (l.dendrite == sn)
-	    	    				delta = cn.active * sn.active / l.stability;
-	        				else
-	        					sum += l.stability;
-	        			}
-        		    	
-        		    	for (Link l : cn.s_links) {
-	        				
-	        				if (l.dendrite == sn)
-	    	    				l.w += delta;
-	        				else {
-	        					l.w -= delta * l.stability / sum;
-	        					if (l.w < 0) l.w = 0;
-	        				}
-	        			}
-    				}
-    			}
-    		}
-    	}
+		NeuronComplex cn = layer.col[x][y];
+		
+		double delta = 0;
+		double sumDelta = 0;
+		for (LinkQ link : cn.Qs.values()) {
+			delta = cn.activity * link.synapse.activity * ny;
+			
+			sumDelta += delta;
+			
+			link.q += delta;
+		}
+		
+		for (LinkQ link : cn.Qs.values()) {
+			link.q = link.q * cn.sumQ / (cn.sumQ + sumDelta);
+		}
     }
 }
