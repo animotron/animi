@@ -31,7 +31,7 @@ import org.animotron.animi.cortex.*;
  */
 public class Restructorization implements Act<CortexZoneComplex> {
 	
-	public double ny = 0.1;
+	public double ny = 0.1 / 5;
 
 	public Restructorization() {}
 

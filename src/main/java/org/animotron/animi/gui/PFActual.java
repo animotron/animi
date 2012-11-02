@@ -229,10 +229,10 @@ public class PFActual implements Imageable, InternalFrameListener {
 	private BufferedImage drawRF() {
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
-		double Q2 = 0;
-		for (LinkQ link : cn.Qs.values()) {
-			Q2 += link.q * link.q;
-		}
+//		double Q2 = 0;
+//		for (LinkQ link : cn.Qs.values()) {
+//			Q2 += link.q * link.q;
+//		}
         int pX, pY;
 		for (LinkQ link : cn.Qs.values()) {
         	pX = (boxSize / 2) + (link.synapse.x - cn.x);
@@ -310,41 +310,20 @@ public class PFActual implements Imageable, InternalFrameListener {
         NeuronComplex[][] ms = Subtraction.process(zone, cn.x, cn.y);
         
 		int pX, pY = 0;
-		for (Link cl : cn.s_links) {
-			
-        	final Neuron sn = cl.synapse;
-
-			for (Link sl : sn.s_links) {
-
-            	pX = (boxSize / 2) + (sl.synapse.x - cn.x);
-				pY = (boxSize / 2) + (sl.synapse.y - cn.y);
+		for (LinkQ link : cn.Qs.values()) {
+        	pX = (boxSize / 2) + (link.synapse.x - cn.x);
+			pY = (boxSize / 2) + (link.synapse.y - cn.y);
+        	
+			if (       pX >= 0 
+        			&& pX < boxSize 
+        			&& pY >= 0 
+        			&& pY < boxSize) {
             	
-				if (       pX >= 0 
-            			&& pX < boxSize 
-            			&& pY >= 0 
-            			&& pY < boxSize) {
-                	
-                	int c = Utils.calcGrey(image, pX, pY);
-					c += 255 * ms[sl.synapse.x][sl.synapse.y].minus;
-					if (c > 255) c = 255;
-					if (c < 0) c = 0;
-					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-
-//			        int value = image.getRGB(pX, pY);
-//			        int r = Utils.get_red(value);
-//			        int g = Utils.get_green(value);
-//			        int b = Utils.get_blue(value);
-//
-//                	double minus = ms[sl.synapse.x][sl.synapse.y].minus;
-//                	if (minus > 0) {
-//                		r += 255 * minus;
-//                		if (r > 255) r = 255;
-//                	} else {
-//                		g += 255 * -minus;
-//                		if (g > 255) g = 255;
-//                	}
-//					image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
-            	}
+            	int c = Utils.calcGrey(image, pX, pY);
+				c += 255 * ms[link.synapse.x][link.synapse.y].minus;
+				if (c > 255) c = 255;
+				if (c < 0) c = 0;
+				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
         	}
         }
         return image;
