@@ -43,7 +43,7 @@ public class NeuronComplex extends Neuron {
 
 	public double q = 0;
 
-	public Map<NeuronComplex, Q> Qs = new FastMap<NeuronComplex, Q>();
+	public Map<NeuronComplex, LinkQ> Qs = new FastMap<NeuronComplex, LinkQ>();
 	
 	public NeuronComplex(int x, int y) {
 		super(x,y);
@@ -66,9 +66,9 @@ public class NeuronComplex extends Neuron {
 		for (Link cnLink : s_links) {
 			for (Link snLink : cnLink.synapse.s_links) {
 				NeuronComplex key = (NeuronComplex) snLink.synapse;
-				Q q = Qs.get(key);
+				LinkQ q = Qs.get(key);
 				if (q == null) {
-					q = new Q(snLink, cnLink);
+					q = new LinkQ(snLink, cnLink);
 					Qs.put(key, q);
 				} else {
 					q.add(snLink, cnLink);

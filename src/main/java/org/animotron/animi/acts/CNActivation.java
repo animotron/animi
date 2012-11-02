@@ -41,20 +41,21 @@ public class CNActivation implements Act<CortexZoneComplex> {
     	
     	cn.activity = 0;
     	cn.backProjection = 0;
-    	for (Link link : cn.s_links) {
-
-    		activity = link.synapse.activity * link.w;
-
-    		link.addStability( activity );
-    		
-    		cn.activity += activity;
-    	}
+//    	for (Link link : cn.s_links) {
+//
+//    		activity = link.synapse.activity * link.w;
+//
+//    		link.addStability( activity );
+//    		
+//    		cn.activity += activity;
+//    	}
     	
     	activity = 0;
-    	for (Q q : cn.Qs.values()) {
-    		activity += q.activity();
+    	for (LinkQ q : cn.Qs.values()) {
+    		activity += q.senapse.activity * q.q();
     	}
-    	assert activity == cn.activity;
+//    	assert activity == cn.activity;
+    	cn.activity = activity;
     	
     	cn.minus = cn.activity;
     }
