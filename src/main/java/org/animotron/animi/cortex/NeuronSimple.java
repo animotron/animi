@@ -31,8 +31,6 @@ public class NeuronSimple extends Neuron {
 	
 	int z;
 	
-	public boolean occupy = false;
-	
 	public NeuronSimple(int x, int y, int z) {
 		super(x,y);
 		this.z = z;

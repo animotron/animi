@@ -30,27 +30,28 @@ import javolution.util.FastList;
  */
 public class LinkQ {
 	
-	public NeuronComplex senapse;
+	public NeuronComplex synapse;
 	public NeuronComplex axon;
 	
 	//** { in , out } **//
 	protected List<Link[]> links = new FastList<Link[]>();
 	
 	public LinkQ(Link in, Link out) {
-		this.senapse = (NeuronComplex) in.synapse;
+		this.synapse = (NeuronComplex) in.synapse;
 		this.axon = (NeuronComplex) out.axon;
 
 		add(in, out);
 	}
 	
 	public void add(Link in, Link out) {
-		assert senapse == in.synapse;
+		assert synapse == in.synapse;
 		assert axon == out.axon;
 		
 		links.add(new Link[] {in, out});
 	}
 	
-	double q = 0;
+	public double q = 0;
+	
 	public double q() {
 //		for (Link[] ls : links) {
 //			q += ls[0].w * ls[1].w;

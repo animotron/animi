@@ -35,6 +35,10 @@ public class Subtraction { //implements Act<CortexZoneComplex> {
 
 //    @Override
     public static NeuronComplex[][] process(CortexZoneComplex layer, final int x, final int y) {
+
+    	
+    	// Ac = Sum ( A(in)j * qj )
+    	// A(in)j = qj * Ac / Sum(q^2)
     	
     	CortexZoneSimple zone = layer.in_zones[0].zone;
     	NeuronComplex[][] ms = new NeuronComplex[zone.width][zone.height];
@@ -46,43 +50,17 @@ public class Subtraction { //implements Act<CortexZoneComplex> {
     	
     	NeuronComplex cn = layer.col[x][y];
     	if (cn.activity > 0) {
-
-    		double Q = 0;
-    		for (Link cnLink : cn.s_links) {
-    			NeuronSimple sn = (NeuronSimple) cnLink.synapse;
-    			
-    			for (Link ssn : sn.s_links) {
-    				
-        			double q = 0;
-    	    		for (Link link : cn.s_links) {
-    	    			q += (ssn.w * link.w) * (ssn.w * link.w);
-    	    		}
-    				
-    				ms[ssn.synapse.x][ssn.synapse.y].q += q;
-    				
-    				Q += q;
-    			}
+    		double Q2 = 0;
+    		for (LinkQ link : cn.Qs.values()) {
+    			Q2 += link.q * link.q;
     		}
-			//XXX: store to reuse //cn.putQ(col, q);
-			if (Q == 0) {
-				System.out.println("WARNING q == 0");
-				return ms;
-			}
-    				
-    		for (Link cnLink : cn.s_links) {
-    			NeuronSimple sn = (NeuronSimple) cnLink.synapse;
-    			
-    			for (Link ssn : sn.s_links) {
-    				
-    				NeuronComplex col = ms[ssn.synapse.x][ssn.synapse.y];
-    				
-					double delta = cn.activity * col.q / Q;
-    				
-    				col.backProjection += delta;
-    				col.minus -= delta;
-//    				if (col.minus < 0) col.minus = 0;
-    			}
+    		
+    		for (LinkQ link : cn.Qs.values()) {
+    			NeuronComplex in = ms[link.synapse.x][link.synapse.y];
+    			in.activity = cn.activity * link.q * Q2;
+    			in.minus = in.activity;
     		}
+    		
     	}
     	return ms;
     }

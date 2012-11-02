@@ -33,6 +33,8 @@ public class Neuron {
 	@RuntimeParam(name="activity")
 	public double activity = 0;
 	
+	public boolean occupy = false;
+	
 	public int x;
 	
 	public int y;
@@ -61,6 +63,6 @@ public class Neuron {
 	}
 
 	public boolean isOccupy() {
-		return false;
+		return occupy;
 	}
 }

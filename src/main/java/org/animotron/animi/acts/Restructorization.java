@@ -30,78 +30,28 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class Restructorization implements Act<CortexZoneComplex> {
+	
+	public double ny = 0.1;
 
 	public Restructorization() {}
 
     @Override
     public void process(CortexZoneComplex layer, final int x, final int y) {
     	
-    	for (int z = 0; z < layer.deep; z++) {
-    		NeuronSimple sn = layer.s[x][y][z];
-    		if (sn.activity > 0) {
-    			for (Link link : sn.a_links) {
-    				
-    				NeuronComplex cn = (NeuronComplex) link.axon;
-    				if (link.w > 0) {
-    					normalization(cn, sn);
-    				}
-    			}
-    		}
-    	}
+		NeuronComplex cn = layer.col[x][y];
+		
+		double delta = 0;
+		double sumDelta = 0;
+		for (LinkQ link : cn.Qs.values()) {
+			delta = cn.activity * link.synapse.activity * ny;
+			
+			sumDelta += delta;
+			
+			link.q += delta;
+		}
+		
+		for (LinkQ link : cn.Qs.values()) {
+			link.q = link.q * cn.sumQ / (cn.sumQ + sumDelta);
+		}
     }
-	public static void normalization(NeuronComplex cn, NeuronSimple sn) {
-		double sum = 0, delta = 0, wSum = 0;
-
-    	for (Link link : cn.s_links) {
-			
-			if (link.synapse == sn) {
-				delta = cn.activity * sn.activity;
-			}
-
-			sum += link.stability;
-			wSum += Math.abs( link.w );
-		}
-    	
-    	if (sum == 0) {
-    		System.out.println("WARNING: sum of stability == 0");
-    		return;
-    	}
-    	
-    	if (wSum == 0) {
-    		System.out.println("WARNING: wSum of stability == 0");
-        	for (Link link : cn.s_links) {
-    			if (link.synapse == sn)
-    				link.w += 1;
-        	}
-    		return;
-    	}
-
-    	if (Double.isNaN(delta))
-    		return;
-
-//    	System.out.println("before "+delta);
-    	
-    	delta /= sum;
-    	
-    	if (Double.isNaN(delta))
-    		return;
-    	
-//    	System.out.println("=============================================================");
-//    	System.out.println("delta = "+delta);
-
-    	for (Link link : cn.s_links) {
-    		if (!link.synapse.isOccupy())
-    			continue;
-    		
-			if (link.synapse == sn)
-				link.w += delta * Math.abs(link.w) / wSum;
-
-			link.w -= delta * Math.abs(link.w) / wSum;
-			
-			if (Double.isNaN(link.w) || link.w < 0) { 
-				link.w = 0;
-			}
-//			System.out.println("w = "+link.w+" s = "+link.stability);
-		}
-	}
 }

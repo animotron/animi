@@ -296,33 +296,25 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //					g.drawLine(0, y*boxSize, maxX, y*boxSize);
 	
 					final NeuronComplex cn = col[x][y];
-	
-					for (Link cl : cn.s_links) {
-						
-                    	final Neuron sn = cl.synapse;
-
-                    	if (sn.isOccupy()) {
-        					for (Link sl : sn.s_links) {
-
-                                if (sl.w > 0) {
-									
-                                	pX = x*boxSize + (boxSize / 2) + (sl.synapse.x - x);
-									pY = y*boxSize + (boxSize / 2) + (sl.synapse.y - y);
+		    		double Q2 = 0;
+		    		for (LinkQ link : cn.Qs.values()) {
+		    			Q2 += link.q * link.q;
+		    		}
+					for (LinkQ link : cn.Qs.values()) {
+                    	pX = x*boxSize + (boxSize / 2) + (link.synapse.x - x);
+						pY = y*boxSize + (boxSize / 2) + (link.synapse.y - y);
                                 	
-									if (       pX > x*boxSize 
-                                			&& pX < (x*boxSize+boxSize) 
-                                			&& pY > y*boxSize 
-                                			&& pY < (y*boxSize+boxSize)) {
+						if (       pX > x*boxSize 
+                    			&& pX < (x*boxSize+boxSize) 
+                    			&& pY > y*boxSize 
+                    			&& pY < (y*boxSize+boxSize)) {
 				                    	
-				                    	int c = Utils.calcGrey(image, pX, pY);
-										c += 255 * sl.w * cl.w;
-										if (c > 255) c = 255;
-										image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-                                	}
-                                }
-                            }
+	                    	int c = Utils.calcGrey(image, pX, pY);
+							c += 255 * link.q * Q2;
+							if (c > 255) c = 255;
+							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
                     	}
-	                }
+                    }
 				}
 			}
 			return image;
@@ -332,8 +324,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		public Object whatAt(Point point) {
 			try {
 				Point pos = new Point(
-						Math.round(point.x / boxSize), 
-						Math.round(point.y / boxSize)
+					Math.round(point.x / boxSize), 
+					Math.round(point.y / boxSize)
 				);
 				
 				if (pos.x > 1 && pos.x < width && pos.y > 1 && pos.y < height) {
