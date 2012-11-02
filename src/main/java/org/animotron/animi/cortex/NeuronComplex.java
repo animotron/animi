@@ -20,6 +20,12 @@
  */
 package org.animotron.animi.cortex;
 
+import java.util.List;
+import java.util.Map;
+
+import javolution.util.FastList;
+import javolution.util.FastMap;
+
 import org.animotron.animi.RuntimeParam;
 
 /**
@@ -39,13 +45,15 @@ public class NeuronComplex extends Neuron {
 
 	public double q = 0;
 
+	private Map<NeuronComplex, Q> Qs = new FastMap<NeuronComplex, Q>();
+	
 	public NeuronComplex(int x, int y) {
 		super(x,y);
 	}
 
 	public NeuronComplex(NeuronComplex cn) {
 		super(cn.x, cn.y);
-		active = cn.active;
+		activity = cn.activity;
 
 		s_links = cn.s_links;
 		a_links = cn.a_links;
@@ -53,5 +61,21 @@ public class NeuronComplex extends Neuron {
 		backProjection = cn.backProjection;
 		minus = cn.minus;
 		q = cn.q;
+	}
+
+	public void init() {
+		//collect Q
+		for (Link cnLink : s_links) {
+			for (Link snLink : cnLink.synapse.s_links) {
+				NeuronComplex key = (NeuronComplex) snLink.synapse;
+				Q q = Qs.get(key);
+				if (q == null) {
+					q = new Q(snLink, cnLink);
+					Qs.put(key, q);
+				} else {
+					q.add(snLink, cnLink);
+				}
+			}
+		}
 	}
 }

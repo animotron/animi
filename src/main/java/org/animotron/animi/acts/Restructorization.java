@@ -38,7 +38,7 @@ public class Restructorization implements Act<CortexZoneComplex> {
     	
     	for (int z = 0; z < layer.deep; z++) {
     		NeuronSimple sn = layer.s[x][y][z];
-    		if (sn.active > 0) {
+    		if (sn.activity > 0) {
     			for (Link link : sn.a_links) {
     				
     				NeuronComplex cn = (NeuronComplex) link.axon;
@@ -55,7 +55,7 @@ public class Restructorization implements Act<CortexZoneComplex> {
     	for (Link link : cn.s_links) {
 			
 			if (link.synapse == sn) {
-				delta = cn.active * sn.active;
+				delta = cn.activity * sn.activity;
 			}
 
 			sum += link.stability;
@@ -86,8 +86,8 @@ public class Restructorization implements Act<CortexZoneComplex> {
     	if (Double.isNaN(delta))
     		return;
     	
-    	System.out.println("=============================================================");
-    	System.out.println("delta = "+delta);
+//    	System.out.println("=============================================================");
+//    	System.out.println("delta = "+delta);
 
     	for (Link link : cn.s_links) {
     		if (!link.synapse.isOccupy())
@@ -101,7 +101,7 @@ public class Restructorization implements Act<CortexZoneComplex> {
 			if (Double.isNaN(link.w) || link.w < 0) { 
 				link.w = 0;
 			}
-			System.out.println("w = "+link.w+" s = "+link.stability);
+//			System.out.println("w = "+link.w+" s = "+link.stability);
 		}
 	}
 }

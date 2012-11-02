@@ -30,8 +30,8 @@ import org.animotron.animi.RuntimeParam;
  */
 public class Neuron {
 	
-	@RuntimeParam(name="active")
-	public double active = 0;
+	@RuntimeParam(name="activity")
+	public double activity = 0;
 	
 	public int x;
 	

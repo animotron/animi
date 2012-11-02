@@ -39,16 +39,16 @@ public class CNActivation implements Act<CortexZoneComplex> {
     	
     	double active = 0;
     	
-    	cn.active = 0;
+    	cn.activity = 0;
     	cn.backProjection = 0;
     	for (Link link : cn.s_links) {
 
-    		active = link.synapse.active * link.w;
+    		active = link.synapse.activity * link.w;
 
     		link.addStability( active );
     		
-    		cn.active += active;
+    		cn.activity += active;
     	}
-    	cn.minus = cn.active;
+    	cn.minus = cn.activity;
     }
 }

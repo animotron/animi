@@ -45,7 +45,7 @@ public class Subtraction { //implements Act<CortexZoneComplex> {
     	}
     	
     	NeuronComplex cn = layer.col[x][y];
-    	if (cn.active > 0) {
+    	if (cn.activity > 0) {
 
     		double Q = 0;
     		for (Link cnLink : cn.s_links) {
@@ -76,7 +76,7 @@ public class Subtraction { //implements Act<CortexZoneComplex> {
     				
     				NeuronComplex col = ms[ssn.synapse.x][ssn.synapse.y];
     				
-					double delta = cn.active * col.q / Q;
+					double delta = cn.activity * col.q / Q;
     				
     				col.backProjection += delta;
     				col.minus -= delta;

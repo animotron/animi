@@ -30,6 +30,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import javolution.util.FastList;
+
 /**
  * Complex cortex zone
  * 
@@ -64,7 +66,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 	/** Memory **/
 	public NeuronSimple[][][] s;
-
+	
     CortexZoneComplex() {
 		super();
     }
@@ -208,8 +210,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						}
 					}
 				}
+				col[x][y].init();
 			}
 		}
+		
 	}
     
 	// Картинка активных нейронов по колонкам
@@ -219,7 +223,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			BufferedImage image = new BufferedImage(width(), height(), BufferedImage.TYPE_INT_ARGB);
 			for (int x = 0; x < width(); x++) {
 				for (int y = 0; y < height(); y++) {
-					int c = s[x][y][z].active > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
+					int c = s[x][y][z].activity > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
 					image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
 				}
 			}

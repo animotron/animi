@@ -94,22 +94,22 @@ public class Remember implements Act<CortexZoneComplex> {
 		//находим максимальный простой нейрон и им запоминаем (от минусовки)
     	
     	//вес синапса ставим по остаточному всечению
-    	sn.active = 0;
+    	sn.activity = 0;
 		for (Link snLink : sn.s_links) {
 			
 			NeuronComplex in = ms[snLink.synapse.x][snLink.synapse.y];
 			snLink.w = in.minus;
 			
-    		sn.active += in.active * snLink.w;
+    		sn.activity += in.activity * snLink.w;
 
 			//занулить минусовку простого нейрона
 //			in.minus = 0;
 		}
     	sn.occupy = true;
-    	maxLink.addStability( sn.active );
+    	maxLink.addStability( sn.activity );
     	
-    	if (cn.active == 0)
-    		cn.active = sn.active;
+    	if (cn.activity == 0)
+    		cn.activity = sn.activity;
     	
     	//присвоить веса сложного нейрона таким образом, чтобы 
     	
