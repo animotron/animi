@@ -391,74 +391,79 @@ public class Application extends JFrame {
     	}
     }
 
-	Stimulator stimulator = new Stimulator(
+    Figure[] RANDOM_LINE = new Figure[] {
+        new RandomLineAnime(4, 4, Retina.WIDTH - 4, Retina.HEIGHT - 4)
+    };
+
+    Figure[] H_DOUBLE_LINE = new Figure[] {
+		new HLineAnime(
+			Retina.WIDTH - 4, 0,
+			new int[][] {
+				{Retina.WIDTH / 2, 2},
+				{Retina.WIDTH / 2, Retina.HEIGHT - 3},
+				{Retina.WIDTH / 2, 2}
+			}
+		)
+		,
+		new HLineAnime(
+			Retina.WIDTH - 4, 0,
+			new int[][] {
+				{Retina.WIDTH / 2, 3},
+				{Retina.WIDTH / 2, Retina.HEIGHT - 2},
+				{Retina.WIDTH / 2, 3}
+			}
+		)
+	};
+
+    Figure[] H_V_LINES = new Figure[] {
+		new HLineAnime(
+			10, 0,
+			new int[][] {
+					{4, 4},
+					{Retina.WIDTH - 8, 4},
+					{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+					{4, Retina.HEIGHT - 8},
+					{4, 4}
+			}
+    	),
+		new VLineAnime(
+			10, 0,
+			new int[][] {
+					{Retina.WIDTH - 8, 4},
+					{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+					{4, Retina.HEIGHT - 8},
+					{4, 4},
+					{Retina.WIDTH - 8, 4},
+			}
+		),
+		new HLineAnime(
+			10, 0,
+			new int[][] {
+					{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+					{4, Retina.HEIGHT - 8},
+					{4, 4},
+					{Retina.WIDTH - 8, 4},
+					{Retina.WIDTH - 8, Retina.HEIGHT - 8}
+			}
+		),
+		new VLineAnime(
+			10, 0,
+			new int[][] {
+					{4, Retina.HEIGHT - 8},
+					{4, 4},
+					{Retina.WIDTH - 8, 4},
+					{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+					{4, Retina.HEIGHT - 8}
+			}
+		)
+	};
+
+    Stimulator stimulator = new Stimulator(
             Retina.WIDTH, Retina.HEIGHT,
-            new Figure[] {
+//        		RANDOM_LINE
+//        		H_DOUBLE_LINE
+        		H_V_LINES
 
-                    new RandomLineAnime(4, 4, Retina.WIDTH - 4, Retina.HEIGHT - 4)
-
-//                    new HLineAnime(
-//                            Retina.WIDTH - 4, 0,
-//                            new int[][] {
-//                                    {Retina.WIDTH / 2, 2},
-//                                    {Retina.WIDTH / 2, Retina.HEIGHT - 3},
-//                                    {Retina.WIDTH / 2, 2}
-//                            }
-//                    )
-//                    ,
-//                    new HLineAnime(
-//                            Retina.WIDTH - 4, 0,
-//                            new int[][] {
-//                                    {Retina.WIDTH / 2, 3},
-//                                    {Retina.WIDTH / 2, Retina.HEIGHT - 2},
-//                                    {Retina.WIDTH / 2, 3}
-//                            }
-//                    )
-
-
-
-//            		new HLineAnime(
-//    				10, 0,
-//    				new int[][] {
-//    						{4, 4},
-//    						{Retina.WIDTH - 8, 4},
-//    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-//    						{4, Retina.HEIGHT - 8},
-//    						{4, 4}
-//    				}
-//			),
-//            		new VLineAnime(
-//    				10, 0,
-//    				new int[][] {
-//    						{Retina.WIDTH - 8, 4},
-//    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-//    						{4, Retina.HEIGHT - 8},
-//    						{4, 4},
-//    						{Retina.WIDTH - 8, 4},
-//    				}
-//			),
-//            		new HLineAnime(
-//    				10, 0,
-//    				new int[][] {
-//    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-//    						{4, Retina.HEIGHT - 8},
-//    						{4, 4},
-//    						{Retina.WIDTH - 8, 4},
-//    						{Retina.WIDTH - 8, Retina.HEIGHT - 8}
-//    				}
-//			),
-//        		new VLineAnime(
-//    				10, 0,
-//    				new int[][] {
-//    						{4, Retina.HEIGHT - 8},
-//    						{4, 4},
-//    						{Retina.WIDTH - 8, 4},
-//    						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-//    						{4, Retina.HEIGHT - 8}
-//    				}
-//			)
-
-            		
 //            		new LineAnime(
 //            				10, 0,
 //            				new int[][] {
@@ -538,7 +543,7 @@ public class Application extends JFrame {
 //                                    {40, 40}
 //                            }
 //                    )
-            }
+//            }
     );
 
     //Create a new internal frame.
