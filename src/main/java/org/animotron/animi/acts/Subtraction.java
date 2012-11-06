@@ -58,7 +58,7 @@ public class Subtraction { //implements Act<CortexZoneComplex> {
     		for (LinkQ link : cn.Qs.values()) {
     			NeuronComplex in = ms[link.synapse.x][link.synapse.y];
     			in.activity = cn.activity * link.q * Q2;
-    			in.minus = in.activity;
+    			in.posActivity = in.activity;
     		}
     		
     	}

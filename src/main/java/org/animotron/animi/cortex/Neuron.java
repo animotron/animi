@@ -47,19 +47,27 @@ public class Neuron {
 	/** outgoing links **/
 	public FastList<Link> a_links = new FastList<Link>();
 	
+	public FastList<Link> s_stopLinks = new FastList<Link>();
+
 	public Neuron(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
 
 	//called by Link only!
-	protected void addSynapse(Link link) {
-		s_links.add(link);
+	protected void addSynapse(Link link, LinkType type) {
+		if (type == LinkType.NORMAL)
+			s_links.add(link);
+		else
+			s_stopLinks.add(link);
 	}
 
 	//called by Link only!
-	protected void addAxon(Link link) {
-		a_links.add(link);
+	protected void addAxon(Link link, LinkType type) {
+		if (type == LinkType.NORMAL)
+			a_links.add(link);
+//		else
+//			a_stopLinks.add(link);
 	}
 
 	public boolean isOccupy() {

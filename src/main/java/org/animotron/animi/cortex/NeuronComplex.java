@@ -38,8 +38,8 @@ public class NeuronComplex extends Neuron {
 	@RuntimeParam(name="backProjection")
 	public double backProjection = 0;
 
-	@RuntimeParam(name="minus")
-	public double minus = 0;
+	@RuntimeParam(name="posActivity")
+	public double posActivity = 0;
 
 	public double q = 0;
 
@@ -59,7 +59,7 @@ public class NeuronComplex extends Neuron {
 		a_links = cn.a_links;
 
 		backProjection = cn.backProjection;
-		minus = cn.minus;
+		posActivity = cn.posActivity;
 		q = cn.q;
 	}
 

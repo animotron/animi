@@ -109,7 +109,7 @@ public class CortexZoneSimple implements Layer {
 	public void set(int x, int y, double b) {
 		col[x][y].activity = b;
 		col[x][y].backProjection = b;
-		col[x][y].minus = b;
+		col[x][y].posActivity = b;
 	}
 
 	@Override

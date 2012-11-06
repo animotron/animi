@@ -405,15 +405,15 @@ public class Application extends JFrame {
                                     {Retina.WIDTH / 2, 2}
                             }
                     )
-//                    ,
-//                    new HLineAnime(
-//                            Retina.WIDTH - 4, 0,
-//                            new int[][] {
-//                                    {Retina.WIDTH / 2, 3},
-//                                    {Retina.WIDTH / 2, Retina.HEIGHT - 2},
-//                                    {Retina.WIDTH / 2, 3}
-//                            }
-//                    )
+                    ,
+                    new HLineAnime(
+                            Retina.WIDTH - 4, 0,
+                            new int[][] {
+                                    {Retina.WIDTH / 2, 3},
+                                    {Retina.WIDTH / 2, Retina.HEIGHT - 2},
+                                    {Retina.WIDTH / 2, 3}
+                            }
+                    )
 
 
 

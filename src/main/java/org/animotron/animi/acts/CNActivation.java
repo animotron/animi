@@ -57,6 +57,6 @@ public class CNActivation implements Act<CortexZoneComplex> {
 //    	assert activity == cn.activity;
     	cn.activity = activity;
     	
-    	cn.minus = cn.activity;
+    	cn.posActivity = cn.activity;
     }
 }

@@ -36,12 +36,12 @@ public class Link {
 	
 	public double stability = 0;
 
-	protected Link(Neuron synapse, Neuron axon) {
+	protected Link(Neuron synapse, Neuron axon, LinkType type) {
 		this.synapse = synapse;
-		synapse.addAxon(this);
+		synapse.addAxon(this, type);
 
 		this.axon = axon;
-		axon.addSynapse(this);
+		axon.addSynapse(this, type);
 	}
 	
 	public void addStability(double x) {

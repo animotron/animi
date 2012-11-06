@@ -30,8 +30,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import javolution.util.FastList;
-
 /**
  * Complex cortex zone
  * 
@@ -46,6 +44,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     
 	public SNActivation snActivation = new SNActivation();
 	public CNActivation cnActivation = new CNActivation();
+	public Stopper stopper = new Stopper();
 
 	public Subtraction subtraction = new Subtraction();
 
@@ -53,6 +52,12 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 	@Params
 	public Remember remember = new Remember();
+	
+	@InitParam(name="disper")
+	public double disper = 0.2;
+
+	@InitParam(name="stoper_links")
+	public int stoper_links = 10;
 	
 	@InitParam(name="deep")
 	public int deep;
@@ -175,7 +180,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 							nerv_links[lx][ly] = true;
 
 							// Создаем синаптическую связь
-							new Link(m.zone.getCol(lx, ly), s[x][y][z]);
+							new Link(m.zone.getCol(lx, ly), s[x][y][z], LinkType.NORMAL);
 						}
 					}
 				}
@@ -206,7 +211,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					for (int j = y - 1; j <= y + 1; j++) {
 						for (int k = 0; k < deep; k++) {
 
-							new Link(s[i][j][k], col[x][y]);
+							new Link(s[i][j][k], col[x][y], LinkType.NORMAL);
 						}
 					}
 				}
@@ -214,6 +219,79 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			}
 		}
 		
+        //разброс торозных связей
+		_sigma = disper * ((width() + height()) / 2);
+        boolean[][] nerv_links = new boolean[width()][height()];
+        
+        int _sigma_ = 1;//(int) _sigma;
+
+        for (int x = _sigma_; x < width() - _sigma_; x++) {
+			for (int y = _sigma_; y < height() - _sigma_; y++) {
+				System.out.println("x = "+x+" y = "+y);
+
+				x_in_nerv = x;
+				y_in_nerv = y;
+		        sigma = _sigma;
+
+				// Обнуление массива занятости связей
+				for (int n1 = 0; n1 < width(); n1++) {
+					for (int n2 = 0; n2 < height(); n2++) {
+						nerv_links[n1][n2] = false;
+					}
+				}
+
+				// преобразование Бокса — Мюллера для получения
+				// нормально распределенной величины
+				// DispLink - дисперсия связей
+				int count = 0;
+				for (int i = 0; i < stoper_links; i++) {
+                    int lx, ly;
+                    do {
+                        do {
+                            if (count > stoper_links * 3) {
+                            	if (Double.isInfinite(sigma)) {
+                            		System.out.println("initialization failed @ x = "+x+" y = "+y);
+                            		System.exit(1);
+                            	}
+                            	sigma += _sigma;
+//        							System.out.println(""+i+" of "+m.ns_links+" ("+sigma+")");
+                            	count = 0;
+                            }
+                            count++;
+                            	
+                            do {
+                                X = 2.0 * Math.random() - 1;
+                                Y = 2.0 * Math.random() - 1;
+                                S = X * X + Y * Y;
+                            } while (S > 1 || S == 0);
+                            S = Math.sqrt(-2 * Math.log(S) / S);
+                            double dX = X * S * sigma;
+                            double dY = Y * S * sigma;
+                            lx = (int) Math.round(x_in_nerv + dX);
+                            ly = (int) Math.round(y_in_nerv + dY);
+
+                            //определяем, что не вышли за границы поля колонок
+                            //колонки по периметру не задействованы
+                        } while (!(lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1));
+
+                        System.out.print("!");
+//                            System.out.println("lx = "+lx+" ly = "+ly);
+
+                    // Проверка на повтор связи
+					} while (nerv_links[lx][ly]);
+                    System.out.print(".");
+
+					nerv_links[lx][ly] = true;
+
+					// Создаем синаптическую связь
+					Link link = new Link(getCol(lx, ly), getCol(x, y), LinkType.STOPPER);
+					
+					//UNDERSTAND: is it ok to have sum ^2 ~ 1
+					link.w = Math.sqrt(1 / stoper_links) / 10;
+				}
+				System.out.println();
+			}
+		}
 	}
     
 	// Картинка активных нейронов по колонкам
@@ -394,7 +472,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			        int c_g = Utils.get_green(value);
 			        int c_b = Utils.get_blue(value);
 
-                	double minus = cn.minus;
+                	double minus = cn.posActivity;
                 	if (minus > 0) {
                 		c_r += 255 * minus;
                 		if (c_r > 255) c_r = 255;
@@ -455,6 +533,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public void cycleActivation() {
         cycle(1, 1, width() - 1, height() - 1, snActivation);
         cycle(1, 1, width() - 1, height() - 1, cnActivation);
+        for (int i = 0; i < 5; i++)
+        	cycle(1, 1, width() - 1, height() - 1, stopper);
     }
 
     //Граничные нейроны не задействованы.

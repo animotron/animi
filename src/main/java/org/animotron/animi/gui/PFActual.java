@@ -320,7 +320,7 @@ public class PFActual implements Imageable, InternalFrameListener {
         			&& pY < boxSize) {
             	
             	int c = Utils.calcGrey(image, pX, pY);
-				c += 255 * ms[link.synapse.x][link.synapse.y].minus;
+				c += 255 * ms[link.synapse.x][link.synapse.y].posActivity;
 				if (c > 255) c = 255;
 				if (c < 0) c = 0;
 				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
