@@ -57,7 +57,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public double disper = 0.2;
 
 	@InitParam(name="stoper_links")
-	public int stoper_links = 10;
+	public int stoper_links = 50;
 	
 	@InitParam(name="deep")
 	public int deep;
@@ -287,7 +287,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					Link link = new Link(getCol(lx, ly), getCol(x, y), LinkType.STOPPER);
 					
 					//UNDERSTAND: is it ok to have sum ^2 ~ 1
-					link.w = Math.sqrt(1 / stoper_links) / 10;
+					link.w = Math.sqrt(1 / (double)stoper_links);
 				}
 				System.out.println();
 			}
@@ -533,7 +533,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public void cycleActivation() {
         cycle(1, 1, width() - 1, height() - 1, snActivation);
         cycle(1, 1, width() - 1, height() - 1, cnActivation);
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
         	cycle(1, 1, width() - 1, height() - 1, stopper);
     }
 

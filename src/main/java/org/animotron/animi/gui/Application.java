@@ -395,25 +395,25 @@ public class Application extends JFrame {
             Retina.WIDTH, Retina.HEIGHT,
             new Figure[] {
 
-//                    new RandomLineAnime(4, 4, Retina.WIDTH - 4, Retina.HEIGHT - 4)
+                    new RandomLineAnime(4, 4, Retina.WIDTH - 4, Retina.HEIGHT - 4)
 
-                    new HLineAnime(
-                            Retina.WIDTH - 4, 0,
-                            new int[][] {
-                                    {Retina.WIDTH / 2, 2},
-                                    {Retina.WIDTH / 2, Retina.HEIGHT - 3},
-                                    {Retina.WIDTH / 2, 2}
-                            }
-                    )
-                    ,
-                    new HLineAnime(
-                            Retina.WIDTH - 4, 0,
-                            new int[][] {
-                                    {Retina.WIDTH / 2, 3},
-                                    {Retina.WIDTH / 2, Retina.HEIGHT - 2},
-                                    {Retina.WIDTH / 2, 3}
-                            }
-                    )
+//                    new HLineAnime(
+//                            Retina.WIDTH - 4, 0,
+//                            new int[][] {
+//                                    {Retina.WIDTH / 2, 2},
+//                                    {Retina.WIDTH / 2, Retina.HEIGHT - 3},
+//                                    {Retina.WIDTH / 2, 2}
+//                            }
+//                    )
+//                    ,
+//                    new HLineAnime(
+//                            Retina.WIDTH - 4, 0,
+//                            new int[][] {
+//                                    {Retina.WIDTH / 2, 3},
+//                                    {Retina.WIDTH / 2, Retina.HEIGHT - 2},
+//                                    {Retina.WIDTH / 2, 3}
+//                            }
+//                    )
 
 
 
