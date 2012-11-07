@@ -77,5 +77,11 @@ public class NeuronComplex extends Neuron {
 				}
 			}
 		}
+		
+		double count = Qs.values().size();
+		for (LinkQ link : Qs.values()) {
+			link.q = 1 / count;
+		}
+		occupy = true;
 	}
 }

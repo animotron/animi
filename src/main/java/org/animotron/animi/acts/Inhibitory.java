@@ -42,6 +42,9 @@ public class Inhibitory implements Act<CortexZoneComplex> {
     		delta += link.w * link.synapse.activity;
     	}
     	
+    	if (cn.activity > 0)
+    		System.out.println("");
+    	
     	cn.activity = cn.activity - delta;
     	if (cn.activity < 0 || Double.isNaN(cn.activity)) 
     		cn.activity = 0;

@@ -54,10 +54,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public Remember remember = new Remember();
 	
 	@InitParam(name="disper")
-	public double disper = 0.2;
+	public double disper = 0.5;
 
 	@InitParam(name="stoper_links")
-	public int stoper_links = 95;
+	public int stoper_links = 15;
 	
 	@InitParam(name="deep")
 	public int deep;
@@ -220,7 +220,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 		
         //разброс торозных связей
-		_sigma = disper * ((width() + height()) / 2);
+		_sigma = disper;// * ((width() + height()) / 2);
         boolean[][] nerv_links = new boolean[width()][height()];
         
         int _sigma_ = 1;//(int) _sigma;
@@ -248,13 +248,13 @@ public class CortexZoneComplex extends CortexZoneSimple {
                     int lx, ly;
                     do {
                         do {
-                            if (count > stoper_links * 3) {
+                            if (count > stoper_links * 5) {
                             	if (Double.isInfinite(sigma)) {
                             		System.out.println("initialization failed @ x = "+x+" y = "+y);
                             		System.exit(1);
                             	}
-                            	sigma += _sigma;
-//        							System.out.println(""+i+" of "+m.ns_links+" ("+sigma+")");
+                            	sigma += _sigma * .1;
+    							System.out.println(""+i+" of ("+sigma+")");
                             	count = 0;
                             }
                             count++;
@@ -287,7 +287,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					Link link = new Link(getCol(lx, ly), getCol(x, y), LinkType.STOPPER);
 					
 					//UNDERSTAND: is it ok to have sum ^2 ~ 1
-					link.w = Math.sqrt(1 / (double)stoper_links);
+					link.w = 1 / ((double) (stoper_links / 2));//Math.sqrt(1 / (double)stoper_links);
 				}
 				System.out.println();
 			}
@@ -337,7 +337,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		ColumnRF_Image() {
 	        boxSize = 1;
 	        for (Mapping m : in_zones) {
-	            boxSize = (int) Math.max(boxSize, ((m.zone.width() + m.zone.height()) / 2) * m.disp * 25);
+	            boxSize = (int) Math.max(boxSize, ((m.zone.width() + m.zone.height()) / 2) * m.disp * 15);
 			}
 
 	        maxX = width() * boxSize;
@@ -542,6 +542,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public void cycle2() {
         cycle(1, 1, width() - 1, height() - 1, restructorization);
 //        cycle(1, 1, width() - 1, height() - 1, subtraction);
-        cycle(1, 1, width() - 1, height() - 1, remember);
+//        cycle(1, 1, width() - 1, height() - 1, remember);
     }
 }

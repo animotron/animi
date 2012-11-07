@@ -53,18 +53,18 @@ public class Restructorization implements Act<CortexZoneComplex> {
 			link.q = link.q / norm;
 		}
 		
-		//stopers normlization
-		sumQ2 = 0;
-		for (Link link : cn.s_inhibitoryLinks) {
-			
-			link.w += cn.activity * link.synapse.activity * ny;
-
-			sumQ2 += link.w * link.w;
-		}
-		
-		norm = Math.sqrt(sumQ2);
-		for (Link link : cn.s_inhibitoryLinks) {
-			link.w = link.w / norm;
-		}
+		//stoppers normlization
+//		sumQ2 = 0;
+//		for (Link link : cn.s_inhibitoryLinks) {
+//			
+//			link.w += cn.activity * link.synapse.activity * ny;
+//
+//			sumQ2 += link.w * link.w;
+//		}
+//		
+//		norm = Math.sqrt(sumQ2);
+//		for (Link link : cn.s_inhibitoryLinks) {
+//			link.w = link.w / norm;
+//		}
     }
 }

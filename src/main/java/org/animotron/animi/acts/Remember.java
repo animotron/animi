@@ -54,6 +54,7 @@ public class Remember implements Act<CortexZoneComplex> {
     			sumA2 += link.synapse.activity * link.synapse.activity;
     		}
 
+    		System.out.println(activity / cn.Qs.values().size());
     		if ((activity / cn.Qs.values().size()) < mRecLevel)
     			return;
     		

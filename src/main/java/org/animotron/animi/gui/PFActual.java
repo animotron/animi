@@ -44,6 +44,8 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 	static List<Field> cnFds = new ArrayList<Field>();
 	static List<Field> snFds = new ArrayList<Field>();
+	
+	int zoom = 5;
 
 	static {
 		Field[] fields = NeuronComplex.class.getFields();
@@ -100,82 +102,82 @@ public class PFActual implements Imageable, InternalFrameListener {
         g.drawString("RF", x, y);
         
 		BufferedImage img = drawRF();
-		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
+		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
 		g.drawImage(
-				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
+				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
 
 		x = 0;
-		y += 2+img.getHeight()*10;
+		y += 2+img.getHeight()*zoom;
 
 		y += textY;
         g.drawString("Total RF", x, y);
 
 		img = drawTotalRF();
-		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
+		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
 		g.drawImage(
-				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
+				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
 
 		
-		y = rY; x = boxSize*10 + 2;
+		y = rY; x = boxSize*zoom + 2;
 		
 		y += textY;
         g.drawString("Original", x, y);
 
 		img = drawIn();
-		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
+		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
 		g.drawImage(
-				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
+				img.getScaledInstance(img.getWidth()*10, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
 
-		x = boxSize*10 + 2;
-		y += 2+img.getHeight()*10;
+		x = boxSize*zoom + 2;
+		y += 2+img.getHeight()*zoom;
 
 		y += textY;
         g.drawString("Minus", x, y);
 
 		img = drawMinus();
-		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
+		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
 		g.drawImage(
-				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
+				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
 
 
 		//next block
-		y = rY; x = 2*(boxSize*10 + 2);
+		y = rY; x = 2*(boxSize*zoom + 2);
 		
 		y += textY;
         g.drawString("Inhibitory RF", x, y);
 
 		img = drawInhibitoryRF();
-		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
+		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
 		g.drawImage(
-				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
+				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
 
-		x = 2*(boxSize*10 + 2);
-		y += 2+img.getHeight()*10;
+		x = 2*(boxSize*zoom + 2);
+		y += 2+img.getHeight()*zoom;
 
 		y += textY;
         g.drawString("Total inhibitory RF", x, y);
 
 		img = drawTotalInhibitoryRF();
-		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
+		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
 		g.drawImage(
-				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
+				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
 
-//		x = 0;
-//		y += 2+img.getHeight()*10;
-//
-//		for (Field f : cnFds) {
-//			y += textY;
-//	        g.drawString(getName(f), x, y);		
-//
-//	        y += textY;
-//	        g.drawString(getValue(f, cn), x, y);		
-//		}
+		x = 0;
+		y += 2+img.getHeight()*zoom;
+
+		for (Field f : cnFds) {
+			y += textY;
+	        g.drawString(getName(f), x, y);		
+
+	        y += textY;
+	        g.drawString(getValue(f, cn), x, y);		
+		}
 //		
 //		for (int dx = -1; dx <= 1; dx++) {
 //			for (int dy = -1; dy <= 1; dy++) {
