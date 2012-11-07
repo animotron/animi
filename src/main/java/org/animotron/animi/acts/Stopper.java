@@ -42,7 +42,7 @@ public class Stopper implements Act<CortexZoneComplex> {
     		delta += link.w * link.synapse.activity;
     	}
     	
-    	cn.activity = cn.posActivity - delta;
+    	cn.activity = cn.activity - delta;
     	if (cn.activity < 0 || Double.isNaN(cn.activity)) 
     		cn.activity = 0;
     }

@@ -57,7 +57,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public double disper = 0.2;
 
 	@InitParam(name="stoper_links")
-	public int stoper_links = 50;
+	public int stoper_links = 95;
 	
 	@InitParam(name="deep")
 	public int deep;
