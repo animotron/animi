@@ -128,7 +128,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		img = drawIn();
 		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
 		g.drawImage(
-				img.getScaledInstance(img.getWidth()*10, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
+				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
 
 		x = boxSize*zoom + 2;
