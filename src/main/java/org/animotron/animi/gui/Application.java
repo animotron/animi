@@ -458,92 +458,94 @@ public class Application extends JFrame {
 		)
 	};
 
+    Figure[] MANY_LINES = new Figure[] {
+		new LineAnime(
+		10, 0,
+		new int[][] {
+				{4, 4},
+				{Retina.WIDTH - 8, 4},
+				{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+				{4, Retina.HEIGHT - 8},
+				{4, 4}
+		}
+	),
+	new LineAnime(
+		10, -.03,
+		new int[][] {
+				{Retina.WIDTH - 8, Retina.HEIGHT - 8},
+				{4, Retina.HEIGHT - 8},
+				{4, 4},
+				{Retina.WIDTH - 8, 4},
+				{Retina.WIDTH - 8, Retina.HEIGHT - 8}
+		}
+	),
+	new LineAnime(
+	    30, -0.03,
+	    new int[][] {
+	            {40, 40},
+	            {Retina.WIDTH - 40, 40},
+	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+	            {40, Retina.HEIGHT - 40},
+	            {40, 40}
+	    }
+	),
+	new LineAnime(
+	    30, 0.03,
+	    new int[][] {
+	            {Retina.WIDTH - 40, 40},
+	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+	            {40, Retina.HEIGHT - 40},
+	            {40, 40},
+	            {Retina.WIDTH - 40, 40},
+	    }
+	),
+	new LineAnime(
+	    30, -0.07,
+	    new int[][] {
+	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+	            {40, Retina.HEIGHT - 40},
+	            {40, 40},
+	            {Retina.WIDTH - 40, 40},
+	            {Retina.WIDTH - 40, Retina.HEIGHT - 40}
+	    }
+	),
+	new LineAnime(
+	    30, 0.07,
+	    new int[][] {
+	            {40, Retina.HEIGHT - 40},
+	            {40, 40},
+	            {Retina.WIDTH - 40, 40},
+	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+	            {40, Retina.HEIGHT - 40}
+	    }
+	),
+	new OvalAnime(30,
+	    new int[][] {
+	            {50, 50},
+	            {Retina.WIDTH - 50, Retina.HEIGHT - 50},
+	            {Retina.WIDTH - 50, 50},
+	            {50, Retina.HEIGHT - 50},
+	            {50, 50}
+	    }
+	),
+	new RectAnime(
+	    50, 0.05,
+	    new int[][] {
+	            {40, 40},
+	            {40, Retina.HEIGHT - 40},
+	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+	            {Retina.WIDTH - 40, 40},
+	            {40, 40}
+	    }
+	)
+    };
+    
     Stimulator stimulator = new Stimulator(
             Retina.WIDTH, Retina.HEIGHT,
 //        		RANDOM_LINE
 //        		H_DOUBLE_LINE
-        		H_V_LINES
-
-//            		new LineAnime(
-//            				10, 0,
-//            				new int[][] {
-//            						{4, 4},
-//            						{Retina.WIDTH - 8, 4},
-//            						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-//            						{4, Retina.HEIGHT - 8},
-//            						{4, 4}
-//            				}
-//    				),
-//            		new LineAnime(
-//            				10, -.03,
-//            				new int[][] {
-//            						{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-//            						{4, Retina.HEIGHT - 8},
-//            						{4, 4},
-//            						{Retina.WIDTH - 8, 4},
-//            						{Retina.WIDTH - 8, Retina.HEIGHT - 8}
-//            				}
-//    				)
-//                    new LineAnime(
-//                            30, -0.03,
-//                            new int[][] {
-//                                    {40, 40},
-//                                    {Retina.WIDTH - 40, 40},
-//                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-//                                    {40, Retina.HEIGHT - 40},
-//                                    {40, 40}
-//                            }
-//                    ),
-//                    new LineAnime(
-//                            30, 0.03,
-//                            new int[][] {
-//                                    {Retina.WIDTH - 40, 40},
-//                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-//                                    {40, Retina.HEIGHT - 40},
-//                                    {40, 40},
-//                                    {Retina.WIDTH - 40, 40},
-//                            }
-//                    ),
-//                    new LineAnime(
-//                            30, -0.07,
-//                            new int[][] {
-//                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-//                                    {40, Retina.HEIGHT - 40},
-//                                    {40, 40},
-//                                    {Retina.WIDTH - 40, 40},
-//                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40}
-//                            }
-//                    )
-//                    new LineAnime(
-//                            30, 0.07,
-//                            new int[][] {
-//                                    {40, Retina.HEIGHT - 40},
-//                                    {40, 40},
-//                                    {Retina.WIDTH - 40, 40},
-//                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-//                                    {40, Retina.HEIGHT - 40}
-//                            }
-//                    ),
-//                    new OvalAnime(30,
-//                            new int[][] {
-//                                    {50, 50},
-//                                    {Retina.WIDTH - 50, Retina.HEIGHT - 50},
-//                                    {Retina.WIDTH - 50, 50},
-//                                    {50, Retina.HEIGHT - 50},
-//                                    {50, 50}
-//                            }
-//                    ),
-//                    new RectAnime(
-//                            50, 0.05,
-//                            new int[][] {
-//                                    {40, 40},
-//                                    {40, Retina.HEIGHT - 40},
-//                                    {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-//                                    {Retina.WIDTH - 40, 40},
-//                                    {40, 40}
-//                            }
-//                    )
-//            }
+//        		H_V_LINES
+        		MANY_LINES
     );
 
     //Create a new internal frame.
