@@ -44,7 +44,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     
 	public SNActivation snActivation = new SNActivation();
 	public CNActivation cnActivation = new CNActivation();
-	public Stopper stopper = new Stopper();
+	public Inhibitory inhibitory = new Inhibitory();
 
 	public Subtraction subtraction = new Subtraction();
 
@@ -534,7 +534,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
         cycle(1, 1, width() - 1, height() - 1, snActivation);
         cycle(1, 1, width() - 1, height() - 1, cnActivation);
         for (int i = 0; i < 10; i++)
-        	cycle(1, 1, width() - 1, height() - 1, stopper);
+        	cycle(1, 1, width() - 1, height() - 1, inhibitory);
     }
 
     //Граничные нейроны не задействованы.

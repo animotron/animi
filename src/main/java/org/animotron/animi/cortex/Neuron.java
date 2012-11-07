@@ -47,7 +47,7 @@ public class Neuron {
 	/** outgoing links **/
 	public FastList<Link> a_links = new FastList<Link>();
 	
-	public FastList<Link> s_stopLinks = new FastList<Link>();
+	public FastList<Link> s_inhibitoryLinks = new FastList<Link>();
 
 	public Neuron(int x, int y) {
 		this.x = x;
@@ -59,7 +59,7 @@ public class Neuron {
 		if (type == LinkType.NORMAL)
 			s_links.add(link);
 		else
-			s_stopLinks.add(link);
+			s_inhibitoryLinks.add(link);
 	}
 
 	//called by Link only!

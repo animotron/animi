@@ -146,9 +146,9 @@ public class PFActual implements Imageable, InternalFrameListener {
 		y = rY; x = 2*(boxSize*10 + 2);
 		
 		y += textY;
-        g.drawString("Stopper", x, y);
+        g.drawString("Inhibitory RF", x, y);
 
-		img = drawMinusRF();
+		img = drawInhibitoryRF();
 		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
 		g.drawImage(
 				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
@@ -158,9 +158,9 @@ public class PFActual implements Imageable, InternalFrameListener {
 		y += 2+img.getHeight()*10;
 
 		y += textY;
-        g.drawString("Total stopper", x, y);
+        g.drawString("Total inhibitory RF", x, y);
 
-		img = drawTotalMinusRF();
+		img = drawTotalInhibitoryRF();
 		g.drawRect(x, y, 2+(img.getWidth()*10), 2+(img.getHeight()*10));
 		g.drawImage(
 				img.getScaledInstance(img.getWidth()*10, img.getHeight()*10, Image.SCALE_AREA_AVERAGING),
@@ -313,11 +313,11 @@ public class PFActual implements Imageable, InternalFrameListener {
         return image;
 	}
 
-	private BufferedImage drawMinusRF() {
+	private BufferedImage drawInhibitoryRF() {
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
         int pX, pY;
-		for (Link link : cn.s_stopLinks) {
+		for (Link link : cn.s_inhibitoryLinks) {
         	pX = (boxSize / 2) + (link.synapse.x - cn.x);
 			pY = (boxSize / 2) + (link.synapse.y - cn.y);
                     	
@@ -335,11 +335,11 @@ public class PFActual implements Imageable, InternalFrameListener {
         return image;
 	}
 
-	private BufferedImage drawTotalMinusRF() {
+	private BufferedImage drawTotalInhibitoryRF() {
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
         int pX, pY;
-		for (Link link : cn.s_stopLinks) {
+		for (Link link : cn.s_inhibitoryLinks) {
         	pX = (boxSize / 2) + (link.synapse.x - cn.x);
 			pY = (boxSize / 2) + (link.synapse.y - cn.y);
                     	

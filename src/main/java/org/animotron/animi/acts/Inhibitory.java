@@ -29,16 +29,16 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Stopper implements Act<CortexZoneComplex> {
+public class Inhibitory implements Act<CortexZoneComplex> {
 
-	public Stopper() {}
+	public Inhibitory() {}
 
     @Override
     public void process(CortexZoneComplex layer, final int x, final int y) {
     	NeuronComplex cn = layer.col[x][y];
     	
     	double delta = 0;
-    	for (Link link : cn.s_stopLinks) {
+    	for (Link link : cn.s_inhibitoryLinks) {
     		delta += link.w * link.synapse.activity;
     	}
     	
