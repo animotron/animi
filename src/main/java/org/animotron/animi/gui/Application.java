@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 
 import org.animotron.animi.Imageable;
 import org.animotron.animi.cortex.*;
@@ -58,6 +59,7 @@ public class Application extends JFrame {
 	public static MultiCortex cortexs = null;
 	
 	JDesktopPane desktop;
+	public static JLabel count;
 	
 	private Application() {
 		
@@ -305,6 +307,12 @@ public class Application extends JFrame {
 
     protected JPanel createStatusBar() {
     	JPanel bar = new JPanel();
+    	
+    	bar.setBorder(new BevelBorder(BevelBorder.LOWERED));
+    	bar.setLayout(new BoxLayout(bar, BoxLayout.X_AXIS));
+    	count = new JLabel("status");
+    	count.setHorizontalAlignment(SwingConstants.LEFT);
+    	bar.add(count);
     	
     	return bar;
     }

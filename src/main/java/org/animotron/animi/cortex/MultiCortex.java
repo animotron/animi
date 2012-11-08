@@ -21,6 +21,7 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.Params;
+import org.animotron.animi.gui.Application;
 
 
 /**
@@ -95,6 +96,8 @@ public class MultiCortex {
     	cycle1();
     	cycle2();
     	count++;
+    	
+    	Application.count.setText(String.valueOf(count));
     }
 
 	//Такт 1. Активация колонок (узнавание)
