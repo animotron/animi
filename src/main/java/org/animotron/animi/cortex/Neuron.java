@@ -33,7 +33,7 @@ public class Neuron {
 	@RuntimeParam(name="activity")
 	public double activity = 0;
 	
-	public boolean occupy = false;
+	public boolean occupy = true;
 	
 	public int x;
 	

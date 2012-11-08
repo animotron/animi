@@ -43,9 +43,9 @@ public class CortexZoneSimple implements Layer {
     public NeuronComplex[][] col;
     
 	@InitParam(name="width")
-	public int width = 32;
+	public int width = 192;
 	@InitParam(name="height")
-	public int height = 32;
+	public int height = 144;
 
     CortexZoneSimple() {
     	name = null;
@@ -72,7 +72,7 @@ public class CortexZoneSimple implements Layer {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                c = col[x][y].activity > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
+                c = col[x][y].backProjection > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
                 image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
             }
         }

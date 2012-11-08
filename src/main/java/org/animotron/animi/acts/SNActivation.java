@@ -36,15 +36,15 @@ public class SNActivation implements Act<CortexZoneComplex> {
     @Override
     public void process(CortexZoneComplex layer, final int x, final int y) {
 
-        for (int z = 0; z < layer.deep; z++) {
-        	NeuronSimple sn = layer.s[x][y][z];
-        	sn.activity = 0; //UNDERSTAND: do we need previous value
-
-        	if (sn.occupy) {
-	        	for (Link link : sn.s_links) {
-	        		sn.activity += link.synapse.activity * link.w;
-	        	}
-        	}
-        }
+//        for (int z = 0; z < layer.deep; z++) {
+//        	NeuronSimple sn = layer.s[x][y][z];
+//        	sn.activity = 0; //UNDERSTAND: do we need previous value
+//
+//        	if (sn.occupy) {
+//	        	for (Link link : sn.s_links) {
+//	        		sn.activity += link.synapse.activity * link.w;
+//	        	}
+//        	}
+//        }
     }
 }

@@ -80,6 +80,7 @@ public class Visualizer extends JInternalFrame {
 		    if (bigP.y > 700) {
 		    	bigP.x = 200;
 		    	bigP.y = 500;
+				setLocation(bigP.x, bigP.y);
 
 		    } else if (bigP.y > 500) {
 		    	bigP.x += 20;
@@ -93,6 +94,10 @@ public class Visualizer extends JInternalFrame {
 		    setSize(size);
 		    
 		    if (smallP.y > 700) {
+		    	smallP.y = 10;
+				setLocation(smallP.x, smallP.y);
+
+		    } else if (smallP.y > 500) {
 		    	smallP.y += 20;
 
 		    } else 

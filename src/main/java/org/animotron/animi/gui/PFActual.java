@@ -83,7 +83,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		
 		calcBoxSize();
 		
-		BufferedImage image = new BufferedImage(400, 400, BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(boxSize*zoom*3, boxSize*zoom*3, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         g.setColor(Color.WHITE);
 
@@ -240,14 +240,12 @@ public class PFActual implements Imageable, InternalFrameListener {
 		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
 		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
 
-        for (Link cl : cn.s_links) {
-            for (Link sl : cl.synapse.s_links) {
-            	minX = Math.min(minX, sl.synapse.x);
-            	minY = Math.min(minY, sl.synapse.y);
+		for (LinkQ link : cn.Qs.values()) {
+        	minX = Math.min(minX, link.synapse.x);
+        	minY = Math.min(minY, link.synapse.y);
 
-            	maxX = Math.max(maxX, sl.synapse.x);
-            	maxY = Math.max(maxY, sl.synapse.y);
-            }
+        	maxX = Math.max(maxX, link.synapse.x);
+        	maxY = Math.max(maxY, link.synapse.y);
         }
         boxSize = Math.max(maxX - minX, maxY - minY) + 2;
 	}
@@ -257,8 +255,8 @@ public class PFActual implements Imageable, InternalFrameListener {
 
         int pX, pY;
 		for (LinkQ link : cn.Qs.values()) {
-        	pX = (boxSize / 2) + (link.synapse.x - cn.x);
-			pY = (boxSize / 2) + (link.synapse.y - cn.y);
+        	pX = (boxSize / 2) + (link.synapse.x - (int)(cn.x * link.fX));
+			pY = (boxSize / 2) + (link.synapse.y - (int)(cn.y * link.fY));
                     	
 			if (       pX > 0 
         			&& pX < boxSize 
@@ -301,8 +299,8 @@ public class PFActual implements Imageable, InternalFrameListener {
 
         int pX, pY;
         for (LinkQ link : cn.Qs.values()) {
-        	pX = (boxSize / 2) + (link.synapse.x - cn.x);
-			pY = (boxSize / 2) + (link.synapse.y - cn.y);
+        	pX = (boxSize / 2) + (link.synapse.x - (int)(cn.x * link.fX));
+			pY = (boxSize / 2) + (link.synapse.y - (int)(cn.y * link.fY));
         	if (pX >= 0 && pX < boxSize 
         			&& pY >= 0 && pY < boxSize) {
             	
@@ -363,28 +361,23 @@ public class PFActual implements Imageable, InternalFrameListener {
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
 		int pX, pY = 0;
-		for (Link cl : cn.s_links) {
-			
-        	final Neuron sn = cl.synapse;
+        for (LinkQ link : cn.Qs.values()) {
 
-			for (Link sl : sn.s_links) {
-
-            	pX = (boxSize / 2) + (sl.synapse.x - cn.x);
-				pY = (boxSize / 2) + (sl.synapse.y - cn.y);
+        	pX = (boxSize / 2) + (link.synapse.x - (int)(cn.x * link.fX));
+			pY = (boxSize / 2) + (link.synapse.y - (int)(cn.y * link.fY));
+        	
+			if (       pX >= 0 
+        			&& pX < boxSize 
+        			&& pY >= 0 
+        			&& pY < boxSize) {
             	
-				if (       pX >= 0 
-            			&& pX < boxSize 
-            			&& pY >= 0 
-            			&& pY < boxSize) {
-                	
-                	int c = Utils.calcGrey(image, pX, pY);
-					c += 255 * sl.synapse.activity;
-					if (c > 255) c = 255;
-					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-				} else {
-					System.out.println("WRONG "+pX+" "+pY);
-                }
-        	}
+            	int c = Utils.calcGrey(image, pX, pY);
+				c += 255 * link.synapse.activity;
+				if (c > 255) c = 255;
+				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+			} else {
+//				System.out.println("WRONG "+pX+" "+pY);
+            }
         }
         return image;
 	}

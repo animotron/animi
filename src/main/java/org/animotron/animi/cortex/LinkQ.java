@@ -20,10 +20,6 @@
  */
 package org.animotron.animi.cortex;
 
-import java.util.List;
-
-import javolution.util.FastList;
-
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
@@ -33,29 +29,20 @@ public class LinkQ {
 	public NeuronComplex synapse;
 	public NeuronComplex axon;
 	
-	//** { in , out } **//
-	protected List<Link[]> links = new FastList<Link[]>();
+	public double fX = 1;
+	public double fY = 1;
 	
-	public LinkQ(Link in, Link out) {
-		this.synapse = (NeuronComplex) in.synapse;
-		this.axon = (NeuronComplex) out.axon;
-
-		add(in, out);
-	}
-	
-	public void add(Link in, Link out) {
-		assert synapse == in.synapse;
-		assert axon == out.axon;
+	public LinkQ(NeuronComplex synapse, NeuronComplex axon, double q, double fX, double fY) {
+		this.synapse = synapse;
+		this.axon = axon;
 		
-		links.add(new Link[] {in, out});
+		axon.Qs.put(synapse, this);
+		
+		this.q = q;
+		
+		this.fX = fX;
+		this.fY = fY;
 	}
 	
 	public double q = 0;
-	
-	public double q() {
-//		for (Link[] ls : links) {
-//			q += ls[0].w * ls[1].w;
-//		}
-		return q;
-	}
 }

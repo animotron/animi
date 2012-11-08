@@ -45,6 +45,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public SNActivation snActivation = new SNActivation();
 	public CNActivation cnActivation = new CNActivation();
 	public Inhibitory inhibitory = new Inhibitory();
+	public FinalActivity finalActivity = new FinalActivity();
 
 	public Subtraction subtraction = new Subtraction();
 
@@ -54,13 +55,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public Remember remember = new Remember();
 	
 	@InitParam(name="disper")
-	public double disper = 0.5;
+	public double disper = 1.0;
 
-	@InitParam(name="stoper_links")
-	public int stoper_links = 15;
-	
-	@InitParam(name="deep")
-	public int deep;
+	@InitParam(name="inhibitory_links")
+	public int inhibitory_links = 25;
 	
 	/** Number of synaptic connections of the all simple neurons **/
 	public int ns_links;
@@ -69,38 +67,26 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	/** Number of synaptic connections of the complex neuron **/
 	public int nsc_links;
 	
-	/** Memory **/
-	public NeuronSimple[][][] s;
-	
     CortexZoneComplex() {
 		super();
     }
 
 	CortexZoneComplex(String name, MultiCortex mc, int deep, Mapping[] in_zones) {
 		super(name, mc);
+		
+		//92, 74
+		width /= 2;
+		height /= 2;
+		
 		this.in_zones = in_zones;
-		this.deep = deep;
     }
     
     public void init() {
     	super.init();
     	
-		s = new NeuronSimple[width()][height()][deep];
-
 		ns_links = 0;
         for (Mapping i : in_zones) {
             ns_links += i.ns_links;
-		}
-
-		nsc_links = nas_links * deep;
-
-	    // Инициализация синаптических связей простых нейронов
-		for (int x = 0; x < width(); x++) {
-			for (int y = 0; y < height(); y++) {
-				for (int z = 0; z < deep; z++) {
-					s[x][y][z] = new NeuronSimple(x,y,z);
-				}
-			}
 		}
 
 		// Создание синаптических связей симпл нейронов.
@@ -109,13 +95,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		double x_in_nerv, y_in_nerv;
         double X, Y, S;
         double _sigma, sigma;
+        
+        double fX, fY;
 
 		for (Mapping m : in_zones) {
+			
+			fX = m.zone.width() / (double) width();
+			fY = m.zone.height() / (double) height();
 
             boolean[][] nerv_links = new boolean[m.zone.width()][m.zone.height()];
-
-//            int sigmaX = (int) (m.disp * m.zone.width());
-//            int sigmaY = (int) (m.disp * m.zone.height());
 
             for (int x = 0; x < width(); x++) {
 				for (int y = 0; y < height(); y++) {
@@ -127,98 +115,64 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					y_in_nerv = y * m.zone.height() / (double) height();
 //					System.out.println("x_in_nerv = "+x_in_nerv+" y_in_nerv = "+y_in_nerv);
 
-                    _sigma = m.disp * ((m.zone.width() + m.zone.height()) / 2);
+                    _sigma = m.disp;// * ((m.zone.width() + m.zone.height()) / 2);
                     sigma = _sigma;
 
-                    for (int z = 0; z < deep; z++) {
-						// Обнуление массива занятости связей
-						for (int n1 = 0; n1 < m.zone.width(); n1++) {
-							for (int n2 = 0; n2 < m.zone.height(); n2++) {
-								nerv_links[n1][n2] = false;
-							}
+					// Обнуление массива занятости связей
+					for (int n1 = 0; n1 < m.zone.width(); n1++) {
+						for (int n2 = 0; n2 < m.zone.height(); n2++) {
+							nerv_links[n1][n2] = false;
 						}
+					}
 
-						// преобразование Бокса — Мюллера для получения
-						// нормально распределенной величины
-						// DispLink - дисперсия связей
-						int count = 0;
-						for (int i = 0; i < m.ns_links; i++) {
-                            int lx, ly;
+					// преобразование Бокса — Мюллера для получения
+					// нормально распределенной величины
+					// DispLink - дисперсия связей
+					int count = 0;
+					for (int i = 0; i < m.ns_links; i++) {
+                        int lx, ly;
+                        do {
                             do {
+                                if (count > m.ns_links * 3) {
+                                	if (Double.isInfinite(sigma)) {
+                                		System.out.println("initialization failed @ x = "+x+" y = "+y);
+                                		System.exit(1);
+                                	}
+                                	sigma += _sigma * 0.1;
+        							System.out.println("\n"+i+" of "+m.ns_links+" ("+sigma+")");
+                                	count = 0;
+                                }
+                                count++;
+                                	
                                 do {
-	                                if (count > m.ns_links * 3) {
-	                                	if (Double.isInfinite(sigma)) {
-	                                		System.out.println("initialization failed @ x = "+x+" y = "+y);
-	                                		System.exit(1);
-	                                	}
-	                                	sigma += _sigma;
-//	        							System.out.println(""+i+" of "+m.ns_links+" ("+sigma+")");
-	                                	count = 0;
-	                                }
-	                                count++;
-	                                	
-	                                do {
-	                                    X = 2.0 * Math.random() - 1;
-	                                    Y = 2.0 * Math.random() - 1;
-	                                    S = X * X + Y * Y;
-	                                } while (S > 1 || S == 0);
-	                                S = Math.sqrt(-2 * Math.log(S) / S);
-	                                double dX = X * S * sigma;
-	                                double dY = Y * S * sigma;
-	                                lx = (int) Math.round(x_in_nerv + dX);
-	                                ly = (int) Math.round(y_in_nerv + dY);
-	
-	                                //определяем, что не вышли за границы поля колонок
-	                                //колонки по периметру не задействованы
-                                } while (!(lx >= 1 && ly >= 1 && lx < m.zone.width() - 1 && ly < m.zone.height() - 1));
+                                    X = 2.0 * Math.random() - 1;
+                                    Y = 2.0 * Math.random() - 1;
+                                    S = X * X + Y * Y;
+                                } while (S > 1 || S == 0);
+                                S = Math.sqrt(-2 * Math.log(S) / S);
+                                double dX = X * S * sigma;
+                                double dY = Y * S * sigma;
+                                lx = (int) Math.round(x_in_nerv + dX);
+                                ly = (int) Math.round(y_in_nerv + dY);
 
-//                                System.out.println("lx = "+lx+" ly = "+ly);
+                                //определяем, что не вышли за границы поля колонок
+                                //колонки по периметру не задействованы
+                            } while (!(lx >= 1 && ly >= 1 && lx < m.zone.width() - 1 && ly < m.zone.height() - 1));
 
-                            // Проверка на повтор связи
-							} while (nerv_links[lx][ly]);
+                        // Проверка на повтор связи
+						} while (nerv_links[lx][ly]);
 
-							nerv_links[lx][ly] = true;
+                        System.out.print(".");
+						nerv_links[lx][ly] = true;
 
-							// Создаем синаптическую связь
-							new Link(m.zone.getCol(lx, ly), s[x][y][z], LinkType.NORMAL);
-						}
+						// Создаем синаптическую связь
+						new LinkQ(m.zone.getCol(lx, ly), col[x][y], 1 / (double)m.ns_links, fX, fY);
 					}
+					System.out.println();
 				}
 			}
 		}
 
-		// Инициализация аксонных связей простых нейронов
-		// и, соответственно, синаптических сложных нейронов.
-		// В простейшем случае каждый простой нейрон сязан с девятью колонками,
-		// образующими квадрат с центров в этом нейроне.
-//		for (int x = 0; x < width(); x++) {
-//			for (int y = 0; y < height(); y++) {
-//				NeuronComplex sn = col[x][y];
-//
-//				sn.s_links = new Link[nsc_links];
-//				for (int i = 0; i < nsc_links; i++) {
-//					sn.s_links[i] = new Link();
-//				}
-//			}
-//		}
-
-		// колонки по периметру не задействованы
-		for (int x = 1; x < width() - 1; x++) {
-			for (int y = 1; y < height() - 1; y++) {
-
-				//XXX: disparse
-				for (int i = x - 1; i <= x + 1; i++) {
-					for (int j = y - 1; j <= y + 1; j++) {
-						for (int k = 0; k < deep; k++) {
-
-							new Link(s[i][j][k], col[x][y], LinkType.NORMAL);
-						}
-					}
-				}
-				col[x][y].init();
-			}
-		}
-		
         //разброс торозных связей
 		_sigma = disper;// * ((width() + height()) / 2);
         boolean[][] nerv_links = new boolean[width()][height()];
@@ -227,7 +181,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
         for (int x = _sigma_; x < width() - _sigma_; x++) {
 			for (int y = _sigma_; y < height() - _sigma_; y++) {
-				System.out.println("x = "+x+" y = "+y);
+//				System.out.println("x = "+x+" y = "+y);
 
 				x_in_nerv = x;
 				y_in_nerv = y;
@@ -244,17 +198,17 @@ public class CortexZoneComplex extends CortexZoneSimple {
 				// нормально распределенной величины
 				// DispLink - дисперсия связей
 				int count = 0;
-				for (int i = 0; i < stoper_links; i++) {
+				for (int i = 0; i < inhibitory_links; i++) {
                     int lx, ly;
                     do {
                         do {
-                            if (count > stoper_links * 5) {
+                            if (count > inhibitory_links * 5) {
                             	if (Double.isInfinite(sigma)) {
                             		System.out.println("initialization failed @ x = "+x+" y = "+y);
                             		System.exit(1);
                             	}
                             	sigma += _sigma * .1;
-    							System.out.println(""+i+" of ("+sigma+")");
+//    							System.out.println("\n"+i+" of ("+sigma+")");
                             	count = 0;
                             }
                             count++;
@@ -274,41 +228,40 @@ public class CortexZoneComplex extends CortexZoneSimple {
                             //колонки по периметру не задействованы
                         } while (!(lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1));
 
-                        System.out.print("!");
-//                            System.out.println("lx = "+lx+" ly = "+ly);
+//                        System.out.print("!");
 
                     // Проверка на повтор связи
 					} while (nerv_links[lx][ly]);
-                    System.out.print(".");
+//                    System.out.print(".");
 
 					nerv_links[lx][ly] = true;
 
 					// Создаем синаптическую связь
-					Link link = new Link(getCol(lx, ly), getCol(x, y), LinkType.STOPPER);
+					Link link = new Link(getCol(lx, ly), getCol(x, y), LinkType.INHIBITORY);
 					
 					//UNDERSTAND: is it ok to have sum ^2 ~ 1
-					link.w = 1 / ((double) (stoper_links / 2));//Math.sqrt(1 / (double)stoper_links);
+					link.w = 1 / ((double) (inhibitory_links / 2));//Math.sqrt(1 / (double)stoper_links);
 				}
-				System.out.println();
+//				System.out.println();
 			}
 		}
 	}
     
 	// Картинка активных нейронов по колонкам
-	public BufferedImage[] getSImage() {
-		BufferedImage[] a = new BufferedImage[deep];
-		for (int z = 0; z < deep; z++) {
-			BufferedImage image = new BufferedImage(width(), height(), BufferedImage.TYPE_INT_ARGB);
-			for (int x = 0; x < width(); x++) {
-				for (int y = 0; y < height(); y++) {
-					int c = s[x][y][z].activity > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-					image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
-				}
-			}
-			a[z] = image;
-		}
-		return a;
-	}
+//	public BufferedImage[] getSImage() {
+//		BufferedImage[] a = new BufferedImage[deep];
+//		for (int z = 0; z < deep; z++) {
+//			BufferedImage image = new BufferedImage(width(), height(), BufferedImage.TYPE_INT_ARGB);
+//			for (int x = 0; x < width(); x++) {
+//				for (int y = 0; y < height(); y++) {
+//					int c = s[x][y][z].activity > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
+//					image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
+//				}
+//			}
+//			a[z] = image;
+//		}
+//		return a;
+//	}
 	
 	public void prepareForSerialization() {
 		CRF = null;
@@ -337,7 +290,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		ColumnRF_Image() {
 	        boxSize = 1;
 	        for (Mapping m : in_zones) {
-	            boxSize = (int) Math.max(boxSize, ((m.zone.width() + m.zone.height()) / 2) * m.disp * 15);
+	            boxSize = (int) Math.max(boxSize, m.disp * 3);
 			}
 
 	        maxX = width() * boxSize;
@@ -374,13 +327,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //					g.drawLine(0, y*boxSize, maxX, y*boxSize);
 	
 					final NeuronComplex cn = col[x][y];
-		    		double Q2 = 0;
-		    		for (LinkQ link : cn.Qs.values()) {
-		    			Q2 += link.q * link.q;
-		    		}
 					for (LinkQ link : cn.Qs.values()) {
-                    	pX = x*boxSize + (boxSize / 2) + (link.synapse.x - x);
-						pY = y*boxSize + (boxSize / 2) + (link.synapse.y - y);
+                    	pX = x*boxSize + (boxSize / 2) + (link.synapse.x - (int)(x * link.fX));
+						pY = y*boxSize + (boxSize / 2) + (link.synapse.y - (int)(y * link.fY));
                                 	
 						if (       pX > x*boxSize 
                     			&& pX < (x*boxSize+boxSize) 
@@ -388,7 +337,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
                     			&& pY < (y*boxSize+boxSize)) {
 				                    	
 	                    	int c = Utils.calcGrey(image, pX, pY);
-							c += 255 * link.q;// * Q2;
+							c += 255 * link.q;
 							if (c > 255) c = 255;
 							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
                     	}
@@ -505,20 +454,20 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	}
 
 	// Картинка суммы занятых нейронов в колонке
-	public BufferedImage[] getOccupyImage() {
-		BufferedImage[] a = new BufferedImage[deep];
-		for (int z = 0; z < deep; z++) {
-			BufferedImage image = new BufferedImage(width(), height(), BufferedImage.TYPE_INT_ARGB);
-			for (int x = 0; x < width(); x++) {
-				for (int y = 0; y < height(); y++) {
-					int c = s[x][y][z].occupy ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-					image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
-				}
-			}
-			a[z] = image;
-		}
-		return a;
-	}
+//	public BufferedImage[] getOccupyImage() {
+//		BufferedImage[] a = new BufferedImage[deep];
+//		for (int z = 0; z < deep; z++) {
+//			BufferedImage image = new BufferedImage(width(), height(), BufferedImage.TYPE_INT_ARGB);
+//			for (int x = 0; x < width(); x++) {
+//				for (int y = 0; y < height(); y++) {
+//					int c = s[x][y][z].occupy ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
+//					image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
+//				}
+//			}
+//			a[z] = image;
+//		}
+//		return a;
+//	}
     
     public void cycle (int x1, int y1, int x2, int y2, Act<CortexZoneComplex> task) {
         for (int x = x1; x < x2; x++) {
@@ -531,10 +480,12 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Граничные нейроны не задействованы.
     //Такт 1. Активация колонок (узнавание)
     public void cycleActivation() {
-        cycle(1, 1, width() - 1, height() - 1, snActivation);
+//        cycle(1, 1, width() - 1, height() - 1, snActivation);
         cycle(1, 1, width() - 1, height() - 1, cnActivation);
         for (int i = 0; i < 10; i++)
         	cycle(1, 1, width() - 1, height() - 1, inhibitory);
+
+        cycle(1, 1, width() - 1, height() - 1, finalActivity);
     }
 
     //Граничные нейроны не задействованы.

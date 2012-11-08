@@ -2,7 +2,7 @@
  *  Copyright (C) 2012 The Animo Project
  *  http://animotron.org
  *
- *  This file is part of Animotron.
+ *  This file is part of Animi.
  *
  *  Animotron is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -18,36 +18,25 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.cortex;
+package org.animotron.animi.acts;
 
-import org.animotron.animi.InitParam;
+import org.animotron.animi.cortex.*;
 
 /**
- * Projection description of the one zone to another
+ * 
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Mapping {
-	public CortexZoneSimple zone;       // Projecting zone
-	
-	@InitParam(name="ns_links")
-    public int ns_links;           // Number of synaptic connections for the zone
-    
-	/** дисперсия связей **/
-	@InitParam(name="disp")
-	public double disp;      // Describe a size of sensor field
+public class FinalActivity implements Act<CortexZoneComplex> {
 
-	Mapping () {}
-	
-    public Mapping(CortexZoneSimple zone, int ns_links, double disp) {
-        this.zone = zone;
-        this.disp = disp;
-        this.ns_links = ns_links;
-    }
+	public FinalActivity() {}
 
-    public String toString() {
-    	return "mapping "+zone.toString();
+    @Override
+    public void process(CortexZoneComplex layer, final int x, final int y) {
+    	NeuronComplex cn = layer.col[x][y];
+    	
+    	cn.backProjection = cn.activity;
     }
 }

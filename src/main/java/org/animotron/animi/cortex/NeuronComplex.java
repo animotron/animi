@@ -65,18 +65,18 @@ public class NeuronComplex extends Neuron {
 
 	public void init() {
 		//collect Q
-		for (Link cnLink : s_links) {
-			for (Link snLink : cnLink.synapse.s_links) {
-				NeuronComplex key = (NeuronComplex) snLink.synapse;
-				LinkQ q = Qs.get(key);
-				if (q == null) {
-					q = new LinkQ(snLink, cnLink);
-					Qs.put(key, q);
-				} else {
-					q.add(snLink, cnLink);
-				}
-			}
-		}
+//		for (Link cnLink : s_links) {
+//			for (Link snLink : cnLink.synapse.s_links) {
+//				NeuronComplex key = (NeuronComplex) snLink.synapse;
+//				LinkQ q = Qs.get(key);
+//				if (q == null) {
+//					q = new LinkQ(snLink, cnLink);
+//					Qs.put(key, q);
+//				} else {
+//					q.add(snLink, cnLink);
+//				}
+//			}
+//		}
 		
 		double count = Qs.values().size();
 		for (LinkQ link : Qs.values()) {

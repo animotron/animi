@@ -26,6 +26,6 @@ package org.animotron.animi.cortex;
  */
 public enum LinkType {
 	
-	NORMAL, STOPPER
+	NORMAL, INHIBITORY
 
 }
