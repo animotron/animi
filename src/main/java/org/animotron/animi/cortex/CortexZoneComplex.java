@@ -398,7 +398,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	    private BufferedImage image;
 	    
 	    RRF_Image() {
-	        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			CortexZoneSimple zone = in_zones[0].zone;
+	        image = new BufferedImage(zone.width, zone.height, BufferedImage.TYPE_INT_RGB);
 		}
 	
 		public String getImageName() {
@@ -410,26 +411,20 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, width, height);
 	
-			CortexZoneSimple zone = in_zones[0].zone;
 			for (int x = 1; x < width() - 1; x++) {
 				for (int y = 1; y < height() - 1; y++) {
 					
-					final NeuronComplex cn = zone.col[x][y];
+					final NeuronComplex cn = col[x][y];
+					
+					for (LinkQ link : cn.Qs.values()) {
 
-					int value = image.getRGB(x, y);
-			        int c_r = Utils.get_red(value);
-			        int c_g = Utils.get_green(value);
-			        int c_b = Utils.get_blue(value);
-
-                	double minus = cn.posActivity;
-                	if (minus > 0) {
-                		c_r += 255 * minus;
-                		if (c_r > 255) c_r = 255;
-                	} else {
-                		c_g += 255 * -minus;
-                		if (c_g > 255) c_g = 255;
-                	}
-					image.setRGB(x, y, Utils.create_rgb(255, c_r, c_g, c_b));
+						int c = Utils.calcGrey(image, link.synapse.x, link.synapse.y);
+						c += 255 * cn.backProjection * link.q;
+	            		
+						if (c > 255) c = 255;
+	            		
+	            		image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
+					}
 				}
 			}
 			return image;
