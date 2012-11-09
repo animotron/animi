@@ -409,7 +409,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		public BufferedImage getImage() {
 			Graphics g = image.getGraphics();
 			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, width, height);
+			g.fillRect(0, 0, image.getWidth(), image.getHeight());
 	
 			for (int x = 1; x < width() - 1; x++) {
 				for (int y = 1; y < height() - 1; y++) {
@@ -423,7 +423,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	            		
 						if (c > 255) c = 255;
 	            		
-	            		image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
+	            		image.setRGB(link.synapse.x, link.synapse.y, Utils.create_rgb(255, c, c, c));
 					}
 				}
 			}
