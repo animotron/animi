@@ -101,7 +101,7 @@ public class Application extends JFrame {
 
             @Override
             public void windowIconified(WindowEvent e) {
-                pause();
+//                pause();
             }
         });
 
