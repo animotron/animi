@@ -492,9 +492,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //        cycle(1, 1, width() - 1, height() - 1, snActivation);
         cycle(1, 1, width() - 1, height() - 1, cnActivation);
 
+        double max;
         for (int i = 0; i < 10; i++) {
-            double max = Double.MIN_VALUE;
-        	max = cycle(1, 1, width() - 1, height() - 1, inhibitory, max);
+        	max = cycle(1, 1, width() - 1, height() - 1, inhibitory, Double.MIN_VALUE);
 
         	if (max < 0.1) 
         		break;
