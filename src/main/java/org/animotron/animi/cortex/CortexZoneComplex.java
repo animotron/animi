@@ -477,13 +477,28 @@ public class CortexZoneComplex extends CortexZoneSimple {
         }
     }
 
+    public double cycle (int x1, int y1, int x2, int y2, ActWithMax<CortexZoneComplex> task, double max) {
+        for (int x = x1; x < x2; x++) {
+            for (int y = y1; y < y2; y++) {
+            	max = task.process(this, x, y, max);
+            }
+        }
+        return max;
+    }
+
     //Граничные нейроны не задействованы.
     //Такт 1. Активация колонок (узнавание)
     public void cycleActivation() {
 //        cycle(1, 1, width() - 1, height() - 1, snActivation);
         cycle(1, 1, width() - 1, height() - 1, cnActivation);
-        for (int i = 0; i < 10; i++)
-        	cycle(1, 1, width() - 1, height() - 1, inhibitory);
+
+        for (int i = 0; i < 10; i++) {
+            double max = Double.MIN_VALUE;
+        	max = cycle(1, 1, width() - 1, height() - 1, inhibitory, max);
+
+        	if (max < 0.1) 
+        		break;
+        }
 
         cycle(1, 1, width() - 1, height() - 1, finalActivity);
     }

@@ -29,24 +29,26 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Inhibitory implements Act<CortexZoneComplex> {
+public class Inhibitory implements ActWithMax<CortexZoneComplex> {
 
 	public Inhibitory() {}
 
-    @Override
-    public void process(CortexZoneComplex layer, final int x, final int y) {
+	@Override
+    public double process(CortexZoneComplex layer, final int x, final int y, double max) {
     	NeuronComplex cn = layer.col[x][y];
     	
-    	double delta = 0;
+    	if (cn.activity == 0)
+    		return max;
+
+		double delta = 0;
     	for (Link link : cn.s_inhibitoryLinks) {
     		delta += link.w * link.synapse.activity;
     	}
     	
-    	if (cn.activity > 0)
-    		System.out.println("");
-    	
     	cn.activity = cn.activity - delta;
     	if (cn.activity < 0 || Double.isNaN(cn.activity)) 
     		cn.activity = 0;
+    	
+    	return Math.max(max, delta);
     }
 }
