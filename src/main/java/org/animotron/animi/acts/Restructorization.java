@@ -32,6 +32,7 @@ import org.animotron.animi.cortex.*;
 public class Restructorization implements Act<CortexZoneComplex> {
 	
 	public double ny = 0.1 / 5;
+	public double inhibitoryNy = 0.1 / 5;
 
 	public Restructorization() {}
 
@@ -53,19 +54,10 @@ public class Restructorization implements Act<CortexZoneComplex> {
 			link.q = link.q / norm;
 		}
 		
-		//inhibitory restructorization
-//		sumQ2 = 0;
-//		for (Link link : cn.s_inhibitoryLinks) {
-//			
-//			link.w += cn.activity * link.synapse.activity * ny;
-//
-//			sumQ2 += link.w * link.w;
-//		}
-		
-		//inhibitory normlization
-//		norm = Math.sqrt(sumQ2);
-//		for (Link link : cn.s_inhibitoryLinks) {
-//			link.w = link.w / norm;
-//		}
+		//inhibitory restructorization & normlization
+		for (Link link : cn.s_inhibitoryLinks) {
+			
+			link.w += cn.activity * (link.synapse.activity * inhibitoryNy - cn.activity * link.w);
+		}
     }
 }
