@@ -55,9 +55,9 @@ public class Restructorization implements Act<CortexZoneComplex> {
 		}
 		
 		//inhibitory restructorization & normlization
-		for (Link link : cn.s_inhibitoryLinks) {
-			
-			link.w += cn.activity * (link.synapse.activity * inhibitoryNy - cn.activity * link.w);
-		}
+//		for (Link link : cn.s_inhibitoryLinks) {
+//			
+//			link.w += cn.activity * (link.synapse.activity * inhibitoryNy - cn.activity * link.w);
+//		}
     }
 }
