@@ -528,13 +528,23 @@ public class Application extends JFrame {
 	    }
 	),
 	new RectAnime(
-	    50, 0.05,
+	    20, 0.05,
 	    new int[][] {
 	            {40, 40},
 	            {40, Retina.HEIGHT - 40},
 	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
 	            {Retina.WIDTH - 40, 40},
 	            {40, 40}
+	    }
+	),
+	new RectAnime(
+	    30, 0.05,
+	    new int[][] {
+	            {40, Retina.HEIGHT - 40},
+	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
+	            {Retina.WIDTH - 40, 40},
+	            {40, 40},
+	            {40, Retina.HEIGHT - 40}
 	    }
 	)
     };
