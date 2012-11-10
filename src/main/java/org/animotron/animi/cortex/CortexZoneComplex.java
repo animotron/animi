@@ -71,12 +71,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		super();
     }
 
-	CortexZoneComplex(String name, MultiCortex mc, int deep, Mapping[] in_zones) {
+	CortexZoneComplex(String name, MultiCortex mc, int width, int height, Mapping[] in_zones) {
 		super(name, mc);
 		
-		//92, 74
-		width /= 2;
-		height /= 2;
+		this.width = width;;
+		this.height = height;
 		
 		this.in_zones = in_zones;
     }
