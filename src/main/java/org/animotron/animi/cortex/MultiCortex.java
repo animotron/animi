@@ -92,29 +92,28 @@ public class MultiCortex {
 	}
 
     public void process() {
-    	cycle1();
-    	cycle2();
+    	cycle(z_viscor);
+    	cycle(z_asscor);
     	count++;
     	
     	Application.count.setText(String.valueOf(count));
     }
 
-	//Такт 1. Активация колонок (узнавание)
-    public void cycle1() {
+    public void cycle(CortexZoneComplex zone) {
+    	if (!zone.isActive())
+    		return;
+    				
+    	//Такт 1. Активация колонок (узнавание)
         //Последовательность активации зон коры определяется их номером
-        z_viscor.cycleActivation();
-        //z_asscor.cycle1();
+    	zone.cycleActivation();
+        //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
+        //Последовательность активации зон коры определяется их номером
+    	zone.cycle2();
     }
 
-    //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
-    public void cycle2() {
-        //Последовательность активации зон коры определяется их номером
-        z_viscor.cycle2();
-//        z_asscor.cycle2();
-    }
-
-	public void prepareForSerialization() {
+    public void prepareForSerialization() {
 //		z_video.prepareForSerialization();
 		z_viscor.prepareForSerialization();
+		z_asscor.prepareForSerialization();
 	}
 }

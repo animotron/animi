@@ -159,34 +159,6 @@ public class Application extends JFrame {
         });
         menu.add(menuItem);
  
-        //control
-//        menu = new JMenu("Control");
-//        menu.setMnemonic(KeyEvent.VK_D);
-//        menuBar.add(menu);
-// 
-//		addMenu(menu, "init", KeyEvent.VK_I, new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//	            init();
-//			}
-//		});
-//
-//        miRun = addMenu(menu, "run", KeyEvent.VK_R, new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//	            run();
-//			}
-//		});
-//        miRun.setEnabled(false);
-//
-//        miPause = addMenu(menu, "pause", KeyEvent.VK_P, new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//	            pause();
-//			}
-//		});
-//        miPause.setEnabled(false);
-
         return menuBar;
     }
     
@@ -202,8 +174,10 @@ public class Application extends JFrame {
 //        return menuItem;
 //    }
     
+    JToolBar bar;
+    
     protected JToolBar createToolBar() {
-    	JToolBar bar = new JToolBar();
+    	bar = new JToolBar();
     	
     	final Kryo kryo = new Kryo();
     	
@@ -305,6 +279,30 @@ public class Application extends JFrame {
         return bar;
     }
 
+    private void addToBar() {
+        bar.addSeparator();
+
+        for (CortexZoneSimple z : cortexs.zones) {
+        	if (!(z instanceof CortexZoneComplex)) {
+        		continue;
+			}
+        	final CortexZoneComplex zone = (CortexZoneComplex)z;
+        	
+        	final JCheckBox chB = new JCheckBox("Active "+zone);
+//        	chB.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.ALT_MASK));
+//        	chB.setMnemonic(KeyEvent.VK_P);
+        	chB.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					zone.active = !zone.active;
+					chB.setSelected(zone.isActive());
+				}
+	        });
+	        bar.add(chB);
+        }
+    }
+
     protected JPanel createStatusBar() {
     	JPanel bar = new JPanel();
     	
@@ -336,19 +334,11 @@ public class Application extends JFrame {
     }
     
     protected void initialize() {
-    	
     	cortexs.init();
     	
     	createViews();
-
-//    	camView.resume();
-
-//    	miRun.setEnabled(true);
-//    	
-//    	miPause.setEnabled(false);
-//    	miResume.setEnabled(false);
-//    	
-//    	miStop.setEnabled(false);
+    	
+    	addToBar();
     }
     
     private void createViews() {

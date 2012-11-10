@@ -504,4 +504,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //        cycle(1, 1, width() - 1, height() - 1, subtraction);
 //        cycle(1, 1, width() - 1, height() - 1, remember);
     }
+
+    public boolean active = false;
+	public boolean isActive() {
+		return active;
+	}
 }

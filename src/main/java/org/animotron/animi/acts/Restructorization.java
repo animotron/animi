@@ -41,21 +41,22 @@ public class Restructorization implements Act<CortexZoneComplex> {
     	
 		NeuronComplex cn = layer.col[x][y];
 		
-		double sumA = 0;
-		for (int dx = x - 1; dx <= x + 1; dx++) {
-			for (int dy = y - 1; dy <= y + 1; dy++) {
-				if (x == dx && y == dy) continue;
-				
-				sumA += layer.col[dx][dy].activity;
-			}
-		}
-		sumA /= 8;
+//		double sumA = 0;
+//		for (int dx = x - 1; dx <= x + 1; dx++) {
+//			for (int dy = y - 1; dy <= y + 1; dy++) {
+//				if (x == dx && y == dy) continue;
+//				
+//				sumA += layer.col[dx][dy].activity;
+//			}
+//		}
+//		sumA /= 8;
 		
 
 		double sumQ2 = 0;
 		for (LinkQ link : cn.Qs.values()) {
 			
-			link.q += (sumA + cn.activity) * link.synapse.activity * ny;
+//			link.q += (sumA + cn.activity) * link.synapse.activity * ny;
+			link.q += cn.activity * link.synapse.activity * ny;
 
 			sumQ2 += link.q * link.q;
 		}
