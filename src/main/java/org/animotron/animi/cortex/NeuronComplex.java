@@ -42,11 +42,15 @@ public class NeuronComplex extends Neuron {
 	public double posActivity = 0;
 
 	public double q = 0;
+	
+	public CortexZoneSimple zone = null;
 
 	public Map<NeuronComplex, LinkQ> Qs = new FastMap<NeuronComplex, LinkQ>();
 
-	public NeuronComplex(int x, int y) {
+	public NeuronComplex(CortexZoneSimple zone, int x, int y) {
 		super(x,y);
+		
+		this.zone = zone;
 	}
 
 	public NeuronComplex(NeuronComplex cn) {

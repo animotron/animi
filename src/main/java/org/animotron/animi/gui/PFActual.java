@@ -27,6 +27,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.event.InternalFrameEvent;
@@ -83,7 +84,13 @@ public class PFActual implements Imageable, InternalFrameListener {
 		
 		calcBoxSize();
 		
-		BufferedImage image = new BufferedImage(boxSize*zoom*3, boxSize*zoom*3, BufferedImage.TYPE_INT_RGB);
+		int num = 3;
+		Iterator<LinkQ> iter = cn.Qs.values().iterator();
+		if (!iter.next().synapse.Qs.isEmpty()) {
+			num = 5;
+		}
+		
+		BufferedImage image = new BufferedImage((boxSize*zoom+5)*num, boxSize*zoom*3, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         g.setColor(Color.WHITE);
 
@@ -167,9 +174,26 @@ public class PFActual implements Imageable, InternalFrameListener {
 		g.drawImage(
 				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
+		
+		if (num == 5) {
+			//next block
+			y = rY; x = 3*(boxSize*zoom + 2);
+
+			y += textY;
+	        g.drawString("up 2 levels restored RF", x, y);
+
+			img = draw2upRF();
+			g.drawRect(x, y, 2+(img.getWidth()), 2+(img.getHeight()));
+			g.drawImage(
+					img,
+					x+1, y+1, null);
+			
+			y += 2+img.getHeight() + textY;
+		} else {
+			y += 2+img.getHeight()*zoom;
+		}
 
 		x = 0;
-		y += 2+img.getHeight()*zoom;
 
 		for (Field f : cnFds) {
 			y += textY;
@@ -353,6 +377,37 @@ public class PFActual implements Imageable, InternalFrameListener {
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
         	}
+        }
+        return image;
+	}
+
+	private BufferedImage draw2upRF() {
+		int _boxSize = boxSize*zoom*2;
+        BufferedImage image = new BufferedImage(_boxSize, _boxSize, BufferedImage.TYPE_INT_ARGB);
+
+        int pX, pY, pX2, pY2;
+		for (LinkQ link : cn.Qs.values()) {
+        	pX = (int)(cn.x * link.fX);
+			pY = (int)(cn.y * link.fY);
+			
+			for (LinkQ link2 : link.synapse.Qs.values()) {
+	        	pX2 = (_boxSize / 2) + (link2.synapse.x - (int)(pX * link2.fX));
+				pY2 = (_boxSize / 2) + (link2.synapse.y - (int)(pY * link2.fY));
+                    	
+				if (       pX2 > 0 
+	        			&& pX2 < _boxSize 
+	        			&& pY2 > 0 
+	        			&& pY2 < _boxSize) {
+		                    	
+	            	int c = Utils.calcGrey(image, pX2, pY2);
+					c += 255 * link.q * link2.q; // * Q2
+					if (c > 255) c = 255;
+					image.setRGB(pX2, pY2, Utils.create_rgb(255, c, c, c));
+	        	} else {
+	        		System.out.println("");
+	        	}
+				
+			}
         }
         return image;
 	}
