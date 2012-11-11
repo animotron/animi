@@ -45,8 +45,6 @@ public class NeuronComplex extends Neuron {
 
 	public Map<NeuronComplex, LinkQ> Qs = new FastMap<NeuronComplex, LinkQ>();
 
-	public double sumQ = 0;
-	
 	public NeuronComplex(int x, int y) {
 		super(x,y);
 	}

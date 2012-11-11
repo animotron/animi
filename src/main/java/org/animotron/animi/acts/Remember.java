@@ -58,13 +58,10 @@ public class Remember implements Act<CortexZoneComplex> {
     		if ((activity / cn.Qs.values().size()) < mRecLevel)
     			return;
     		
-    		double sumQ = 0;
     		for (LinkQ link : cn.Qs.values()) {
     			link.q = link.synapse.activity / sumA2;
-    			sumQ += link.q;
     		}
     		cn.occupy = true;
-    		cn.sumQ = sumQ;
     	}
 //    	Restructorization.normalization(cn, sn);
     }
