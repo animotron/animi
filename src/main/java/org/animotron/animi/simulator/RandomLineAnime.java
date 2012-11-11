@@ -22,6 +22,8 @@ package org.animotron.animi.simulator;
 
 import java.awt.*;
 
+import org.animotron.animi.RuntimeParam;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
@@ -30,6 +32,9 @@ import java.awt.*;
 public class RandomLineAnime implements Figure {
 
     private int[][] p = new int[4][4];
+
+    @RuntimeParam(name = "active")
+    public boolean active = true;
 
     public RandomLineAnime(int x1, int y1, int x2, int y2) {
 
@@ -81,5 +86,10 @@ public class RandomLineAnime implements Figure {
             }
         }
     }
+
+	@Override
+	public boolean isActive() {
+		return active;
+	}
 
 }

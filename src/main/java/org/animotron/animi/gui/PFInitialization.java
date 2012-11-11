@@ -47,7 +47,7 @@ public class PFInitialization extends JInternalFrame {
 	JPanel panel;
 	boolean readOnly;
 
-	public PFInitialization(final Application app, MultiCortex mc) {
+	public PFInitialization(final Application app, final MultiCortex mc) {
 	    super("Initialization params",
 	            false, //resizable
 	            false, //closable
@@ -69,14 +69,16 @@ public class PFInitialization extends JInternalFrame {
         
         scan(gbc, null, mc);
 		
-		JButton btInit = new JButton("Init");
-		btInit.setEnabled(!readOnly);
+        JButton btInit = new JButton(!readOnly ? "Init" : "Apply");
+//		btInit.setEnabled(!readOnly);
 		btInit.setMnemonic(KeyEvent.VK_I);
         btInit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				app.initialize();
-				app.closeFrame(PFInitialization.this);
+				if (!mc.active) {
+					app.initialize();
+					app.closeFrame(PFInitialization.this);
+				}
 			}
 		});
 

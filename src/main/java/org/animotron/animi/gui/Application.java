@@ -226,6 +226,25 @@ public class Application extends JFrame {
         
         bar.addSeparator();
 
+        button = new JButton("Stimulator");
+//        button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.ALT_MASK));
+//        button.setMnemonic(KeyEvent.VK_I);
+        button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				StimulatorParams form = new StimulatorParams(Application.this, stimulator);
+		    	form.setVisible(true);
+		        desktop.add(form);
+		        try {
+		        	form.setSelected(true);
+		        } catch (java.beans.PropertyVetoException e1) {}
+			}
+        });
+        bar.add(button);
+
+        bar.addSeparator();
+
         button = new JButton("Init");
         button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.ALT_MASK));
         button.setMnemonic(KeyEvent.VK_I);
@@ -396,7 +415,7 @@ public class Application extends JFrame {
 
     Figure[] H_DOUBLE_LINE = new Figure[] {
 		new HLineAnime(
-			Retina.WIDTH - 4, 0,
+				Retina.WIDTH - 4, 0,
 			new int[][] {
 				{Retina.WIDTH / 2, 2},
 				{Retina.WIDTH / 2, Retina.HEIGHT - 3},
@@ -405,7 +424,7 @@ public class Application extends JFrame {
 		)
 		,
 		new HLineAnime(
-			Retina.WIDTH - 4, 0,
+				Retina.WIDTH - 4, 0,
 			new int[][] {
 				{Retina.WIDTH / 2, 3},
 				{Retina.WIDTH / 2, Retina.HEIGHT - 2},

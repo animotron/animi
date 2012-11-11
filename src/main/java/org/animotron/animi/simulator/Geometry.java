@@ -23,6 +23,8 @@ package org.animotron.animi.simulator;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import org.animotron.animi.RuntimeParam;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
@@ -30,7 +32,10 @@ import java.awt.Graphics;
  */
 public class Geometry implements Figure {
 	
-	public void drawImage(Graphics g) {
+    @RuntimeParam(name = "active")
+    public boolean active = true;
+
+    public void drawImage(Graphics g) {
 		g.setColor(Color.WHITE);
 		g.drawRect(100, 100, 100, 100);
 		g.fillRect(250, 100, 100, 100);
@@ -42,5 +47,10 @@ public class Geometry implements Figure {
 	}
 	
 	public void step() {
+	}
+
+	@Override
+	public boolean isActive() {
+		return active;
 	}
 }

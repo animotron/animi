@@ -28,6 +28,8 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import org.animotron.animi.Imageable;
+import org.animotron.animi.Params;
+import org.animotron.animi.RuntimeParam;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -36,14 +38,18 @@ import org.animotron.animi.Imageable;
  */
 public class Stimulator implements Runnable, Imageable {
 	
-	private int frequency = 60; // Hz
+	@RuntimeParam(name = "frequency")
+	public int frequency = 60; // Hz
 
+    @Params
+    public Figure[] figures;
+    
     private long fps;
     private long frame = 0;
     private long t0 = System.currentTimeMillis();
 
     private boolean run = true;
-    private Figure[] figures;
+    
     private int width, height;
 
     public Stimulator(int width, int height, Figure[] figures) {
@@ -66,11 +72,16 @@ public class Stimulator implements Runnable, Imageable {
 						this.wait();
 					}
 				}
+                long t = System.currentTimeMillis();
 				
 				prosess();
                 
-                if (frequency != 0)
-                	Thread.sleep(1000 / frequency);
+                if (frequency != 0) {
+                    t = (1000 / frequency) - (System.currentTimeMillis() - t);
+
+                    if (t > 0)
+                    	Thread.sleep(t);
+                }
 
 			} catch (Throwable e) {
 				e.printStackTrace();
@@ -109,18 +120,14 @@ public class Stimulator implements Runnable, Imageable {
 	}
 
 	public void pause() {
-		if (paused) return;
-
 		paused = true;
 	}
 
 	public void resume() {
-		if (!paused) return;
-
+		paused = false;
 		synchronized (this) {
 			notifyAll();
 		}
-		paused = false;
 	}
 	
 
@@ -132,7 +139,9 @@ public class Stimulator implements Runnable, Imageable {
 	public BufferedImage getImage() {
 
         for (Figure i : figures) {
-            i.step();
+        	if (i.isActive()) {
+        		i.step();
+        	}
         }
         
         //workaround
@@ -140,7 +149,9 @@ public class Stimulator implements Runnable, Imageable {
         Graphics g = img.getGraphics();
 
         for (Figure i : figures) {
-            i.drawImage(g);
+        	if (i.isActive()) {
+        		i.drawImage(g);
+        	}
         }
 
         return img;
@@ -153,7 +164,9 @@ public class Stimulator implements Runnable, Imageable {
         Graphics g = img.getGraphics();
 
         for (Figure i : figures) {
-            i.drawImage(g);
+        	if (i.isActive()) {
+        		i.drawImage(g);
+        	}
         }
         drawUImage(g);
         

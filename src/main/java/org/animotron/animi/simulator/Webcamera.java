@@ -82,4 +82,8 @@ public class Webcamera implements Figure, WebcamListener {
         image = webcam.getImage();
 	}
 
+	@Override
+	public boolean isActive() {
+		return webcam.isOpen();
+	}
 }

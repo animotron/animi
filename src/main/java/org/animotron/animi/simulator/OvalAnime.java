@@ -22,6 +22,8 @@ package org.animotron.animi.simulator;
 
 import java.awt.*;
 
+import org.animotron.animi.RuntimeParam;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
@@ -35,6 +37,9 @@ public class OvalAnime implements Figure {
     private double l = 0;
     private int a;
     private int X, Y;
+
+    @RuntimeParam(name = "active")
+    public boolean active = true;
 
     public OvalAnime(int a, int[][] anime) {
         this.a = a;
@@ -63,4 +68,9 @@ public class OvalAnime implements Figure {
             l--;
         }
     }
+
+	@Override
+	public boolean isActive() {
+		return active;
+	}
 }

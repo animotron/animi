@@ -23,6 +23,8 @@ package org.animotron.animi.simulator;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
+import org.animotron.animi.RuntimeParam;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
@@ -37,6 +39,9 @@ public abstract class AbstractAnime implements Figure {
     private double l = 0;
     private AffineTransform at;
     Point2D[] p;
+    
+    @RuntimeParam(name = "active")
+    public boolean active = true;
 
     public AbstractAnime(double dt, int[][] anime) {
         this.dt = dt;
@@ -62,4 +67,9 @@ public abstract class AbstractAnime implements Figure {
             p[i] = q;
         }
     }
+	
+	@Override
+	public boolean isActive() {
+		return active;
+	}
 }

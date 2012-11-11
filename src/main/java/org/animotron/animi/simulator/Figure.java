@@ -31,5 +31,7 @@ public interface Figure {
 	public void drawImage(Graphics g);
 
 	public void step();
+	
+	public boolean isActive();
 
 }
