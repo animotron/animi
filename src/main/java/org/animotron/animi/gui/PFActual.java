@@ -391,8 +391,10 @@ public class PFActual implements Imageable, InternalFrameListener {
 			pY = (int)(cn.y * link.fY);
 			
 			for (LinkQ link2 : link.synapse.Qs.values()) {
-	        	pX2 = (_boxSize / 2) + (link2.synapse.x - (int)(pX * link2.fX));
-				pY2 = (_boxSize / 2) + (link2.synapse.y - (int)(pY * link2.fY));
+//	        	pX2 = (_boxSize / 2) + (link2.synapse.x - (int)(pX * link2.fX));
+//				pY2 = (_boxSize / 2) + (link2.synapse.y - (int)(pY * link2.fY));
+	        	pX2 = link2.synapse.x;
+				pY2 = link2.synapse.y;
                     	
 				if (       pX2 > 0 
 	        			&& pX2 < _boxSize 
@@ -400,7 +402,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 	        			&& pY2 < _boxSize) {
 		                    	
 	            	int c = Utils.calcGrey(image, pX2, pY2);
-					c += 255 * link.q * link2.q; // * Q2
+					c += 255 * link.q * link2.q * 10; // * Q2
 					if (c > 255) c = 255;
 					image.setRGB(pX2, pY2, Utils.create_rgb(255, c, c, c));
 	        	} else {
