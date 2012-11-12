@@ -43,6 +43,8 @@ public class MultiCortex {
     public CortexZoneComplex z_viscor;
     @Params
     public CortexZoneComplex z_asscor;
+    @Params
+    public CortexZoneComplex z_3rd;
 //  @Params
 //  public CortexZoneSimple z_good;
 //  @Params
@@ -76,7 +78,18 @@ public class MultiCortex {
 //                        new Mapping(z_bad, 10, 0.01)
                 }
         );
-        zones = new CortexZoneSimple[]{z_video, z_viscor, z_asscor};
+
+        System.out.println("z_3rd");
+        z_3rd = new CortexZoneComplex("3rd cortex", this, 16, 16,
+                new Mapping[]{
+                        new Mapping(z_asscor, 500, 5)
+//                        ,
+//                        new Mapping(z_good, 10, 0.01),
+//                        new Mapping(z_bad, 10, 0.01)
+                }
+        );
+
+        zones = new CortexZoneSimple[]{z_video, z_viscor, z_asscor, z_3rd};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_video);
@@ -86,14 +99,17 @@ public class MultiCortex {
 
 
 	public void init() {
-		z_video.init();
-		z_viscor.init();
-		z_asscor.init();
+		for (CortexZoneSimple zone : zones) {
+			zone.init();
+		}
 	}
 
     public void process() {
-    	cycle(z_viscor);
-    	cycle(z_asscor);
+		for (CortexZoneSimple zone : zones) {
+			if (zone instanceof CortexZoneComplex) {
+				cycle((CortexZoneComplex) zone);
+			}
+		}
     	count++;
     	
     	Application.count.setText(String.valueOf(count));

@@ -180,7 +180,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 			y = rY; x = 3*(boxSize*zoom + 2);
 
 			y += textY;
-	        g.drawString("up 2 levels restored RF", x, y);
+	        g.drawString("restore uppest levels RF", x, y);
 
 			img = draw2upRF();
 			g.drawRect(x, y, 2+(img.getWidth()), 2+(img.getHeight()));
@@ -380,36 +380,36 @@ public class PFActual implements Imageable, InternalFrameListener {
         }
         return image;
 	}
+	
+	private void drawStepUp(NeuronComplex cn, double q, BufferedImage image) {
+		for (LinkQ link : cn.Qs.values()) {
+			
+			if (link.synapse.Qs.size() == 0) {
+	        	int pX = link.synapse.x;
+	        	int pY = link.synapse.y;
+                    	
+				if (       pX > 0 
+	        			&& pX < image.getWidth() 
+	        			&& pY > 0 
+	        			&& pY < image.getHeight()) {
+		                    	
+	            	int c = Utils.calcGrey(image, pX, pY);
+					c += 255 * link.q * q * 10;
+					if (c > 255) c = 255;
+					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+	        	}
+			} else {
+				drawStepUp(link.synapse, q * link.q, image);
+			}
+		}
+	}
 
 	private BufferedImage draw2upRF() {
 		int _boxSize = boxSize*zoom*2;
         BufferedImage image = new BufferedImage(_boxSize, _boxSize, BufferedImage.TYPE_INT_ARGB);
 
-        int pX, pY, pX2, pY2;
 		for (LinkQ link : cn.Qs.values()) {
-        	pX = (int)(cn.x * link.fX);
-			pY = (int)(cn.y * link.fY);
-			
-			for (LinkQ link2 : link.synapse.Qs.values()) {
-//	        	pX2 = (_boxSize / 2) + (link2.synapse.x - (int)(pX * link2.fX));
-//				pY2 = (_boxSize / 2) + (link2.synapse.y - (int)(pY * link2.fY));
-	        	pX2 = link2.synapse.x;
-				pY2 = link2.synapse.y;
-                    	
-				if (       pX2 > 0 
-	        			&& pX2 < _boxSize 
-	        			&& pY2 > 0 
-	        			&& pY2 < _boxSize) {
-		                    	
-	            	int c = Utils.calcGrey(image, pX2, pY2);
-					c += 255 * link.q * link2.q * 10; // * Q2
-					if (c > 255) c = 255;
-					image.setRGB(pX2, pY2, Utils.create_rgb(255, c, c, c));
-	        	} else {
-	        		System.out.println("");
-	        	}
-				
-			}
+			drawStepUp(link.synapse, link.q, image);
         }
         return image;
 	}
