@@ -121,18 +121,28 @@ public class PFInitialization extends JInternalFrame {
 		
 		Class<?> clazz = obj.getClass();
 		
+		int gridx = gbc.gridx == -1 ? 1 : gbc.gridx;
+		int gridy = gbc.gridy;
+
 		if (clazz.isArray()) {
 			Object[] objs = ((Object[])obj);
 			for (int i = 0; i < objs.length; i++) {
 				Object o = objs[i];
+
+				gbc.gridy = gridy;
+
 				addSep(gbc, o.toString());
 				scan(gbc, null, o);
+				
+				gbc.gridx = gridx + (i+1)*2;
 			}
 			return;
 		}
-
+		
 		Field[] fields = clazz.getFields();
 		for (int i = 0; i < fields.length; i++) {
+			gbc.gridx = gridx;
+			
 			Field field = fields[i];
 //			System.out.println(field.getName());
 			if (field.isAnnotationPresent(InitParam.class) || field.isAnnotationPresent(RuntimeParam.class)) {
@@ -140,7 +150,7 @@ public class PFInitialization extends JInternalFrame {
 			
 			} else if (field.isAnnotationPresent(Params.class)) {
 //				System.out.println("# "+field.getName());
-				addSep(gbc, field.getName());
+		        addSep(gbc, field.getName());
 				scan(gbc, field, obj);
 			}
 		}
@@ -149,10 +159,12 @@ public class PFInitialization extends JInternalFrame {
 	private void addSep(GridBagConstraints gbc, String name) {
 		JLabel label = new JLabel(name);
 
+//        gbc.gridx++;
         gbc.gridy++;
-        gbc.gridx = 1;
         gbc.gridwidth = 2;
         panel.add(label, gbc);
+
+//        gbc.gridx--;
         gbc.gridwidth = 1;
 	}
 
@@ -193,7 +205,6 @@ public class PFInitialization extends JInternalFrame {
 		JLabel label = new JLabel(getName(f));
 
         gbc.gridy++;
-        gbc.gridx = 1;
         panel.add(label, gbc);
 
         gbc.gridx++;

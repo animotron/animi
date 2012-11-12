@@ -37,28 +37,25 @@ public class MultiCortex {
     
     public Retina retina;
 
-    @Params
     public CortexZoneSimple z_video;
-    @Params
     public CortexZoneComplex z_viscor;
-    @Params
     public CortexZoneComplex z_asscor;
-    @Params
     public CortexZoneComplex z_3rd;
 //  @Params
 //  public CortexZoneSimple z_good;
 //  @Params
 //  public CortexZoneSimple z_bad;
 
+    @Params
     public CortexZoneSimple [] zones;
 
     public MultiCortex() {
 
         System.out.println("z_video");
-        z_video = new CortexZoneSimple("Input visual layer", this);
+        z_video = new CortexZoneSimple("Input visual", this);
 
         System.out.println("z_viscor");
-        z_viscor = new CortexZoneComplex("Prime visual cortex", this, 92, 74,
+        z_viscor = new CortexZoneComplex("Prime visual", this, 92, 74,
             new Mapping[]{
                 new Mapping(z_video, 300, 5) //20x20 (300)
             }
@@ -70,7 +67,7 @@ public class MultiCortex {
 //        z_bad = new SCortexZone("Zone bad", 20, 20);
 //
         System.out.println("z_asscor");
-        z_asscor = new CortexZoneComplex("Associative cortex", this, 32, 32,
+        z_asscor = new CortexZoneComplex("Associative", this, 32, 32,
                 new Mapping[]{
                         new Mapping(z_viscor, 300, 5)
 //                        ,
@@ -80,14 +77,15 @@ public class MultiCortex {
         );
 
         System.out.println("z_3rd");
-        z_3rd = new CortexZoneComplex("3rd cortex", this, 16, 16,
+        z_3rd = new CortexZoneComplex("3rd cortex", this, 32, 32,
                 new Mapping[]{
-                        new Mapping(z_asscor, 500, 5)
+                        new Mapping(z_asscor, 300, 5)
 //                        ,
 //                        new Mapping(z_good, 10, 0.01),
 //                        new Mapping(z_bad, 10, 0.01)
                 }
         );
+//        z_3rd.inhibitory_links = 100;
 
         zones = new CortexZoneSimple[]{z_video, z_viscor, z_asscor, z_3rd};
         
