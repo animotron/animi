@@ -20,6 +20,7 @@
  */
 package org.animotron.animi.acts;
 
+import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 
 /**
@@ -31,7 +32,12 @@ import org.animotron.animi.cortex.*;
  */
 public class Restructorization implements Act<CortexZoneComplex> {
 	
+	@RuntimeParam(name = "count")
+	public int count = 10000;
+
+	@RuntimeParam(name = "ny")
 	public double ny = 0.1 / 5;
+	@RuntimeParam(name = "inhibitoryNy")
 	public double inhibitoryNy = 0.1 / 5;
 
 	public Restructorization() {}
@@ -51,12 +57,12 @@ public class Restructorization implements Act<CortexZoneComplex> {
 //		}
 //		sumA /= 8;
 		
-
+		double factor = ny / Math.pow(2, layer.count / count);
 		double sumQ2 = 0;
 		for (LinkQ link : cn.Qs.values()) {
 			
 //			link.q += (sumA + cn.activity) * link.synapse.activity * ny;
-			link.q += cn.activity * link.synapse.activity * ny;
+			link.q += cn.activity * link.synapse.activity * factor;
 
 			sumQ2 += link.q * link.q;
 		}

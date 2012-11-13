@@ -52,6 +52,9 @@ public class CortexZoneSimple implements Layer {
 	public int width = 192;
 	@InitParam(name="height")
 	public int height = 144;
+	
+	public int count = 0;
+
 
     CortexZoneSimple() {
     	name = null;

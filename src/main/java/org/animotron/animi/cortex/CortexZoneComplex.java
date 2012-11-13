@@ -44,17 +44,18 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	@Params
 	public Mapping[] in_zones;
     
-	public SNActivation snActivation = new SNActivation();
+//	public SNActivation snActivation = new SNActivation();
 	public CNActivation cnActivation = new CNActivation();
 	public Inhibitory inhibitory = new Inhibitory();
 	public FinalActivity finalActivity = new FinalActivity();
 
-	public Subtraction subtraction = new Subtraction();
-
-	public Restructorization restructorization = new Restructorization();
+//	public Subtraction subtraction = new Subtraction();
 
 	@Params
-	public Remember remember = new Remember();
+	public Restructorization restructorization = new Restructorization();
+
+//	@Params
+//	public Remember remember = new Remember();
 	
 	@InitParam(name="disper")
 	public double disper = 1.0;
@@ -471,7 +472,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
         return max;
     }
     
-    int count = 0;
     public void process() {
     	if (!isActive())
     		return;
