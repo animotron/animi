@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Complex cortex zone
@@ -69,10 +68,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	protected int nas_links = 9;
 	/** Number of synaptic connections of the complex neuron **/
 	public int nsc_links;
-	
-//	public boolean saccade = false;
-//	//vector: 0,1 - direction & length
-//	public int[] saccadeVector = new int[] {0,0};
 	
     CortexZoneComplex() {
 		super();
@@ -370,7 +365,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					
 					watching.add(pos);
 					
-					System.out.println("x = "+pos.x+" y = "+pos.y);
+//					System.out.println("x = "+pos.x+" y = "+pos.y);
 					
 					return new Object[] { CortexZoneComplex.this, pos };
 				}
@@ -459,22 +454,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 	}
 
-	// Картинка суммы занятых нейронов в колонке
-//	public BufferedImage[] getOccupyImage() {
-//		BufferedImage[] a = new BufferedImage[deep];
-//		for (int z = 0; z < deep; z++) {
-//			BufferedImage image = new BufferedImage(width(), height(), BufferedImage.TYPE_INT_ARGB);
-//			for (int x = 0; x < width(); x++) {
-//				for (int y = 0; y < height(); y++) {
-//					int c = s[x][y][z].occupy ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-//					image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
-//				}
-//			}
-//			a[z] = image;
-//		}
-//		return a;
-//	}
-    
     public void cycle (int x1, int y1, int x2, int y2, Act<CortexZoneComplex> task) {
         for (int x = x1; x < x2; x++) {
             for (int y = y1; y < y2; y++) {
@@ -497,20 +476,12 @@ public class CortexZoneComplex extends CortexZoneSimple {
     	if (!isActive())
     		return;
     	
-//    	if (saccade) {
-//    		saccadeVector[0] = rnd.nextInt(40) - 20;
-//    		saccadeVector[1] = rnd.nextInt(40) - 20;
-//    		int steps = rnd.nextInt(20);
-//    		for (step = 0; step < steps; step++) {
-//    	    	cycleActivation();
-//    	    	cycle2();
-//    		}
-//    	} else {
-	    	cycleActivation();
-	    	cycle2();
-//    	}
+    	cycleActivation();
+    	if (isLearning()) {
+    		cycleLearning();
     	
-    	count++;
+    		count++;
+    	}
     }
 
     //Граничные нейроны не задействованы.
@@ -532,8 +503,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
     //Граничные нейроны не задействованы.
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
-    private void cycle2() {
-        cycle(1, 1, width() - 1, height() - 1, restructorization);
+    private void cycleLearning() {
+		cycle(1, 1, width() - 1, height() - 1, restructorization);
 //        cycle(1, 1, width() - 1, height() - 1, subtraction);
 //        cycle(1, 1, width() - 1, height() - 1, remember);
     }
@@ -542,9 +513,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		out.write("<zone type='complex'");
 		write(out, "name", name);
 		write(out, "id", id);
-		write(out, "active", active);
 		write(out, "width", width);
 		write(out, "height", height);
+		write(out, "active", active);
+		write(out, "learning", learning);
 		write(out, "count", count);
 
 		write(out, "inhibitory-links-", disper);

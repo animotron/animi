@@ -227,6 +227,7 @@ public class MultiCortex {
 				zone.width = Integer.valueOf(attrs.getValue("width"));
 				zone.height = Integer.valueOf(attrs.getValue("height"));
 				zone.active = Boolean.valueOf(attrs.getValue("active"));
+				zone.learning = Boolean.valueOf(attrs.getValue("learning"));
 				
 				zone.initCols();
 

@@ -174,7 +174,11 @@ public class Application extends JFrame {
     JToolBar bar;
     
     protected JToolBar createToolBar() {
-    	bar = new JToolBar();
+    	if (bar == null) {
+    		bar = new JToolBar();
+    	} else {
+    		bar.removeAll();
+    	}
     	
         JButton button = new JButton("Load");
         button.addActionListener(new ActionListener() {
@@ -329,7 +333,10 @@ public class Application extends JFrame {
 			}
         	final CortexZoneComplex zone = (CortexZoneComplex)z;
         	
-        	final JCheckBox chB = new JCheckBox("Active "+zone);
+        	final JLabel label = new JLabel(zone.toString());
+	        bar.add(label);
+        	
+        	final JCheckBox chB = new JCheckBox("Active");
         	chB.addActionListener(new ActionListener() {
 				
 				@Override
@@ -339,6 +346,18 @@ public class Application extends JFrame {
 				}
 	        });
 	        bar.add(chB);
+
+	        final JCheckBox chL = new JCheckBox("Learning");
+	        chL.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					zone.learning = !zone.learning;
+					chL.setSelected(zone.isLearning());
+				}
+	        });
+	        bar.add(chL);
+	        bar.addSeparator();
         }
     }
 
@@ -376,13 +395,15 @@ public class Application extends JFrame {
     	cortexs.init();
     	
     	createViews();
-    	
-    	addToBar();
     }
     
     private void createViews() {
     	clearFrames();
-        createFrame(stimulator);
+    	
+    	createToolBar();
+    	addToBar();
+
+    	createFrame(stimulator);
 
         for (CortexZoneSimple zone : cortexs.zones) {
         	if (zone instanceof CortexZoneComplex) {

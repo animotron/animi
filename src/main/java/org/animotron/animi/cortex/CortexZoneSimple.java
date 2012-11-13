@@ -176,6 +176,11 @@ public class CortexZoneSimple implements Layer {
 		return col[x][y];
 	}
 
+	public boolean learning = false;
+	public boolean isLearning() {
+		return learning;
+	}
+	
     public boolean active = false;
 	public boolean isActive() {
 		return active;
@@ -193,9 +198,10 @@ public class CortexZoneSimple implements Layer {
 		out.write("<zone type='simple'");
 		write(out, "name", name);
 		write(out, "id", id);
-		write(out, "active", active);
 		write(out, "width", width);
 		write(out, "height", height);
+		write(out, "active", active);
+		write(out, "learning", learning);
 		out.write("/>");
 	}
 }
