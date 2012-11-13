@@ -44,6 +44,12 @@ public class Link {
 		axon.addSynapse(this, type);
 	}
 	
+	protected Link(Neuron synapse, Neuron axon, double w, LinkType type) {
+		this(synapse, axon, type);
+		
+		this.w = w;
+	}
+
 	public void addStability(double x) {
 //		System.out.println(x);
 		stability += Math.abs(x);

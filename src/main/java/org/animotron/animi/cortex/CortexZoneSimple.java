@@ -62,13 +62,17 @@ public class CortexZoneSimple implements Layer {
         this.mc = mc;
     }
     
-    public void init() {
+    public void initCols() {
         col = new NeuronComplex[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 col[x][y] = new NeuronComplex(this, x, y);
             }
         }
+    }
+
+    public void init() {
+    	initCols();
     }
 
     public BufferedImage getImage() {
@@ -147,7 +151,8 @@ public class CortexZoneSimple implements Layer {
 	}
 
 	public void save(Writer out) throws IOException {
-		out.write("<zone");
+		out.write("<zone type='simple'");
+		write(out, "name", name);
 		write(out, "id", id);
 		write(out, "active", active);
 		write(out, "width", width);

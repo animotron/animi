@@ -525,13 +525,27 @@ public class CortexZoneComplex extends CortexZoneSimple {
     }
 
 	public void save(Writer out) throws IOException {
-		out.write("<zone");
+		out.write("<zone type='complex'");
+		write(out, "name", name);
 		write(out, "id", id);
 		write(out, "active", active);
 		write(out, "width", width);
 		write(out, "height", height);
 		write(out, "count", count);
+
+		write(out, "inhibitory-links-", disper);
+		write(out, "number-of-inhibitory-links", inhibitory_links);
+
 		out.write(">");
+		
+		for (Mapping mapping : in_zones) {
+			out.write("<mapping");
+			write(out, "synaptic-links-dispersion", mapping.disp);
+			write(out, "number-of-synaptic-links", mapping.ns_links);
+			write(out, "with-zone", mapping.zone.id);
+			out.write("/>");
+			
+		}
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				NeuronComplex cn = col[x][y];
