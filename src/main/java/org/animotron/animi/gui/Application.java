@@ -28,7 +28,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 
 import javax.swing.*;
@@ -314,15 +313,23 @@ public class Application extends JFrame {
     private void addToBar() {
         bar.addSeparator();
 
-        for (CortexZoneSimple z : cortexs.zones) {
+        for (final CortexZoneSimple z : cortexs.zones) {
         	if (!(z instanceof CortexZoneComplex)) {
+	        	final JCheckBox chB_ = new JCheckBox("Saccade");
+	        	chB_.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						z.saccade = !z.saccade;
+						chB_.setSelected(z.saccade);
+					}
+		        });
+		        bar.add(chB_);
         		continue;
 			}
         	final CortexZoneComplex zone = (CortexZoneComplex)z;
         	
         	final JCheckBox chB = new JCheckBox("Active "+zone);
-//        	chB.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.ALT_MASK));
-//        	chB.setMnemonic(KeyEvent.VK_P);
         	chB.addActionListener(new ActionListener() {
 				
 				@Override

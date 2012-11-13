@@ -143,7 +143,7 @@ public class Retina {
     	for (int x = 0; x < width; x++)
         	for (int y = 0; y < height; y++)
         		preprocessed[x][y] = Utils.calcGrey(physicalImage, x, y) / 255;
-        
+    	
 //    	double SP, SC, SA;
 //        double K_cont;
         for (int ix = 0; ix < NL.width(); ix++) {

@@ -28,6 +28,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -110,8 +111,46 @@ public class CortexZoneSimple implements Layer {
         return height;
     }
 
+    Random rnd = new Random();
+
+    public boolean saccade = false;
+    
+    private int next() {
+		return rnd.nextInt(40) - 20;
+//		int r = 20 + rnd.nextInt(20);
+//		
+//		if (rnd.nextBoolean())
+//			return -r;
+//		
+//		return r;
+    }
+
 	@Override
 	public void process() {
+    	if (saccade) {
+    		int vX = next();
+    		int vY = next();
+    		int steps = 10;//rnd.nextInt(20);
+    		
+    		int dx, dy = 0;
+    		for (int step = 1; step <= steps; step++) {
+    			dx = vX * step;
+    			dy = vY * step;
+    			for (int x = 0; x < width; x++) {
+    	    		if (x+dx < 0 || x+dx >= width)
+    	    			continue;
+    	    		
+        			for (int y = 0; y < height; y++) {
+        	    		if (y+dy < 0 || y+dy >= height)
+        	    			continue;
+        	    		
+        	    		col[x][y].activity += col[x + dx][y + dy].activity;
+        	    		if (col[x][y].activity > 1)
+        	    			col[x][y].activity = 1;
+        			}
+    			}
+    		}
+    	}
 	}
 
 	@Override

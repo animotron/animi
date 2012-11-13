@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Complex cortex zone
@@ -68,6 +69,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	protected int nas_links = 9;
 	/** Number of synaptic connections of the complex neuron **/
 	public int nsc_links;
+	
+//	public boolean saccade = false;
+//	//vector: 0,1 - direction & length
+//	public int[] saccadeVector = new int[] {0,0};
 	
     CortexZoneComplex() {
 		super();
@@ -488,13 +493,22 @@ public class CortexZoneComplex extends CortexZoneSimple {
     }
     
     int count = 0;
-    
     public void process() {
     	if (!isActive())
     		return;
-
-    	cycleActivation();
-    	cycle2();
+    	
+//    	if (saccade) {
+//    		saccadeVector[0] = rnd.nextInt(40) - 20;
+//    		saccadeVector[1] = rnd.nextInt(40) - 20;
+//    		int steps = rnd.nextInt(20);
+//    		for (step = 0; step < steps; step++) {
+//    	    	cycleActivation();
+//    	    	cycle2();
+//    		}
+//    	} else {
+	    	cycleActivation();
+	    	cycle2();
+//    	}
     	
     	count++;
     }

@@ -117,9 +117,7 @@ public class MultiCortex {
 
     public void process() {
 		for (CortexZoneSimple zone : zones) {
-			if (zone instanceof CortexZoneComplex) {
-				((CortexZoneComplex) zone).process();
-			}
+			zone.process();
 		}
     	count++;
     	
