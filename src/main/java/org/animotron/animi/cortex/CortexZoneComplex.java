@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Complex cortex zone
@@ -42,8 +41,6 @@ import java.util.UUID;
  */
 public class CortexZoneComplex extends CortexZoneSimple {
 	
-	String id = UUID.randomUUID().toString();
-
 	@Params
 	public Mapping[] in_zones;
     
@@ -304,7 +301,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 	
 		public String getImageName() {
-			return "input from output";
+			return "input from output "+CortexZoneComplex.this.name;
 		}
 
 		public BufferedImage getImage() {
@@ -526,19 +523,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //        cycle(1, 1, width() - 1, height() - 1, subtraction);
 //        cycle(1, 1, width() - 1, height() - 1, remember);
     }
-
-    public boolean active = false;
-	public boolean isActive() {
-		return active;
-	}
-	
-	private void write(Writer out, String name, Object value) throws IOException {
-		out.write(" ");
-		out.write(name);
-		out.write("='");
-		out.write(String.valueOf(value));
-		out.write("'");
-	}
 
 	public void save(Writer out) throws IOException {
 		out.write("<zone");

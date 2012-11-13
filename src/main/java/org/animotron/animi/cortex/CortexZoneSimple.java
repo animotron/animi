@@ -26,6 +26,9 @@ import org.animotron.animi.Utils;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.UUID;
 
 /**
  * Simple cortex zone
@@ -36,7 +39,9 @@ import java.awt.image.BufferedImage;
  */
 public class CortexZoneSimple implements Layer {
 
-    String name;
+	String id = UUID.randomUUID().toString();
+
+	String name;
     MultiCortex mc;
     
     /** State of complex neurons (outputs cortical columns) **/
@@ -126,5 +131,27 @@ public class CortexZoneSimple implements Layer {
 
 	public NeuronComplex getCol(int x, int y) {
 		return col[x][y];
+	}
+
+    public boolean active = false;
+	public boolean isActive() {
+		return active;
+	}
+	
+	protected void write(Writer out, String name, Object value) throws IOException {
+		out.write(" ");
+		out.write(name);
+		out.write("='");
+		out.write(String.valueOf(value));
+		out.write("'");
+	}
+
+	public void save(Writer out) throws IOException {
+		out.write("<zone");
+		write(out, "id", id);
+		write(out, "active", active);
+		write(out, "width", width);
+		write(out, "height", height);
+		out.write("/>");
 	}
 }
