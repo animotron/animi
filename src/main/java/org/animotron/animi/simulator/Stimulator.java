@@ -112,6 +112,8 @@ public class Stimulator implements Runnable, Imageable {
 	private volatile boolean paused = false;
 	
 	public synchronized void start() {
+		resume();
+		
 		if (th != null) return;
 		
 		th = new Thread(this);

@@ -20,6 +20,10 @@
  */
 package org.animotron.animi.cortex;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+
 import org.animotron.animi.Params;
 import org.animotron.animi.gui.Application;
 
@@ -105,7 +109,7 @@ public class MultiCortex {
     public void process() {
 		for (CortexZoneSimple zone : zones) {
 			if (zone instanceof CortexZoneComplex) {
-				cycle((CortexZoneComplex) zone);
+				((CortexZoneComplex) zone).process();
 			}
 		}
     	count++;
@@ -113,21 +117,25 @@ public class MultiCortex {
     	Application.count.setText(String.valueOf(count));
     }
 
-    public void cycle(CortexZoneComplex zone) {
-    	if (!zone.isActive())
-    		return;
-    				
-    	//Такт 1. Активация колонок (узнавание)
-        //Последовательность активации зон коры определяется их номером
-    	zone.cycleActivation();
-        //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
-        //Последовательность активации зон коры определяется их номером
-    	zone.cycle2();
-    }
-
     public void prepareForSerialization() {
 //		z_video.prepareForSerialization();
 		z_viscor.prepareForSerialization();
 		z_asscor.prepareForSerialization();
+	}
+    
+    public void save(Writer out) throws IOException {
+    	out.write("<cortex>");
+		for (CortexZoneSimple zone : zones) {
+			if (zone instanceof CortexZoneComplex) {
+				((CortexZoneComplex)zone).save(out);
+			}
+		}
+    	out.write("</cortex>");
+    }
+
+
+	public static MultiCortex load(File file) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

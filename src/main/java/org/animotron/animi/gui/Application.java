@@ -26,8 +26,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -35,10 +37,6 @@ import javax.swing.border.BevelBorder;
 import org.animotron.animi.Imageable;
 import org.animotron.animi.cortex.*;
 import org.animotron.animi.simulator.*;
-
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -179,21 +177,25 @@ public class Application extends JFrame {
     protected JToolBar createToolBar() {
     	bar = new JToolBar();
     	
-    	final Kryo kryo = new Kryo();
-    	
         JButton button = new JButton("Load");
         button.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Input input = new Input(new FileInputStream("file.bin"));
-					cortexs = kryo.readObject(input, MultiCortex.class);
-					input.close();
+					final JFileChooser fc = new JFileChooser();
 					
-					createViews();
+					int returnVal = fc.showOpenDialog(Application.this);
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+			            File file = fc.getSelectedFile();
+			            
+			            cortexs = MultiCortex.load(file);
+						
+						createViews();
 
-					run();
+						run();
+					}
+
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
@@ -207,17 +209,28 @@ public class Application extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (cortexs != null) {
-					boolean was = cortexs.active;
-					pause();
-					cortexs.prepareForSerialization();
-					try {
-						if (was) Thread.sleep(1000);
-						
-						Output output = new Output(new FileOutputStream("file.bin"));
-						kryo.writeObject(output, cortexs);
-						output.close();
-					} catch (Exception ex) {
-						ex.printStackTrace();
+					final JFileChooser fc = new JFileChooser();
+					
+					int returnVal = fc.showSaveDialog(Application.this);
+					
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+			            File file = fc.getSelectedFile();
+
+						boolean was = cortexs.active;
+						pause();
+						//cortexs.prepareForSerialization();
+						try {
+							if (was) Thread.sleep(1000);
+							
+							BufferedWriter out = new BufferedWriter(new FileWriter(file));
+							cortexs.save(out);
+							out.close();
+							
+							System.out.println("saved.");
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+						run();
 					}
 				}
 			}

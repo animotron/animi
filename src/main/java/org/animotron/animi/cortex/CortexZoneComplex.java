@@ -27,8 +27,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Complex cortex zone
@@ -38,6 +41,8 @@ import java.util.List;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class CortexZoneComplex extends CortexZoneSimple {
+	
+	String id = UUID.randomUUID().toString();
 
 	@Params
 	public Mapping[] in_zones;
@@ -343,6 +348,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
                     }
 				}
 			}
+			
+			int textY = g.getFontMetrics(g.getFont()).getHeight();
+			int x = 0, y = textY;
+			g.drawString("count: "+count, x, y);		
+			
 			return image;
 		}
 
@@ -479,10 +489,22 @@ public class CortexZoneComplex extends CortexZoneSimple {
         }
         return max;
     }
+    
+    int count = 0;
+    
+    public void process() {
+    	if (!isActive())
+    		return;
+
+    	cycleActivation();
+    	cycle2();
+    	
+    	count++;
+    }
 
     //Граничные нейроны не задействованы.
     //Такт 1. Активация колонок (узнавание)
-    public void cycleActivation() {
+    private void cycleActivation() {
 //        cycle(1, 1, width() - 1, height() - 1, snActivation);
         cycle(1, 1, width() - 1, height() - 1, cnActivation);
 
@@ -499,7 +521,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
     //Граничные нейроны не задействованы.
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
-    public void cycle2() {
+    private void cycle2() {
         cycle(1, 1, width() - 1, height() - 1, restructorization);
 //        cycle(1, 1, width() - 1, height() - 1, subtraction);
 //        cycle(1, 1, width() - 1, height() - 1, remember);
@@ -508,5 +530,49 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public boolean active = false;
 	public boolean isActive() {
 		return active;
+	}
+	
+	private void write(Writer out, String name, Object value) throws IOException {
+		out.write(" ");
+		out.write(name);
+		out.write("='");
+		out.write(String.valueOf(value));
+		out.write("'");
+	}
+
+	public void save(Writer out) throws IOException {
+		out.write("<zone");
+		write(out, "id", id);
+		write(out, "active", active);
+		write(out, "width", width);
+		write(out, "height", height);
+		write(out, "count", count);
+		out.write(">");
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				NeuronComplex cn = col[x][y];
+				
+				out.write("<cn");
+				write(out, "x", cn.x);
+				write(out, "y", cn.y);
+				out.write(">");
+				for (LinkQ link : cn.Qs.values()) {
+					out.write("<linkS");
+					write(out, "w", link.q);
+					write(out, "sX", link.synapse.x);
+					write(out, "sY", link.synapse.y);
+					out.write("/>");
+				}
+				for (Link link : cn.s_inhibitoryLinks) {
+					out.write("<linkI");
+					write(out, "w", link.w);
+					write(out, "sX", link.synapse.x);
+					write(out, "sY", link.synapse.y);
+					out.write("/>");
+				}
+				out.write("</cn>");
+			}
+		}
+		out.write("</zone>");
 	}
 }
