@@ -59,104 +59,105 @@ public class Stimulator implements Runnable, Imageable {
 	}
 
 	public void init() {
+		int bb = 15;
         figures = new Figure[] {
     		new LineAnime(
-        		10, 0,
+        		5, 0,
         		new int[][] {
-        				{4, 4},
-        				{mc.retina.width() - 8, 4},
-        				{mc.retina.width() - 8, mc.retina.height() - 8},
-        				{4, mc.retina.height() - 8},
-        				{4, 4}
+        				{bb, bb},
+        				{mc.retina.width() - bb, bb},
+        				{mc.retina.width() - bb, mc.retina.height() - bb},
+        				{bb, mc.retina.height() - bb},
+        				{bb, bb}
         		}
         	),
         	new LineAnime(
-        		10, -.03,
+        		5, -.03,
         		new int[][] {
-        				{mc.retina.width() - 8, mc.retina.height() - 8},
-        				{4, mc.retina.width() - 8},
-        				{4, 4},
-        				{mc.retina.width() - 8, 4},
-        				{mc.retina.width() - 8, mc.retina.height() - 8}
+        				{mc.retina.width() - bb, mc.retina.height() - bb},
+        				{bb, mc.retina.width() - bb},
+        				{bb, bb},
+        				{mc.retina.width() - bb, bb},
+        				{mc.retina.width() - bb, mc.retina.height() - bb}
         		}
         	),
         	new LineAnime(
-        	    30, -0.03,
+        	    15, -0.03,
         	    new int[][] {
-        	            {40, 40},
-        	            {mc.retina.width() - 40, 40},
-        	            {mc.retina.width() - 40, mc.retina.height() - 40},
-        	            {40, mc.retina.height() - 40},
-        	            {40, 40}
+        	            {bb, bb},
+        	            {mc.retina.width() - bb, bb},
+        	            {mc.retina.width() - bb, mc.retina.height() - bb},
+        	            {bb, mc.retina.height() - bb},
+        	            {bb, bb}
         	    }
         	),
         	new LineAnime(
-        	    30, 0.03,
+        	    15, 0.03,
         	    new int[][] {
-        	            {mc.retina.width() - 40, 40},
-        	            {mc.retina.width() - 40, mc.retina.height() - 40},
-        	            {40, mc.retina.height() - 40},
-        	            {40, 40},
-        	            {mc.retina.width() - 40, 40},
+        	            {mc.retina.width() - bb, bb},
+        	            {mc.retina.width() - bb, mc.retina.height() - bb},
+        	            {bb, mc.retina.height() - bb},
+        	            {bb, bb},
+        	            {mc.retina.width() - bb, bb},
         	    }
         	),
         	new LineAnime(
-        	    30, -0.07,
+        	    15, -0.07,
         	    new int[][] {
-        	            {mc.retina.width() - 40, mc.retina.height() - 40},
-        	            {40, mc.retina.height() - 40},
-        	            {40, 40},
-        	            {mc.retina.width() - 40, 40},
-        	            {mc.retina.width() - 40, mc.retina.height() - 40}
+        	            {mc.retina.width() - bb, mc.retina.height() - bb},
+        	            {bb, mc.retina.height() - bb},
+        	            {bb, bb},
+        	            {mc.retina.width() - bb, bb},
+        	            {mc.retina.width() - bb, mc.retina.height() - bb}
         	    }
         	),
         	new LineAnime(
-        	    30, 0.07,
+        	    15, 0.07,
         	    new int[][] {
-        	            {40, mc.retina.height() - 40},
-        	            {40, 40},
-        	            {mc.retina.width() - 40, 40},
-        	            {mc.retina.width() - 40, mc.retina.height() - 40},
-        	            {40, mc.retina.height() - 40}
+        	            {bb, mc.retina.height() - bb},
+        	            {bb, bb},
+        	            {mc.retina.width() - bb, bb},
+        	            {mc.retina.width() - bb, mc.retina.height() - bb},
+        	            {bb, mc.retina.height() - bb}
         	    }
         	),
-        	new OvalAnime(30,
+        	new OvalAnime(15,
         	    new int[][] {
-        	            {50, 50},
-        	            {mc.retina.width() - 50, mc.retina.height() - 50},
-        	            {mc.retina.width() - 50, 50},
-        	            {50, mc.retina.height() - 50},
-        	            {50, 50}
-        	    }
-        	),
-        	new RectAnime(
-        	    20, 0.05,
-        	    new int[][] {
-        	            {40, 40},
-        	            {40, mc.retina.height() - 40},
-        	            {mc.retina.width() - 40, mc.retina.height() - 40},
-        	            {mc.retina.width() - 40, 40},
-        	            {40, 40}
+        	            {bb, bb},
+        	            {mc.retina.width() - bb, mc.retina.height() - bb},
+        	            {mc.retina.width() - bb, bb},
+        	            {bb, mc.retina.height() - bb},
+        	            {bb, bb}
         	    }
         	),
         	new RectAnime(
-        	    30, 0.05,
+        	    10, 0.05,
         	    new int[][] {
-        	            {40, mc.retina.height() - 40},
-        	            {mc.retina.width() - 40, mc.retina.height() - 40},
-        	            {mc.retina.width() - 40, 40},
-        	            {40, 40},
-        	            {40, mc.retina.height() - 40}
+        	            {10, 10},
+        	            {10, mc.retina.height() - 10},
+        	            {mc.retina.width() - 10, mc.retina.height() - 10},
+        	            {mc.retina.width() - 10, 10},
+        	            {10, 10}
         	    }
         	),
         	new RectAnime(
-        	    20, 0,
+        	    15, 0.05,
         	    new int[][] {
-        	            {mc.retina.width() - 40, mc.retina.height() - 40},
-        	            {mc.retina.width() - 40, 40},
-        	            {40, 40},
-        	            {40, mc.retina.height() - 40},
-        	            {mc.retina.width() - 40, mc.retina.height() - 40}
+        	            {10, mc.retina.height() - 10},
+        	            {mc.retina.width() - 10, mc.retina.height() - 10},
+        	            {mc.retina.width() - 10, 10},
+        	            {10, 10},
+        	            {10, mc.retina.height() - 10}
+        	    }
+        	),
+        	new RectAnime(
+        	    10, 0,
+        	    new int[][] {
+        	            {mc.retina.width() - 10, mc.retina.height() - 10},
+        	            {mc.retina.width() - 10, 10},
+        	            {10, 10},
+        	            {10, mc.retina.height() - 10},
+        	            {mc.retina.width() - 10, mc.retina.height() - 10}
         	    }
         	)
         };
