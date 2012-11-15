@@ -162,12 +162,12 @@ public class CortexZoneSimple implements Layer {
     		}
     	}
     	
-		cycle(0, 0, width(), height(), nextLayerActivation);
+//		cycle(0, 0, width(), height(), nextLayerActivation);
 	}
 	
-	public void zero() {
-		cycle(0, 0, width(), height(), zero);
-	}
+//	public void zero() {
+//		cycle(0, 0, width(), height(), zero);
+//	}
 
 	@Override
 	public void set(int x, int y, double b) {
