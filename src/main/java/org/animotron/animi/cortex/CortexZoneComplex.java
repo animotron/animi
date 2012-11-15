@@ -102,6 +102,12 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		for (Mapping m : in_zones) {
 			
+            for (int x = 0; x < m.zone.width(); x++) {
+				for (int y = 0; y < m.zone.height(); y++) {
+					m.zone.col[x][y].a_links.clear();
+				}
+            }
+
 			fX = m.zone.width() / (double) width();
 			fY = m.zone.height() / (double) height();
 
