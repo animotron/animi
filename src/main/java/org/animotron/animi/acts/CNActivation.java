@@ -29,14 +29,21 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Zero implements Act<CortexZoneSimple> {
+public class CNActivation implements Act<CortexZoneSimple> {
 
-	public Zero() {}
+	public CNActivation() {}
 
     @Override
-    public void process(final CortexZoneSimple layer, final int x, final int y) {
-    	final NeuronComplex cn = layer.col[x][y];
-    	cn.activity = 0;
-    	cn.posActivity = 0;
+    public void process(CortexZoneSimple layer, final int x, final int y) {
+    	NeuronComplex cn = layer.col[x][y];
+    	
+    	double activity = 0;
+    	
+    	for (LinkQ q : cn.Qs.values()) {
+    		activity += q.synapse.activity * q.q;
+    	}
+    	
+    	cn.activity = activity;
+    	cn.posActivity = cn.activity;
     }
 }

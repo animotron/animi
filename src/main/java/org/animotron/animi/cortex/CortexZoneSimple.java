@@ -24,8 +24,8 @@ import org.animotron.animi.InitParam;
 import org.animotron.animi.Utils;
 import org.animotron.animi.acts.Act;
 import org.animotron.animi.acts.ActWithMax;
-import org.animotron.animi.acts.UpDownCNActivation;
-import org.animotron.animi.acts.Zero;
+import org.animotron.animi.acts.old.UpDownCNActivation;
+import org.animotron.animi.acts.old.Zero;
 
 import java.awt.Color;
 import java.awt.Point;

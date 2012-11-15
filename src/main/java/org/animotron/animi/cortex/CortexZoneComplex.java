@@ -22,7 +22,7 @@ package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
 import org.animotron.animi.acts.*;
-import org.animotron.animi.acts.old.CNActivation;
+import org.animotron.animi.acts.old.PosActivity;
 
 import java.awt.Color;
 import java.awt.Graphics;

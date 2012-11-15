@@ -30,21 +30,20 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class CNActivation implements Act<CortexZoneSimple> {
+public class UpDownCNActivation implements Act<CortexZoneSimple> {
 
-	public CNActivation() {}
+	public UpDownCNActivation() {}
 
     @Override
-    public void process(CortexZoneSimple layer, final int x, final int y) {
-    	NeuronComplex cn = layer.col[x][y];
+    public void process(final CortexZoneSimple layer, final int x, final int y) {
+    	final NeuronComplex cn = layer.col[x][y];
     	
-    	double activity = 0;
-    	
-    	for (LinkQ q : cn.Qs.values()) {
-    		activity += q.synapse.activity * q.q;
+    	if (cn.activity == 0) {
+    		return;
     	}
     	
-    	cn.activity = activity;
-    	cn.posActivity = cn.activity;
+    	for (LinkQ q : cn.a_Qs) {
+    		q.axon.activity += cn.activity * q.q;
+    	}
     }
 }

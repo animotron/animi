@@ -18,25 +18,26 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.acts;
+package org.animotron.animi.acts.old;
 
+import org.animotron.animi.acts.Act;
 import org.animotron.animi.cortex.*;
 
 /**
- * 
+ * Активация простых нейронов при узнавании запомненной картины
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class PosActivity implements Act<CortexZoneSimple> {
+public class Zero implements Act<CortexZoneSimple> {
 
-	public PosActivity() {}
+	public Zero() {}
 
     @Override
-    public void process(CortexZoneSimple layer, final int x, final int y) {
-    	NeuronComplex cn = layer.col[x][y];
-    	
-    	cn.posActivity = cn.activity;
+    public void process(final CortexZoneSimple layer, final int x, final int y) {
+    	final NeuronComplex cn = layer.col[x][y];
+    	cn.activity = 0;
+    	cn.posActivity = 0;
     }
 }
