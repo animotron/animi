@@ -67,6 +67,7 @@ public class CortexZoneSimple implements Layer {
     }
     
     public void initCols() {
+    	count = 0;
         col = new NeuronComplex[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
