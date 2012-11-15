@@ -55,7 +55,7 @@ public class PFInitialization extends JInternalFrame {
 	            false, //maximizable
 	            false);//iconifiable
 	    
-	    readOnly = mc.active;
+	    readOnly = false;//mc.active;
 	    
 	    panel = new JPanel();
 	    
