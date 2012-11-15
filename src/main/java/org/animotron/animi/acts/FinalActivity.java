@@ -29,12 +29,12 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class FinalActivity implements Act<CortexZoneComplex> {
+public class FinalActivity implements Act<CortexZoneSimple> {
 
 	public FinalActivity() {}
 
     @Override
-    public void process(CortexZoneComplex layer, final int x, final int y) {
+    public void process(CortexZoneSimple layer, final int x, final int y) {
     	NeuronComplex cn = layer.col[x][y];
     	
     	cn.backProjection = cn.activity;

@@ -44,19 +44,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	@Params
 	public Mapping[] in_zones;
     
-//	public SNActivation snActivation = new SNActivation();
-	public CNActivation cnActivation = new CNActivation();
+//	public CNActivation cnActivation = new CNActivation();
+	
+	public PosActivity posActivity = new PosActivity();
 	public Inhibitory inhibitory = new Inhibitory();
 	public FinalActivity finalActivity = new FinalActivity();
-
-//	public Subtraction subtraction = new Subtraction();
 
 	@Params
 	public Restructorization restructorization = new Restructorization();
 
-//	@Params
-//	public Remember remember = new Remember();
-	
 	@InitParam(name="disper")
 	public double disper = 1.0;
 
@@ -105,6 +101,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
             for (int x = 0; x < m.zone.width(); x++) {
 				for (int y = 0; y < m.zone.height(); y++) {
 					m.zone.col[x][y].a_links.clear();
+					m.zone.col[x][y].a_Qs.clear();
 				}
             }
 
@@ -481,23 +478,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 	}
 
-    public void cycle (int x1, int y1, int x2, int y2, Act<CortexZoneComplex> task) {
-        for (int x = x1; x < x2; x++) {
-            for (int y = y1; y < y2; y++) {
-                task.process(this, x, y);
-            }
-        }
-    }
-
-    public double cycle (int x1, int y1, int x2, int y2, ActWithMax<CortexZoneComplex> task, double max) {
-        for (int x = x1; x < x2; x++) {
-            for (int y = y1; y < y2; y++) {
-            	max = task.process(this, x, y, max);
-            }
-        }
-        return max;
-    }
-    
     public void process() {
     	if (!isActive())
     		return;
@@ -514,7 +494,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Такт 1. Активация колонок (узнавание)
     private void cycleActivation() {
 //        cycle(1, 1, width() - 1, height() - 1, snActivation);
-        cycle(1, 1, width() - 1, height() - 1, cnActivation);
+//        cycle(1, 1, width() - 1, height() - 1, cnActivation);
+
+        cycle(1, 1, width() - 1, height() - 1, posActivity);
 
         double max;
         for (int i = 0; i < 10; i++) {

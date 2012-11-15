@@ -18,8 +18,9 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.acts;
+package org.animotron.animi.acts.old;
 
+import org.animotron.animi.acts.Act;
 import org.animotron.animi.cortex.*;
 
 /**
@@ -29,26 +30,21 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Inhibitory implements ActWithMax<CortexZoneSimple> {
+public class CNActivation implements Act<CortexZoneSimple> {
 
-	public Inhibitory() {}
+	public CNActivation() {}
 
-	@Override
-    public double process(final CortexZoneSimple layer, final int x, final int y, double max) {
-    	final NeuronComplex cn = layer.col[x][y];
+    @Override
+    public void process(CortexZoneSimple layer, final int x, final int y) {
+    	NeuronComplex cn = layer.col[x][y];
     	
-    	if (cn.activity == 0)
-    		return max;
-
-    	double delta = 0;
-    	for (Link link : cn.s_inhibitoryLinks) {
-    		delta += link.w * link.synapse.activity;
+    	double activity = 0;
+    	
+    	for (LinkQ q : cn.Qs.values()) {
+    		activity += q.synapse.activity * q.q;
     	}
     	
-    	cn.activity = cn.activity - delta;
-    	if (cn.activity < 0 || Double.isNaN(cn.activity)) 
-    		cn.activity = 0;
-    	
-    	return Math.max(max, delta);
+    	cn.activity = activity;
+    	cn.posActivity = cn.activity;
     }
 }

@@ -22,6 +22,10 @@ package org.animotron.animi.cortex;
 
 import org.animotron.animi.InitParam;
 import org.animotron.animi.Utils;
+import org.animotron.animi.acts.Act;
+import org.animotron.animi.acts.ActWithMax;
+import org.animotron.animi.acts.UpDownCNActivation;
+import org.animotron.animi.acts.Zero;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -55,8 +59,10 @@ public class CortexZoneSimple implements Layer {
 	
 	public int count = 0;
 
+	public Zero zero = new Zero();
+	public UpDownCNActivation nextLayerActivation = new UpDownCNActivation();
 
-    CortexZoneSimple() {
+	CortexZoneSimple() {
     	name = null;
     	mc = null;
     }
@@ -155,6 +161,12 @@ public class CortexZoneSimple implements Layer {
     			}
     		}
     	}
+    	
+		cycle(0, 0, width(), height(), nextLayerActivation);
+	}
+	
+	public void zero() {
+		cycle(0, 0, width(), height(), zero);
 	}
 
 	@Override
@@ -179,7 +191,24 @@ public class CortexZoneSimple implements Layer {
 	public NeuronComplex getCol(int x, int y) {
 		return col[x][y];
 	}
+	
+    public void cycle (int x1, int y1, int x2, int y2, Act<CortexZoneSimple> task) {
+        for (int x = x1; x < x2; x++) {
+            for (int y = y1; y < y2; y++) {
+                task.process(this, x, y);
+            }
+        }
+    }
 
+    public double cycle (int x1, int y1, int x2, int y2, ActWithMax<CortexZoneSimple> task, double max) {
+        for (int x = x1; x < x2; x++) {
+            for (int y = y1; y < y2; y++) {
+            	max = task.process(this, x, y, max);
+            }
+        }
+        return max;
+    }
+    
 	public boolean learning = false;
 	public boolean isLearning() {
 		return learning;

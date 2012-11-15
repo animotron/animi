@@ -29,22 +29,14 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class SNActivation implements Act<CortexZoneComplex> {
+public class Zero implements Act<CortexZoneSimple> {
 
-	public SNActivation() {}
+	public Zero() {}
 
     @Override
-    public void process(CortexZoneComplex layer, final int x, final int y) {
-
-//        for (int z = 0; z < layer.deep; z++) {
-//        	NeuronSimple sn = layer.s[x][y][z];
-//        	sn.activity = 0; //UNDERSTAND: do we need previous value
-//
-//        	if (sn.occupy) {
-//	        	for (Link link : sn.s_links) {
-//	        		sn.activity += link.synapse.activity * link.w;
-//	        	}
-//        	}
-//        }
+    public void process(final CortexZoneSimple layer, final int x, final int y) {
+    	final NeuronComplex cn = layer.col[x][y];
+    	cn.activity = 0;
+    	cn.posActivity = 0;
     }
 }

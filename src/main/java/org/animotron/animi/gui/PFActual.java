@@ -34,7 +34,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 import org.animotron.animi.*;
-import org.animotron.animi.acts.Subtraction;
+import org.animotron.animi.acts.old.Subtraction;
 import org.animotron.animi.cortex.*;
 
 /**

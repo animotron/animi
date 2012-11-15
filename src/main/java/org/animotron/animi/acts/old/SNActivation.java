@@ -18,8 +18,9 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.acts;
+package org.animotron.animi.acts.old;
 
+import org.animotron.animi.acts.Act;
 import org.animotron.animi.cortex.*;
 
 /**
@@ -29,26 +30,22 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Inhibitory implements ActWithMax<CortexZoneSimple> {
+public class SNActivation implements Act<CortexZoneComplex> {
 
-	public Inhibitory() {}
+	public SNActivation() {}
 
-	@Override
-    public double process(final CortexZoneSimple layer, final int x, final int y, double max) {
-    	final NeuronComplex cn = layer.col[x][y];
-    	
-    	if (cn.activity == 0)
-    		return max;
+    @Override
+    public void process(CortexZoneComplex layer, final int x, final int y) {
 
-    	double delta = 0;
-    	for (Link link : cn.s_inhibitoryLinks) {
-    		delta += link.w * link.synapse.activity;
-    	}
-    	
-    	cn.activity = cn.activity - delta;
-    	if (cn.activity < 0 || Double.isNaN(cn.activity)) 
-    		cn.activity = 0;
-    	
-    	return Math.max(max, delta);
+//        for (int z = 0; z < layer.deep; z++) {
+//        	NeuronSimple sn = layer.s[x][y][z];
+//        	sn.activity = 0; //UNDERSTAND: do we need previous value
+//
+//        	if (sn.occupy) {
+//	        	for (Link link : sn.s_links) {
+//	        		sn.activity += link.synapse.activity * link.w;
+//	        	}
+//        	}
+//        }
     }
 }

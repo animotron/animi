@@ -20,7 +20,6 @@
  */
 package org.animotron.animi.acts;
 
-import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 
 /**
@@ -30,55 +29,20 @@ import org.animotron.animi.cortex.*;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Restructorization implements Act<CortexZoneSimple> {
-	
-	@RuntimeParam(name = "count")
-	public int count = 10000;
+public class UpDownCNActivation implements Act<CortexZoneSimple> {
 
-	@RuntimeParam(name = "ny")
-	public double ny = 0.1 / 5;
-	@RuntimeParam(name = "inhibitoryNy")
-	public double inhibitoryNy = 0.1 / 5;
-
-	public Restructorization() {}
+	public UpDownCNActivation() {}
 
     @Override
     public void process(final CortexZoneSimple layer, final int x, final int y) {
+    	final NeuronComplex cn = layer.col[x][y];
     	
-		final NeuronComplex cn = layer.col[x][y];
-		
-		if (cn.activity == 0)
-			return;
-		
-//		double sumA = 0;
-//		for (int dx = x - 1; dx <= x + 1; dx++) {
-//			for (int dy = y - 1; dy <= y + 1; dy++) {
-//				if (x == dx && y == dy) continue;
-//				
-//				sumA += layer.col[dx][dy].activity;
-//			}
-//		}
-//		sumA /= 8;
-		
-		double factor = ny / Math.pow(2, layer.count / count);
-		double sumQ2 = 0;
-		for (LinkQ link : cn.Qs.values()) {
-			
-//			link.q += (sumA + cn.activity) * link.synapse.activity * ny;
-			link.q += cn.activity * link.synapse.activity * factor;
-
-			sumQ2 += link.q * link.q;
-		}
-		
-		double norm = Math.sqrt(sumQ2);
-		for (LinkQ link : cn.Qs.values()) {
-			link.q = link.q / norm;
-		}
-		
-		//inhibitory restructorization & normlization
-//		for (Link link : cn.s_inhibitoryLinks) {
-//			
-//			link.w += cn.activity * (link.synapse.activity * inhibitoryNy - cn.activity * link.w);
-//		}
+    	if (cn.activity == 0) {
+    		return;
+    	}
+    	
+    	for (LinkQ q : cn.a_Qs) {
+    		q.axon.activity += cn.activity * q.q;
+    	}
     }
 }

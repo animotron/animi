@@ -18,50 +18,52 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.acts;
+package org.animotron.animi.acts.old;
 
+import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.acts.Act;
 import org.animotron.animi.cortex.*;
 
 /**
- * Активация простых нейронов при узнавании запомненной картины
+ * Запоминание
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Subtraction { //implements Act<CortexZoneComplex> {
+public class Remember implements Act<CortexZoneComplex> {
+	
+	//порог запоминания
+	@RuntimeParam(name="mRecLevel")
+	public double mRecLevel = 0.1;
 
-	public Subtraction() {}
-
-//    @Override
-    public static NeuronComplex[][] process(CortexZoneComplex layer, final int x, final int y) {
-
-    	
-    	// Ac = Sum ( A(in)j * qj )
-    	// A(in)j = qj * Ac / Sum(q^2)
-    	
-    	CortexZoneSimple zone = layer.in_zones[0].zone;
-    	NeuronComplex[][] ms = new NeuronComplex[zone.width][zone.height];
-    	for (int _x = 0; _x < zone.width; _x++) {
-        	for (int _y = 0; _y < zone.height; _y++) {
-        		ms[_x][_y] = new NeuronComplex(zone.col[_x][_y]);
-        	}
-    	}
+    public Remember () {}
+    
+    @Override
+    public void process(CortexZoneComplex layer, final int x, final int y) {
     	
     	NeuronComplex cn = layer.col[x][y];
-    	if (cn.activity > 0) {
-    		double Q2 = 0;
+    	
+    	if (!cn.isOccupy()) {
+    		
+    		double sumA2 = 0;
+    		double activity = 0;
+
     		for (LinkQ link : cn.Qs.values()) {
-    			Q2 += link.q * link.q;
+    			activity += link.synapse.activity;
+    			
+    			sumA2 += link.synapse.activity * link.synapse.activity;
     		}
+
+    		System.out.println(activity / cn.Qs.values().size());
+    		if ((activity / cn.Qs.values().size()) < mRecLevel)
+    			return;
     		
     		for (LinkQ link : cn.Qs.values()) {
-    			NeuronComplex in = ms[link.synapse.x][link.synapse.y];
-    			in.activity = cn.activity * link.q * Q2;
-    			in.posActivity = in.activity;
+    			link.q = link.synapse.activity / sumA2;
     		}
-    		
+    		cn.occupy = true;
     	}
-    	return ms;
+//    	Restructorization.normalization(cn, sn);
     }
 }

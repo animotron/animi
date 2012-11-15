@@ -22,6 +22,7 @@ package org.animotron.animi.cortex;
 
 import java.util.Map;
 
+import javolution.util.FastList;
 import javolution.util.FastMap;
 
 import org.animotron.animi.RuntimeParam;
@@ -46,6 +47,7 @@ public class NeuronComplex extends Neuron {
 	public CortexZoneSimple zone = null;
 
 	public Map<NeuronComplex, LinkQ> Qs = new FastMap<NeuronComplex, LinkQ>();
+	public FastList<LinkQ> a_Qs = new FastList<LinkQ>();
 
 	public NeuronComplex(CortexZoneSimple zone, int x, int y) {
 		super(x,y);
@@ -66,20 +68,6 @@ public class NeuronComplex extends Neuron {
 	}
 
 	public void init() {
-		//collect Q
-//		for (Link cnLink : s_links) {
-//			for (Link snLink : cnLink.synapse.s_links) {
-//				NeuronComplex key = (NeuronComplex) snLink.synapse;
-//				LinkQ q = Qs.get(key);
-//				if (q == null) {
-//					q = new LinkQ(snLink, cnLink);
-//					Qs.put(key, q);
-//				} else {
-//					q.add(snLink, cnLink);
-//				}
-//			}
-//		}
-		
 		double count = Qs.values().size();
 		for (LinkQ link : Qs.values()) {
 			link.q = 1 / count;

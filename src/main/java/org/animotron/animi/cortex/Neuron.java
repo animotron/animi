@@ -64,10 +64,7 @@ public class Neuron {
 
 	//called by Link only!
 	protected void addAxon(Link link, LinkType type) {
-		if (type == LinkType.NORMAL)
-			a_links.add(link);
-//		else
-//			a_stopLinks.add(link);
+		a_links.add(link);
 	}
 
 	public boolean isOccupy() {

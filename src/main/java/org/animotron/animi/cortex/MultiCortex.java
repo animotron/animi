@@ -116,12 +116,20 @@ public class MultiCortex {
 	}
 
     public void process() {
+    	CortexZoneSimple prev = null;
 		for (CortexZoneSimple zone : zones) {
-			zone.process();
+			if (prev != null) {
+				zone.zero();
+				prev.process();
+			}
+			prev = zone;
 		}
-    	count++;
-    	
-    	Application.count.setText(String.valueOf(count));
+		if (prev != null) {
+			prev.process();
+			count++;
+
+			Application.count.setText(String.valueOf(count));
+		}
     }
 
     public void prepareForSerialization() {

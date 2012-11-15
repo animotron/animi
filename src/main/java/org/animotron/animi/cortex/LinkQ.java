@@ -36,6 +36,7 @@ public class LinkQ {
 		this.synapse = synapse;
 		this.axon = axon;
 		
+		synapse.a_Qs.add(this);
 		axon.Qs.put(synapse, this);
 		
 		this.q = q;

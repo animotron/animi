@@ -23,27 +23,20 @@ package org.animotron.animi.acts;
 import org.animotron.animi.cortex.*;
 
 /**
- * Активация простых нейронов при узнавании запомненной картины
+ * 
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class CNActivation implements Act<CortexZoneComplex> {
+public class PosActivity implements Act<CortexZoneSimple> {
 
-	public CNActivation() {}
+	public PosActivity() {}
 
     @Override
-    public void process(CortexZoneComplex layer, final int x, final int y) {
+    public void process(CortexZoneSimple layer, final int x, final int y) {
     	NeuronComplex cn = layer.col[x][y];
     	
-    	double activity = 0;
-    	
-    	for (LinkQ q : cn.Qs.values()) {
-    		activity += q.synapse.activity * q.q;
-    	}
-    	
-    	cn.activity = activity;
     	cn.posActivity = cn.activity;
     }
 }
