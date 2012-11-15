@@ -34,6 +34,7 @@ import javax.swing.*;
 import org.animotron.animi.InitParam;
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.cortex.CortexZoneSimple;
 import org.animotron.animi.cortex.MultiCortex;
 
 /**
@@ -138,6 +139,21 @@ public class PFInitialization extends JInternalFrame {
 			}
 			return;
 		}
+
+		if (obj instanceof CortexZoneSimple) {
+			final CortexZoneSimple zone = (CortexZoneSimple)obj;
+	        JButton btn = new JButton("reinit");
+	        btn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					zone.init();
+				}
+			});
+	        gbc.gridy++;
+	        gbc.gridwidth = 2;
+	        panel.add(btn, gbc);
+	        gbc.gridwidth = 1;
+		}
 		
 		Field[] fields = clazz.getFields();
 		for (int i = 0; i < fields.length; i++) {
@@ -154,6 +170,7 @@ public class PFInitialization extends JInternalFrame {
 				scan(gbc, field, obj);
 			}
 		}
+		
 	}
 
 	private void addSep(GridBagConstraints gbc, String name) {
