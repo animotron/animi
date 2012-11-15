@@ -237,7 +237,6 @@ public class MultiCortex {
 				}
 			}
 		}
-		
 
 		@Override
 		public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
@@ -249,6 +248,7 @@ public class MultiCortex {
 					((CortexZoneComplex) zone).in_zones = 
 						mappings.toArray(new Mapping[mappings.size()]);
 				}
+				mappings.clear();
 				
 				zone = null;
 			}
