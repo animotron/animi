@@ -194,7 +194,9 @@ public class Application extends JFrame {
 			            
 			            cortexs = MultiCortex.load(file);
 						
-						createViews();
+			        	stimulator = new Stimulator(cortexs);
+
+			        	createViews();
 
 						run();
 					}
@@ -394,6 +396,8 @@ public class Application extends JFrame {
     protected void initialize() {
     	cortexs.init();
     	
+    	stimulator = new Stimulator(cortexs);
+    	
     	createViews();
     }
     
@@ -422,13 +426,6 @@ public class Application extends JFrame {
     	if (cortexs != null) {
 			cortexs.active = true;
 	        stimulator.start();
-			
-//			miRun.setEnabled(false);
-//			
-//			miPause.setEnabled(true);
-//			miResume.setEnabled(false);
-//    	
-//			miStop.setEnabled(true);
     	}
     }
     
@@ -444,9 +441,6 @@ public class Application extends JFrame {
     	if (cortexs != null) {
 			stimulator.pause();
 			cortexs.active = false;
-			
-//			miPause.setEnabled(false);
-//			miResume.setEnabled(true);
     	}
     }
 
@@ -517,115 +511,8 @@ public class Application extends JFrame {
 		)
 	};
 
-    Figure[] MANY_LINES = new Figure[] {
-		new LineAnime(
-		10, 0,
-		new int[][] {
-				{4, 4},
-				{Retina.WIDTH - 8, 4},
-				{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-				{4, Retina.HEIGHT - 8},
-				{4, 4}
-		}
-	),
-	new LineAnime(
-		10, -.03,
-		new int[][] {
-				{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-				{4, Retina.HEIGHT - 8},
-				{4, 4},
-				{Retina.WIDTH - 8, 4},
-				{Retina.WIDTH - 8, Retina.HEIGHT - 8}
-		}
-	),
-	new LineAnime(
-	    30, -0.03,
-	    new int[][] {
-	            {40, 40},
-	            {Retina.WIDTH - 40, 40},
-	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-	            {40, Retina.HEIGHT - 40},
-	            {40, 40}
-	    }
-	),
-	new LineAnime(
-	    30, 0.03,
-	    new int[][] {
-	            {Retina.WIDTH - 40, 40},
-	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-	            {40, Retina.HEIGHT - 40},
-	            {40, 40},
-	            {Retina.WIDTH - 40, 40},
-	    }
-	),
-	new LineAnime(
-	    30, -0.07,
-	    new int[][] {
-	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-	            {40, Retina.HEIGHT - 40},
-	            {40, 40},
-	            {Retina.WIDTH - 40, 40},
-	            {Retina.WIDTH - 40, Retina.HEIGHT - 40}
-	    }
-	),
-	new LineAnime(
-	    30, 0.07,
-	    new int[][] {
-	            {40, Retina.HEIGHT - 40},
-	            {40, 40},
-	            {Retina.WIDTH - 40, 40},
-	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-	            {40, Retina.HEIGHT - 40}
-	    }
-	),
-	new OvalAnime(30,
-	    new int[][] {
-	            {50, 50},
-	            {Retina.WIDTH - 50, Retina.HEIGHT - 50},
-	            {Retina.WIDTH - 50, 50},
-	            {50, Retina.HEIGHT - 50},
-	            {50, 50}
-	    }
-	),
-	new RectAnime(
-	    20, 0.05,
-	    new int[][] {
-	            {40, 40},
-	            {40, Retina.HEIGHT - 40},
-	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-	            {Retina.WIDTH - 40, 40},
-	            {40, 40}
-	    }
-	),
-	new RectAnime(
-	    30, 0.05,
-	    new int[][] {
-	            {40, Retina.HEIGHT - 40},
-	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-	            {Retina.WIDTH - 40, 40},
-	            {40, 40},
-	            {40, Retina.HEIGHT - 40}
-	    }
-	),
-	new RectAnime(
-	    20, 0,
-	    new int[][] {
-	            {Retina.WIDTH - 40, Retina.HEIGHT - 40},
-	            {Retina.WIDTH - 40, 40},
-	            {40, 40},
-	            {40, Retina.HEIGHT - 40},
-	            {Retina.WIDTH - 40, Retina.HEIGHT - 40}
-	    }
-	)
-    };
     
-    Stimulator stimulator = new Stimulator(
-            Retina.WIDTH, Retina.HEIGHT,
-//        		RANDOM_LINE
-//        		H_DOUBLE_LINE
-//        		H_V_LINES
-        		MANY_LINES
-    );
+    Stimulator stimulator = null;
 
     //Create a new internal frame.
     protected void createFrame(Imageable imageable) {

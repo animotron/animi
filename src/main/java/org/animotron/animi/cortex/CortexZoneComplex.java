@@ -247,6 +247,14 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //				System.out.println();
 			}
 		}
+        
+        if (CRF != null) {
+        	CRF.init();
+        }
+        
+        if (RRF != null) {
+        	RRF.init();
+        }
 	}
     
 	// Картинка активных нейронов по колонкам
@@ -290,6 +298,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	    private Point atFocus = null;
 
 		ColumnRF_Image() {
+			init();
+		}
+
+		public void init() {
 	        boxSize = 1;
 	        for (Mapping m : in_zones) {
 	            boxSize = (int) Math.max(boxSize, m.disp * 3);
@@ -405,9 +417,13 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	    private BufferedImage image;
 	    
 	    RRF_Image() {
+	    	init();
+		}
+	    
+	    public void init() {
 			CortexZoneSimple zone = in_zones[0].zone;
 	        image = new BufferedImage(zone.width, zone.height, BufferedImage.TYPE_INT_RGB);
-		}
+	    }
 	
 		public String getImageName() {
 			return "restored input";
@@ -425,12 +441,16 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					
 					for (LinkQ link : cn.Qs.values()) {
 
-						int c = Utils.calcGrey(image, link.synapse.x, link.synapse.y);
-						c += 255 * cn.backProjection * link.q;
-	            		
-						if (c > 255) c = 255;
-	            		
-	            		image.setRGB(link.synapse.x, link.synapse.y, Utils.create_rgb(255, c, c, c));
+						try {
+							int c = Utils.calcGrey(image, link.synapse.x, link.synapse.y);
+							c += 255 * cn.backProjection * link.q;
+		            		
+							if (c > 255) c = 255;
+		            		
+		            		image.setRGB(link.synapse.x, link.synapse.y, Utils.create_rgb(255, c, c, c));
+						} catch (Exception e) {
+							System.out.println(image.getWidth()+" - "+link.synapse.x);;
+						}
 					}
 				}
 			}

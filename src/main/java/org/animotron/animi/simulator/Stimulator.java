@@ -30,6 +30,7 @@ import java.awt.image.BufferedImage;
 import org.animotron.animi.Imageable;
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.cortex.MultiCortex;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -50,17 +51,115 @@ public class Stimulator implements Runnable, Imageable {
 
     private boolean run = true;
     
-    private int width, height;
+    MultiCortex mc;
 
-    public Stimulator(int width, int height, Figure[] figures) {
-        this.width = width;
-        this.height = height;
-        this.figures = figures;
-    }
+    public Stimulator(MultiCortex cortexs) {
+    	mc = cortexs;
+    	init();
+	}
 
-    protected Stimulator(int width, int height, Figure[] figures, int frequency) {
-        this(width, height, figures);
-    	this.frequency = frequency;
+	public void init() {
+        figures = new Figure[] {
+    		new LineAnime(
+        		10, 0,
+        		new int[][] {
+        				{4, 4},
+        				{mc.retina.width() - 8, 4},
+        				{mc.retina.width() - 8, mc.retina.height() - 8},
+        				{4, mc.retina.height() - 8},
+        				{4, 4}
+        		}
+        	),
+        	new LineAnime(
+        		10, -.03,
+        		new int[][] {
+        				{mc.retina.width() - 8, mc.retina.height() - 8},
+        				{4, mc.retina.width() - 8},
+        				{4, 4},
+        				{mc.retina.width() - 8, 4},
+        				{mc.retina.width() - 8, mc.retina.height() - 8}
+        		}
+        	),
+        	new LineAnime(
+        	    30, -0.03,
+        	    new int[][] {
+        	            {40, 40},
+        	            {mc.retina.width() - 40, 40},
+        	            {mc.retina.width() - 40, mc.retina.height() - 40},
+        	            {40, mc.retina.height() - 40},
+        	            {40, 40}
+        	    }
+        	),
+        	new LineAnime(
+        	    30, 0.03,
+        	    new int[][] {
+        	            {mc.retina.width() - 40, 40},
+        	            {mc.retina.width() - 40, mc.retina.height() - 40},
+        	            {40, mc.retina.height() - 40},
+        	            {40, 40},
+        	            {mc.retina.width() - 40, 40},
+        	    }
+        	),
+        	new LineAnime(
+        	    30, -0.07,
+        	    new int[][] {
+        	            {mc.retina.width() - 40, mc.retina.height() - 40},
+        	            {40, mc.retina.height() - 40},
+        	            {40, 40},
+        	            {mc.retina.width() - 40, 40},
+        	            {mc.retina.width() - 40, mc.retina.height() - 40}
+        	    }
+        	),
+        	new LineAnime(
+        	    30, 0.07,
+        	    new int[][] {
+        	            {40, mc.retina.height() - 40},
+        	            {40, 40},
+        	            {mc.retina.width() - 40, 40},
+        	            {mc.retina.width() - 40, mc.retina.height() - 40},
+        	            {40, mc.retina.height() - 40}
+        	    }
+        	),
+        	new OvalAnime(30,
+        	    new int[][] {
+        	            {50, 50},
+        	            {mc.retina.width() - 50, mc.retina.height() - 50},
+        	            {mc.retina.width() - 50, 50},
+        	            {50, mc.retina.height() - 50},
+        	            {50, 50}
+        	    }
+        	),
+        	new RectAnime(
+        	    20, 0.05,
+        	    new int[][] {
+        	            {40, 40},
+        	            {40, mc.retina.height() - 40},
+        	            {mc.retina.width() - 40, mc.retina.height() - 40},
+        	            {mc.retina.width() - 40, 40},
+        	            {40, 40}
+        	    }
+        	),
+        	new RectAnime(
+        	    30, 0.05,
+        	    new int[][] {
+        	            {40, mc.retina.height() - 40},
+        	            {mc.retina.width() - 40, mc.retina.height() - 40},
+        	            {mc.retina.width() - 40, 40},
+        	            {40, 40},
+        	            {40, mc.retina.height() - 40}
+        	    }
+        	),
+        	new RectAnime(
+        	    20, 0,
+        	    new int[][] {
+        	            {mc.retina.width() - 40, mc.retina.height() - 40},
+        	            {mc.retina.width() - 40, 40},
+        	            {40, 40},
+        	            {40, mc.retina.height() - 40},
+        	            {mc.retina.width() - 40, mc.retina.height() - 40}
+        	    }
+        	)
+        };
 	}
     
 	@Override
@@ -147,7 +246,7 @@ public class Stimulator implements Runnable, Imageable {
         }
         
         //workaround
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();
 
         for (Figure i : figures) {
@@ -161,7 +260,7 @@ public class Stimulator implements Runnable, Imageable {
 	
 	public BufferedImage getUserImage() {
         //workaround
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
 
         Graphics g = img.getGraphics();
 

@@ -62,6 +62,10 @@ public class Retina {
 	private Layer NL = null;
 	public void setNextLayer(Layer layer) {
 		NL = layer;
+		
+		width = layer.width();
+		height = layer.height();
+
 		initialize();
 	}
 	
@@ -139,11 +143,17 @@ public class Retina {
 
     public void process(BufferedImage physicalImage) {
 
-    	//preprocessing
+        double XScale = physicalImage.getWidth() / (double)width;
+        double YScale = physicalImage.getHeight() / (double)height;
+
+        //preprocessing
     	for (int x = 0; x < width; x++)
         	for (int y = 0; y < height; y++)
-        		preprocessed[x][y] = Utils.calcGrey(physicalImage, x, y) / 255;
+        		preprocessed[x][y] = Utils.calcGrey(physicalImage, (int)(x * XScale), (int)(y * YScale)) / 255;
     	
+        XScale = width / (double)NL.width();
+        YScale = height / (double)NL.height();
+
 //    	double SP, SC, SA;
 //        double K_cont;
         for (int ix = 0; ix < NL.width(); ix++) {
@@ -151,7 +161,7 @@ public class Retina {
 
 //        		OnOffReceptiveField mSensPol = sensorField[ix][iy];
 
-                NL.set(ix, iy, preprocessed[ix][iy]);
+                NL.set(ix, iy, preprocessed[(int)(ix * XScale)][(int)(iy * YScale)]);
 
 //                NL.set(ix,iy,false);
 //
