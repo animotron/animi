@@ -22,7 +22,7 @@ package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
 import org.animotron.animi.acts.*;
-import org.animotron.animi.acts.old.PosActivity;
+import org.animotron.animi.acts.old.CNActivation;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -495,7 +495,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Такт 1. Активация колонок (узнавание)
     private void cycleActivation() {
 //        cycle(1, 1, width() - 1, height() - 1, snActivation);
-        cycle(1, 1, width() - 1, height() - 1, cnActivation);
+//        cycle(1, 1, width() - 1, height() - 1, cnActivation);
 
         cycle(1, 1, width() - 1, height() - 1, posActivity);
 

@@ -116,20 +116,22 @@ public class MultiCortex {
 	}
 
     public void process() {
+    	CortexZoneSimple prev = null;
 		for (CortexZoneSimple zone : zones) {
-			zone.process();
+			if (prev != null) {
+				zone.zero();
+				prev.process();
+				prev.activateNextLayer();
+			}
+			prev = zone;
 		}
-		count++;
+		if (prev != null) {
+			prev.process();
 
-		Application.count.setText(String.valueOf(count));
+			Application.count.setText(String.valueOf(count++));
+		}
     }
 
-    public void prepareForSerialization() {
-//		z_video.prepareForSerialization();
-		z_viscor.prepareForSerialization();
-		z_asscor.prepareForSerialization();
-	}
-    
     public void save(Writer out) throws IOException {
     	out.write("<cortex>");
 		for (CortexZoneSimple zone : zones) {
