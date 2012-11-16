@@ -123,7 +123,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 				for (int i = 0; i < inhibitory_links; i++) {
                     int lx, ly;
                     do {
-                        do {
+//                        do {
                             if (count > inhibitory_links * 5) {
                             	if (Double.isInfinite(sigma)) {
                             		System.out.println("initialization failed @ x = "+x+" y = "+y);
@@ -148,21 +148,23 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
                             //определяем, что не вышли за границы поля колонок
                             //колонки по периметру не задействованы
-                        } while (!(lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1));
+//                        } while (!(lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1));
 
 //                        System.out.print("!");
 
                     // Проверка на повтор связи
-					} while (nerv_links[lx][ly]);
+					} while ((lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1) && nerv_links[lx][ly]);
 //                    System.out.print(".");
 
-					nerv_links[lx][ly] = true;
-
-					// Создаем синаптическую связь
-					Link link = new Link(getCol(lx, ly), getCol(x, y), LinkType.INHIBITORY);
-					
-					//UNDERSTAND: is it ok to have sum ^2 ~ 1
-					link.w = 1 / ((double) (inhibitory_links / 2));//Math.sqrt(1 / (double)stoper_links);
+                    if ((lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1)) {
+						nerv_links[lx][ly] = true;
+	
+						// Создаем синаптическую связь
+						Link link = new Link(getCol(lx, ly), getCol(x, y), LinkType.INHIBITORY);
+						
+						//UNDERSTAND: is it ok to have sum ^2 ~ 1
+						link.w = 1 / ((double) (inhibitory_links / 2));//Math.sqrt(1 / (double)stoper_links);
+                    }
 				}
 //				System.out.println();
 			}
@@ -224,7 +226,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		public void init() {
 	        boxSize = 1;
 	        for (Mapping m : in_zones) {
-	            boxSize = (int) Math.max(boxSize, m.disp * 3);
+	            boxSize = (int) Math.max(boxSize, m.disp);
 			}
 
 	        maxX = width() * boxSize;
@@ -324,7 +326,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		@Override
 		public double frequency() {
-			return 0.01;
+			return 1;
 		}
 	}
 
@@ -401,7 +403,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		@Override
 		public double frequency() {
-			return 0.01;
+			return 1;
 		}
 	}
 
@@ -464,6 +466,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			write(out, "synaptic-links-dispersion", mapping.disp);
 			write(out, "number-of-synaptic-links", mapping.ns_links);
 			write(out, "with-zone", mapping.zone.id);
+			write(out, "soft", mapping.soft);
 			out.write("/>");
 			
 		}

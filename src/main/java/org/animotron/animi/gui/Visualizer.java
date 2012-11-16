@@ -137,7 +137,8 @@ public class Visualizer extends JInternalFrame {
 				
 				@Override
 				public void mousePressed(MouseEvent e) {
-					Object obj = simulator.whatAt(e.getPoint());
+					Point point = new Point(e.getX() / zoom, e.getY() / zoom);
+					Object obj = simulator.whatAt(point);
 					//hack
 					if (obj != null && obj.getClass().isArray()) {
 						Application._.createFrame(new PFActual((Object[])obj));

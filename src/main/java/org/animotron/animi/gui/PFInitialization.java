@@ -190,50 +190,83 @@ public class PFInitialization extends JInternalFrame {
 
 	private void addField(GridBagConstraints gbc, final Field f, final Object obj) {
 
-        final JTextField text = new JTextField(getValue(f, obj));
-        if (f.isAnnotationPresent(InitParam.class))
-        	text.setEditable(!readOnly);
-        text.addFocusListener(new FocusListener() {
-			
-			@Override
-			public void focusLost(FocusEvent e) {
-				String type = f.getType().getName();
-				if ("int".equals(type)) {
+		if (f.getType() == boolean.class) {
+	        final JCheckBox chBox = new JCheckBox(getName(f), getBooleanValue(f, obj));
+	        
+	        if (f.isAnnotationPresent(InitParam.class)) {
+	        	chBox.setEnabled(!readOnly);
+	        }
+	        
+	        chBox.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
 					f.setAccessible(true);
 					try {
-						f.set(obj, Integer.valueOf(text.getText()));
+						f.set(obj, chBox.isSelected());
 					} catch (Exception e1) {
-						text.setText(getValue(f, obj));
+						chBox.setSelected(getBooleanValue(f, obj));
 					}
-				} else if ("double".equals(type)) {
+				}
+			});
+	        
+	        gbc.gridy++;
+	        panel.add(chBox, gbc);
+			
+		} else {
+	        final JTextField text = new JTextField(getValue(f, obj));
+	        if (f.isAnnotationPresent(InitParam.class))
+	        	text.setEditable(!readOnly);
+	        text.addFocusListener(new FocusListener() {
+				
+				@Override
+				public void focusLost(FocusEvent e) {
+					String type = f.getType().getName();
+					if ("int".equals(type)) {
 						f.setAccessible(true);
 						try {
-							f.set(obj, Double.valueOf(text.getText()));
+							f.set(obj, Integer.valueOf(text.getText()));
 						} catch (Exception e1) {
 							text.setText(getValue(f, obj));
 						}
-				} else {
-					System.out.println("unknown type "+type);
+					} else if ("double".equals(type)) {
+							f.setAccessible(true);
+							try {
+								f.set(obj, Double.valueOf(text.getText()));
+							} catch (Exception e1) {
+								text.setText(getValue(f, obj));
+							}
+					} else {
+						System.out.println("unknown type "+type);
+					}
 				}
-			}
+				
+				@Override
+				public void focusGained(FocusEvent e) {
+				}
+			});
 			
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-		});
-		
-		JLabel label = new JLabel(getName(f));
-
-        gbc.gridy++;
-        panel.add(label, gbc);
-
-        gbc.gridx++;
-        panel.add(text, gbc);
+			JLabel label = new JLabel(getName(f));
+	
+	        gbc.gridy++;
+	        panel.add(label, gbc);
+	
+	        gbc.gridx++;
+	        panel.add(text, gbc);
+		}
 	}
 
 	private String getName(Field f) {
 		return f.getName();
 //		return f.getAnnotation(RuntimeParam.class).name();
+	}
+
+	private Boolean getBooleanValue(Field f, Object obj) {
+		try {
+			f.setAccessible(true);
+			return Boolean.valueOf((Boolean) f.get(obj));
+		} catch (Exception e) {
+		}
+		return false;
 	}
 
 	private String getValue(Field f, Object obj) {

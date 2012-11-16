@@ -76,22 +76,26 @@ public class MultiCortex {
 
         z_1st = new CortexZoneComplex("1st", this, 200, 200,
             new Mapping[]{
-                new Mapping(z_in, 50, 1) //7x7 (50)
+                new Mapping(z_in, 50, 1, false) //7x7 (50)
             }
         );
+        z_in.nextLayers(new CortexZoneSimple[] {z_1st});
 
         z_goriz1 = new CortexZoneComplex("1st G", this, 20, 20,
             new Mapping[]{
-                new Mapping(z_1st, 400, 5) //20x20 (400)
+                new Mapping(z_1st, 400, 8, false) //20x20 (400)
             }
         );
+        z_1st.nextLayers(new CortexZoneSimple[] {z_goriz1});
 
         z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
             new Mapping[]{
-                new Mapping(z_1st, 400, 3),
-                new Mapping(z_goriz1, 300, 30)
+                new Mapping(z_1st, 400, 8, false),
+                new Mapping(z_goriz1, 300, 6, true)
             }
         );
+        z_1st.nextLayers(new CortexZoneSimple[] {z_2nd});
+        z_goriz1.nextLayers(new CortexZoneSimple[] {z_2nd});
 
 //        z_3rd = new CortexZoneComplex("3rd", this, 32, 32,
 //            new Mapping[]{
@@ -208,7 +212,8 @@ public class MultiCortex {
 					new Mapping(
 						prevZone,
 						Integer.valueOf(attrs.getValue("number-of-synaptic-links")),
-						Double.valueOf(attrs.getValue("synaptic-links-dispersion"))
+						Double.valueOf(attrs.getValue("synaptic-links-dispersion")),
+						Boolean.valueOf(attrs.getValue("soft"))
 					)
 				);
 				

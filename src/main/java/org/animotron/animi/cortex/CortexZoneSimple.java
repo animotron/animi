@@ -165,11 +165,21 @@ public class CortexZoneSimple implements Layer {
     			}
     		}
     	}
-    	
+	}
+
+	CortexZoneSimple[] nextLayers = null;
+	
+	public void nextLayers(CortexZoneSimple[] nextLayers) {
+		this.nextLayers = nextLayers;
 	}
 	
 	public void activateNextLayer() {
-		cycle(0, 0, width(), height(), nextLayerActivation);
+		boolean haveActive = false;
+		for (CortexZoneSimple layer : nextLayers) {
+			haveActive = layer.isActive() || haveActive;
+		}
+		if (haveActive)
+			cycle(0, 0, width(), height(), nextLayerActivation);
 	}
 	
 	public void zero() {
@@ -200,19 +210,25 @@ public class CortexZoneSimple implements Layer {
 	}
 	
     public void cycle (int x1, int y1, int x2, int y2, Act<CortexZoneSimple> task) {
-        for (int x = x1; x < x2; x++) {
-            for (int y = y1; y < y2; y++) {
-                task.process(this, x, y);
-            }
-        }
+    	try {
+	        for (int x = x1; x < x2; x++) {
+	            for (int y = y1; y < y2; y++) {
+	                task.process(this, x, y);
+	            }
+	        }
+    	} catch (Throwable e) {
+		}
     }
 
     public double cycle (int x1, int y1, int x2, int y2, ActWithMax<CortexZoneSimple> task, double max) {
-        for (int x = x1; x < x2; x++) {
-            for (int y = y1; y < y2; y++) {
-            	max = task.process(this, x, y, max);
-            }
-        }
+    	try {
+	        for (int x = x1; x < x2; x++) {
+	            for (int y = y1; y < y2; y++) {
+	            	max = task.process(this, x, y, max);
+	            }
+	        }
+		} catch (Throwable e) {
+		}
         return max;
     }
     

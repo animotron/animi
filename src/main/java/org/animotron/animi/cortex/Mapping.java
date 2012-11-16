@@ -39,12 +39,16 @@ public class Mapping {
 	@InitParam(name="disp")
 	public double disp;      // Describe a size of sensor field
 
+	@InitParam(name="soft")
+	public boolean soft = true;
+
 	Mapping () {}
 	
-    public Mapping(CortexZoneSimple zone, int ns_links, double disp) {
+    public Mapping(CortexZoneSimple zone, int ns_links, double disp, boolean soft) {
         this.zone = zone;
         this.disp = disp;
         this.ns_links = ns_links;
+        this.soft = soft;
     }
 
     public String toString() {
@@ -97,7 +101,7 @@ public class Mapping {
 				for (int i = 0; i < ns_links; i++) {
                     int lx, ly;
                     do {
-//                        do {
+                        do {
                             if (count > ns_links * 3) {
                             	if (Double.isInfinite(sigma)) {
                             		System.out.println("initialization failed @ x = "+x+" y = "+y);
@@ -122,16 +126,21 @@ public class Mapping {
 
                             //определяем, что не вышли за границы поля колонок
                             //колонки по периметру не задействованы
-//                        } while (!(lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1));
+                        } while (!(soft || (lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1)));
 
                     // Проверка на повтор связи
-					} while (nerv_links[lx][ly]);
+					} while (
+							(!soft || (lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1))
+							&& nerv_links[lx][ly]
+						);
 
                     System.out.print(".");
-					nerv_links[lx][ly] = true;
-
-					// Создаем синаптическую связь
-					new LinkQ(zone.getCol(lx, ly), z.col[x][y], 1 / (double)ns_links, fX, fY);
+                    if (lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1) {
+						nerv_links[lx][ly] = true;
+	
+						// Создаем синаптическую связь
+						new LinkQ(zone.getCol(lx, ly), z.col[x][y], 1 / (double)ns_links, fX, fY);
+                    }
 				}
 				System.out.println();
 			}
