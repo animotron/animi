@@ -22,19 +22,22 @@ package org.animotron.animi.gui;
 
 import javax.swing.JComponent;
 
+import org.animotron.animi.Imageable;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
 public abstract class Repainter implements Runnable {
 
-	private int frequency = 2;
+	private double frequency;
 
 	private JComponent component;
 	private Thread th;
 
-	public Repainter(JComponent comp) {
+	public Repainter(JComponent comp, Imageable imageable) {
 		component = comp;
+		frequency = imageable.frequency();
 		
 		th = new Thread(this);
 		th.setDaemon(true);
@@ -53,7 +56,9 @@ public abstract class Repainter implements Runnable {
 				prepareImage();
 				component.repaint();
                 
-                Thread.sleep(1000 / frequency);
+				if (frequency != 0)
+					Thread.sleep((int)(1000 / frequency));
+				
 			} catch (Throwable e) {
             }
 		}

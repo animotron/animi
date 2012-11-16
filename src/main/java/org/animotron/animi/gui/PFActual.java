@@ -526,4 +526,9 @@ public class PFActual implements Imageable, InternalFrameListener {
 	public void internalFrameDeactivated(InternalFrameEvent e) {
 		zone.getCRF().focusLost(point);
 	}
+
+	@Override
+	public double frequency() {
+		return 0.1;
+	}
 }

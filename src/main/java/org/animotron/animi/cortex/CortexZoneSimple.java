@@ -99,6 +99,10 @@ public class CortexZoneSimple implements Layer {
         return image;
     }
 
+	@Override
+	public double frequency() {
+		return 1;
+	}
 
 	@Override
 	public Object whatAt(Point point) {

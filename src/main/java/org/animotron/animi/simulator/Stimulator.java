@@ -299,4 +299,9 @@ public class Stimulator implements Runnable, Imageable {
 	@Override
 	public void closed(Point point) {
 	}
+
+	@Override
+	public double frequency() {
+		return frequency;
+	}
 }

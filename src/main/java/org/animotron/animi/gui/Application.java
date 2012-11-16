@@ -71,7 +71,6 @@ public class Application extends JFrame {
                   screenSize.height - inset*2);
  
         desktop = new JDesktopPane();
-//        createFrame(stimulator);
         
         setJMenuBar(menuBar = createMenuBar());
         
@@ -169,18 +168,6 @@ public class Application extends JFrame {
 		});
         menu.add(menuItem);
     }
-    
-//    private JMenuItem addMenu(JMenu menu, String name, int key, ActionListener listener) {
-//    	JMenuItem menuItem = new JMenuItem(name);
-//        menuItem.setMnemonic(key);
-//        menuItem.setAccelerator(
-//    		KeyStroke.getKeyStroke(key, ActionEvent.ALT_MASK)
-//		);
-//        menuItem.addActionListener(listener);
-//        menu.add(menuItem);
-//        
-//        return menuItem;
-//    }
     
     JToolBar bar;
     
@@ -421,18 +408,6 @@ public class Application extends JFrame {
     	addToBar();
 
     	createFrame(stimulator);
-
-        for (CortexZoneSimple zone : cortexs.zones) {
-        	if (zone instanceof CortexZoneComplex) {
-				CortexZoneComplex z = (CortexZoneComplex) zone;
-
-				createFrame(z);
-				createFrame(z.getCRF());
-				createFrame(z.getRRF());
-			} else {
-				createFrame(zone);
-			}
-        }
     }
     
     private void run() {

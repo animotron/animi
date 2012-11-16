@@ -321,6 +321,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		public void closed(Point point) {
 			watching.remove(point);
 		}
+
+		@Override
+		public double frequency() {
+			return 0.01;
+		}
 	}
 
 	RRF_Image RRF = null;
@@ -392,6 +397,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		@Override
 		public void closed(Point point) {
+		}
+
+		@Override
+		public double frequency() {
+			return 0.01;
 		}
 	}
 

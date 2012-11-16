@@ -22,9 +22,12 @@ package org.animotron.animi.gui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
@@ -57,19 +60,21 @@ public class Visualizer extends JInternalFrame {
 	
 	private BufferedImage image = null;
 	
-	public Visualizer(Imageable simulator) {
-	    super(simulator.getImageName(),
+	private int zoom = 1;
+	
+	public Visualizer(Imageable imageable) {
+	    super(imageable.getImageName(),
 	            true, //resizable
 	            true, //closable
 	            false, //maximizable
 	            true);//iconifiable
 	    
-	    this.simulator = simulator;
+	    this.simulator = imageable;
 	    
-	    if (simulator instanceof InternalFrameListener)
-	    	addInternalFrameListener((InternalFrameListener) simulator);
+	    if (imageable instanceof InternalFrameListener)
+	    	addInternalFrameListener((InternalFrameListener) imageable);
 
-		BufferedImage img = simulator.getImage();
+		BufferedImage img = imageable.getImage();
 
 		Dimension size = new Dimension(img.getWidth()+20, img.getHeight()+40);
 	    
@@ -106,8 +111,17 @@ public class Visualizer extends JInternalFrame {
 
 		getContentPane().add(canvas);
 		
-		repainter = new Repainter(canvas);
+		repainter = new Repainter(canvas, imageable);
 		repainter.start();
+		
+		addMouseWheelListener(new MouseWheelListener() {
+			
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				zoom += e.getWheelRotation();
+				if (zoom <= 0) zoom = 1;
+			}
+		});
 	}
 	
 	private class ImageCanvas extends JComponent {
@@ -145,18 +159,18 @@ public class Visualizer extends JInternalFrame {
 		}
 
 		public void paint(Graphics g) {
-//			if (image == null) return;
-			g.drawImage(image, 0, 0, this);
-//			g.drawImage(
-//				image.getScaledInstance(image.getWidth()*10, image.getHeight()*10, Image.SCALE_AREA_AVERAGING),
-//				0, 0, this);
+			if (image == null) return;
+//			g.drawImage(image, 0, 0, this);
+			g.drawImage(
+				image.getScaledInstance(image.getWidth()*zoom, image.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
+				0, 0, this);
 		}
 	}
 	
     private class Repainter extends org.animotron.animi.gui.Repainter {
     	
-		public Repainter(JComponent comp) {
-			super(comp);
+		public Repainter(JComponent comp, Imageable imageable) {
+			super(comp, imageable);
 		}
 
 		@Override

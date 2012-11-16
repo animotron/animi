@@ -40,4 +40,6 @@ public interface Imageable {
 	public void focusLost(Point point);
 
 	public void closed(Point point);
+
+	public double frequency();
 }
