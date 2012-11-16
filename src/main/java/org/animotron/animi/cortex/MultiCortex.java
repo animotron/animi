@@ -79,19 +79,19 @@ public class MultiCortex {
                 new Mapping(z_in, 50, 1) //7x7 (50)
             }
         );
-//
-//        z_goriz1 = new CortexZoneComplex("1st G", this, 20, 20,
-//            new Mapping[]{
-//                new Mapping(z_1st, 400, 5) //20x20 (400)
-//            }
-//        );
-//
-//        z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
-//            new Mapping[]{
-//                new Mapping(z_1st, 400, 3),
-//                new Mapping(z_goriz1, 300, 30)
-//            }
-//        );
+
+        z_goriz1 = new CortexZoneComplex("1st G", this, 20, 20,
+            new Mapping[]{
+                new Mapping(z_1st, 400, 5) //20x20 (400)
+            }
+        );
+
+        z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
+            new Mapping[]{
+                new Mapping(z_1st, 400, 3),
+                new Mapping(z_goriz1, 300, 30)
+            }
+        );
 
 //        z_3rd = new CortexZoneComplex("3rd", this, 32, 32,
 //            new Mapping[]{
@@ -99,8 +99,8 @@ public class MultiCortex {
 //            }
 //        );
 
-//        zones = new CortexZoneSimple[]{z_in, z_1st, z_goriz1, z_2nd};
-        zones = new CortexZoneSimple[]{z_in, z_1st};
+        zones = new CortexZoneSimple[]{z_in, z_1st, z_goriz1, z_2nd};
+//        zones = new CortexZoneSimple[]{z_in, z_1st};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);

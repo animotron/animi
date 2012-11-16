@@ -97,7 +97,7 @@ public class Mapping {
 				for (int i = 0; i < ns_links; i++) {
                     int lx, ly;
                     do {
-                        do {
+//                        do {
                             if (count > ns_links * 3) {
                             	if (Double.isInfinite(sigma)) {
                             		System.out.println("initialization failed @ x = "+x+" y = "+y);
@@ -122,7 +122,7 @@ public class Mapping {
 
                             //определяем, что не вышли за границы поля колонок
                             //колонки по периметру не задействованы
-                        } while (!(lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1));
+//                        } while (!(lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1));
 
                     // Проверка на повтор связи
 					} while (nerv_links[lx][ly]);
