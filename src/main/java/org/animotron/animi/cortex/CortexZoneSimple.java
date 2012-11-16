@@ -53,9 +53,9 @@ public class CortexZoneSimple implements Layer {
     public NeuronComplex[][] col;
     
 	@InitParam(name="width")
-	public int width = 192;
+	public int width = 100;
 	@InitParam(name="height")
-	public int height = 144;
+	public int height = 100;
 	
 	public int count = 0;
 

@@ -55,10 +55,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public Restructorization restructorization = new Restructorization();
 
 	@InitParam(name="disper")
-	public double disper = 1.0;
+	public double disper = 1.5;
 
 	@InitParam(name="inhibitory_links")
-	public int inhibitory_links = 30;
+	public int inhibitory_links = 40;
 	
 	/** Number of synaptic connections of the all simple neurons **/
 	public int ns_links;
@@ -88,99 +88,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
             ns_links += i.ns_links;
 		}
 
-		// Создание синаптических связей симпл нейронов.
-		// Связи распределяются случайным образом.
-		// Плотность связей убывает экспоненциально с удалением от колонки.
-		double x_in_nerv, y_in_nerv;
-        double X, Y, S;
-        double _sigma, sigma;
-        
-        double fX, fY;
-
 		for (Mapping m : in_zones) {
-			
-            for (int x = 0; x < m.zone.width(); x++) {
-				for (int y = 0; y < m.zone.height(); y++) {
-					m.zone.col[x][y].a_links.clear();
-					m.zone.col[x][y].a_Qs.clear();
-				}
-            }
-
-			fX = m.zone.width() / (double) width();
-			fY = m.zone.height() / (double) height();
-
-            boolean[][] nerv_links = new boolean[m.zone.width()][m.zone.height()];
-
-            for (int x = 0; x < width(); x++) {
-				for (int y = 0; y < height(); y++) {
-//					System.out.println("x = "+x+" y = "+y);
-
-					// Определение координат текущего нейрона в масштабе
-					// проецируемой зоны
-					x_in_nerv = x * m.zone.width() / (double) width();
-					y_in_nerv = y * m.zone.height() / (double) height();
-//					System.out.println("x_in_nerv = "+x_in_nerv+" y_in_nerv = "+y_in_nerv);
-
-                    _sigma = m.disp;// * ((m.zone.width() + m.zone.height()) / 2);
-                    sigma = _sigma;
-
-					// Обнуление массива занятости связей
-					for (int n1 = 0; n1 < m.zone.width(); n1++) {
-						for (int n2 = 0; n2 < m.zone.height(); n2++) {
-							nerv_links[n1][n2] = false;
-						}
-					}
-
-					// преобразование Бокса — Мюллера для получения
-					// нормально распределенной величины
-					// DispLink - дисперсия связей
-					int count = 0;
-					for (int i = 0; i < m.ns_links; i++) {
-                        int lx, ly;
-                        do {
-                            do {
-                                if (count > m.ns_links * 3) {
-                                	if (Double.isInfinite(sigma)) {
-                                		System.out.println("initialization failed @ x = "+x+" y = "+y);
-                                		System.exit(1);
-                                	}
-                                	sigma += _sigma * 0.1;
-        							System.out.println("\n"+i+" of "+m.ns_links+" ("+sigma+")");
-                                	count = 0;
-                                }
-                                count++;
-                                	
-                                do {
-                                    X = 2.0 * Math.random() - 1;
-                                    Y = 2.0 * Math.random() - 1;
-                                    S = X * X + Y * Y;
-                                } while (S > 1 || S == 0);
-                                S = Math.sqrt(-2 * Math.log(S) / S);
-                                double dX = X * S * sigma;
-                                double dY = Y * S * sigma;
-                                lx = (int) Math.round(x_in_nerv + dX);
-                                ly = (int) Math.round(y_in_nerv + dY);
-
-                                //определяем, что не вышли за границы поля колонок
-                                //колонки по периметру не задействованы
-                            } while (!(lx >= 1 && ly >= 1 && lx < m.zone.width() - 1 && ly < m.zone.height() - 1));
-
-                        // Проверка на повтор связи
-						} while (nerv_links[lx][ly]);
-
-                        System.out.print(".");
-						nerv_links[lx][ly] = true;
-
-						// Создаем синаптическую связь
-						new LinkQ(m.zone.getCol(lx, ly), col[x][y], 1 / (double)m.ns_links, fX, fY);
-					}
-					System.out.println();
-				}
-			}
+			m.map(this);
 		}
 
-        //разброс торозных связей
-		_sigma = disper;// * ((width() + height()) / 2);
+        double X, Y, S;
+		double x_in_nerv, y_in_nerv;
+
+		//разброс торозных связей
+		double sigma, _sigma = disper;
         boolean[][] nerv_links = new boolean[width()][height()];
         
         int _sigma_ = 1;//(int) _sigma;

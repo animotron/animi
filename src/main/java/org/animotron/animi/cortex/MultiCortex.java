@@ -49,9 +49,11 @@ public class MultiCortex {
     
     public Retina retina;
 
-    public CortexZoneSimple z_video;
-    public CortexZoneComplex z_viscor;
-    public CortexZoneComplex z_asscor;
+    public CortexZoneSimple z_in;
+    public CortexZoneComplex z_1st;
+    public CortexZoneComplex z_goriz1;
+    public CortexZoneComplex z_2nd;
+    public CortexZoneComplex z_goriz2;
     public CortexZoneComplex z_3rd;
 //  @Params
 //  public CortexZoneSimple z_good;
@@ -70,42 +72,38 @@ public class MultiCortex {
 
     public MultiCortex() {
 
-        z_video = new CortexZoneSimple("Input visual", this);
+        z_in = new CortexZoneSimple("Input", this);
 
-        z_viscor = new CortexZoneComplex("Prime visual", this, 92, 74,
+        z_1st = new CortexZoneComplex("1st", this, 200, 200,
             new Mapping[]{
-                new Mapping(z_video, 300, 5) //20x20 (300)
+                new Mapping(z_in, 50, 1) //7x7 (50)
             }
         );
-
-//        System.out.println("z_good");
-//        z_good = new SCortexZone("Zone good", 20, 20);
-//        System.out.println("z_bad");
-//        z_bad = new SCortexZone("Zone bad", 20, 20);
 //
-        z_asscor = new CortexZoneComplex("Associative", this, 32, 32,
-                new Mapping[]{
-                        new Mapping(z_viscor, 300, 5)
-//                        ,
-//                        new Mapping(z_good, 10, 0.01),
-//                        new Mapping(z_bad, 10, 0.01)
-                }
-        );
+//        z_goriz1 = new CortexZoneComplex("1st G", this, 20, 20,
+//            new Mapping[]{
+//                new Mapping(z_1st, 400, 5) //20x20 (400)
+//            }
+//        );
+//
+//        z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
+//            new Mapping[]{
+//                new Mapping(z_1st, 400, 3),
+//                new Mapping(z_goriz1, 300, 30)
+//            }
+//        );
 
-        z_3rd = new CortexZoneComplex("3rd cortex", this, 32, 32,
-                new Mapping[]{
-                        new Mapping(z_asscor, 300, 5)
-//                        ,
-//                        new Mapping(z_good, 10, 0.01),
-//                        new Mapping(z_bad, 10, 0.01)
-                }
-        );
-//        z_3rd.inhibitory_links = 100;
+//        z_3rd = new CortexZoneComplex("3rd", this, 32, 32,
+//            new Mapping[]{
+//                new Mapping(z_2nd, 300, 5)
+//            }
+//        );
 
-        zones = new CortexZoneSimple[]{z_video, z_viscor, z_asscor, z_3rd};
+//        zones = new CortexZoneSimple[]{z_in, z_1st, z_goriz1, z_2nd};
+        zones = new CortexZoneSimple[]{z_in, z_1st};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
-        retina.setNextLayer(z_video);
+        retina.setNextLayer(z_in);
     }
 
 

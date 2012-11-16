@@ -47,15 +47,12 @@ public class Application extends JFrame {
 	
 	static Application _ = null;
 
-//	private JMenuItem miInit = null;
-//	private JMenuItem miRun = null;
-//	private JMenuItem miPause = null;
-//	private JMenuItem miResume = null;
-//	private JMenuItem miStop = null;
-	
 	public static MultiCortex cortexs = null;
 	
 	JDesktopPane desktop;
+
+	private JMenuBar menuBar;
+	
 	public static JLabel count;
 	
 	private Application() {
@@ -76,7 +73,7 @@ public class Application extends JFrame {
         desktop = new JDesktopPane();
 //        createFrame(stimulator);
         
-        setJMenuBar(createMenuBar());
+        setJMenuBar(menuBar = createMenuBar());
         
         c.add(createToolBar(),BorderLayout.NORTH);
         c.add(desktop, BorderLayout.CENTER);
@@ -102,16 +99,6 @@ public class Application extends JFrame {
             }
         });
 
-//        //constants control
-//        //минимальное соотношение средней контрасности переферии и центра сенсорного поля, 
-//        //необходимое для активации контрастность для темных элементов (0)
-//		addDoubleSlider("соот.  переферии и центра", "KContr1", tools);
-//		//контрастность для светлых элементов
-//		addDoubleSlider("контрастность для светлых", "KContr2", tools);
-//		addDoubleSlider("минимальная контрастность", "KContr3", tools);
-//		
-//		addIntSlider("Bright Level","Level_Bright",tools);
-//
 //		camView = new WebcamPanel();
 //        add(camView, CENTER);
 //
@@ -127,22 +114,7 @@ public class Application extends JFrame {
         menu.setMnemonic(KeyEvent.VK_D);
         menuBar.add(menu);
  
-        //Set up the first menu item.
-        JMenuItem menuItem = new JMenuItem("Retina");
-        menuItem.setMnemonic(KeyEvent.VK_N);
-        menuItem.setAccelerator(
-    		KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK)
-		);
-        menuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-	            createFrame(stimulator);
-			}
-		});
-        menu.add(menuItem);
- 
-        //Set up the second menu item.
-        menuItem = new JMenuItem("Quit");
+        JMenuItem menuItem = new JMenuItem("Quit");
         menuItem.setMnemonic(KeyEvent.VK_Q);
         menuItem.setAccelerator(
     		KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.ALT_MASK)
@@ -157,6 +129,45 @@ public class Application extends JFrame {
         menu.add(menuItem);
  
         return menuBar;
+    }
+    
+    JMenu windowsMenu = null;
+    protected void createWindowsMenuBar(JMenuBar menuBar) {
+    	if (windowsMenu != null) {
+    		windowsMenu.removeAll();
+    	} else {
+	        windowsMenu = new JMenu("Windows");
+	        windowsMenu.setMnemonic(KeyEvent.VK_W);
+	        menuBar.add(windowsMenu);
+    	}
+    	
+    	addMenu(windowsMenu, stimulator);
+ 
+        for (CortexZoneSimple zone : cortexs.zones) {
+        	if (zone instanceof CortexZoneComplex) {
+        		JMenu menu = new JMenu(zone.toString());
+    	        windowsMenu.add(menu);
+
+    	        CortexZoneComplex z = (CortexZoneComplex) zone;
+
+    	        addMenu(menu, z);
+    	        addMenu(menu, z.getCRF());
+    	        addMenu(menu, z.getRRF());
+			} else {
+				addMenu(windowsMenu, zone);
+			}
+        }
+    }
+    
+    private void addMenu(JMenu menu, final Imageable imageable) {
+        JMenuItem menuItem = new JMenuItem(imageable.getImageName());
+        menuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+		    	createFrame(imageable);
+			}
+		});
+        menu.add(menuItem);
     }
     
 //    private JMenuItem addMenu(JMenu menu, String name, int key, ActionListener listener) {
@@ -405,6 +416,8 @@ public class Application extends JFrame {
     	clearFrames();
     	
     	createToolBar();
+    	
+    	createWindowsMenuBar(menuBar);
     	addToBar();
 
     	createFrame(stimulator);

@@ -50,4 +50,91 @@ public class Mapping {
     public String toString() {
     	return "mapping "+zone.toString();
     }
+
+	// Связи распределяются случайным образом.
+	// Плотность связей убывает экспоненциально с удалением от колонки.
+	public void map(CortexZoneComplex z) {
+        for (int x = 0; x < zone.width(); x++) {
+			for (int y = 0; y < zone.height(); y++) {
+				zone.col[x][y].a_links.clear();
+				zone.col[x][y].a_Qs.clear();
+			}
+        }
+
+		double fX = zone.width() / (double) z.width();
+		double fY = zone.height() / (double) z.height();
+
+        double X, Y, S;
+		double x_in_nerv, y_in_nerv;
+        double _sigma, sigma;
+
+        boolean[][] nerv_links = new boolean[zone.width()][zone.height()];
+
+        for (int x = 0; x < z.width(); x++) {
+			for (int y = 0; y < z.height(); y++) {
+//				System.out.println("x = "+x+" y = "+y);
+
+				// Определение координат текущего нейрона в масштабе
+				// проецируемой зоны
+				x_in_nerv = x * zone.width() / (double) z.width();
+				y_in_nerv = y * zone.height() / (double) z.height();
+//				System.out.println("x_in_nerv = "+x_in_nerv+" y_in_nerv = "+y_in_nerv);
+
+                _sigma = disp;// * ((m.zone.width() + m.zone.height()) / 2);
+                sigma = _sigma;
+
+				// Обнуление массива занятости связей
+				for (int n1 = 0; n1 < zone.width(); n1++) {
+					for (int n2 = 0; n2 < zone.height(); n2++) {
+						nerv_links[n1][n2] = false;
+					}
+				}
+
+				// преобразование Бокса — Мюллера для получения
+				// нормально распределенной величины
+				// DispLink - дисперсия связей
+				int count = 0;
+				for (int i = 0; i < ns_links; i++) {
+                    int lx, ly;
+                    do {
+                        do {
+                            if (count > ns_links * 3) {
+                            	if (Double.isInfinite(sigma)) {
+                            		System.out.println("initialization failed @ x = "+x+" y = "+y);
+                            		System.exit(1);
+                            	}
+                            	sigma += _sigma * 0.1;
+    							System.out.println("\n"+i+" of "+ns_links+" ("+sigma+")");
+                            	count = 0;
+                            }
+                            count++;
+                            	
+                            do {
+                                X = 2.0 * Math.random() - 1;
+                                Y = 2.0 * Math.random() - 1;
+                                S = X * X + Y * Y;
+                            } while (S > 1 || S == 0);
+                            S = Math.sqrt(-2 * Math.log(S) / S);
+                            double dX = X * S * sigma;
+                            double dY = Y * S * sigma;
+                            lx = (int) Math.round(x_in_nerv + dX);
+                            ly = (int) Math.round(y_in_nerv + dY);
+
+                            //определяем, что не вышли за границы поля колонок
+                            //колонки по периметру не задействованы
+                        } while (!(lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1));
+
+                    // Проверка на повтор связи
+					} while (nerv_links[lx][ly]);
+
+                    System.out.print(".");
+					nerv_links[lx][ly] = true;
+
+					// Создаем синаптическую связь
+					new LinkQ(zone.getCol(lx, ly), z.col[x][y], 1 / (double)ns_links, fX, fY);
+				}
+				System.out.println();
+			}
+		}
+	}
 }
