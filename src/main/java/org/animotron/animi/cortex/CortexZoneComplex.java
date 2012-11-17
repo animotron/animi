@@ -212,8 +212,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	class ColumnRF_Image implements Imageable {
 		
 	    private int boxSize;
-	    private int maxX;
-	    private int maxY;
 	    private BufferedImage image;
 	    
 	    private List<Point> watching = new ArrayList<Point>();
@@ -291,7 +289,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
                     	pX = x*boxSize + (boxSize / 2) + (link.synapse.x - (int)(x * link.fX));
 						pY = y*boxSize + (boxSize / 2) + (link.synapse.y - (int)(y * link.fY));
 						
-						if (pX > image.getWidth() || pY > image.getHeight())
+						if (pX >= image.getWidth() || pY >= image.getHeight())
 							continue;
                                 	
 						if (       pX > x*boxSize 
@@ -439,6 +437,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     		return;
     	
     	cycleActivation();
+    	
     	if (isLearning()) {
     		cycleLearning();
     	
