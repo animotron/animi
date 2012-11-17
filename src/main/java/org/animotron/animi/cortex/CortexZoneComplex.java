@@ -423,9 +423,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Такт 1. Активация колонок (узнавание)
     private void cycleActivation() {
 //        cycle(1, 1, width() - 1, height() - 1, snActivation);
-//        cycle(1, 1, width() - 1, height() - 1, cnActivation);
+        cycle(1, 1, width() - 1, height() - 1, cnActivation);
 
-        cycle(1, 1, width() - 1, height() - 1, posActivity);
+//        cycle(1, 1, width() - 1, height() - 1, posActivity);
 
         double max;
         for (int i = 0; i < 10; i++) {

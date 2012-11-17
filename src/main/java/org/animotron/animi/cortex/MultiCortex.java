@@ -83,16 +83,18 @@ public class MultiCortex {
 
         z_goriz1 = new CortexZoneComplex("1st G", this, 20, 20,
             new Mapping[]{
-                new Mapping(z_1st, 400, 8, false) //20x20 (400)
+                new Mapping(z_1st, 400, 2, false) //20x20 (400)
             }
         );
-        z_goriz1.inhibitory_links = 300;
+        z_goriz1.inhibitory_links = 0;
+        z_goriz1.disper = 1;
+
         z_1st.nextLayers(new CortexZoneSimple[] {z_goriz1});
 
         z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
             new Mapping[]{
-                new Mapping(z_1st, 400, 8, false),
-                new Mapping(z_goriz1, 300, 6, true)
+                new Mapping(z_1st, 400, 2, false),
+                new Mapping(z_goriz1, 300, 2, true)
             }
         );
         z_1st.nextLayers(new CortexZoneSimple[] {z_2nd});
@@ -118,21 +120,28 @@ public class MultiCortex {
 		}
 	}
 
-    public void process() {
-    	CortexZoneSimple prev = null;
-		for (CortexZoneSimple zone : zones) {
-			if (prev != null) {
-				zone.zero();
-				prev.process();
-				prev.activateNextLayer();
-			}
-			prev = zone;
-		}
-		if (prev != null) {
-			prev.process();
+//    public void process() {
+//    	CortexZoneSimple prev = null;
+//		for (CortexZoneSimple zone : zones) {
+//			if (prev != null) {
+//				zone.zero();
+//				prev.process();
+//				prev.activateNextLayer();
+//			}
+//			prev = zone;
+//		}
+//		if (prev != null) {
+//			prev.process();
+//
+//			Application.count.setText(String.valueOf(count++));
+//		}
+//    }
 
-			Application.count.setText(String.valueOf(count++));
+    public void process() {
+		for (CortexZoneSimple zone : zones) {
+			zone.process();
 		}
+		Application.count.setText(String.valueOf(count++));
     }
 
     public void save(Writer out) throws IOException {
