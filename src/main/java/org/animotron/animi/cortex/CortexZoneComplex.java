@@ -48,7 +48,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public CNActivation cnActivation = new CNActivation();
 	
 	public PosActivity posActivity = new PosActivity();
+	
+	@Params
 	public Inhibitory inhibitory = new Inhibitory();
+	
 	public FinalActivity finalActivity = new FinalActivity();
 
 	@Params
@@ -163,7 +166,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						Link link = new Link(getCol(lx, ly), getCol(x, y), LinkType.INHIBITORY);
 						
 						//UNDERSTAND: is it ok to have sum ^2 ~ 1
-						link.w = 3 / ((double) inhibitory_links);//Math.sqrt(1 / (double)stoper_links);
+						link.w = Math.sqrt(1 / (double)inhibitory_links);
                     }
 				}
 //				System.out.println();

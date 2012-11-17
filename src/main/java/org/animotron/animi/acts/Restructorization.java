@@ -38,7 +38,7 @@ public class Restructorization implements Act<CortexZoneSimple> {
 	@RuntimeParam(name = "ny")
 	public double ny = 0.1 / 5;
 	@RuntimeParam(name = "inhibitoryNy")
-	public double inhibitoryNy = 0.1 / 5;
+	public double inhibitoryNy = ny / 5;
 
 	public Restructorization() {}
 
@@ -76,9 +76,18 @@ public class Restructorization implements Act<CortexZoneSimple> {
 		}
 		
 		//inhibitory restructorization & normlization
-//		for (Link link : cn.s_inhibitoryLinks) {
-//			
+		sumQ2 = 0;
+		for (Link link : cn.s_inhibitoryLinks) {
 //			link.w += cn.activity * (link.synapse.activity * inhibitoryNy - cn.activity * link.w);
-//		}
+			link.w += cn.activity * link.synapse.activity * inhibitoryNy;
+
+			sumQ2 += link.w * link.w;
+		}
+
+//		sumQ2 *= k;
+		norm = Math.sqrt(sumQ2);
+		for (Link link : cn.s_inhibitoryLinks) {
+			link.w = link.w / norm;
+		}
     }
 }

@@ -20,6 +20,7 @@
  */
 package org.animotron.animi.acts;
 
+import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 
 /**
@@ -31,6 +32,9 @@ import org.animotron.animi.cortex.*;
  */
 public class Inhibitory implements ActWithMax<CortexZoneSimple> {
 
+	@RuntimeParam(name = "k")
+	public double k = 0.3;
+	
 	public Inhibitory() {}
 
 	@Override
@@ -44,6 +48,8 @@ public class Inhibitory implements ActWithMax<CortexZoneSimple> {
     	for (Link link : cn.s_inhibitoryLinks) {
     		delta += link.w * link.synapse.activity;
     	}
+    	
+    	delta *= k;
     	
     	cn.activity = cn.activity - delta;
     	if (cn.activity < 0 || Double.isNaN(cn.activity)) 
