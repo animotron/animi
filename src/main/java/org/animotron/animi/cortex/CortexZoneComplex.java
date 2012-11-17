@@ -224,13 +224,37 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 
 		public void init() {
-	        boxSize = 1;
-	        for (Mapping m : in_zones) {
-	            boxSize = (int) Math.max(boxSize, m.disp);
-			}
 
-	        maxX = width() * boxSize;
+			int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+			int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+
+			for (int x = 1; x < width() - 1; x++) {
+				for (int y = 1; y < height() - 1; y++) {
+					minX = Integer.MAX_VALUE; minY = Integer.MAX_VALUE;
+					maxX = Integer.MIN_VALUE; maxY = Integer.MIN_VALUE;
+
+					for (LinkQ link : col[x][y].Qs.values()) {
+			        	minX = Math.min(minX, link.synapse.x);
+			        	minY = Math.min(minY, link.synapse.y);
+			
+			        	maxX = Math.max(maxX, link.synapse.x);
+			        	maxY = Math.max(maxY, link.synapse.y);
+			        }
+					boxSize = Math.max(maxX - minX, maxY - minY);
+				}
+			}
+	        
+	        if (boxSize < 2) boxSize = 2;
+
+			maxX = width() * boxSize;
 	        maxY = height() * boxSize;
+	        
+	        if (maxX > 600) {
+	        	maxX = 600;
+	        }
+	        if (maxY > 600) {
+	        	maxY = 600;
+	        }
 	        
 	        image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
 		}
@@ -242,7 +266,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		public BufferedImage getImage() {
 			Graphics g = image.getGraphics();
 			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, maxX, maxY);
+			g.fillRect(0, 0, image.getWidth(), image.getHeight());
 	
 			int pX, pY = 0;
 	
@@ -266,6 +290,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					for (LinkQ link : cn.Qs.values()) {
                     	pX = x*boxSize + (boxSize / 2) + (link.synapse.x - (int)(x * link.fX));
 						pY = y*boxSize + (boxSize / 2) + (link.synapse.y - (int)(y * link.fY));
+						
+						if (pX > image.getWidth() || pY > image.getHeight())
+							continue;
                                 	
 						if (       pX > x*boxSize 
                     			&& pX < (x*boxSize+boxSize) 
