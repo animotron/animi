@@ -76,6 +76,9 @@ public class Mapping {
         double _sigma, sigma;
 
         boolean[][] nerv_links = new boolean[zone.width()][zone.height()];
+        
+		double sumQ2 = (1 / (double)ns_links * 1 / (double)ns_links) * ns_links;
+		double norm = Math.sqrt(sumQ2);
 
         for (int x = 0; x < toZone.width(); x++) {
 			for (int y = 0; y < toZone.height(); y++) {
@@ -140,7 +143,7 @@ public class Mapping {
                         nerv_links[lx][ly] = true;
 	
 						// Создаем синаптическую связь
-						new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], 1 / (double)ns_links, fX, fY);
+						new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY);
                     } else {
                     	System.out.print("!");
                     }
