@@ -107,7 +107,7 @@ public class Mapping {
                             		System.out.println("initialization failed @ x = "+x+" y = "+y);
                             		System.exit(1);
                             	}
-                            	sigma *= 0.05;//_sigma * 0.1;
+                            	sigma *= 1.05;//_sigma * 0.1;
     							System.out.println("\n"+i+" of "+ns_links+" ("+sigma+")");
                             	count = 0;
                             }
