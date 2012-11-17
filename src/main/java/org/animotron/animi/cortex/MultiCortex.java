@@ -86,6 +86,7 @@ public class MultiCortex {
                 new Mapping(z_1st, 400, 8, false) //20x20 (400)
             }
         );
+        z_goriz1.inhibitory_links = 300;
         z_1st.nextLayers(new CortexZoneSimple[] {z_goriz1});
 
         z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
