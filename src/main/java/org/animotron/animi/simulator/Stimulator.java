@@ -40,7 +40,7 @@ import org.animotron.animi.cortex.MultiCortex;
 public class Stimulator implements Runnable, Imageable {
 	
 	@RuntimeParam(name = "frequency")
-	public int frequency = 60; // Hz
+	public int frequency = 0; // Hz
 
     @Params
     public Figure[] figures;

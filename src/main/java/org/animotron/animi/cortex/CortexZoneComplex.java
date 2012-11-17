@@ -385,6 +385,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 
 		public BufferedImage getImage() {
+			
+			int maxGray = 0;
+			
 			Graphics g = image.getGraphics();
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, image.getWidth(), image.getHeight());
@@ -401,11 +404,28 @@ public class CortexZoneComplex extends CortexZoneSimple {
 							c += 255 * cn.backProjection * link.q;
 		            		
 							if (c > 255) c = 255;
+							
+							maxGray = Math.max(maxGray, c);
 		            		
 		            		image.setRGB(link.synapse.x, link.synapse.y, Utils.create_rgb(255, c, c, c));
 						} catch (Exception e) {
 							System.out.println(image.getWidth()+" - "+link.synapse.x);;
 						}
+					}
+				}
+			}
+			if (maxGray != 255 || maxGray != 0) {
+				double bright = 255 / (double)maxGray;
+				for (int x = 0; x < image.getWidth(); x++) {
+					for (int y = 0; y < image.getHeight(); y++) {
+						
+						int c = Utils.calcGrey(image, x, y);
+						
+						c *= bright;
+	            		
+						if (c > 255) c = 255;
+	            		
+	            		image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
 					}
 				}
 			}
