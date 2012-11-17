@@ -90,13 +90,15 @@ public class PFActual implements Imageable, InternalFrameListener {
 			num = 5;
 		}
 		
-		BufferedImage image = new BufferedImage((boxSize*zoom+5)*num, boxSize*zoom*3, BufferedImage.TYPE_INT_RGB);
+
+		BufferedImage image = new BufferedImage((boxSize*zoom+5)*num, (boxSize*zoom*4)+(10*5), BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
         g.setColor(Color.WHITE);
 
-		int textY = g.getFontMetrics(g.getFont()).getHeight();
 		int x = 0, y = 0;
 		
+		int textY = g.getFontMetrics(g.getFont()).getHeight();
+
 		y += textY;
 		g.drawString("column [ "+point.x+" : "+point.y+" ]", x, y);		
 

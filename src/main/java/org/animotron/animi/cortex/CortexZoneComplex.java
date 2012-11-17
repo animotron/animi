@@ -163,7 +163,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						Link link = new Link(getCol(lx, ly), getCol(x, y), LinkType.INHIBITORY);
 						
 						//UNDERSTAND: is it ok to have sum ^2 ~ 1
-						link.w = 1 / ((double) (inhibitory_links / 2));//Math.sqrt(1 / (double)stoper_links);
+						link.w = 3 / ((double) inhibitory_links);//Math.sqrt(1 / (double)stoper_links);
                     }
 				}
 //				System.out.println();
@@ -457,7 +457,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
         for (int i = 0; i < 10; i++) {
         	max = cycle(1, 1, width() - 1, height() - 1, inhibitory, Double.MIN_VALUE);
 
-        	if (max < 0.1) 
+        	if (max < 0.05) 
         		break;
         }
 
