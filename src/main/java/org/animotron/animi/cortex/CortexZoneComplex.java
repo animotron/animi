@@ -61,7 +61,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public double disper = 1.5;
 
 	@InitParam(name="inhibitory_links")
-	public int inhibitory_links = 40;
+	public int inhibitory_links = 30;
 	
 	/** Number of synaptic connections of the all simple neurons **/
 	public int ns_links;
