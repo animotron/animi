@@ -319,16 +319,16 @@ public class Application extends JFrame {
 
         for (final CortexZoneSimple z : cortexs.zones) {
         	if (!(z instanceof CortexZoneComplex)) {
-	        	final JCheckBox chB_ = new JCheckBox("Saccade");
-	        	chB_.addActionListener(new ActionListener() {
-					
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						z.saccade = !z.saccade;
-						chB_.setSelected(z.saccade);
-					}
-		        });
-		        bar.add(chB_);
+//	        	final JCheckBox chB_ = new JCheckBox("Saccade");
+//	        	chB_.addActionListener(new ActionListener() {
+//					
+//					@Override
+//					public void actionPerformed(ActionEvent e) {
+//						z.saccade = !z.saccade;
+//						chB_.setSelected(z.saccade);
+//					}
+//		        });
+//		        bar.add(chB_);
         		continue;
 			}
         	final CortexZoneComplex zone = (CortexZoneComplex)z;
@@ -513,6 +513,13 @@ public class Application extends JFrame {
     }
     
     private void clearFrames() {
+        int count = desktop.getComponentCount();
+        for (int i = 0; i < count; i++) {
+            Component comp = desktop.getComponent(i);
+            if (comp instanceof Visualizer) {
+            	((Visualizer)comp).close();
+            }
+        }
     	desktop.removeAll();
     	Visualizer.reset();
     	desktop.repaint();

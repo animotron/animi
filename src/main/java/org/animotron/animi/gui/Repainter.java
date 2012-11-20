@@ -100,4 +100,12 @@ public abstract class Repainter implements Runnable {
 		}
 		paused = false;
 	}
+	
+	public void stop() {
+		running = false;
+		try {
+			th.join(1000);
+		} catch (InterruptedException e) {
+		}
+	}
 }

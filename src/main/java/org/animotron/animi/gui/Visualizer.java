@@ -32,6 +32,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
+import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 import org.animotron.animi.Imageable;
@@ -60,7 +61,7 @@ public class Visualizer extends JInternalFrame {
 	
 	private BufferedImage image = null;
 	
-	private int zoom = 1;
+	private int zoom = 2;
 	
 	public Visualizer(Imageable imageable) {
 	    super(imageable.getImageName(),
@@ -76,7 +77,7 @@ public class Visualizer extends JInternalFrame {
 
 		BufferedImage img = imageable.getImage();
 
-		Dimension size = new Dimension(img.getWidth()+20, img.getHeight()+40);
+		Dimension size = new Dimension(img.getWidth()*zoom+20, img.getHeight()*zoom+40);
 	    
 		if (img.getWidth() > 200) {
 			setLocation(bigP.x, bigP.y);
@@ -122,6 +123,42 @@ public class Visualizer extends JInternalFrame {
 				if (zoom <= 0) zoom = 1;
 			}
 		});
+		
+		addInternalFrameListener(new InternalFrameListener() {
+			
+			@Override
+			public void internalFrameOpened(InternalFrameEvent e) {
+			}
+			
+			@Override
+			public void internalFrameIconified(InternalFrameEvent e) {
+			}
+			
+			@Override
+			public void internalFrameDeiconified(InternalFrameEvent e) {
+			}
+			
+			@Override
+			public void internalFrameDeactivated(InternalFrameEvent e) {
+			}
+			
+			@Override
+			public void internalFrameClosing(InternalFrameEvent e) {
+			}
+			
+			@Override
+			public void internalFrameClosed(InternalFrameEvent e) {
+				repainter.stop();
+			}
+			
+			@Override
+			public void internalFrameActivated(InternalFrameEvent e) {
+			}
+		});
+	}
+	
+	public void close() {
+		repainter.stop();
 	}
 	
 	private class ImageCanvas extends JComponent {
