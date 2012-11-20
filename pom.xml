@@ -4,7 +4,7 @@
 
 	<groupId>org.animotron</groupId>
 	<artifactId>animi</artifactId>
-	<version>0.1.M03</version>
+	<version>0.1.M04</version>
 	<packaging>jar</packaging>
 
 	<name>Animi - natural language bridge to Animo world</name>
@@ -28,6 +28,7 @@
 
     <dependencies>
 		<!-- web camera -->
+		<!-- 
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
 			<artifactId>webcam-capture</artifactId>
@@ -38,6 +39,7 @@
     		<artifactId>webcam-capture-driver-openimaj</artifactId>
     		<version>0.3.4</version>
    		</dependency>
+   		-->
    		
 		<!-- 
         <dependency>
@@ -57,11 +59,13 @@
         </dependency>
         -->
 
+		<!-- 
         <dependency>
             <groupId>com.esotericsoftware.kryo</groupId>
             <artifactId>kryo</artifactId>
             <version>2.20</version>
         </dependency>
+        -->
         
         <!-- fast map, list ... -->
 		<dependency>
@@ -79,19 +83,23 @@
         </dependency>
     </dependencies>
     
-    <build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-		</plugins>
-		<sourceDirectory>src/main/java</sourceDirectory>
-		<testSourceDirectory>src/test/java</testSourceDirectory>
-	</build>
-    
+
+<build>
+    <plugins>
+        <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+                <archive>
+                    <manifest>
+                        <mainClass>org.animotron.animi.gui.Application</mainClass>
+                    </manifest>
+                </archive>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+
 </project>

@@ -20,70 +20,71 @@
  */
 package org.animotron.animi.simulator;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-
-import com.github.sarxos.webcam.*;
-import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
+//import java.awt.Dimension;
+//import java.awt.Graphics;
+//import java.awt.image.BufferedImage;
+//
+//import com.github.sarxos.webcam.*;
+//import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class Webcamera implements Figure, WebcamListener {
-	
-	private Webcam webcam = null;
-    private BufferedImage image;
-
-    public Webcamera() {
-        Webcam.setDriver(new OpenImajDriver());
-        webcam = Webcam.getDefault();
-        if (webcam == null) {
-            System.out.println("No webcams found...");
-            System.exit(1);
-        }
-//        webcam.setViewSize(new Dimension(Retina.WIDTH, Retina.HEIGHT));
-        webcam.setViewSize(new Dimension(320, 240));
-        webcam.addWebcamListener(this);
-
-        if (!webcam.isOpen()) {
-            webcam.open();
-        }
-	}
-
-	@Override
-	public void drawImage(Graphics g) {
-		g.drawImage(image, 0, 0, null);
-	}
-
-	public void start() {
-        if (!webcam.isOpen()) {
-            webcam.open();
-        }
-	}
-
-	public void stop() {
-        if (webcam.isOpen()) {
-            webcam.close();
-        }
-	}
-
-	@Override
-	public void webcamOpen(WebcamEvent we) {
-	}
-
-	@Override
-	public void webcamClosed(WebcamEvent we) {
-	}
-
-	@Override
-	public void step() {
-        image = webcam.getImage();
-	}
-
-	@Override
-	public boolean isActive() {
-		return webcam.isOpen();
-	}
+public class Webcamera {
+//implements Figure, WebcamListener {
+//	
+//	private Webcam webcam = null;
+//    private BufferedImage image;
+//
+//    public Webcamera() {
+//        Webcam.setDriver(new OpenImajDriver());
+//        webcam = Webcam.getDefault();
+//        if (webcam == null) {
+//            System.out.println("No webcams found...");
+//            System.exit(1);
+//        }
+////        webcam.setViewSize(new Dimension(Retina.WIDTH, Retina.HEIGHT));
+//        webcam.setViewSize(new Dimension(320, 240));
+//        webcam.addWebcamListener(this);
+//
+//        if (!webcam.isOpen()) {
+//            webcam.open();
+//        }
+//	}
+//
+//	@Override
+//	public void drawImage(Graphics g) {
+//		g.drawImage(image, 0, 0, null);
+//	}
+//
+//	public void start() {
+//        if (!webcam.isOpen()) {
+//            webcam.open();
+//        }
+//	}
+//
+//	public void stop() {
+//        if (webcam.isOpen()) {
+//            webcam.close();
+//        }
+//	}
+//
+//	@Override
+//	public void webcamOpen(WebcamEvent we) {
+//	}
+//
+//	@Override
+//	public void webcamClosed(WebcamEvent we) {
+//	}
+//
+//	@Override
+//	public void step() {
+//        image = webcam.getImage();
+//	}
+//
+//	@Override
+//	public boolean isActive() {
+//		return webcam.isOpen();
+//	}
 }

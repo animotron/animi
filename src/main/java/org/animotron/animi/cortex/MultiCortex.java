@@ -74,31 +74,31 @@ public class MultiCortex {
 
         z_in = new CortexZoneSimple("Input", this);
 
-        z_1st = new CortexZoneComplex("1st", this, 200, 200,
+        z_1st = new CortexZoneComplex("1st", this, 100, 100,
             new Mapping[]{
                 new Mapping(z_in, 50, 1, false) //7x7 (50)
             }
         );
         z_in.nextLayers(new CortexZoneSimple[] {z_1st});
 
-        z_goriz1 = new CortexZoneComplex("1st G", this, 20, 20,
-            new Mapping[]{
-                new Mapping(z_1st, 400, 2, false) //20x20 (400)
-            }
-        );
-        z_goriz1.inhibitory_links = 0;
-        z_goriz1.disper = 1;
-
-        z_1st.nextLayers(new CortexZoneSimple[] {z_goriz1});
-
-        z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
-            new Mapping[]{
-                new Mapping(z_1st, 400, 2, false),
-                new Mapping(z_goriz1, 300, 2, true)
-            }
-        );
-        z_1st.nextLayers(new CortexZoneSimple[] {z_2nd});
-        z_goriz1.nextLayers(new CortexZoneSimple[] {z_2nd});
+//        z_goriz1 = new CortexZoneComplex("1st G", this, 20, 20,
+//            new Mapping[]{
+//                new Mapping(z_1st, 400, 2, false) //20x20 (400)
+//            }
+//        );
+//        z_goriz1.inhibitory_links = 0;
+//        z_goriz1.disper = 1;
+//
+//        z_1st.nextLayers(new CortexZoneSimple[] {z_goriz1});
+//
+//        z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
+//            new Mapping[]{
+//                new Mapping(z_1st, 400, 2, false),
+//                new Mapping(z_goriz1, 300, 2, true)
+//            }
+//        );
+//        z_1st.nextLayers(new CortexZoneSimple[] {z_2nd});
+//        z_goriz1.nextLayers(new CortexZoneSimple[] {z_2nd});
 
 //        z_3rd = new CortexZoneComplex("3rd", this, 32, 32,
 //            new Mapping[]{
@@ -106,8 +106,8 @@ public class MultiCortex {
 //            }
 //        );
 
-        zones = new CortexZoneSimple[]{z_in, z_1st, z_goriz1, z_2nd};
-//        zones = new CortexZoneSimple[]{z_in, z_1st};
+//        zones = new CortexZoneSimple[]{z_in, z_1st, z_goriz1, z_2nd};
+        zones = new CortexZoneSimple[]{z_in, z_1st};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);
