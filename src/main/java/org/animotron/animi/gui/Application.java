@@ -259,6 +259,18 @@ public class Application extends JFrame {
         });
         bar.add(button);
 
+        button = new JButton("Next");
+        button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.ALT_MASK));
+        button.setMnemonic(KeyEvent.VK_N);
+        button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stimulator.init();
+			}
+        });
+        bar.add(button);
+
         bar.addSeparator();
 
         button = new JButton("Init");

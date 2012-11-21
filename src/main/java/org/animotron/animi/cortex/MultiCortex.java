@@ -50,6 +50,9 @@ public class MultiCortex {
     public Retina retina;
 
     public CortexZoneSimple z_in;
+    
+    public CortexZoneComplex z_motoric;
+    
     public CortexZoneComplex z_1st;
     public CortexZoneComplex z_goriz1;
     public CortexZoneComplex z_2nd;
@@ -81,6 +84,12 @@ public class MultiCortex {
         );
         z_in.nextLayers(new CortexZoneSimple[] {z_1st});
 
+        z_motoric = new CortexZoneComplex("motoric", this, 10, 10,
+            new Mapping[]{
+                new Mapping(z_1st, 200, 10, false)
+            }
+        );
+
 //        z_goriz1 = new CortexZoneComplex("1st G", this, 20, 20,
 //            new Mapping[]{
 //                new Mapping(z_1st, 400, 2, false) //20x20 (400)
@@ -107,7 +116,7 @@ public class MultiCortex {
 //        );
 
 //        zones = new CortexZoneSimple[]{z_in, z_1st, z_goriz1, z_2nd};
-        zones = new CortexZoneSimple[]{z_in, z_1st};
+        zones = new CortexZoneSimple[]{z_in, z_1st, z_motoric};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);
