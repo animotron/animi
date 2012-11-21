@@ -192,7 +192,7 @@ public class Application extends JFrame {
 			            
 			            cortexs = MultiCortex.load(file);
 						
-			        	stimulator = new Stimulator(cortexs);
+			        	stimulator = new StaticStimulator(cortexs);
 
 			        	createViews();
 
@@ -394,7 +394,7 @@ public class Application extends JFrame {
     protected void initialize() {
     	cortexs.init();
     	
-    	stimulator = new Stimulator(cortexs);
+    	stimulator = new StaticStimulator(cortexs);
     	
     	createViews();
     }
@@ -500,7 +500,7 @@ public class Application extends JFrame {
 	};
 
     
-    Stimulator stimulator = null;
+    StaticStimulator stimulator = null;
 
     //Create a new internal frame.
     protected void createFrame(Imageable imageable) {
