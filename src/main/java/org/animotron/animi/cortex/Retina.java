@@ -143,20 +143,62 @@ public class Retina {
     public static int Level_Bright = 100;
     public static int Lelel_min = 10;// * N_Col;
 
-    public int shiftX = 0;
-    public int shiftY = 0;
+    public int fromX = 0;
+    public int fromY = 0;
+    
+    double delta = 0;
+    double deltaX = 0;
+    double deltaY = 0;
+
+    double speed = 1;
+    
+    int steps = 0;
+    int required = 0;
+    
+    boolean flag = true;
 
     public void shift(int x, int y) {
-    	shiftX = shiftX + (width / 2) - x;
-    	shiftY = shiftY + (height / 2) - y;
+    	int shiftX = fromX + (width / 2) - x;
+    	int shiftY = fromY + (height / 2) - y;
+    	
+    	required = (int)Math.sqrt(shiftX*shiftX + shiftY*shiftY);
+    	
+    	delta = required / speed;
+    	
+    	deltaX = (shiftX - fromX) / delta;
+    	deltaY = (shiftY - fromY) / delta;
+    	
+    	required = Math.abs(required);
+    	
+    	steps = 0;
+    	flag = false;
 	}
+    
+    public boolean needShift() {
+    	return flag;
+    }
 
 	public void resetShift() {
-    	shiftX = 0;
-    	shiftY = 0;
+		deltaX = 0;
+		deltaY = 0;
+		
+		fromX = (int)(deltaX * steps) + fromX;
+		fromY = (int)(deltaY * steps) + fromY;
+
+		flag = true;
+		steps = 0;
 	}
 
 	public void process(BufferedImage physicalImage) {
+		
+		steps++;
+		
+		int thisX = (int)(deltaX * steps) + fromX;
+		int thisY = (int)(deltaY * steps) + fromY;
+		
+		if (speed * steps >= required) {
+			resetShift();
+		}
 
         double XScale = physicalImage.getWidth() / (double)width;
         double YScale = physicalImage.getHeight() / (double)height;
@@ -172,7 +214,7 @@ public class Retina {
         //zero
         for (int ix = 0; ix < NL.width(); ix++) {
         	for (int iy = 0; iy < NL.height(); iy++) {
-    			NL.set(ix, iy, 0);
+    			NL.shift(ix, iy);
         	}
         }
 
@@ -184,8 +226,8 @@ public class Retina {
 
 //        		OnOffReceptiveField mSensPol = sensorField[ix][iy];
 
-        		if (ix + shiftX >= 0 && ix + shiftX < width && iy + shiftY >= 0 && iy + shiftY < height) {
-        			NL.set(ix + shiftX, iy + shiftY, preprocessed[(int)(ix * XScale)][(int)(iy * YScale)]);
+        		if (ix + thisX >= 0 && ix + thisX < width && iy + thisY >= 0 && iy + thisY < height) {
+        			NL.set(ix + thisX, iy + thisY, preprocessed[(int)(ix * XScale)][(int)(iy * YScale)]);
         		}
 
 //                NL.set(ix,iy,false);

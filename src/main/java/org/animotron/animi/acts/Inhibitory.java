@@ -41,20 +41,23 @@ public class Inhibitory implements ActWithMax<CortexZoneSimple> {
     public double process(final CortexZoneSimple layer, final int x, final int y, double max) {
     	final NeuronComplex cn = layer.col[x][y];
     	
-    	if (cn.activity == 0)
+    	if (cn.activity[0] == 0)
     		return max;
 
     	double delta = 0;
     	for (Link link : cn.s_inhibitoryLinks) {
-    		delta += link.w * link.synapse.activity;
+    		for (int i = 0; i < 3; i++) {
+    			delta += link.w[i] * link.synapse.activity[i];
+    		}
     	}
     	
     	delta *= k;
     	
-    	cn.activity = cn.activity - delta;
-    	if (cn.activity < 0 || Double.isNaN(cn.activity)) 
-    		cn.activity = 0;
-    	
+		for (int i = 0; i < 3; i++) {
+	    	cn.activity[i] = cn.activity[i] - delta;
+	    	if (cn.activity[i] < 0 || Double.isNaN(cn.activity[i])) 
+	    		cn.activity[i] = 0;
+		}
     	return Math.max(max, delta);
     }
 }

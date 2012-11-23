@@ -36,7 +36,10 @@ public class Zero implements Act<CortexZoneSimple> {
     @Override
     public void process(final CortexZoneSimple layer, final int x, final int y) {
     	final NeuronComplex cn = layer.col[x][y];
-    	cn.activity = 0;
-    	cn.posActivity = 0;
+    	
+    	for (int i = 0; i < 3; i++) {
+	    	cn.activity[i] = 0;
+	    	cn.posActivity[i] = 0;
+    	}
     }
 }

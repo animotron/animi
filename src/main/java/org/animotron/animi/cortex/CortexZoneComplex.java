@@ -107,7 +107,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
         
         int _sigma_ = 1;//(int) _sigma;
 
-        for (int x = _sigma_; x < width() - _sigma_; x++) {
+		//UNDERSTAND: is it ok to have sum ^2 ~ 1
+		double w = Math.sqrt(1 / (double)inhibitory_links);
+
+		for (int x = _sigma_; x < width() - _sigma_; x++) {
 			for (int y = _sigma_; y < height() - _sigma_; y++) {
 //				System.out.println("x = "+x+" y = "+y);
 
@@ -166,10 +169,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						nerv_links[lx][ly] = true;
 	
 						// Создаем синаптическую связь
-						Link link = new Link(getCol(lx, ly), getCol(x, y), LinkType.INHIBITORY);
-						
-						//UNDERSTAND: is it ok to have sum ^2 ~ 1
-						link.w = Math.sqrt(1 / (double)inhibitory_links);
+						new Link(getCol(lx, ly), getCol(x, y), w, LinkType.INHIBITORY);
                     }
 				}
 //				System.out.println();
@@ -248,7 +248,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 				}
 			}
 	        
-	        if (boxSize < 2) boxSize = 2;
+	        if (boxSize < 5) boxSize = 5;
 
 			maxX = width() * boxSize;
 	        maxY = height() * boxSize;
@@ -273,6 +273,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			g.fillRect(0, 0, image.getWidth(), image.getHeight());
 	
 			int pX, pY = 0;
+	        int value = 0, G = 0, B = 0, R = 0;
 	
 			g.setColor(Color.YELLOW);
 			for (Point p : watching) {
@@ -303,10 +304,22 @@ public class CortexZoneComplex extends CortexZoneSimple {
                     			&& pY > y*boxSize 
                     			&& pY < (y*boxSize+boxSize)) {
 				                    	
-	                    	int c = Utils.calcGrey(image, pX, pY);
-							c += 255 * link.q;
-							if (c > 255) c = 255;
-							image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+					        value = image.getRGB(pX, pY);
+
+					        G = Utils.get_green(value);
+					        B = Utils.get_blue(value);
+					        R = Utils.get_red(value);
+
+							G += 255 * link.q[0];
+							if (G > 255) G = 255;
+
+							B += 255 * link.q[1];
+							if (B > 255) B = 255;
+							
+							R += 255 * link.q[2];
+							if (R > 255) R = 255;
+
+							image.setRGB(pX, pY, Utils.create_rgb(255, R, G, B));
                     	}
                     }
 				}
@@ -389,9 +402,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		public BufferedImage getImage() {
 			
-			int maxGray = 0;
-			
-			Graphics g = image.getGraphics();
+			int max = 0, value = 0, R = 0, G = 0, B = 0;
+
+	        Graphics g = image.getGraphics();
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, image.getWidth(), image.getHeight());
 	
@@ -403,32 +416,53 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					for (LinkQ link : cn.Qs.values()) {
 
 						try {
-							int c = Utils.calcGrey(image, link.synapse.x, link.synapse.y);
-							c += 255 * cn.backProjection * link.q;
-		            		
-							if (c > 255) c = 255;
+					        value = image.getRGB(link.synapse.x, link.synapse.y);
+
+					        G = Utils.get_green(value);
+					        B = Utils.get_blue(value);
+					        R = Utils.get_red(value);
+
+							G += 255 * cn.backProjection[0] * link.q[0];
+							if (G > 255) G = 255;
 							
-							maxGray = Math.max(maxGray, c);
+							B += 255 * cn.backProjection[1] * link.q[1];
+							if (B > 255) B = 255;
+
+							R += 255 * cn.backProjection[2] * link.q[2];
+							if (R > 255) R = 255;
+
+							max = Math.max(max, G);
+							max = Math.max(max, B);
+							max = Math.max(max, R);
 		            		
-		            		image.setRGB(link.synapse.x, link.synapse.y, Utils.create_rgb(255, c, c, c));
+		            		image.setRGB(link.synapse.x, link.synapse.y, Utils.create_rgb(255, R, G, B));
 						} catch (Exception e) {
 							System.out.println(image.getWidth()+" - "+link.synapse.x);;
 						}
 					}
 				}
 			}
-			if (maxGray != 255 || maxGray != 0) {
-				double bright = 255 / (double)maxGray;
+			if (max != 255 || max != 0) {
+				double bright = 255 / (double)max;
 				for (int x = 0; x < image.getWidth(); x++) {
 					for (int y = 0; y < image.getHeight(); y++) {
 						
-						int c = Utils.calcGrey(image, x, y);
-						
-						c *= bright;
+				        value = image.getRGB(x, y);
+
+				        G = Utils.get_green(value);
+				        B = Utils.get_blue(value);
+				        R = Utils.get_red(value);
+
+						G *= bright;
+						if (G > 255) G = 255;
 	            		
-						if (c > 255) c = 255;
-	            		
-	            		image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
+						B *= bright;
+						if (B > 255) B = 255;
+
+						R *= bright;
+						if (R > 255) R = 255;
+
+						image.setRGB(x, y, Utils.create_rgb(255, R, G, B));
 					}
 				}
 			}

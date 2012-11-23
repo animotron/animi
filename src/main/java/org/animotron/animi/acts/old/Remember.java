@@ -42,28 +42,28 @@ public class Remember implements Act<CortexZoneComplex> {
     @Override
     public void process(CortexZoneComplex layer, final int x, final int y) {
     	
-    	NeuronComplex cn = layer.col[x][y];
+//    	NeuronComplex cn = layer.col[x][y];
     	
-    	if (!cn.isOccupy()) {
-    		
-    		double sumA2 = 0;
-    		double activity = 0;
-
-    		for (LinkQ link : cn.Qs.values()) {
-    			activity += link.synapse.activity;
-    			
-    			sumA2 += link.synapse.activity * link.synapse.activity;
-    		}
-
-    		System.out.println(activity / cn.Qs.values().size());
-    		if ((activity / cn.Qs.values().size()) < mRecLevel)
-    			return;
-    		
-    		for (LinkQ link : cn.Qs.values()) {
-    			link.q = link.synapse.activity / sumA2;
-    		}
-    		cn.occupy = true;
-    	}
+//    	if (!cn.isOccupy()) {
+//    		
+//    		double sumA2 = 0;
+//    		double activity = 0;
+//
+//    		for (LinkQ link : cn.Qs.values()) {
+//    			activity += link.synapse.activity;
+//    			
+//    			sumA2 += link.synapse.activity * link.synapse.activity;
+//    		}
+//
+//    		System.out.println(activity / cn.Qs.values().size());
+//    		if ((activity / cn.Qs.values().size()) < mRecLevel)
+//    			return;
+//    		
+//    		for (LinkQ link : cn.Qs.values()) {
+//    			link.q = link.synapse.activity / sumA2;
+//    		}
+//    		cn.occupy = true;
+//    	}
 //    	Restructorization.normalization(cn, sn);
     }
 }

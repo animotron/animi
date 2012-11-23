@@ -32,7 +32,7 @@ public class Link {
 	//Axon terminal
 	public Neuron axon;
 
-	public double w = 0;
+	public double[] w = new double[] {0, 0, 0};
 	
 	public double stability = 0;
 
@@ -47,7 +47,9 @@ public class Link {
 	protected Link(Neuron synapse, Neuron axon, double w, LinkType type) {
 		this(synapse, axon, type);
 		
-		this.w = w;
+		this.w[0] = w/(double)3;
+		this.w[1] = w/(double)3;
+		this.w[2] = w/(double)3;
 	}
 
 	public void addStability(double x) {

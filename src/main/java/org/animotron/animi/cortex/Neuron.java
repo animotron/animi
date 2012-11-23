@@ -31,9 +31,7 @@ import org.animotron.animi.RuntimeParam;
 public class Neuron {
 	
 	@RuntimeParam(name="activity")
-	public double activity = 0;
-	
-	public boolean occupy = true;
+	public double[] activity = new double[] {0, 0, 0};
 	
 	public int x;
 	
@@ -65,9 +63,5 @@ public class Neuron {
 	//called by Link only!
 	protected void addAxon(Link link, LinkType type) {
 		a_links.add(link);
-	}
-
-	public boolean isOccupy() {
-		return occupy;
 	}
 }

@@ -27,6 +27,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -130,17 +131,17 @@ public class PFActual implements Imageable, InternalFrameListener {
 		
 		y = rY; x = boxSize*zoom + 2;
 		
-		y += textY;
-        g.drawString("Original", x, y);
-
-		img = drawIn();
-		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
-		g.drawImage(
-				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
-				x+1, y+1, null);
-
-		x = boxSize*zoom + 2;
-		y += 2+img.getHeight()*zoom;
+//		y += textY;
+//        g.drawString("Original", x, y);
+//
+//		img = drawIn();
+//		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
+//		g.drawImage(
+//				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
+//				x+1, y+1, null);
+//
+//		x = boxSize*zoom + 2;
+//		y += 2+img.getHeight()*zoom;
 
 //		y += textY;
 //        g.drawString("Minus", x, y);
@@ -152,8 +153,10 @@ public class PFActual implements Imageable, InternalFrameListener {
 //				x+1, y+1, null);
 //
 //
+		int col = 1;
+		
 		//next block
-		y = rY; x = 2*(boxSize*zoom + 2);
+		y = rY; x = col*(boxSize*zoom + 2);
 		
 		y += textY;
         g.drawString("Inhibitory RF", x, y);
@@ -164,7 +167,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 				x+1, y+1, null);
 
-		x = 2*(boxSize*zoom + 2);
+		x = col*(boxSize*zoom + 2);
 		y += 2+img.getHeight()*zoom;
 
 		y += textY;
@@ -178,7 +181,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		
 		if (num == 5) {
 			//next block
-			y = rY; x = 3*(boxSize*zoom + 2);
+			y = rY; x = (col+1)*(boxSize*zoom + 2);
 
 			y += textY;
 	        g.drawString("restore uppest levels RF", x, y);
@@ -288,37 +291,27 @@ public class PFActual implements Imageable, InternalFrameListener {
         			&& pY > 0 
         			&& pY < boxSize) {
 	                    	
-            	int c = Utils.calcGrey(image, pX, pY);
-				c += 255 * link.q; // * Q2
-				if (c > 255) c = 255;
-				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+		        int value = image.getRGB(pX, pY);
+
+		        int g = Utils.get_green(value);
+		        int b = Utils.get_blue(value);
+		        int r = Utils.get_red(value);
+
+				g += 255 * link.q[0];
+				if (g > 255) g = 255;
+
+				b += 255 * link.q[1];
+				if (b > 255) b = 255;
+
+				r += 255 * link.q[2];
+				if (r > 255) r = 255;
+				
+				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
         	}
         }
         return image;
 	}
 	
-//	private BufferedImage drawTotalRF() {
-//        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
-//
-//        int pX, pY;
-//        for (Link cl : cn.s_links) {
-//        	final NeuronSimple sn = (NeuronSimple) cl.synapse;
-//            for (Link sl : sn.s_links) {
-//            	pX = (boxSize / 2) + (sl.synapse.x - cl.axon.x);
-//				pY = (boxSize / 2) + (sl.synapse.y - cl.axon.y);
-//            	if (pX >= 0 && pX < boxSize 
-//            			&& pY >= 0 && pY < boxSize) {
-//                	
-//                	int c = Utils.calcGrey(image, pX, pY);
-//					c += 50;//255 * sl.w;
-//					if (c > 255) c = 255;
-//					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-//                }
-//            }
-//        }
-//        return image;
-//	}
-
 	private BufferedImage drawTotalRF() {
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
@@ -352,7 +345,7 @@ public class PFActual implements Imageable, InternalFrameListener {
         			&& pY < boxSize) {
 	                    	
             	int c = Utils.calcGrey(image, pX, pY);
-				c += 255 * link.w;
+				c += 255 * link.w[0];
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
         	}
@@ -395,12 +388,12 @@ public class PFActual implements Imageable, InternalFrameListener {
 	        			&& pY < image.getHeight()) {
 		                    	
 	            	int c = Utils.calcGrey(image, pX, pY);
-					c += 255 * link.q * q * 10;
+					c += 255 * link.q[0] * q * 10;
 					if (c > 255) c = 255;
 					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
 	        	}
 			} else {
-				drawStepUp(link.synapse, q * link.q, image);
+				drawStepUp(link.synapse, q * link.q[0], image);
 			}
 		}
 	}
@@ -410,7 +403,7 @@ public class PFActual implements Imageable, InternalFrameListener {
         BufferedImage image = new BufferedImage(_boxSize, _boxSize, BufferedImage.TYPE_INT_ARGB);
 
 		for (LinkQ link : cn.Qs.values()) {
-			drawStepUp(link.synapse, link.q, image);
+			drawStepUp(link.synapse, link.q[0], image);
         }
         return image;
 	}
@@ -429,10 +422,22 @@ public class PFActual implements Imageable, InternalFrameListener {
         			&& pY >= 0 
         			&& pY < boxSize) {
             	
-            	int c = Utils.calcGrey(image, pX, pY);
-				c += 255 * link.synapse.activity;
-				if (c > 255) c = 255;
-				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+		        int value = image.getRGB(pX, pY);
+
+		        int g = Utils.get_green(value);
+		        int b = Utils.get_blue(value);
+		        int r = Utils.get_red(value);
+
+				g += 255 * link.synapse.activity[0];
+				if (g > 255) g = 255;
+
+				b += 255 * link.synapse.activity[1];
+				if (b > 255) b = 255;
+
+				r += 255 * link.synapse.activity[2];
+				if (r > 255) r = 255;
+
+				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
 			} else {
 //				System.out.println("WRONG "+pX+" "+pY);
             }
@@ -447,7 +452,12 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 	private String getValue(Field f, Object obj) {
 		try {
-			return f.get(obj).toString();
+			Object o = f.get(obj);
+			if (o.getClass().isArray()) {
+				return Arrays.toString((Object[]) o);
+			} else {
+				return o.toString();
+			}
 		} catch (Exception e) {
 		}
 		return "???";

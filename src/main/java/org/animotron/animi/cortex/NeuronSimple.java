@@ -35,8 +35,4 @@ public class NeuronSimple extends Neuron {
 		super(x,y);
 		this.z = z;
 	}
-
-	public boolean isOccupy() {
-		return occupy;
-	}
 }

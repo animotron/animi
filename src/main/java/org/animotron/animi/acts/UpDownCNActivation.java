@@ -37,12 +37,14 @@ public class UpDownCNActivation implements Act<CortexZoneSimple> {
     public void process(final CortexZoneSimple layer, final int x, final int y) {
     	final NeuronComplex cn = layer.col[x][y];
     	
-    	if (cn.activity == 0) {
-    		return;
-    	}
-    	
-    	for (LinkQ q : cn.a_Qs) {
-    		q.axon.activity += cn.activity * q.q;
+//    	if (cn.activity == 0) {
+//    		return;
+//    	}
+
+    	for (int i = 0; i < 3; i++) {
+	    	for (LinkQ q : cn.a_Qs) {
+	    		q.axon.activity[0] += cn.activity[i] * q.q[i];
+	    	}
     	}
     }
 }

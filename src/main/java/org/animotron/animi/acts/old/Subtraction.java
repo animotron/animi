@@ -36,6 +36,6 @@ public class Subtraction implements Act<CortexZoneComplex> {
 
     @Override
     public void process(CortexZoneComplex layer, int x, int y) {
-    	NeuronComplex cn = layer.col[x][y];
+//    	NeuronComplex cn = layer.col[x][y];
     }
 }

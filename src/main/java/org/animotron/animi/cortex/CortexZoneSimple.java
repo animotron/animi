@@ -92,7 +92,7 @@ public class CortexZoneSimple implements Layer {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                c = col[x][y].backProjection > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
+                c = col[x][y].backProjection[0] > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
                 image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
             }
         }
@@ -158,9 +158,9 @@ public class CortexZoneSimple implements Layer {
         	    		if (y+dy < 0 || y+dy >= height)
         	    			continue;
         	    		
-        	    		col[x][y].activity += col[x + dx][y + dy].activity;
-        	    		if (col[x][y].activity > 1)
-        	    			col[x][y].activity = 1;
+        	    		col[x][y].activity[0] += col[x + dx][y + dy].activity[0];
+        	    		if (col[x][y].activity[0] > 1)
+        	    			col[x][y].activity[0] = 1;
         			}
     			}
     		}
@@ -188,9 +188,22 @@ public class CortexZoneSimple implements Layer {
 
 	@Override
 	public void set(int x, int y, double b) {
-		col[x][y].activity = b;
-		col[x][y].backProjection = b;
-		col[x][y].posActivity = b;
+		final NeuronComplex cn = col[x][y];
+		cn.activity[0] = b;
+		cn.backProjection[0] = b;
+		cn.posActivity[0] = b;
+	}
+
+	@Override
+	public void shift(int x, int y) {
+		for (int i = 1; i < 3; i++) {
+			final NeuronComplex cn = col[x][y];
+			cn.activity[i] = cn.activity[i-1];
+			cn.backProjection[i] = cn.backProjection[i-1];
+			cn.posActivity[i] = cn.posActivity[i-1];
+		}
+		
+		set(x, y, 0);
 	}
 
 	@Override

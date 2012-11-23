@@ -39,11 +39,13 @@ public class LinkQ {
 		synapse.a_Qs.add(this);
 		axon.Qs.put(synapse, this);
 		
-		this.q = q;
+		this.q[0] = q / (double)3;
+		this.q[1] = q / (double)3;
+		this.q[2] = q / (double)3;
 		
 		this.fX = fX;
 		this.fY = fY;
 	}
 	
-	public double q = 0;
+	public double[] q = new double[] {0, 0, 0};
 }

@@ -31,7 +31,7 @@ public class AttentionZone extends CortexZoneComplex {
 	}
 	
     public void process() {
-    	if (!isActive())
+    	if (!isActive() || !mc.retina.needShift())
     		return;
     	
     	cycleActivation();
@@ -43,8 +43,8 @@ public class AttentionZone extends CortexZoneComplex {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
             	NeuronComplex cn = col[x][y];
-            	if (max < cn.activity) {
-            		max = cn.activity;
+            	if (max < cn.activity[0]) {
+            		max = cn.activity[0];
             		X = x;
             		Y = y;
             	}
@@ -55,9 +55,9 @@ public class AttentionZone extends CortexZoneComplex {
             for (int y = 0; y < height; y++) {
             	NeuronComplex cn = col[x][y];
             	if (!(X == x && Y == y)) {
-            		cn.activity = 0;
-            		cn.posActivity = 0;
-            		cn.backProjection = 0;
+            		cn.activity[0] = 0;
+            		cn.posActivity[0] = 0;
+            		cn.backProjection[0] = 0;
             	}
             }
         }
