@@ -150,7 +150,7 @@ public class Retina {
     double deltaX = 0;
     double deltaY = 0;
 
-    double speed = 1;
+    double speed = 2;
     
     int steps = 0;
     int required = 0;
@@ -182,8 +182,8 @@ public class Retina {
 		deltaX = 0;
 		deltaY = 0;
 		
-		fromX = (int)(deltaX * steps) + fromX;
-		fromY = (int)(deltaY * steps) + fromY;
+		fromX = 0;
+		fromY = 0;
 
 		flag = true;
 		steps = 0;
@@ -197,7 +197,14 @@ public class Retina {
 		int thisY = (int)(deltaY * steps) + fromY;
 		
 		if (speed * steps >= required) {
-			resetShift();
+			deltaX = 0;
+			deltaY = 0;
+			
+			fromX = thisX;
+			fromY = thisY;
+
+			flag = true;
+			steps = 0;
 		}
 
         double XScale = physicalImage.getWidth() / (double)width;
