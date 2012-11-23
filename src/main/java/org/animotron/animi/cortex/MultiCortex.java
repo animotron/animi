@@ -84,11 +84,12 @@ public class MultiCortex {
         );
         z_in.nextLayers(new CortexZoneSimple[] {z_1st});
 
-        z_motoric = new CortexZoneComplex("motoric", this, 10, 10,
+        z_motoric = new CortexZoneComplex("attention", this, 20, 20,
             new Mapping[]{
-                new Mapping(z_1st, 200, 10, false)
+                new Mapping(z_1st, 80, 1, false)
             }
         );
+        z_motoric.inhibitory_links = 0;
 
 //        z_goriz1 = new CortexZoneComplex("1st G", this, 20, 20,
 //            new Mapping[]{
