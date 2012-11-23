@@ -34,7 +34,6 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 import org.animotron.animi.*;
-import org.animotron.animi.acts.old.Subtraction;
 import org.animotron.animi.cortex.*;
 
 /**
@@ -143,16 +142,16 @@ public class PFActual implements Imageable, InternalFrameListener {
 		x = boxSize*zoom + 2;
 		y += 2+img.getHeight()*zoom;
 
-		y += textY;
-        g.drawString("Minus", x, y);
-
-		img = drawMinus();
-		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
-		g.drawImage(
-				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
-				x+1, y+1, null);
-
-
+//		y += textY;
+//        g.drawString("Minus", x, y);
+//
+//		img = drawMinus();
+//		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
+//		g.drawImage(
+//				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
+//				x+1, y+1, null);
+//
+//
 		//next block
 		y = rY; x = 2*(boxSize*zoom + 2);
 		
@@ -437,31 +436,6 @@ public class PFActual implements Imageable, InternalFrameListener {
 			} else {
 //				System.out.println("WRONG "+pX+" "+pY);
             }
-        }
-        return image;
-	}
-
-	private BufferedImage drawMinus() {
-        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
-
-        NeuronComplex[][] ms = Subtraction.process(zone, cn.x, cn.y);
-        
-		int pX, pY = 0;
-		for (LinkQ link : cn.Qs.values()) {
-        	pX = (boxSize / 2) + (link.synapse.x - cn.x);
-			pY = (boxSize / 2) + (link.synapse.y - cn.y);
-        	
-			if (       pX >= 0 
-        			&& pX < boxSize 
-        			&& pY >= 0 
-        			&& pY < boxSize) {
-            	
-            	int c = Utils.calcGrey(image, pX, pY);
-				c += 255 * ms[link.synapse.x][link.synapse.y].posActivity;
-				if (c > 255) c = 255;
-				if (c < 0) c = 0;
-				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-        	}
         }
         return image;
 	}

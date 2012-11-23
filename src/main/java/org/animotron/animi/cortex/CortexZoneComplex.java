@@ -23,6 +23,7 @@ package org.animotron.animi.cortex;
 import org.animotron.animi.*;
 import org.animotron.animi.acts.*;
 import org.animotron.animi.acts.old.CNActivation;
+import org.animotron.animi.acts.old.Subtraction;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -53,6 +54,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public Inhibitory inhibitory = new Inhibitory();
 	
 	public FinalActivity finalActivity = new FinalActivity();
+
+	public Subtraction subtraction = new Subtraction();
 
 	@Params
 	public Restructorization restructorization = new Restructorization();
@@ -468,31 +471,30 @@ public class CortexZoneComplex extends CortexZoneSimple {
     	}
     }
 
-    //Граничные нейроны не задействованы.
     //Такт 1. Активация колонок (узнавание)
     protected void cycleActivation() {
 //        cycle(1, 1, width() - 1, height() - 1, snActivation);
-        cycle(1, 1, width() - 1, height() - 1, cnActivation);
+        cycle(0, 0, width(), height(), cnActivation);
 
 //        cycle(1, 1, width() - 1, height() - 1, posActivity);
 
         double max;
         for (int i = 0; i < 10; i++) {
-        	max = cycle(1, 1, width() - 1, height() - 1, inhibitory, Double.MIN_VALUE);
+        	max = cycle(0, 0, width(), height(), inhibitory, Double.MIN_VALUE);
 
         	if (max < 0.05) 
         		break;
         }
 
-        cycle(1, 1, width() - 1, height() - 1, finalActivity);
+        cycle(0, 0, width(), height(), finalActivity);
     }
 
     //Граничные нейроны не задействованы.
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     private void cycleLearning() {
-		cycle(1, 1, width() - 1, height() - 1, restructorization);
-//        cycle(1, 1, width() - 1, height() - 1, subtraction);
-//        cycle(1, 1, width() - 1, height() - 1, remember);
+		cycle(0, 0, width(), height(), restructorization);
+//        cycle(0, 0, width(), height(), subtraction);
+//        cycle(0, 0, width(), height(), remember);
     }
 
 	public void save(Writer out) throws IOException {

@@ -51,6 +51,7 @@ public class MultiCortex {
 
     public CortexZoneSimple z_in;
     
+    public CortexZoneComplex z_attention;
     public CortexZoneComplex z_motoric;
     
     public CortexZoneComplex z_1st;
@@ -84,9 +85,16 @@ public class MultiCortex {
         );
         z_in.nextLayers(new CortexZoneSimple[] {z_1st});
 
-        z_motoric = new AttentionZone("attention", this, 20, 20,
+        z_attention = new AttentionZone("attention", this, 20, 20,
             new Mapping[]{
                 new Mapping(z_1st, 80, 1, false)
+            }
+        );
+        z_attention.inhibitory_links = 0;
+
+        z_motoric = new AttentionZone("motoric", this, 2, 2,
+            new Mapping[]{
+                new Mapping(z_attention, 0, 0, false)
             }
         );
         z_motoric.inhibitory_links = 0;
@@ -117,7 +125,7 @@ public class MultiCortex {
 //        );
 
 //        zones = new CortexZoneSimple[]{z_in, z_1st, z_goriz1, z_2nd};
-        zones = new CortexZoneSimple[]{z_in, z_1st, z_motoric};
+        zones = new CortexZoneSimple[]{z_in, z_1st, z_attention};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);
