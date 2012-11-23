@@ -470,7 +470,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
     //Граничные нейроны не задействованы.
     //Такт 1. Активация колонок (узнавание)
-    private void cycleActivation() {
+    protected void cycleActivation() {
 //        cycle(1, 1, width() - 1, height() - 1, snActivation);
         cycle(1, 1, width() - 1, height() - 1, cnActivation);
 

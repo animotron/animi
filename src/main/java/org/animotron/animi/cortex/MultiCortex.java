@@ -84,7 +84,7 @@ public class MultiCortex {
         );
         z_in.nextLayers(new CortexZoneSimple[] {z_1st});
 
-        z_motoric = new CortexZoneComplex("attention", this, 20, 20,
+        z_motoric = new AttentionZone("attention", this, 20, 20,
             new Mapping[]{
                 new Mapping(z_1st, 80, 1, false)
             }

@@ -267,6 +267,7 @@ public class Application extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				stimulator.init();
+				cortexs.retina.resetShift();
 			}
         });
         bar.add(button);

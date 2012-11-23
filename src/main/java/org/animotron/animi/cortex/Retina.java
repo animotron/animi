@@ -143,7 +143,20 @@ public class Retina {
     public static int Level_Bright = 100;
     public static int Lelel_min = 10;// * N_Col;
 
-    public void process(BufferedImage physicalImage) {
+    public int shiftX = 0;
+    public int shiftY = 0;
+
+    public void shift(int x, int y) {
+    	shiftX = shiftX + (width / 2) - x;
+    	shiftY = shiftY + (height / 2) - y;
+	}
+
+	public void resetShift() {
+    	shiftX = 0;
+    	shiftY = 0;
+	}
+
+	public void process(BufferedImage physicalImage) {
 
         double XScale = physicalImage.getWidth() / (double)width;
         double YScale = physicalImage.getHeight() / (double)height;
@@ -156,6 +169,14 @@ public class Retina {
         XScale = width / (double)NL.width();
         YScale = height / (double)NL.height();
 
+        //zero
+        for (int ix = 0; ix < NL.width(); ix++) {
+        	for (int iy = 0; iy < NL.height(); iy++) {
+    			NL.set(ix, iy, 0);
+        	}
+        }
+
+        
 //    	double SP, SC, SA;
 //        double K_cont;
         for (int ix = 0; ix < NL.width(); ix++) {
@@ -163,7 +184,9 @@ public class Retina {
 
 //        		OnOffReceptiveField mSensPol = sensorField[ix][iy];
 
-                NL.set(ix, iy, preprocessed[(int)(ix * XScale)][(int)(iy * YScale)]);
+        		if (ix + shiftX >= 0 && ix + shiftX < width && iy + shiftY >= 0 && iy + shiftY < height) {
+        			NL.set(ix + shiftX, iy + shiftY, preprocessed[(int)(ix * XScale)][(int)(iy * YScale)]);
+        		}
 
 //                NL.set(ix,iy,false);
 //
@@ -237,5 +260,4 @@ public class Retina {
         }
         return image;
     }
-
 }
