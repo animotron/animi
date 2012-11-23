@@ -49,6 +49,9 @@ public abstract class AbstractAnime implements Figure {
     }
 	
 	public void step() {
+		if (anime == null)
+			return;
+		
         if (l <= 0) {
             int j = Math.min(i + 1, anime.length - 1);
             dx = anime[j][0] - anime[i][0];

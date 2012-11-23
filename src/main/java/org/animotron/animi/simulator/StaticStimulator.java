@@ -60,7 +60,8 @@ public class StaticStimulator implements Runnable, Imageable {
 
 	public void init() {
         figures = new Figure[] {
-        	new OvalAnime(15, mc.retina.width(), mc.retina.height())
+//        	new OvalAnime(15, mc.retina.width(), mc.retina.height())
+        	new RectAnime(15, mc.retina.width(), mc.retina.height())
         };
 	}
     
