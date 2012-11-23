@@ -60,11 +60,18 @@ public class StaticStimulator implements Runnable, Imageable {
 
 	public void init() {
         figures = new Figure[] {
-//        	new OvalAnime(15, mc.retina.width(), mc.retina.height())
-        	new RectAnime(15, mc.retina.width(), mc.retina.height())
+        	new OvalAnime(15, mc.retina.width(), mc.retina.height()),
+        	new RectAnime(15, mc.retina.width(), mc.retina.height()),
+        	new Triangle(15, mc.retina.width(), mc.retina.height())
         };
 	}
     
+	public void reset() {
+		for (Figure figure : figures) {
+			figure.reset();
+        };
+	}
+
 	@Override
 	public void run() {
         while (run) {

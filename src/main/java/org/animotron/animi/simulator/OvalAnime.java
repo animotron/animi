@@ -56,7 +56,9 @@ public class OvalAnime implements Figure {
         this.anime = anime;
     }
 	
-	public void drawImage(Graphics g) {
+    public void reset() {}
+
+    public void drawImage(Graphics g) {
         g.setColor(Color.WHITE);
         g.drawOval(X - D / 2, Y - D / 2, D, D);
 	}

@@ -28,32 +28,45 @@ import java.awt.geom.Point2D;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public class LineAnime extends AbstractAnime {
+public class Triangle extends AbstractAnime {
 
-    public LineAnime(int a, double dt, int[][] anime) {
-        super(dt, anime);
+    
+    public Triangle(int d, int maxX, int maxY) {
+        super(0, null);
+        
+        this.maxX = maxX;
+        this.maxY = maxY;
+
+        reset();
+    }
+    
+    public void reset() {
+        int X1 = rnd.nextInt(maxX);
+        int Y1 = rnd.nextInt(maxY);
+
+        int X2 = rnd.nextInt(maxX);
+        int Y2 = rnd.nextInt(maxY);
+
+        int X3 = rnd.nextInt(maxX);
+        int Y3 = rnd.nextInt(maxY);
+
         this.p = new Point2D[] {
-                new Point(anime[0][0], anime[0][1]),
-                new Point(anime[0][0] - a / 2, anime[0][1] - a / 2),
-                new Point(anime[0][0] + a / 2, anime[0][1] + a / 2)
+	        new Point(X1, Y1),
+	        new Point(X2, Y2),
+	        new Point(X3, Y3),
+	        new Point(X1, Y1)
         };
-
     }
 
-    protected LineAnime(double dt, int[][] anime) {
-        super(dt, anime);
-    }
-
-    public void reset() {}
-
-    public void drawImage(Graphics g) {
+	public void drawImage(Graphics g) {
         g.setColor(Color.WHITE);
-
-        g.drawLine(
-                (int) Math.round(p[1].getX()), (int) Math.round(p[1].getY()),
-                (int) Math.round(p[2].getX()), (int) Math.round(p[2].getY())
-        );
-		
-	}
+        Polygon polygon = new Polygon();
+        for (int i = 0; i < p.length; i++) {
+            if (i > 0) {
+                polygon.addPoint((int) Math.round(p[i].getX()), (int) Math.round(p[i].getY()));
+            }
+        }
+        g.drawPolygon(polygon);
+    }
 
 }

@@ -32,6 +32,8 @@ import org.animotron.animi.RuntimeParam;
  */
 public abstract class AbstractAnime implements Figure {
 
+    protected int maxX = 0, maxY = 0;
+
     private int[][] anime;
 
     private int i = 0;

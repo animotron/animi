@@ -21,17 +21,22 @@
 package org.animotron.animi.simulator;
 
 import java.awt.*;
+import java.util.Random;
 
 /**
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
 public interface Figure {
-
+	
+    final static Random rnd = new Random();
+    
 	public void drawImage(Graphics g);
 
 	public void step();
 	
 	public boolean isActive();
+
+	public void reset();
 
 }

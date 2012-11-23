@@ -47,7 +47,7 @@ public class RandomLineAnime implements Figure {
             init(i);
         }
     }
-
+    
     private int random(int min, int max) {
         return (int) Math.round((max - min) * Math.random() + min);
     }
@@ -56,6 +56,8 @@ public class RandomLineAnime implements Figure {
         p[0] = random(p[2], p[3]);
         d(p);
     }
+    
+    public void reset() {}
 
     private void d(int[] p) {
         p[1] = random(p[2] - p[0], p[3] - p[0]);

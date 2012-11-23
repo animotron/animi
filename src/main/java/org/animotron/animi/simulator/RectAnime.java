@@ -22,7 +22,6 @@ package org.animotron.animi.simulator;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.Random;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -30,12 +29,18 @@ import java.util.Random;
  *
  */
 public class RectAnime extends AbstractAnime {
+	
+	private int d;
 
     public RectAnime(int d, int maxX, int maxY) {
         super(0, null);
 
-        Random rnd = new Random();
-        
+        this.d = d;
+        this.maxX = maxX;
+        this.maxY = maxY;
+    }
+    
+    public void reset() {
         int D = 2 * rnd.nextInt(d);
         
         int X = rnd.nextInt(maxX);

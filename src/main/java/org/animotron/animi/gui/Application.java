@@ -266,7 +266,7 @@ public class Application extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				stimulator.init();
+				stimulator.reset();
 				cortexs.retina.resetShift();
 			}
         });
