@@ -38,6 +38,8 @@ public class RectAnime extends AbstractAnime {
         this.d = d;
         this.maxX = maxX;
         this.maxY = maxY;
+        
+        reset();
     }
     
     public void reset() {
