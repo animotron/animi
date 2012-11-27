@@ -37,10 +37,10 @@ import org.animotron.animi.RuntimeParam;
 public class NeuronComplex extends Neuron {
 	
 	@RuntimeParam(name="backProjection")
-	public double[] backProjection = new double[] {0, 0, 0};
+	public double[] backProjection = new double[] {0, 0, 0, 0, 0, 0, 0};
 
 	@RuntimeParam(name="posActivity")
-	public double[] posActivity = new double[] {0, 0, 0};
+	public double[] posActivity = new double[] {0, 0, 0, 0, 0, 0, 0};
 
 	public double q = 0;
 	
@@ -55,24 +55,10 @@ public class NeuronComplex extends Neuron {
 		this.zone = zone;
 	}
 
-	public NeuronComplex(NeuronComplex cn) {
-		super(cn.x, cn.y);
-		activity = cn.activity;
-
-		s_links = cn.s_links;
-		a_links = cn.a_links;
-
-		backProjection = cn.backProjection;
-		posActivity = cn.posActivity;
-		q = cn.q;
-	}
-
 	public void init() {
-		double count = Qs.values().size() * 3;
+		double count = Qs.values().size();
 		for (LinkQ link : Qs.values()) {
-			for (int i = 0; i < 3; i++) {
-				link.q[i] = 1 / count;
-			}
+			link.q = 1 / count;
 		}
 	}
 }

@@ -221,10 +221,16 @@ public class Retina {
         //zero
         for (int ix = 0; ix < NL.width(); ix++) {
         	for (int iy = 0; iy < NL.height(); iy++) {
-    			NL.shift(ix, iy);
         	}
         }
-
+        
+        for (int ix = 0; ix < NL.width(); ix++) {
+        	for (int iy = 0; iy < NL.height(); iy++) {
+    			NL.shift(ix, iy, 0);
+        	}
+        }
+        
+        int nextX, nextY;
         
 //    	double SP, SC, SA;
 //        double K_cont;
@@ -233,8 +239,11 @@ public class Retina {
 
 //        		OnOffReceptiveField mSensPol = sensorField[ix][iy];
 
-        		if (ix + thisX >= 0 && ix + thisX < width && iy + thisY >= 0 && iy + thisY < height) {
-        			NL.set(ix + thisX, iy + thisY, preprocessed[(int)(ix * XScale)][(int)(iy * YScale)]);
+        		nextX = ix + thisX;
+        		nextY = iy + thisY;
+        		
+        		if (nextX >= 0 && nextX < width && nextY >= 0 && nextY < height) {
+        			NL.shift(nextX, nextY, preprocessed[(int)(ix * XScale)][(int)(iy * YScale)]);
         		}
 
 //                NL.set(ix,iy,false);
@@ -288,6 +297,7 @@ public class Retina {
 //                }
         	}
         }
+        System.out.println("");
     }
     
 	public int width() {

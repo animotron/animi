@@ -41,10 +41,8 @@ public class UpDownCNActivation implements Act<CortexZoneSimple> {
 //    		return;
 //    	}
 
-    	for (int i = 0; i < 3; i++) {
-	    	for (LinkQ q : cn.a_Qs) {
-	    		q.axon.activity[0] += cn.activity[i] * q.q[i];
-	    	}
-    	}
+//    	for (LinkQ link : cn.a_Qs) {
+//    		link.axon.activity[0] += cn.activity[link.delay] * link.q;
+//    	}
     }
 }

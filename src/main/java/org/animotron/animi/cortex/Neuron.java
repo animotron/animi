@@ -31,7 +31,7 @@ import org.animotron.animi.RuntimeParam;
 public class Neuron {
 	
 	@RuntimeParam(name="activity")
-	public double[] activity = new double[] {0, 0, 0};
+	public double[] activity = new double[] {0, 0, 0, 0, 0, 0, 0};
 	
 	public int x;
 	

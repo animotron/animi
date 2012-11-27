@@ -53,11 +53,10 @@ public class Inhibitory implements ActWithMax<CortexZoneSimple> {
     	
     	delta *= k;
     	
-		for (int i = 0; i < 3; i++) {
-	    	cn.activity[i] = cn.activity[i] - delta;
-	    	if (cn.activity[i] < 0 || Double.isNaN(cn.activity[i])) 
-	    		cn.activity[i] = 0;
-		}
+    	cn.activity[0] = cn.activity[0] - delta;
+    	if (cn.activity[0] < 0 || Double.isNaN(cn.activity[0])) 
+    		cn.activity[0] = 0;
+
     	return Math.max(max, delta);
     }
 }

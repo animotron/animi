@@ -297,14 +297,23 @@ public class PFActual implements Imageable, InternalFrameListener {
 		        int b = Utils.get_blue(value);
 		        int r = Utils.get_red(value);
 
-				g += 255 * link.q[0];
-				if (g > 255) g = 255;
+		        switch (link.delay) {
+				case 0:
+					g += 255 * link.q;;
+					if (g > 255) g = 255;
 
-				b += 255 * link.q[1];
-				if (b > 255) b = 255;
+					break;
+				case 1:
+					b += 255 * link.q;
+					if (b > 255) b = 255;
 
-				r += 255 * link.q[2];
-				if (r > 255) r = 255;
+					break;
+				default:
+					r += 255 * link.q;
+					if (r > 255) r = 255;
+
+					break;
+				}
 				
 				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
         	}
@@ -388,12 +397,12 @@ public class PFActual implements Imageable, InternalFrameListener {
 	        			&& pY < image.getHeight()) {
 		                    	
 	            	int c = Utils.calcGrey(image, pX, pY);
-					c += 255 * link.q[0] * q * 10;
+					c += 255 * link.q * q * 10;
 					if (c > 255) c = 255;
 					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
 	        	}
 			} else {
-				drawStepUp(link.synapse, q * link.q[0], image);
+				drawStepUp(link.synapse, q * link.q, image);
 			}
 		}
 	}
@@ -403,7 +412,7 @@ public class PFActual implements Imageable, InternalFrameListener {
         BufferedImage image = new BufferedImage(_boxSize, _boxSize, BufferedImage.TYPE_INT_ARGB);
 
 		for (LinkQ link : cn.Qs.values()) {
-			drawStepUp(link.synapse, link.q[0], image);
+			drawStepUp(link.synapse, link.q, image);
         }
         return image;
 	}
@@ -428,14 +437,25 @@ public class PFActual implements Imageable, InternalFrameListener {
 		        int b = Utils.get_blue(value);
 		        int r = Utils.get_red(value);
 
-				g += 255 * link.synapse.activity[0];
-				if (g > 255) g = 255;
+		        switch (link.delay) {
+				case 0:
+					g += 255 * link.synapse.activity[link.delay];
+					if (g > 255) g = 255;
+					
+					break;
 
-				b += 255 * link.synapse.activity[1];
-				if (b > 255) b = 255;
+				case 1:
+					g += 255 * link.synapse.activity[link.delay];
+					if (g > 255) g = 255;
+					
+					break;
 
-				r += 255 * link.synapse.activity[2];
-				if (r > 255) r = 255;
+				default:
+					r += 255 * link.synapse.activity[2];
+					if (r > 255) r = 255;
+
+					break;
+				}
 
 				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
 			} else {

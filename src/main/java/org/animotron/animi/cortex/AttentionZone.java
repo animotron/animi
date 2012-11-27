@@ -20,6 +20,8 @@
  */
 package org.animotron.animi.cortex;
 
+import java.util.Random;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
@@ -29,6 +31,8 @@ public class AttentionZone extends CortexZoneComplex {
 	public AttentionZone(String name, MultiCortex mc, int width, int height, Mapping[] in_zones) {
 		super(name, mc, width, height, in_zones);
 	}
+	
+	Random rnd = new Random();
 	
     public void process() {
     	if (!isActive() || !mc.retina.needShift())
@@ -65,7 +69,16 @@ public class AttentionZone extends CortexZoneComplex {
         X = (int)(X * in_zones[0].zone.width / (double) width());
 		Y = (int)(Y * in_zones[0].zone.height / (double) height());
 		
-		mc.retina.shift(X, Y);
+		mc.retina.shift(X + nextRandom(), Y + nextRandom());
     }
-
+    
+    private int nextRandom() {
+    	final int res;
+    	if (rnd.nextBoolean())
+    		res = 1;
+    	else
+    		res = -1;
+    	
+    	return res * (4+rnd.nextInt(6));
+    }
 }

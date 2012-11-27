@@ -114,7 +114,7 @@ public class Mapping {
                             		System.exit(1);
                             	}
                             	sigma *= 1.05;//_sigma * 0.1;
-    							System.out.println("\n"+i+" of "+ns_links+" ("+sigma+")");
+//    							System.out.println("\n"+i+" of "+ns_links+" ("+sigma+")");
                             	count = 0;
                             }
                             count++;
@@ -143,7 +143,7 @@ public class Mapping {
                         nerv_links[lx][ly] = true;
 	
 						// Создаем синаптическую связь
-						new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY);
+						new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY, toZone.speed);
                     } else {
                     	System.out.print("!");
                     }

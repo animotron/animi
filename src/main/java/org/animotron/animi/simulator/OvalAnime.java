@@ -21,7 +21,6 @@
 package org.animotron.animi.simulator;
 
 import java.awt.*;
-import java.util.Random;
 
 import org.animotron.animi.RuntimeParam;
 
@@ -29,9 +28,11 @@ import org.animotron.animi.RuntimeParam;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class OvalAnime implements Figure {
+public class OvalAnime extends AbstractAnime {
 
-    private int[][] anime;
+	private int d;
+
+	private int[][] anime;
 
     private int i = 0;
     private double x, y, dx, dy;
@@ -43,20 +44,22 @@ public class OvalAnime implements Figure {
     public boolean active = true;
 
     public OvalAnime(int d, int maxX, int maxY) {
-        Random rnd = new Random();
-        
+    	super(0, null);
+        this.d = d;
+        this.maxX = maxX;
+        this.maxY = maxY;
+    }
+
+    public OvalAnime(int a, int[][] anime) {
+    	super(a, anime);
+    }
+	
+    public void reset() {
         D = rnd.nextInt(d);
         
         X = rnd.nextInt(maxX);
         Y = rnd.nextInt(maxY);
     }
-
-    public OvalAnime(int a, int[][] anime) {
-        this.D = a;
-        this.anime = anime;
-    }
-	
-    public void reset() {}
 
     public void drawImage(Graphics g) {
         g.setColor(Color.WHITE);

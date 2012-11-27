@@ -20,6 +20,8 @@
  */
 package org.animotron.animi.acts;
 
+import java.util.Arrays;
+
 import org.animotron.animi.cortex.*;
 
 /**
@@ -37,6 +39,6 @@ public class PosActivity implements Act<CortexZoneSimple> {
     public void process(CortexZoneSimple layer, final int x, final int y) {
     	NeuronComplex cn = layer.col[x][y];
     	
-    	cn.posActivity = cn.activity;
+    	cn.posActivity = Arrays.copyOf(cn.activity, cn.activity.length);
     }
 }

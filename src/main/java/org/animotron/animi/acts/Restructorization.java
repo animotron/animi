@@ -54,20 +54,16 @@ public class Restructorization implements Act<CortexZoneSimple> {
 		double factor = ny / Math.pow(2, layer.count / count);
 		double sumQ2 = 0;
 
-		for (int i = 0; i < 3; i++) {
-			for (LinkQ link : cn.Qs.values()) {
-				
-				link.q[i] += activity * link.synapse.activity[i] * factor;
-	
-				sumQ2 += link.q[i] * link.q[i];
-			}
+		for (LinkQ link : cn.Qs.values()) {
+			
+			link.q += activity * link.synapse.activity[link.delay] * factor;
+
+			sumQ2 += link.q * link.q;
 		}
 			
 		double norm = Math.sqrt(sumQ2);
-		for (int i = 0; i < 3; i++) {
-			for (LinkQ link : cn.Qs.values()) {
-				link.q[i] = link.q[i] / norm;
-			}
+		for (LinkQ link : cn.Qs.values()) {
+			link.q = link.q / norm;
 		}
 		
 		//inhibitory restructorization & normlization

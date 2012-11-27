@@ -40,18 +40,11 @@ public class CNActivation implements Act<CortexZoneSimple> {
     	
     	double activity = 0;
     	
-    	for (int i = 0; i < 3; i++) {
-	    	for (LinkQ q : cn.Qs.values()) {
-	    		activity += q.synapse.activity[i] * q.q[i];
-	    	}
+    	for (LinkQ q : cn.Qs.values()) {
+    		if (q.delay < q.synapse.activity.length)
+    			activity += q.synapse.activity[q.delay] * q.q;
     	}
     	
-    	for (int i = 1; i < 3; i++) {
-	    	cn.activity[i] = cn.activity[i-1];
-	    	cn.posActivity[i] = cn.posActivity[i-1];
-    	}
-
-    	cn.activity[0] = activity;
-    	cn.posActivity[0] = activity;
+    	layer.shift(x, y, activity);
     }
 }

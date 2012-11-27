@@ -83,7 +83,8 @@ public class MultiCortex {
                 new Mapping(z_in, 50, 1, false) //7x7 (50)
             }
         );
-        z_in.nextLayers(new CortexZoneSimple[] {z_1st});
+        z_1st.speed = Integer.MAX_VALUE;
+//        z_in.nextLayers(new CortexZoneSimple[] {z_1st});
 
         z_attention = new AttentionZone("attention", this, 20, 20,
             new Mapping[]{
@@ -91,6 +92,7 @@ public class MultiCortex {
             }
         );
         z_attention.inhibitory_links = 0;
+        z_attention.speed = Integer.MAX_VALUE;
 
         z_motoric = new AttentionZone("motoric", this, 2, 2,
             new Mapping[]{
@@ -98,6 +100,7 @@ public class MultiCortex {
             }
         );
         z_motoric.inhibitory_links = 0;
+        z_motoric.speed = Integer.MAX_VALUE;
 
 //        z_goriz1 = new CortexZoneComplex("1st G", this, 20, 20,
 //            new Mapping[]{
@@ -109,12 +112,13 @@ public class MultiCortex {
 //
 //        z_1st.nextLayers(new CortexZoneSimple[] {z_goriz1});
 //
-//        z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
-//            new Mapping[]{
-//                new Mapping(z_1st, 400, 2, false),
+        z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
+            new Mapping[]{
+                new Mapping(z_1st, 400, 2, false), //20x20
 //                new Mapping(z_goriz1, 300, 2, true)
-//            }
-//        );
+            }
+        );
+        z_2nd.speed = 4;
 //        z_1st.nextLayers(new CortexZoneSimple[] {z_2nd});
 //        z_goriz1.nextLayers(new CortexZoneSimple[] {z_2nd});
 
@@ -125,7 +129,7 @@ public class MultiCortex {
 //        );
 
 //        zones = new CortexZoneSimple[]{z_in, z_1st, z_goriz1, z_2nd};
-        zones = new CortexZoneSimple[]{z_in, z_1st, z_attention};
+        zones = new CortexZoneSimple[]{z_in, z_1st, z_attention, z_2nd};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);
@@ -213,7 +217,8 @@ public class MultiCortex {
 						cn, 
 						Double.valueOf(attrs.getValue("w")),
 						fX,
-						fY
+						fY,
+						Double.valueOf(attrs.getValue("speed"))
 					);
 
 			} else if ("linkI".equals(qName)) {

@@ -32,20 +32,30 @@ public class LinkQ {
 	public double fX = 1;
 	public double fY = 1;
 	
-	public LinkQ(NeuronComplex synapse, NeuronComplex axon, double q, double fX, double fY) {
+	public int delay = 0;
+	
+	public LinkQ(NeuronComplex synapse, NeuronComplex axon, double q, double fX, double fY, double speed) {
 		this.synapse = synapse;
 		this.axon = axon;
 		
 		synapse.a_Qs.add(this);
 		axon.Qs.put(synapse, this);
 		
-		this.q[0] = q / (double)3;
-		this.q[1] = q / (double)3;
-		this.q[2] = q / (double)3;
+		this.q = q;
+//		this.q[0] = q / (double)3;
+//		this.q[1] = q / (double)3;
+//		this.q[2] = q / (double)3;
 		
 		this.fX = fX;
 		this.fY = fY;
+		
+		double lX = synapse.x - (axon.x * fX);
+		double lY = synapse.y - (axon.y * fX);
+		
+		double length = Math.sqrt(lX*lX + lY*lY);
+		
+		delay = (int)Math.round(length / speed);
 	}
 	
-	public double[] q = new double[] {0, 0, 0};
+	public double q = 0;
 }

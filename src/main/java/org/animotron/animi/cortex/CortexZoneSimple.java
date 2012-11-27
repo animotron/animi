@@ -57,6 +57,9 @@ public class CortexZoneSimple implements Layer {
 	@InitParam(name="height")
 	public int height = 100;
 	
+	@InitParam(name="speed")
+	public double speed = Integer.MAX_VALUE;
+	
 	public int count = 0;
 
 	public Zero zero = new Zero();
@@ -189,21 +192,25 @@ public class CortexZoneSimple implements Layer {
 	@Override
 	public void set(int x, int y, double b) {
 		final NeuronComplex cn = col[x][y];
+		if (b != 0)
+			System.out.println();
 		cn.activity[0] = b;
-		cn.backProjection[0] = b;
+//		cn.backProjection[0] = b;
 		cn.posActivity[0] = b;
 	}
 
 	@Override
-	public void shift(int x, int y) {
-		for (int i = 1; i < 3; i++) {
-			final NeuronComplex cn = col[x][y];
+	public void shift(int x, int y, double b) {
+    	//XXX: optimize
+
+		final NeuronComplex cn = col[x][y];
+		for (int i = cn.activity.length - 1; i > 0 ; i--) {
 			cn.activity[i] = cn.activity[i-1];
-			cn.backProjection[i] = cn.backProjection[i-1];
+//			cn.backProjection[i] = cn.backProjection[i-1];
 			cn.posActivity[i] = cn.posActivity[i-1];
 		}
 		
-		set(x, y, 0);
+		set(x, y, b);
 	}
 
 	@Override
@@ -230,6 +237,7 @@ public class CortexZoneSimple implements Layer {
 	            }
 	        }
     	} catch (Throwable e) {
+    		e.printStackTrace();
 		}
     }
 
@@ -251,6 +259,7 @@ public class CortexZoneSimple implements Layer {
 	}
 	
     public boolean active = false;
+
 	public boolean isActive() {
 		return active;
 	}
@@ -271,6 +280,7 @@ public class CortexZoneSimple implements Layer {
 		write(out, "height", height);
 		write(out, "active", active);
 		write(out, "learning", learning);
+		write(out, "speed", speed);
 		out.write("/>");
 	}
 }

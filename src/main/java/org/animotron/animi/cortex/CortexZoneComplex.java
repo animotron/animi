@@ -310,14 +310,24 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					        B = Utils.get_blue(value);
 					        R = Utils.get_red(value);
 
-							G += 255 * link.q[0];
-							if (G > 255) G = 255;
-
-							B += 255 * link.q[1];
-							if (B > 255) B = 255;
+					        switch (link.delay) {
+							case 0:
+								G += 255 * link.q;;
+								if (G > 255) G = 255;
+								
+								break;
 							
-							R += 255 * link.q[2];
-							if (R > 255) R = 255;
+							case 1:
+								B += 255 * link.q;
+								if (B > 255) B = 255;
+
+								break;
+							default:
+								R += 255 * link.q;
+								if (R > 255) R = 255;
+
+								break;
+							}
 
 							image.setRGB(pX, pY, Utils.create_rgb(255, R, G, B));
                     	}
@@ -422,14 +432,24 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					        B = Utils.get_blue(value);
 					        R = Utils.get_red(value);
 
-							G += 255 * cn.backProjection[0] * link.q[0];
-							if (G > 255) G = 255;
+					        switch (link.delay) {
+							case 0:
+								G += 255 * cn.backProjection[0] * link.q;
+								if (G > 255) G = 255;
+								
+								break;
 							
-							B += 255 * cn.backProjection[1] * link.q[1];
-							if (B > 255) B = 255;
+							case 1:
+								B += 255 * cn.backProjection[0] * link.q;
+								if (B > 255) B = 255;
 
-							R += 255 * cn.backProjection[2] * link.q[2];
-							if (R > 255) R = 255;
+								break;
+							default:
+								R += 255 * cn.backProjection[0] * link.q;
+								if (R > 255) R = 255;
+
+								break;
+							}
 
 							max = Math.max(max, G);
 							max = Math.max(max, B);
@@ -537,6 +557,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		write(out, "id", id);
 		write(out, "width", width);
 		write(out, "height", height);
+		write(out, "speed", speed);
 		write(out, "active", active);
 		write(out, "learning", learning);
 		write(out, "count", count);
