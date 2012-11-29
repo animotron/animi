@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -384,25 +385,48 @@ public class PFActual implements Imageable, InternalFrameListener {
         return image;
 	}
 	
-	private void drawStepUp(NeuronComplex cn, double q, BufferedImage image) {
+	private void drawStepUp(NeuronComplex cn, double q, int delay, BufferedImage image) {
 		for (LinkQ link : cn.Qs.values()) {
 			
 			if (link.synapse.Qs.size() == 0) {
 	        	int pX = link.synapse.x;
 	        	int pY = link.synapse.y;
-                    	
+	        	
 				if (       pX > 0 
 	        			&& pX < image.getWidth() 
 	        			&& pY > 0 
 	        			&& pY < image.getHeight()) {
 		                    	
-	            	int c = Utils.calcGrey(image, pX, pY);
-					c += 255 * link.q * q * 10;
-					if (c > 255) c = 255;
-					image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+			        int value = image.getRGB(pX, pY);
+
+			        int G = Utils.get_green(value);
+			        int B = Utils.get_blue(value);
+			        int R = Utils.get_red(value);
+
+			        switch (delay) {
+					case 0:
+						G += 255 * link.q * q;
+						if (G > 255) G = 255;
+						
+						break;
+
+					case 1:
+						B += 255 * link.q * q;
+						if (B > 255) B = 255;
+						
+						break;
+					
+					default:
+						R += 255 * link.q * q;
+						if (R > 255) R = 255;
+
+						break;
+					}
+
+					image.setRGB(pX, pY, Utils.create_rgb(255, R, G, B));
 	        	}
 			} else {
-				drawStepUp(link.synapse, q * link.q, image);
+				drawStepUp(link.synapse, q * link.q, delay, image);
 			}
 		}
 	}
@@ -410,9 +434,24 @@ public class PFActual implements Imageable, InternalFrameListener {
 	private BufferedImage draw2upRF() {
 		int _boxSize = boxSize*zoom*2;
         BufferedImage image = new BufferedImage(_boxSize, _boxSize, BufferedImage.TYPE_INT_ARGB);
+        
+        NeuronComplex _cn = null;
+        Collection<LinkQ> links = cn.Qs.values();
+        while (!links.isEmpty()) {
+        	_cn = links.iterator().next().synapse;
+        	links = _cn.Qs.values();
+        }
+        if (_cn != null) {
+        	final int x = _cn.zone.height() + 1;
+        	final int y = _cn.zone.width() + 1;
+            
+        	Graphics g = image.getGraphics();
+            g.drawLine(0, y, x, y);
+            g.drawLine(x, y, x, 0);
+        }
 
 		for (LinkQ link : cn.Qs.values()) {
-			drawStepUp(link.synapse, link.q, image);
+			drawStepUp(link.synapse, link.q, link.delay, image);
         }
         return image;
 	}
