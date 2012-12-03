@@ -529,9 +529,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
     protected void cycleActivation() {
     	
     	performTask(cnActivation);
-//		for (int i : new int[] {1,2,3,4,5,6,7}) {
+		for (int i : new int[] {1,2,3,4,5}) {
 			performTask(inhibitory);
-//		}
+		}
     }
 
     //Граничные нейроны не задействованы.

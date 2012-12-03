@@ -24,6 +24,7 @@ import static org.jocl.CL.*;
 
 import java.awt.Color;
 import java.awt.image.DataBufferInt;
+import java.util.Arrays;
 
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
@@ -45,11 +46,6 @@ public class Restructorization extends Task {
 	@RuntimeParam(name = "count")
 	public int count = 10000;
 
-	@RuntimeParam(name = "ny")
-	public double ny = 0.1;
-//	@RuntimeParam(name = "inhibitoryNy")
-//	public double inhibitoryNy = ny / 5;
-
 	public Restructorization(CortexZoneComplex cz) {
 		super(cz);
 	}
@@ -60,30 +56,22 @@ public class Restructorization extends Task {
      * @param kernel The OpenCL kernel for which the arguments will be set
      */
     protected void setupArguments(cl_kernel kernel) {
-//    	final float[] cols = cz.cols;
-//    	
-//    	outputMem = clCreateBuffer(
-//    		cz.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
-//    		cols.length * Sizeof.cl_float, Pointer.to(cols), null
-//		);
-
         clSetKernelArg(kernel,  0, Sizeof.cl_mem, Pointer.to(cz.cl_cols));
         clSetKernelArg(kernel,  1, Sizeof.cl_int, Pointer.to(new int[] {cz.width}));
 
     	Mapping m = cz.in_zones[0];
 
-//    	outputMem = clCreateBuffer(
-//    		cz.mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-//    		m.linksWeight.length * Sizeof.cl_float, Pointer.to(m.linksWeight), null
-//		);
-
     	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(m.cl_links));
         clSetKernelArg(kernel,  3, Sizeof.cl_mem, Pointer.to(m.cl_senapseOfLinks));
         clSetKernelArg(kernel,  4, Sizeof.cl_int, Pointer.to(new int[] {m.ns_links}));
-        clSetKernelArg(kernel,  5, Sizeof.cl_float, Pointer.to(new float[] {(float) (ny / Math.pow(2, cz.count / (double)count))}));
+        clSetKernelArg(kernel,  5, Sizeof.cl_float, Pointer.to(new float[] {sz.ny}));
+        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(sz.cl_colsNy));
         
 //        System.out.println("Restructorization Original");
 //        System.out.println(m.linksWeight[0]);
+
+        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
+        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
     }
 
 	@Override
@@ -145,12 +133,21 @@ public class Restructorization extends Task {
             target, 0, null, events[0]);
 
         clWaitForEvents(1, events);
+
+        target = Pointer.to(sz.colsNy);
+        clEnqueueReadBuffer(
+            commandQueue, sz.cl_colsNy, 
+            CL_TRUE, 0, sz.colsNy.length * Sizeof.cl_float, 
+            target, 0, null, events[0]);
+
+        clWaitForEvents(1, events);
         
 //        Utils.printBenchmarkInfo("Reading", events[0]);
 
 //        m.linksWeight = result;
 
-        processColors(m.linksWeight);
+//        System.out.println(Arrays.toString(sz.colsNy));
+//        processColors(m.linksWeight);
         
         release();
         

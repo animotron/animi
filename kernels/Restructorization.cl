@@ -30,39 +30,54 @@ __kernel void computeRestructorization(
     __global float* linksWeight,
     __global int*   linksSenapse,
     int linksNumber,
-    float factor
+    
+    float ny,
+    __global float* nys,
+
+    __global float* input,
+    int inputSizeX
 ) {
 
     int x = get_global_id(0);
     int y = get_global_id(1);
     
     float activity = cols[mul24(y, sizeX)+x];
-    
-    int XSize = mul24(linksNumber, 2);
-    int offset = mul24(y, mul24(sizeX, XSize)) + mul24(x, XSize);
-    
-	int linksOffset = mul24(y, mul24(sizeX, linksNumber)) + mul24(x, linksNumber);
-
-	float w;
-	float sumQ2 = 0;
-    for(int l = 0; l < linksNumber; l++)
+    if (activity > 0)
     {
-    	int xi = linksSenapse[offset + mul24(l, 2)  ];
-    	int yi = linksSenapse[offset + mul24(l, 2)+1];
-    	
-    	w = linksWeight[linksOffset + l];
-    	
-    	w += activity * cols[mul24(yi, sizeX)+xi] * factor;
-
-		sumQ2 += w * w;
+	    int XSize = mul24(linksNumber, 2);
+	    int offset = mul24(y, mul24(sizeX, XSize)) + mul24(x, XSize);
+	    
+		int linksOffset = mul24(y, mul24(sizeX, linksNumber)) + mul24(x, linksNumber);
 		
-		linksWeight[linksOffset + l] = w;
-	}
-
-	float norm = sqrt(sumQ2);
-    for(int l = 0; l < linksNumber; l++)
-    {
-//		linksWeight[linksOffset + l] = norm;
-		linksWeight[linksOffset + l] = linksWeight[linksOffset + l] / norm;
+		float factor = 1;
+		if (nys[mul24(y, sizeX)+x] != ny)
+		{
+			factor = nys[mul24(y, sizeX)+x];
+			nys[mul24(y, sizeX)+x] = ny;
+		} else {
+			factor = activity * nys[mul24(y, sizeX)+x];
+		}
+	
+		float w;
+		float sumQ2 = 0;
+	    for(int l = 0; l < linksNumber; l++)
+	    {
+	    	int xi = linksSenapse[offset + mul24(l, 2)  ];
+	    	int yi = linksSenapse[offset + mul24(l, 2)+1];
+	    	
+	    	w = linksWeight[linksOffset + l];
+	    	
+	    	w += input[mul24(yi, inputSizeX)+xi] * factor;
+	
+			sumQ2 += w * w;
+			
+			linksWeight[linksOffset + l] = w;
+		}
+	
+		float norm = sqrt(sumQ2);
+	    for(int l = 0; l < linksNumber; l++)
+	    {
+			linksWeight[linksOffset + l] = linksWeight[linksOffset + l] / norm;
+		}
 	}
 }

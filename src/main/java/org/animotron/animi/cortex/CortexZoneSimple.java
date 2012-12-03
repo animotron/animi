@@ -23,6 +23,7 @@ package org.animotron.animi.cortex;
 import static org.jocl.CL.*;
 
 import org.animotron.animi.InitParam;
+import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.acts.Act;
 import org.animotron.animi.acts.ActWithMax;
 import org.animotron.animi.acts.UpDownCNActivation;
@@ -87,7 +88,15 @@ public class CortexZoneSimple implements Layer {
     public cl_mem cl_cols;
     public float cols[];
     
-    public BufferedImage image;
+    public cl_mem cl_colsNy;
+    public float colsNy[];
+
+	@RuntimeParam(name = "first_ny")
+	public float first_ny = 1f;
+	@RuntimeParam(name = "ny")
+	public float ny = 0.15f;
+
+	public BufferedImage image;
 
     /**
      * Initializes the OpenCL memory object and the BufferedImage which will later receive the pixels
@@ -102,6 +111,14 @@ public class CortexZoneSimple implements Layer {
     		cols.length * Sizeof.cl_float, Pointer.to(cols), null
 		);
         
+        colsNy = new float[width * height];
+    	Arrays.fill(colsNy, first_ny);
+    	
+        cl_colsNy = clCreateBuffer(
+    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
+    		colsNy.length * Sizeof.cl_float, Pointer.to(colsNy), null
+		);
+
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 
