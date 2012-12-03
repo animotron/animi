@@ -56,4 +56,6 @@ __kernel void computeInhibitory(
     	delta = 0;
 	}
 	output[mul24(y, sizeX)+x] = delta;
+	
+	barrier(CLK_LOCAL_MEM_FENCE);
 }

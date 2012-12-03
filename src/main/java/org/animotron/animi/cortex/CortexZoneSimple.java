@@ -24,6 +24,7 @@ import static org.jocl.CL.*;
 
 import org.animotron.animi.InitParam;
 import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.Utils;
 import org.animotron.animi.acts.Act;
 import org.animotron.animi.acts.ActWithMax;
 import org.animotron.animi.acts.UpDownCNActivation;
@@ -69,9 +70,6 @@ public class CortexZoneSimple implements Layer {
 	
 	public int count = 0;
 
-	public Zero zero = new Zero();
-	public UpDownCNActivation nextLayerActivation = new UpDownCNActivation();
-
 	CortexZoneSimple() {
     	name = null;
     	mc = null;
@@ -87,6 +85,8 @@ public class CortexZoneSimple implements Layer {
      */
     public cl_mem cl_cols;
     public float cols[];
+    
+    public float beforeInhibitoryCols[];
     
     public cl_mem cl_colsNy;
     public float colsNy[];
@@ -105,6 +105,9 @@ public class CortexZoneSimple implements Layer {
     	
     	cols = new float[width * height];
     	Arrays.fill(cols, 0);
+    	
+    	beforeInhibitoryCols = new float[width * height];
+    	Arrays.fill(beforeInhibitoryCols, 0);
     	
         cl_cols = clCreateBuffer(
     		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
@@ -137,18 +140,24 @@ public class CortexZoneSimple implements Layer {
     	for (int i = 0; i < cols.length; i++) {
     		final float value = cols[i];
       	
-    		data[i] = 
-				Float.isNaN(value) ? 
-					Color.RED   .getRGB() : 
-					value == 0 ? 
-						Color.BLACK .getRGB() : 
-						value > 0 ? 
-							Color.WHITE .getRGB() :
-							Color.YELLOW.getRGB();
+    		if (Float.isNaN(value))
+    			data[i] = Color.RED.getRGB();
+    		else {
+    			int c = (int)(value * 255);
+    			if (this instanceof CortexZoneComplex) {
+    				if (value != 1 && value > 0)
+    					System.out.println(value);
+    			}
+    			if (c > 255) 
+    				c = 255;
+					
+				data[i] = Utils.create_rgb(255, c, c, c);
+    		}
     	}
     }
     
     public BufferedImage getImage() {
+    	refreshImage();
         return image;
     }
 
@@ -217,23 +226,6 @@ public class CortexZoneSimple implements Layer {
 
 	CortexZoneSimple[] nextLayers = null;
 	
-	public void nextLayers(CortexZoneSimple[] nextLayers) {
-		this.nextLayers = nextLayers;
-	}
-	
-	public void activateNextLayer() {
-		boolean haveActive = false;
-		for (CortexZoneSimple layer : nextLayers) {
-			haveActive = layer.isActive() || haveActive;
-		}
-		if (haveActive)
-			cycle(0, 0, width(), height(), nextLayerActivation);
-	}
-	
-	public void zero() {
-		cycle(0, 0, width(), height(), zero);
-	}
-
 	@Override
 	public void set(int x, int y, float b) {
 //		final NeuronComplex cn = col[x][y];

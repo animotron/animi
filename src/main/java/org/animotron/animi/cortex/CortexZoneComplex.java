@@ -406,8 +406,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 					Utils.drawRF(
 		        		image, 
-		        		image.getWidth(),
-		        		0, 0,
 		        		x, y, 
 		        		in_zones[0]
 		    		);
@@ -453,30 +451,30 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //					}
 				}
 			}
-			if (max != 255 || max != 0) {
-				double bright = 255 / (double)max;
-				for (int x = 0; x < image.getWidth(); x++) {
-					for (int y = 0; y < image.getHeight(); y++) {
-						
-				        value = image.getRGB(x, y);
-
-				        G = Utils.get_green(value);
-				        B = Utils.get_blue(value);
-				        R = Utils.get_red(value);
-
-						G *= bright;
-						if (G > 255) G = 255;
-	            		
-						B *= bright;
-						if (B > 255) B = 255;
-
-						R *= bright;
-						if (R > 255) R = 255;
-
-						image.setRGB(x, y, Utils.create_rgb(255, R, G, B));
-					}
-				}
-			}
+//			if (max != 255 || max != 0) {
+//				double bright = 255 / (double)max;
+//				for (int x = 0; x < image.getWidth(); x++) {
+//					for (int y = 0; y < image.getHeight(); y++) {
+//						
+//				        value = image.getRGB(x, y);
+//
+//				        G = Utils.get_green(value);
+//				        B = Utils.get_blue(value);
+//				        R = Utils.get_red(value);
+//
+//						G *= bright;
+//						if (G > 255) G = 255;
+//	            		
+//						B *= bright;
+//						if (B > 255) B = 255;
+//
+//						R *= bright;
+//						if (R > 255) R = 255;
+//
+//						image.setRGB(x, y, Utils.create_rgb(255, R, G, B));
+//					}
+//				}
+//			}
 			return image;
 		}
 
@@ -529,9 +527,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
     protected void cycleActivation() {
     	
     	performTask(cnActivation);
-		for (int i : new int[] {1,2,3,4,5}) {
+//		for (int i : new int[] {1,2,3,4,5}) {
 			performTask(inhibitory);
-		}
+//		}
     }
 
     //Граничные нейроны не задействованы.

@@ -80,4 +80,6 @@ __kernel void computeRestructorization(
 			linksWeight[linksOffset + l] = linksWeight[linksOffset + l] / norm;
 		}
 	}
+	
+	barrier(CLK_LOCAL_MEM_FENCE);
 }

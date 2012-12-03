@@ -77,24 +77,26 @@ public class Restructorization extends Task {
 	@Override
 	protected void processColors(float[] array) {
 //    	System.out.println("Restructorization "+array.length);
-//        System.out.println(array[0]);
+//        System.out.println(Arrays.toString(array));
         
-    	// Write the colors into the bufferedImage
-        DataBufferInt dataBuffer = (DataBufferInt)cz.image.getRaster().getDataBuffer();
-        int data[] = dataBuffer.getData();
-        
-        for (int i = 0; i < cz.cols.length; i++) {
-        	final float value = cz.cols[i];
-        	
-        	data[i] = 
-    			Float.isNaN(value) ? 
-        			Color.RED   .getRGB() : 
-				value == 0 ? 
-					Color.BLACK .getRGB() : 
-				value > 0 ? 
-					Color.WHITE .getRGB() :
-					Color.YELLOW.getRGB();
-        }
+        cz.refreshImage();
+//        
+//    	// Write the colors into the bufferedImage
+//        DataBufferInt dataBuffer = (DataBufferInt)cz.image.getRaster().getDataBuffer();
+//        int data[] = dataBuffer.getData();
+//        
+//        for (int i = 0; i < cz.cols.length; i++) {
+//        	final float value = cz.cols[i];
+//        	
+//        	data[i] = 
+//    			Float.isNaN(value) ? 
+//        			Color.RED   .getRGB() : 
+//				value == 0 ? 
+//					Color.BLACK .getRGB() : 
+//				value > 0 ? 
+//					Color.WHITE .getRGB() :
+//					Color.YELLOW.getRGB();
+//        }
     }
 
 	/**
@@ -147,7 +149,7 @@ public class Restructorization extends Task {
 //        m.linksWeight = result;
 
 //        System.out.println(Arrays.toString(sz.colsNy));
-//        processColors(m.linksWeight);
+        processColors(sz.cols);
         
         release();
         

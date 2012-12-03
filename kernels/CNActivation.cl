@@ -54,4 +54,6 @@ __kernel void computeActivation(
     }
 
     output[mul24(y, outputSizeX)+x] = sum;
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
 }

@@ -137,7 +137,62 @@ public class Utils {
         return image;
 	}
 	
-    /*
+	public static BufferedImage drawRF(
+			final BufferedImage image,
+			final int cnX, final int cnY, 
+			final Mapping m) {
+
+		final int offset = (cnY * m.toZone.width * m.linksSenapseRecordSize) + (m.linksSenapseRecordSize * cnX);
+        final int offsetWeight = (cnY * m.toZone.width * m.linksWeightRecordSize) + (m.linksWeightRecordSize * cnX);
+        
+        int pX = 0, pY = 0;
+        for (int l = 0; l < m.ns_links; l++) {
+        	int xi = m.linksSenapse[offset + 2*l    ];
+        	int yi = m.linksSenapse[offset + 2*l + 1];
+        	
+        	pX = xi;
+			pY = yi;
+                    	
+			if (       pX > 0 
+        			&& pX < image.getWidth() 
+        			&& pY > 0 
+        			&& pY < image.getHeight()) {
+
+//		        int value = image.getRGB(pX, pY);
+//
+//		        int g = Utils.get_green(value);
+//		        int b = Utils.get_blue(value);
+//		        int r = Utils.get_red(value);
+//
+//		        switch (link.delay) {
+//				case 0:
+//					g += 255 * link.q;;
+//					if (g > 255) g = 255;
+//
+//					break;
+//				case 1:
+//					b += 255 * link.q;
+//					if (b > 255) b = 255;
+//
+//					break;
+//				default:
+//					r += 255 * link.q;
+//					if (r > 255) r = 255;
+//
+//					break;
+//				}
+//				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
+
+				int c = calcGrey(image, pX, pY);
+				c += 255 * m.toZone.cols[cnY * m.toZone.width + cnX] * m.linksWeight[offsetWeight + l];
+				if (c > 255) c = 255;
+				image.setRGB(pX, pY, create_rgb(255, c, c, c));
+        	}
+        }
+        return image;
+	}
+
+	/*
      * Print "benchmarking" information 
      */
     public static void printBenchmarkInfo(String description, cl_event event) {

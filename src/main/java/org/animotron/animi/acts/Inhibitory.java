@@ -76,25 +76,10 @@ public class Inhibitory extends Task {
 
 	@Override
 	protected void processColors(float[] array) {
-//    	System.out.println("Inhibitory "+array.length);
-//        System.out.println(Arrays.toString(array));
+    	System.out.println("Inhibitory "+array.length);
+        System.out.println(Arrays.toString(array));
         
-    	// Write the colors into the bufferedImage
-        DataBufferInt dataBuffer = (DataBufferInt)cz.image.getRaster().getDataBuffer();
-        int data[] = dataBuffer.getData();
-        
-        for (int i = 0; i < array.length; i++) {
-        	final float value = array[i];
-        	
-        	data[i] = 
-    			Float.isNaN(value) ? 
-        			Color.RED   .getRGB() : 
-				value == 0 ? 
-					Color.BLACK .getRGB() : 
-				value > 0 ? 
-					Color.WHITE .getRGB() :
-					Color.YELLOW.getRGB();
-        }
+//        cz.refreshImage();
     }
 
 	@Override

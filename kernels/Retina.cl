@@ -57,4 +57,6 @@ __kernel void computeRetina(
 	    //normalize
 	    output[pos] = value / 255;
     }
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
 }

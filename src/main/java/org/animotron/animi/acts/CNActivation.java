@@ -22,6 +22,8 @@ package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
 
+import java.util.Arrays;
+
 import org.animotron.animi.cortex.*;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -72,6 +74,7 @@ public class CNActivation extends Task {
 
 	@Override
 	protected void processColors(float[] array) {
+		System.arraycopy(array, 0, cz.beforeInhibitoryCols, 0, array.length);
 //    	System.out.println("Activation "+array.length);
 //        System.out.println(Arrays.toString(array));
 //        
