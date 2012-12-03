@@ -184,7 +184,7 @@ public class Utils {
 //				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
 
 				int c = calcGrey(image, pX, pY);
-				c += 255 * m.toZone.cols[cnY * m.toZone.width + cnX] * m.linksWeight[offsetWeight + l];
+				c += 255 * m.toZone.cols[cnY * m.toZone.width + cnX] * m.linksWeight[offsetWeight + l] / 5;
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, create_rgb(255, c, c, c));
         	}
