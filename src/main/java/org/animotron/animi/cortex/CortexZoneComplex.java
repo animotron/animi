@@ -20,10 +20,13 @@
  */
 package org.animotron.animi.cortex;
 
+import static org.jocl.CL.*;
+
 import org.animotron.animi.*;
 import org.animotron.animi.acts.*;
-import org.animotron.animi.acts.old.CNActivation;
-import org.animotron.animi.acts.old.Subtraction;
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_mem;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -32,6 +35,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -45,26 +49,23 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 	@Params
 	public Mapping[] in_zones;
-    
-	public CNActivation cnActivation = new CNActivation();
-	
-	public PosActivity posActivity = new PosActivity();
-	
-	@Params
-	public Inhibitory inhibitory = new Inhibitory();
-	
-	public FinalActivity finalActivity = new FinalActivity();
 
-	public Subtraction subtraction = new Subtraction();
-
+	CNActivation cnActivation = new CNActivation(this);
 	@Params
-	public Restructorization restructorization = new Restructorization();
+    Inhibitory inhibitory = new Inhibitory(this);
+	@Params
+	Restructorization restructorization = new Restructorization(this);
 
 	@InitParam(name="disper")
 	public double disper = 1.5;
 
 	@InitParam(name="inhibitory_links")
-	public int inhibitory_links = 30;
+	public int number_of_inhibitory_links = 30;
+	
+	@InitParam(name="inhibitory_w")
+	public float inhibitory_w = (float)Math.sqrt(1 / (double)number_of_inhibitory_links);
+	
+	public int inhibitoryLinksSenapse[];
 	
 	/** Number of synaptic connections of the all simple neurons **/
 	public int ns_links;
@@ -73,6 +74,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	/** Number of synaptic connections of the complex neuron **/
 	public int nsc_links;
 	
+    /**
+     * The OpenCL memory object which store the neuron links for each zone.
+     */
+    public cl_mem cl_senapseOfinhibitoryLinks;
+
     CortexZoneComplex() {
 		super();
     }
@@ -85,30 +91,42 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		
 		this.in_zones = in_zones;
     }
-    
+	
+    public cl_mem inhibitoryLinks;
+	
+    /**
+     * Initializes the OpenCL memory object and the BufferedImage which will later receive the pixels
+     */
     public void init() {
     	super.init();
     	
-		ns_links = 0;
-        for (Mapping i : in_zones) {
-            ns_links += i.ns_links;
-		}
+		//count number of links
+//    	ns_links = 0;
+//        for (Mapping m : in_zones) {
+//            ns_links += m.ns_links;
+//		}
 
+        //mapping
 		for (Mapping m : in_zones) {
 			m.map(this);
 		}
 
-        double X, Y, S;
+//		inhibitoryLinks = clCreateBuffer(mc.context, CL_MEM_WRITE_ONLY, inhibitory_links * Sizeof.cl_uint, null, null);
+
+		double X, Y, S;
 		double x_in_nerv, y_in_nerv;
 
 		//разброс торозных связей
+		inhibitoryLinksSenapse = new int[width * height * number_of_inhibitory_links * 2];
+		Arrays.fill(inhibitoryLinksSenapse, 0);
+
 		double sigma, _sigma = disper;
         boolean[][] nerv_links = new boolean[width()][height()];
         
         int _sigma_ = 1;//(int) _sigma;
 
 		//UNDERSTAND: is it ok to have sum ^2 ~ 1
-		double w = Math.sqrt(1 / (double)inhibitory_links);
+//		double w = Math.sqrt(1 / (double)inhibitory_links);
 
 		for (int x = _sigma_; x < width() - _sigma_; x++) {
 			for (int y = _sigma_; y < height() - _sigma_; y++) {
@@ -129,11 +147,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 				// нормально распределенной величины
 				// DispLink - дисперсия связей
 				int count = 0;
-				for (int i = 0; i < inhibitory_links; i++) {
+				for (int i = 0; i < number_of_inhibitory_links; i++) {
                     int lx, ly;
                     do {
 //                        do {
-                            if (count > inhibitory_links * 5) {
+                            if (count > number_of_inhibitory_links * 5) {
                             	if (Double.isInfinite(sigma)) {
                             		System.out.println("initialization failed @ x = "+x+" y = "+y);
                             		System.exit(1);
@@ -169,20 +187,27 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						nerv_links[lx][ly] = true;
 	
 						// Создаем синаптическую связь
-						new Link(getCol(lx, ly), getCol(x, y), w, LinkType.INHIBITORY);
+//						new Link(getCol(lx, ly), getCol(x, y), w, LinkType.INHIBITORY);
+						inhibitoryLinksSenapse[(y*width*number_of_inhibitory_links*2)+ (number_of_inhibitory_links*2*x)+ i*2   ] = lx;
+						inhibitoryLinksSenapse[(y*width*number_of_inhibitory_links*2)+ (number_of_inhibitory_links*2*x)+ i*2 +1] = ly;
                     }
 				}
 //				System.out.println();
 			}
 		}
-        
-        if (CRF != null) {
-        	CRF.init();
-        }
-        
-        if (RRF != null) {
-        	RRF.init();
-        }
+		cl_senapseOfinhibitoryLinks = 
+				clCreateBuffer(
+					mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+					inhibitoryLinksSenapse.length * Sizeof.cl_int, Pointer.to(inhibitoryLinksSenapse), null);
+
+//        
+//        if (CRF != null) {
+//        	CRF.init();
+//        }
+//        
+//        if (RRF != null) {
+//        	RRF.init();
+//        }
 	}
     
 	// Картинка активных нейронов по колонкам
@@ -217,7 +242,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 	class ColumnRF_Image implements Imageable {
 		
-	    private int boxSize;
+	    private int boxSize = 5;
 	    private BufferedImage image;
 	    
 	    private List<Point> watching = new ArrayList<Point>();
@@ -229,24 +254,24 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		public void init() {
 
-			int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+//			int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
 			int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
-
-			for (int x = 1; x < width() - 1; x++) {
-				for (int y = 1; y < height() - 1; y++) {
-					minX = Integer.MAX_VALUE; minY = Integer.MAX_VALUE;
-					maxX = Integer.MIN_VALUE; maxY = Integer.MIN_VALUE;
-
-					for (LinkQ link : col[x][y].Qs.values()) {
-			        	minX = Math.min(minX, link.synapse.x);
-			        	minY = Math.min(minY, link.synapse.y);
-			
-			        	maxX = Math.max(maxX, link.synapse.x);
-			        	maxY = Math.max(maxY, link.synapse.y);
-			        }
-					boxSize = Math.max(maxX - minX, maxY - minY);
-				}
-			}
+//
+//			for (int x = 1; x < width() - 1; x++) {
+//				for (int y = 1; y < height() - 1; y++) {
+//					minX = Integer.MAX_VALUE; minY = Integer.MAX_VALUE;
+//					maxX = Integer.MIN_VALUE; maxY = Integer.MIN_VALUE;
+//
+//					for (LinkQ link : col[x][y].Qs.values()) {
+//			        	minX = Math.min(minX, link.synapse.x);
+//			        	minY = Math.min(minY, link.synapse.y);
+//			
+//			        	maxX = Math.max(maxX, link.synapse.x);
+//			        	maxY = Math.max(maxY, link.synapse.y);
+//			        }
+//					boxSize = Math.max(maxX - minX, maxY - minY);
+//				}
+//			}
 	        
 	        if (boxSize < 5) boxSize = 5;
 
@@ -272,9 +297,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, image.getWidth(), image.getHeight());
 	
-			int pX, pY = 0;
-	        int value = 0, G = 0, B = 0, R = 0;
-	
 			g.setColor(Color.YELLOW);
 			for (Point p : watching) {
 				if (atFocus == p) {
@@ -285,53 +307,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
 			}
 	
-			for (int x = 1; x < width() - 1; x++) {
-				for (int y = 1; y < height() - 1; y++) {
-					
-//					g.drawLine(x*boxSize, 0, x*boxSize, maxY);
-//					g.drawLine(0, y*boxSize, maxX, y*boxSize);
-	
-					final NeuronComplex cn = col[x][y];
-					for (LinkQ link : cn.Qs.values()) {
-                    	pX = x*boxSize + (boxSize / 2) + (link.synapse.x - (int)(x * link.fX));
-						pY = y*boxSize + (boxSize / 2) + (link.synapse.y - (int)(y * link.fY));
-						
-						if (pX >= image.getWidth() || pY >= image.getHeight())
-							continue;
-                                	
-						if (       pX > x*boxSize 
-                    			&& pX < (x*boxSize+boxSize) 
-                    			&& pY > y*boxSize 
-                    			&& pY < (y*boxSize+boxSize)) {
-				                    	
-					        value = image.getRGB(pX, pY);
-
-					        G = Utils.get_green(value);
-					        B = Utils.get_blue(value);
-					        R = Utils.get_red(value);
-
-					        switch (link.delay) {
-							case 0:
-								G += 255 * link.q;;
-								if (G > 255) G = 255;
-								
-								break;
-							
-							case 1:
-								B += 255 * link.q;
-								if (B > 255) B = 255;
-
-								break;
-							default:
-								R += 255 * link.q;
-								if (R > 255) R = 255;
-
-								break;
-							}
-
-							image.setRGB(pX, pY, Utils.create_rgb(255, R, G, B));
-                    	}
-                    }
+			for (int x = 0; x < width(); x++) {
+				for (int y = 0; y < height(); y++) {
+			        Utils.drawRF(
+		        		image, 
+		        		boxSize,
+		        		x*boxSize, y*boxSize,
+		        		x, y, 
+		        		in_zones[0]
+		    		);
 				}
 			}
 			
@@ -379,8 +363,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 
 		@Override
-		public double frequency() {
-			return 1;
+		public void refreshImage() {
 		}
 	}
 
@@ -402,7 +385,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 	    
 	    public void init() {
-			CortexZoneSimple zone = in_zones[0].zone;
+			CortexZoneSimple zone = in_zones[0].frZone;
 	        image = new BufferedImage(zone.width, zone.height, BufferedImage.TYPE_INT_RGB);
 	    }
 	
@@ -418,48 +401,56 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, image.getWidth(), image.getHeight());
 	
-			for (int x = 1; x < width() - 1; x++) {
-				for (int y = 1; y < height() - 1; y++) {
+			for (int x = 0; x < width(); x++) {
+				for (int y = 0; y < height(); y++) {
+
+					Utils.drawRF(
+		        		image, 
+		        		image.getWidth(),
+		        		0, 0,
+		        		x, y, 
+		        		in_zones[0]
+		    		);
 					
-					final NeuronComplex cn = col[x][y];
-					
-					for (LinkQ link : cn.Qs.values()) {
-
-						try {
-					        value = image.getRGB(link.synapse.x, link.synapse.y);
-
-					        G = Utils.get_green(value);
-					        B = Utils.get_blue(value);
-					        R = Utils.get_red(value);
-
-					        switch (link.delay) {
-							case 0:
-								G += 255 * cn.backProjection[0] * link.q;
-								if (G > 255) G = 255;
-								
-								break;
-							
-							case 1:
-								B += 255 * cn.backProjection[0] * link.q;
-								if (B > 255) B = 255;
-
-								break;
-							default:
-								R += 255 * cn.backProjection[0] * link.q;
-								if (R > 255) R = 255;
-
-								break;
-							}
-
-							max = Math.max(max, G);
-							max = Math.max(max, B);
-							max = Math.max(max, R);
-		            		
-		            		image.setRGB(link.synapse.x, link.synapse.y, Utils.create_rgb(255, R, G, B));
-						} catch (Exception e) {
-							System.out.println(image.getWidth()+" - "+link.synapse.x);;
-						}
-					}
+//					final NeuronComplex cn = col[x][y];
+//					
+//					for (LinkQ link : cn.Qs.values()) {
+//
+//						try {
+//					        value = image.getRGB(link.synapse.x, link.synapse.y);
+//
+//					        G = Utils.get_green(value);
+//					        B = Utils.get_blue(value);
+//					        R = Utils.get_red(value);
+//
+//					        switch (link.delay) {
+//							case 0:
+//								G += 255 * cn.backProjection[0] * link.q;
+//								if (G > 255) G = 255;
+//								
+//								break;
+//							
+//							case 1:
+//								B += 255 * cn.backProjection[0] * link.q;
+//								if (B > 255) B = 255;
+//
+//								break;
+//							default:
+//								R += 255 * cn.backProjection[0] * link.q;
+//								if (R > 255) R = 255;
+//
+//								break;
+//							}
+//
+//							max = Math.max(max, G);
+//							max = Math.max(max, B);
+//							max = Math.max(max, R);
+//		            		
+//		            		image.setRGB(link.synapse.x, link.synapse.y, Utils.create_rgb(255, R, G, B));
+//						} catch (Exception e) {
+//							System.out.println(image.getWidth()+" - "+link.synapse.x);;
+//						}
+//					}
 				}
 			}
 			if (max != 255 || max != 0) {
@@ -507,8 +498,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 
 		@Override
-		public double frequency() {
-			return 1;
+		public void refreshImage() {
 		}
 	}
 
@@ -524,31 +514,30 @@ public class CortexZoneComplex extends CortexZoneSimple {
     		count++;
     	}
     }
+    
+    private void performTask(Task task) {
+        try {
+            mc.taskQueue.put(task);
+        
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        mc.finish();
+    }
 
     //Такт 1. Активация колонок (узнавание)
     protected void cycleActivation() {
-//        cycle(1, 1, width() - 1, height() - 1, snActivation);
-        cycle(0, 0, width(), height(), cnActivation);
-
-//        cycle(1, 1, width() - 1, height() - 1, posActivity);
-
-        double max;
-        for (int i = 0; i < 10; i++) {
-        	max = cycle(0, 0, width(), height(), inhibitory, Double.MIN_VALUE);
-
-        	if (max < 0.05) 
-        		break;
-        }
-
-        cycle(0, 0, width(), height(), finalActivity);
+    	
+    	performTask(cnActivation);
+//		for (int i : new int[] {1,2,3,4,5,6,7}) {
+			performTask(inhibitory);
+//		}
     }
 
     //Граничные нейроны не задействованы.
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     private void cycleLearning() {
-		cycle(0, 0, width(), height(), restructorization);
-//        cycle(0, 0, width(), height(), subtraction);
-//        cycle(0, 0, width(), height(), remember);
+    	performTask(restructorization);
     }
 
 	public void save(Writer out) throws IOException {
@@ -563,7 +552,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		write(out, "count", count);
 
 		write(out, "inhibitory-links-", disper);
-		write(out, "number-of-inhibitory-links", inhibitory_links);
+		write(out, "number-of-inhibitory-links", number_of_inhibitory_links);
 
 		out.write(">");
 		
@@ -571,36 +560,36 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			out.write("<mapping");
 			write(out, "synaptic-links-dispersion", mapping.disp);
 			write(out, "number-of-synaptic-links", mapping.ns_links);
-			write(out, "with-zone", mapping.zone.id);
+			write(out, "with-zone", mapping.frZone.id);
 			write(out, "soft", mapping.soft);
 			out.write("/>");
 			
 		}
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				NeuronComplex cn = col[x][y];
-				
-				out.write("<cn");
-				write(out, "x", cn.x);
-				write(out, "y", cn.y);
-				out.write(">");
-				for (LinkQ link : cn.Qs.values()) {
-					out.write("<linkS");
-					write(out, "w", link.q);
-					write(out, "sX", link.synapse.x);
-					write(out, "sY", link.synapse.y);
-					out.write("/>");
-				}
-				for (Link link : cn.s_inhibitoryLinks) {
-					out.write("<linkI");
-					write(out, "w", link.w);
-					write(out, "sX", link.synapse.x);
-					write(out, "sY", link.synapse.y);
-					out.write("/>");
-				}
-				out.write("</cn>");
-			}
-		}
+//		for (int x = 0; x < width; x++) {
+//			for (int y = 0; y < height; y++) {
+//				NeuronComplex cn = col[x][y];
+//				
+//				out.write("<cn");
+//				write(out, "x", cn.x);
+//				write(out, "y", cn.y);
+//				out.write(">");
+//				for (LinkQ link : cn.Qs.values()) {
+//					out.write("<linkS");
+//					write(out, "w", link.q);
+//					write(out, "sX", link.synapse.x);
+//					write(out, "sY", link.synapse.y);
+//					out.write("/>");
+//				}
+//				for (Link link : cn.s_inhibitoryLinks) {
+//					out.write("<linkI");
+//					write(out, "w", link.w);
+//					write(out, "sX", link.synapse.x);
+//					write(out, "sY", link.synapse.y);
+//					out.write("/>");
+//				}
+//				out.write("</cn>");
+//			}
+//		}
 		out.write("</zone>");
 	}
 }

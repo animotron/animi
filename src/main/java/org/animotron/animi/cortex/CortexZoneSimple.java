@@ -20,18 +20,24 @@
  */
 package org.animotron.animi.cortex;
 
+import static org.jocl.CL.*;
+
 import org.animotron.animi.InitParam;
-import org.animotron.animi.Utils;
 import org.animotron.animi.acts.Act;
 import org.animotron.animi.acts.ActWithMax;
 import org.animotron.animi.acts.UpDownCNActivation;
 import org.animotron.animi.acts.Zero;
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_mem;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 
@@ -47,10 +53,10 @@ public class CortexZoneSimple implements Layer {
 	String id = UUID.randomUUID().toString();
 
 	String name;
-    MultiCortex mc;
+    public final MultiCortex mc;
     
     /** State of complex neurons (outputs cortical columns) **/
-    public NeuronComplex[][] col;
+//    public NeuronComplex[][] col;
     
 	@InitParam(name="width")
 	public int width = 100;
@@ -75,41 +81,63 @@ public class CortexZoneSimple implements Layer {
         this.mc = mc;
     }
     
-    public void initCols() {
-    	count = 0;
-        col = new NeuronComplex[width][height];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                col[x][y] = new NeuronComplex(this, x, y);
-            }
-        }
-    }
+    /**
+     * The OpenCL memory object which store the activity for each neuron.
+     */
+    public cl_mem cl_cols;
+    public float cols[];
+    
+    public BufferedImage image;
 
+    /**
+     * Initializes the OpenCL memory object and the BufferedImage which will later receive the pixels
+     */
     public void init() {
-    	initCols();
+    	
+    	cols = new float[width * height];
+    	Arrays.fill(cols, 0);
+    	
+        cl_cols = clCreateBuffer(
+    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
+    		cols.length * Sizeof.cl_float, Pointer.to(cols), null
+		);
+        
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 
-    public BufferedImage getImage() {
-        int c;
-    	
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                c = col[x][y].backProjection[0] > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-                image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
-            }
+    public void release() {
+        // Release all existing memory objects
+        if (cl_cols != null) {
+            clReleaseMemObject(cl_cols);
+            cl_cols = null;
         }
+    }
+    
+    public void refreshImage() {
+    	DataBufferInt dataBuffer = (DataBufferInt)image.getRaster().getDataBuffer();
+    	int data[] = dataBuffer.getData();
+      
+    	for (int i = 0; i < cols.length; i++) {
+    		final float value = cols[i];
+      	
+    		data[i] = 
+				Float.isNaN(value) ? 
+					Color.RED   .getRGB() : 
+					value == 0 ? 
+						Color.BLACK .getRGB() : 
+						value > 0 ? 
+							Color.WHITE .getRGB() :
+							Color.YELLOW.getRGB();
+    	}
+    }
+    
+    public BufferedImage getImage() {
         return image;
     }
 
 	@Override
-	public double frequency() {
-		return 1;
-	}
-
-	@Override
 	public Object whatAt(Point point) {
-		return col[point.x][point.y];
+		return null;//col[point.x][point.y];
 	}
 
     public String getImageName() {
@@ -144,30 +172,30 @@ public class CortexZoneSimple implements Layer {
 
 	@Override
 	public void process() {
-    	if (saccade) {
-    		int vX = next();
-    		int vY = next();
-    		int steps = 10;//rnd.nextInt(20);
-    		
-    		int dx, dy = 0;
-    		for (int step = 1; step <= steps; step++) {
-    			dx = vX * step;
-    			dy = vY * step;
-    			for (int x = 0; x < width; x++) {
-    	    		if (x+dx < 0 || x+dx >= width)
-    	    			continue;
-    	    		
-        			for (int y = 0; y < height; y++) {
-        	    		if (y+dy < 0 || y+dy >= height)
-        	    			continue;
-        	    		
-        	    		col[x][y].activity[0] += col[x + dx][y + dy].activity[0];
-        	    		if (col[x][y].activity[0] > 1)
-        	    			col[x][y].activity[0] = 1;
-        			}
-    			}
-    		}
-    	}
+//    	if (saccade) {
+//    		int vX = next();
+//    		int vY = next();
+//    		int steps = 10;//rnd.nextInt(20);
+//    		
+//    		int dx, dy = 0;
+//    		for (int step = 1; step <= steps; step++) {
+//    			dx = vX * step;
+//    			dy = vY * step;
+//    			for (int x = 0; x < width; x++) {
+//    	    		if (x+dx < 0 || x+dx >= width)
+//    	    			continue;
+//    	    		
+//        			for (int y = 0; y < height; y++) {
+//        	    		if (y+dy < 0 || y+dy >= height)
+//        	    			continue;
+//        	    		
+//        	    		col[x][y].activity[0] += col[x + dx][y + dy].activity[0];
+//        	    		if (col[x][y].activity[0] > 1)
+//        	    			col[x][y].activity[0] = 1;
+//        			}
+//    			}
+//    		}
+//    	}
 	}
 
 	CortexZoneSimple[] nextLayers = null;
@@ -190,26 +218,28 @@ public class CortexZoneSimple implements Layer {
 	}
 
 	@Override
-	public void set(int x, int y, double b) {
-		final NeuronComplex cn = col[x][y];
-		if (b != 0)
-			System.out.println();
-		cn.activity[0] = b;
-//		cn.backProjection[0] = b;
-		cn.posActivity[0] = b;
+	public void set(int x, int y, float b) {
+//		final NeuronComplex cn = col[x][y];
+//		if (b != 0)
+//			System.out.println();
+//		cn.activity[0] = b;
+////		cn.backProjection[0] = b;
+//		cn.posActivity[0] = b;
+		
+		cols[(y*width)+x] = b;
 	}
 
 	@Override
-	public void shift(int x, int y, double b) {
+	public void shift(int x, int y, float b) {
     	//XXX: optimize
 
-		final NeuronComplex cn = col[x][y];
-		for (int i = cn.activity.length - 1; i > 0 ; i--) {
-			cn.activity[i] = cn.activity[i-1];
-//			cn.backProjection[i] = cn.backProjection[i-1];
-			cn.posActivity[i] = cn.posActivity[i-1];
-		}
-		
+//		final NeuronComplex cn = col[x][y];
+//		for (int i = cn.activity.length - 1; i > 0 ; i--) {
+//			cn.activity[i] = cn.activity[i-1];
+////			cn.backProjection[i] = cn.backProjection[i-1];
+//			cn.posActivity[i] = cn.posActivity[i-1];
+//		}
+//		
 		set(x, y, b);
 	}
 
@@ -226,7 +256,7 @@ public class CortexZoneSimple implements Layer {
 	}
 
 	public NeuronComplex getCol(int x, int y) {
-		return col[x][y];
+		return null;//col[x][y];
 	}
 	
     public void cycle (int x1, int y1, int x2, int y2, Act<CortexZoneSimple> task) {

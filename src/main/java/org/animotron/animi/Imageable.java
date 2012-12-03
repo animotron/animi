@@ -31,7 +31,9 @@ public interface Imageable {
 	
 	public String getImageName();
 
-	public BufferedImage getImage();
+    public void refreshImage();
+    
+    public BufferedImage getImage();
 
 	public Object whatAt(Point point);
 
@@ -41,5 +43,5 @@ public interface Imageable {
 
 	public void closed(Point point);
 
-	public double frequency();
+//	public double frequency();
 }

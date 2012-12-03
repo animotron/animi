@@ -35,6 +35,7 @@ import org.animotron.animi.InitParam;
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.simulator.StaticStimulator;
+import org.animotron.animi.simulator.Stimulator;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -47,7 +48,7 @@ public class StimulatorParams extends JInternalFrame {
 	JPanel panel;
 	boolean readOnly;
 
-	public StimulatorParams(final Application app, StaticStimulator stimulator) {
+	public StimulatorParams(final Application app, Stimulator stimulator) {
 	    super("Stimulator params",
 	            false, //resizable
 	            false, //closable

@@ -20,7 +20,14 @@
  */
 package org.animotron.animi.cortex;
 
+import static org.jocl.CL.*;
+
+import java.util.Arrays;
+
 import org.animotron.animi.InitParam;
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_mem;
 
 /**
  * Projection description of the one zone to another
@@ -30,7 +37,8 @@ import org.animotron.animi.InitParam;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class Mapping {
-	public CortexZoneSimple zone;       // Projecting zone
+	public CortexZoneSimple frZone;
+	public CortexZoneSimple toZone;
 	
 	@InitParam(name="ns_links")
     public int ns_links;           // Number of synaptic connections for the zone
@@ -41,44 +49,72 @@ public class Mapping {
 
 	@InitParam(name="soft")
 	public boolean soft = true;
+	
+	public double fX = 1;
+	public double fY = 1;
+
+	public float linksWeight[];
+	public int linksWeightRecordSize;
+	
+	public int linksSenapse[];
+	public int linksSenapseRecordSize;
+	
+    /**
+     * The OpenCL memory object which store the neuron links for each zone.
+     */
+    public cl_mem cl_links;
+    public Pointer pnt_links;
+    public cl_mem cl_senapseOfLinks;
 
 	Mapping () {}
 	
     public Mapping(CortexZoneSimple zone, int ns_links, double disp, boolean soft) {
-        this.zone = zone;
+        this.frZone = zone;
         this.disp = disp;
         this.ns_links = ns_links;
         this.soft = soft;
     }
 
     public String toString() {
-    	return "mapping "+zone.toString();
+    	return "mapping "+frZone.toString();
     }
 
 	// Связи распределяются случайным образом.
 	// Плотность связей убывает экспоненциально с удалением от колонки.
-	public void map(CortexZoneComplex toZone) {
-		
+	public void map(CortexZoneComplex zone) {
+		toZone = zone;
+	    
 		System.out.println(toZone);
-		
-        for (int x = 0; x < zone.width(); x++) {
-			for (int y = 0; y < zone.height(); y++) {
-				zone.col[x][y].a_links.clear();
-				zone.col[x][y].a_Qs.clear();
-			}
-        }
 
-		double fX = zone.width() / (double) toZone.width();
-		double fY = zone.height() / (double) toZone.height();
+	    linksWeight = new float[frZone.width() * frZone.height() * ns_links];
+		Arrays.fill(linksWeight, 0);
+		
+		linksWeightRecordSize = ns_links;
+
+		linksSenapse = new int[frZone.width() * frZone.height() * ns_links * 2];
+		Arrays.fill(linksSenapse, 0);
+		
+		linksSenapseRecordSize = ns_links*2;
+
+//        for (int x = 0; x < zone.width(); x++) {
+//			for (int y = 0; y < zone.height(); y++) {
+//				zone.col[x][y].a_links.clear();
+//				zone.col[x][y].a_Qs.clear();
+//			}
+//        }
+
+		fX = zone.width() / (double) toZone.width();
+		fY = zone.height() / (double) toZone.height();
 
         double X, Y, S;
 		double x_in_nerv, y_in_nerv;
         double _sigma, sigma;
 
-        boolean[][] nerv_links = new boolean[zone.width()][zone.height()];
+        boolean[][] nerv_links = new boolean[frZone.width()][frZone.height()];
         
-		double sumQ2 = (1 / (double)ns_links * 1 / (double)ns_links) * ns_links;
-		double norm = Math.sqrt(sumQ2);
+		float sumQ2 = (1 / (float)ns_links * 1 / (float)ns_links) * ns_links;
+		float norm = (float) Math.sqrt(sumQ2);
+		float w = (1 / (float)ns_links) / norm;
 
         for (int x = 0; x < toZone.width(); x++) {
 			for (int y = 0; y < toZone.height(); y++) {
@@ -86,16 +122,16 @@ public class Mapping {
 
 				// Определение координат текущего нейрона в масштабе
 				// проецируемой зоны
-				x_in_nerv = x * zone.width() / (double) toZone.width();
-				y_in_nerv = y * zone.height() / (double) toZone.height();
+				x_in_nerv = x * frZone.width() / (double) toZone.width();
+				y_in_nerv = y * frZone.height() / (double) toZone.height();
 //				System.out.println("x_in_nerv = "+x_in_nerv+" y_in_nerv = "+y_in_nerv);
 
                 _sigma = disp;// * ((m.zone.width() + m.zone.height()) / 2);
                 sigma = _sigma;
 
 				// Обнуление массива занятости связей
-				for (int n1 = 0; n1 < zone.width(); n1++) {
-					for (int n2 = 0; n2 < zone.height(); n2++) {
+				for (int n1 = 0; n1 < frZone.width(); n1++) {
+					for (int n2 = 0; n2 < frZone.height(); n2++) {
 						nerv_links[n1][n2] = false;
 					}
 				}
@@ -135,15 +171,18 @@ public class Mapping {
 //                        } while (!(soft || (lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1)));
 
                     // Проверка на повтор связи
-					} while ( lx < 1 || ly < 1 || lx > zone.width() - 1 || ly > zone.height() - 1 || nerv_links[lx][ly] );
+					} while ( lx < 1 || ly < 1 || lx > frZone.width() - 1 || ly > frZone.height() - 1 || nerv_links[lx][ly] );
 
-                    if (lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1) {
+                    if (lx >= 1 && ly >= 1 && lx < frZone.width() - 1 && ly < frZone.height() - 1) {
                         System.out.print(".");
 
                         nerv_links[lx][ly] = true;
 	
 						// Создаем синаптическую связь
-						new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY, toZone.speed);
+                        linksWeight [(y*toZone.width*ns_links  )+ (ns_links  *x)+ i     ] = w;
+                        linksSenapse[(y*toZone.width*ns_links*2)+ (ns_links*2*x)+ i*2   ] = lx;
+                        linksSenapse[(y*toZone.width*ns_links*2)+ (ns_links*2*x)+ i*2 +1] = ly;
+//						new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY, toZone.speed);
                     } else {
                     	System.out.print("!");
                     }
@@ -151,5 +190,16 @@ public class Mapping {
 				System.out.println();
 			}
 		}
+        
+		cl_links = 
+			clCreateBuffer(
+				frZone.mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+				linksWeight.length * Sizeof.cl_float, Pointer.to(linksWeight), null
+			);
+		
+		cl_senapseOfLinks = 
+			clCreateBuffer(
+				frZone.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+				linksSenapse.length * Sizeof.cl_int, Pointer.to(linksSenapse), null);
 	}
 }

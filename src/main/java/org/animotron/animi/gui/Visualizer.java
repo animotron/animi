@@ -20,19 +20,12 @@
  */
 package org.animotron.animi.gui;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
-import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 import org.animotron.animi.Imageable;
@@ -55,7 +48,6 @@ public class Visualizer extends JInternalFrame {
 	}
 
 	private Imageable simulator;
-	private final Repainter repainter;
 
 	private ImageCanvas canvas = new ImageCanvas();
 	
@@ -112,9 +104,6 @@ public class Visualizer extends JInternalFrame {
 
 		getContentPane().add(canvas);
 		
-		repainter = new Repainter(canvas, imageable);
-		repainter.start();
-		
 		addMouseWheelListener(new MouseWheelListener() {
 			
 			@Override
@@ -123,42 +112,6 @@ public class Visualizer extends JInternalFrame {
 				if (zoom <= 0) zoom = 1;
 			}
 		});
-		
-		addInternalFrameListener(new InternalFrameListener() {
-			
-			@Override
-			public void internalFrameOpened(InternalFrameEvent e) {
-			}
-			
-			@Override
-			public void internalFrameIconified(InternalFrameEvent e) {
-			}
-			
-			@Override
-			public void internalFrameDeiconified(InternalFrameEvent e) {
-			}
-			
-			@Override
-			public void internalFrameDeactivated(InternalFrameEvent e) {
-			}
-			
-			@Override
-			public void internalFrameClosing(InternalFrameEvent e) {
-			}
-			
-			@Override
-			public void internalFrameClosed(InternalFrameEvent e) {
-				repainter.stop();
-			}
-			
-			@Override
-			public void internalFrameActivated(InternalFrameEvent e) {
-			}
-		});
-	}
-	
-	public void close() {
-		repainter.stop();
 	}
 	
 	private class ImageCanvas extends JComponent {
@@ -205,19 +158,13 @@ public class Visualizer extends JInternalFrame {
 		}
 	}
 	
-    private class Repainter extends org.animotron.animi.gui.Repainter {
-    	
-		public Repainter(JComponent comp, Imageable imageable) {
-			super(comp, imageable);
-		}
+	public void refresh() {
+		if (simulator instanceof Stimulator) {
+			image = ((Stimulator) simulator).getUserImage();
+			
+		} else
+			image = simulator.getImage();
 
-		@Override
-		protected void prepareImage() {
-			if (simulator instanceof Stimulator) {
-				image = ((Stimulator) simulator).getUserImage();
-				
-			} else
-				image = simulator.getImage();
-		}
+		repaint();
 	}
 }

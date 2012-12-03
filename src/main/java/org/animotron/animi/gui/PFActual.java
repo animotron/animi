@@ -72,7 +72,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 	public PFActual(Object[] objs) {
 		zone = (CortexZoneComplex) objs[0];
 		point = (Point) objs[1];
-		cn = zone.col[point.x][point.y];
+		cn = null;//zone.col[point.x][point.y];
 	}
 
 	@Override
@@ -86,10 +86,10 @@ public class PFActual implements Imageable, InternalFrameListener {
 		calcBoxSize();
 		
 		int num = 3;
-		Iterator<LinkQ> iter = cn.Qs.values().iterator();
-		if (!iter.next().synapse.Qs.isEmpty()) {
-			num = 5;
-		}
+//		Iterator<LinkQ> iter = cn.Qs.values().iterator();
+//		if (!iter.next().synapse.Qs.isEmpty()) {
+//			num = 5;
+//		}
 		
 
 		BufferedImage image = new BufferedImage((boxSize*zoom+5)*num, (boxSize*zoom*4)+(10*5), BufferedImage.TYPE_INT_RGB);
@@ -130,7 +130,8 @@ public class PFActual implements Imageable, InternalFrameListener {
 				x+1, y+1, null);
 
 		
-		y = rY; x = boxSize*zoom + 2;
+		//next block
+//		y = rY; x = boxSize*zoom + 2;
 		
 //		y += textY;
 //        g.drawString("Original", x, y);
@@ -156,29 +157,29 @@ public class PFActual implements Imageable, InternalFrameListener {
 //
 		int col = 1;
 		
-		//next block
-		y = rY; x = col*(boxSize*zoom + 2);
-		
-		y += textY;
-        g.drawString("Inhibitory RF", x, y);
-
-		img = drawInhibitoryRF();
-		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
-		g.drawImage(
-				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
-				x+1, y+1, null);
-
-		x = col*(boxSize*zoom + 2);
-		y += 2+img.getHeight()*zoom;
-
-		y += textY;
-        g.drawString("Total inhibitory RF", x, y);
-
-		img = drawTotalInhibitoryRF();
-		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
-		g.drawImage(
-				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
-				x+1, y+1, null);
+		//next block (Inhibitory)
+//		y = rY; x = col*(boxSize*zoom + 2);
+//		
+//		y += textY;
+//        g.drawString("Inhibitory RF", x, y);
+//
+//		img = drawInhibitoryRF();
+//		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
+//		g.drawImage(
+//				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
+//				x+1, y+1, null);
+//
+//		x = col*(boxSize*zoom + 2);
+//		y += 2+img.getHeight()*zoom;
+//
+//		y += textY;
+//        g.drawString("Total inhibitory RF", x, y);
+//
+//		img = drawTotalInhibitoryRF();
+//		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
+//		g.drawImage(
+//				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
+//				x+1, y+1, null);
 		
 		if (num == 5) {
 			//next block
@@ -266,124 +267,101 @@ public class PFActual implements Imageable, InternalFrameListener {
 	int boxSize = 0;
 
 	private void calcBoxSize() {
-		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
-		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
-
-		for (LinkQ link : cn.Qs.values()) {
-        	minX = Math.min(minX, link.synapse.x);
-        	minY = Math.min(minY, link.synapse.y);
-
-        	maxX = Math.max(maxX, link.synapse.x);
-        	maxY = Math.max(maxY, link.synapse.y);
-        }
-        boxSize = Math.max(maxX - minX, maxY - minY) + 2;
+//		int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+//		int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+//
+//		for (LinkQ link : cn.Qs.values()) {
+//        	minX = Math.min(minX, link.synapse.x);
+//        	minY = Math.min(minY, link.synapse.y);
+//
+//        	maxX = Math.max(maxX, link.synapse.x);
+//        	maxY = Math.max(maxY, link.synapse.y);
+//        }
+        boxSize = 10;//Math.max(maxX - minX, maxY - minY) + 2;
 	}
 
 	private BufferedImage drawRF() {
-        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
-
-        int pX, pY;
-		for (LinkQ link : cn.Qs.values()) {
-        	pX = (boxSize / 2) + (link.synapse.x - (int)(cn.x * link.fX));
-			pY = (boxSize / 2) + (link.synapse.y - (int)(cn.y * link.fY));
-                    	
-			if (       pX > 0 
-        			&& pX < boxSize 
-        			&& pY > 0 
-        			&& pY < boxSize) {
-	                    	
-		        int value = image.getRGB(pX, pY);
-
-		        int g = Utils.get_green(value);
-		        int b = Utils.get_blue(value);
-		        int r = Utils.get_red(value);
-
-		        switch (link.delay) {
-				case 0:
-					g += 255 * link.q;;
-					if (g > 255) g = 255;
-
-					break;
-				case 1:
-					b += 255 * link.q;
-					if (b > 255) b = 255;
-
-					break;
-				default:
-					r += 255 * link.q;
-					if (r > 255) r = 255;
-
-					break;
-				}
-				
-				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
-        	}
-        }
-        return image;
+        return Utils.drawRF(
+    		new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB), 
+    		boxSize, 0, 0, 
+    		point.x, point.y, 
+    		zone.in_zones[0]
+		);
 	}
 	
 	private BufferedImage drawTotalRF() {
         BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
 
-        int pX, pY;
-        for (LinkQ link : cn.Qs.values()) {
-        	pX = (boxSize / 2) + (link.synapse.x - (int)(cn.x * link.fX));
-			pY = (boxSize / 2) + (link.synapse.y - (int)(cn.y * link.fY));
+        if (point == null)
+        	return image;
+
+        final int cnX = point.x;
+        final int cnY = point.y;
+
+        Mapping m = zone.in_zones[0];
+        
+        final int offset = (cnY * zone.width * m.linksSenapseRecordSize) + (m.linksSenapseRecordSize * cnX);
+        
+        int pX = 0, pY = 0;
+        for (int l = 0; l < m.ns_links; l++) {
+        	int xi = m.linksSenapse[offset + 2*l    ];
+        	int yi = m.linksSenapse[offset + 2*l + 1];
+
+        	pX = (boxSize / 2) + (xi - (int)(cnX * m.fX));
+			pY = (boxSize / 2) + (yi - (int)(cnY * m.fY));
         	if (pX >= 0 && pX < boxSize 
         			&& pY >= 0 && pY < boxSize) {
             	
-            	int c = Utils.calcGrey(image, pX, pY);
-				c += 255;
-				if (c > 255) c = 255;
+            	final int c = 255;
 				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
             }
         }
         return image;
 	}
 
-	private BufferedImage drawInhibitoryRF() {
-        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
+//	private BufferedImage drawInhibitoryRF() {
+//        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
+//
+//        int pX, pY;
+//		for (Link link : cn.s_inhibitoryLinks) {
+//        	pX = (boxSize / 2) + (link.synapse.x - cn.x);
+//			pY = (boxSize / 2) + (link.synapse.y - cn.y);
+//                    	
+//			if (       pX > 0 
+//        			&& pX < boxSize 
+//        			&& pY > 0 
+//        			&& pY < boxSize) {
+//	                    	
+//            	int c = Utils.calcGrey(image, pX, pY);
+//				c += 255 * link.w[0];
+//				if (c > 255) c = 255;
+//				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+//        	}
+//        }
+//        return image;
+//	}
 
-        int pX, pY;
-		for (Link link : cn.s_inhibitoryLinks) {
-        	pX = (boxSize / 2) + (link.synapse.x - cn.x);
-			pY = (boxSize / 2) + (link.synapse.y - cn.y);
-                    	
-			if (       pX > 0 
-        			&& pX < boxSize 
-        			&& pY > 0 
-        			&& pY < boxSize) {
-	                    	
-            	int c = Utils.calcGrey(image, pX, pY);
-				c += 255 * link.w[0];
-				if (c > 255) c = 255;
-				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-        	}
-        }
-        return image;
-	}
-
-	private BufferedImage drawTotalInhibitoryRF() {
-        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
-
-        int pX, pY;
-		for (Link link : cn.s_inhibitoryLinks) {
-        	pX = (boxSize / 2) + (link.synapse.x - cn.x);
-			pY = (boxSize / 2) + (link.synapse.y - cn.y);
-                    	
-			if (       pX > 0 
-        			&& pX < boxSize 
-        			&& pY > 0 
-        			&& pY < boxSize) {
-	                    	
-            	int c = Utils.calcGrey(image, pX, pY);
-				c += 255;
-				if (c > 255) c = 255;
-				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
-        	}
-        }
-        return image;
-	}
+//	private BufferedImage drawTotalInhibitoryRF() {
+//        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
+//
+//        int pX, pY;
+//		for (Link link : cn.s_inhibitoryLinks) {
+//        	pX = (boxSize / 2) + (link.synapse.x - cn.x);
+//			pY = (boxSize / 2) + (link.synapse.y - cn.y);
+//                    	
+//			if (       pX > 0 
+//        			&& pX < boxSize 
+//        			&& pY > 0 
+//        			&& pY < boxSize) {
+//	                    	
+//            	int c = Utils.calcGrey(image, pX, pY);
+//				c += 255;
+//				if (c > 255) c = 255;
+//				image.setRGB(pX, pY, Utils.create_rgb(255, c, c, c));
+//        	}
+//        }
+//        return image;
+//	}
 	
 	private void drawStepUp(NeuronComplex cn, double q, int delay, BufferedImage image) {
 		for (LinkQ link : cn.Qs.values()) {
@@ -573,7 +551,8 @@ public class PFActual implements Imageable, InternalFrameListener {
 	}
 
 	@Override
-	public double frequency() {
-		return 0.1;
+	public void refreshImage() {
+		// TODO Auto-generated method stub
+		
 	}
 }

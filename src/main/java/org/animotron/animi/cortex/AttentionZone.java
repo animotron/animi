@@ -44,30 +44,30 @@ public class AttentionZone extends CortexZoneComplex {
     	int X = -1, Y = -1;
     	double max = Double.MIN_VALUE;
     	
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-            	NeuronComplex cn = col[x][y];
-            	if (max < cn.activity[0]) {
-            		max = cn.activity[0];
-            		X = x;
-            		Y = y;
-            	}
-            }
-        }
-        
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-            	NeuronComplex cn = col[x][y];
-            	if (!(X == x && Y == y)) {
-            		cn.activity[0] = 0;
-            		cn.posActivity[0] = 0;
-            		cn.backProjection[0] = 0;
-            	}
-            }
-        }
+//        for (int x = 0; x < width; x++) {
+//            for (int y = 0; y < height; y++) {
+//            	NeuronComplex cn = col[x][y];
+//            	if (max < cn.activity[0]) {
+//            		max = cn.activity[0];
+//            		X = x;
+//            		Y = y;
+//            	}
+//            }
+//        }
+//        
+//        for (int x = 0; x < width; x++) {
+//            for (int y = 0; y < height; y++) {
+//            	NeuronComplex cn = col[x][y];
+//            	if (!(X == x && Y == y)) {
+//            		cn.activity[0] = 0;
+//            		cn.posActivity[0] = 0;
+//            		cn.backProjection[0] = 0;
+//            	}
+//            }
+//        }
 
-        X = (int)(X * in_zones[0].zone.width / (double) width());
-		Y = (int)(Y * in_zones[0].zone.height / (double) height());
+        X = (int)(X * in_zones[0].frZone.width / (double) width());
+		Y = (int)(Y * in_zones[0].frZone.height / (double) height());
 		
 		mc.retina.shift(X + nextRandom(), Y + nextRandom());
     }

@@ -37,8 +37,8 @@ public class FinalActivity implements Act<CortexZoneSimple> {
 
     @Override
     public void process(CortexZoneSimple layer, final int x, final int y) {
-    	NeuronComplex cn = layer.col[x][y];
-    	
-    	cn.backProjection = Arrays.copyOf(cn.activity, cn.activity.length);
+//    	NeuronComplex cn = layer.col[x][y];
+//    	
+//    	cn.backProjection = Arrays.copyOf(cn.activity, cn.activity.length);
     }
 }

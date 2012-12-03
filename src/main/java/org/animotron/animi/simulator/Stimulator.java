@@ -31,6 +31,7 @@ import org.animotron.animi.Imageable;
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.MultiCortex;
+import org.animotron.animi.gui.Application;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -51,9 +52,11 @@ public class Stimulator implements Runnable, Imageable {
 
     private boolean run = true;
     
+    Application app;
     MultiCortex mc;
 
-    public Stimulator(MultiCortex cortexs) {
+    public Stimulator(Application application, MultiCortex cortexs) {
+    	app = application;
     	mc = cortexs;
     	init();
 	}
@@ -162,7 +165,11 @@ public class Stimulator implements Runnable, Imageable {
         	)
         };
 	}
-    
+
+	public void reset() {
+		init();
+	}
+	
 	@Override
 	public void run() {
         while (run) {
@@ -205,6 +212,8 @@ public class Stimulator implements Runnable, Imageable {
         	cortexs.retina.process(image);
         	
     		cortexs.process();
+    		
+    		app.refresh();
         }
 	}
 	
@@ -301,7 +310,8 @@ public class Stimulator implements Runnable, Imageable {
 	}
 
 	@Override
-	public double frequency() {
-		return frequency;
+	public void refreshImage() {
+		// TODO Auto-generated method stub
+		
 	}
 }

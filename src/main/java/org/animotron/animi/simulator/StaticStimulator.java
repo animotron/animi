@@ -199,7 +199,8 @@ public class StaticStimulator implements Runnable, Imageable {
 	}
 
 	@Override
-	public double frequency() {
-		return frequency;
+	public void refreshImage() {
+		// TODO Auto-generated method stub
+		
 	}
 }

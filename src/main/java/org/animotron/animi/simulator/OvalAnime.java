@@ -32,8 +32,6 @@ public class OvalAnime extends AbstractAnime {
 
 	private int d;
 
-	private int[][] anime;
-
     private int i = 0;
     private double x, y, dx, dy;
     private double l = 0;
@@ -52,6 +50,7 @@ public class OvalAnime extends AbstractAnime {
 
     public OvalAnime(int a, int[][] anime) {
     	super(a, anime);
+    	D = a;
     }
 	
     public void reset() {

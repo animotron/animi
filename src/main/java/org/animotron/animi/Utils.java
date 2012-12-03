@@ -20,7 +20,21 @@
  */
 package org.animotron.animi;
 
+import static org.jocl.CL.CL_PROFILING_COMMAND_END;
+import static org.jocl.CL.CL_PROFILING_COMMAND_START;
+import static org.jocl.CL.CL_TRUE;
+import static org.jocl.CL.clEnqueueReadBuffer;
+import static org.jocl.CL.clGetEventProfilingInfo;
+
 import java.awt.image.BufferedImage;
+import java.nio.IntBuffer;
+
+import org.animotron.animi.cortex.Mapping;
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_command_queue;
+import org.jocl.cl_event;
+import org.jocl.cl_mem;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -67,5 +81,86 @@ public class Utils {
         return rgb & 0xFF;
     }
     
+	public static BufferedImage drawRF(
+			final BufferedImage image, final int boxSize,
+			final int offsetX, final int offsetY,
+			final int cnX, final int cnY, 
+			final Mapping m) {
 
+		final int offset = (cnY * m.toZone.width * m.linksSenapseRecordSize) + (m.linksSenapseRecordSize * cnX);
+        final int offsetWeight = (cnY * m.toZone.width * m.linksWeightRecordSize) + (m.linksWeightRecordSize * cnX);
+        
+        int pX = 0, pY = 0;
+        for (int l = 0; l < m.ns_links; l++) {
+        	int xi = m.linksSenapse[offset + 2*l    ];
+        	int yi = m.linksSenapse[offset + 2*l + 1];
+        	
+        	pX = (boxSize / 2) + (xi - (int)(cnX * m.fX));
+			pY = (boxSize / 2) + (yi - (int)(cnY * m.fY));
+                    	
+			if (       pX > 0 
+        			&& pX < boxSize 
+        			&& pY > 0 
+        			&& pY < boxSize) {
+
+//		        int value = image.getRGB(pX, pY);
+//
+//		        int g = Utils.get_green(value);
+//		        int b = Utils.get_blue(value);
+//		        int r = Utils.get_red(value);
+//
+//		        switch (link.delay) {
+//				case 0:
+//					g += 255 * link.q;;
+//					if (g > 255) g = 255;
+//
+//					break;
+//				case 1:
+//					b += 255 * link.q;
+//					if (b > 255) b = 255;
+//
+//					break;
+//				default:
+//					r += 255 * link.q;
+//					if (r > 255) r = 255;
+//
+//					break;
+//				}
+//				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
+
+				int c = calcGrey(image, offsetX + pX, offsetY + pY);
+				c += 255 * (double)m.linksWeight[offsetWeight + l];
+				if (c > 255) c = 255;
+				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, c, c, c));
+        	}
+        }
+        return image;
+	}
+	
+    /*
+     * Print "benchmarking" information 
+     */
+    public static void printBenchmarkInfo(String description, cl_event event) {
+        StringBuilder sb = new StringBuilder();
+        sb
+        	.append(description)
+        	.append(" ")
+        	.append(computeExecutionTimeMs(event))
+        	.append(" ms");
+        
+        System.out.println(sb.toString());
+    }
+    
+    /*
+     * Compute the execution time for the given event, in milliseconds
+     */
+    private static double computeExecutionTimeMs(cl_event event) {
+        long startTime[] = new long[1];
+        long endTime[] = new long[1];
+        clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END,   
+            Sizeof.cl_ulong, Pointer.to(endTime), null);
+        clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, 
+            Sizeof.cl_ulong, Pointer.to(startTime), null);
+        return (endTime[0]-startTime[0]) / 1e6;
+    }
 }

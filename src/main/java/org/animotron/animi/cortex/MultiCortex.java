@@ -20,17 +20,42 @@
  */
 package org.animotron.animi.cortex;
 
+import static org.jocl.CL.*;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import javolution.util.FastMap;
+
 import org.animotron.animi.Params;
+import org.animotron.animi.acts.CNActivation;
+import org.animotron.animi.acts.Inhibitory;
+import org.animotron.animi.acts.Restructorization;
 import org.animotron.animi.gui.Application;
+import org.jocl.CL;
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_command_queue;
+import org.jocl.cl_context;
+import org.jocl.cl_context_properties;
+import org.jocl.cl_device_id;
+import org.jocl.cl_kernel;
+import org.jocl.cl_platform_id;
+import org.jocl.cl_program;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -42,6 +67,10 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class MultiCortex {
+
+    private static final boolean BENCHMARK = true;
+
+    public static boolean RUN = true;
 
     public boolean active = false;
     
@@ -76,6 +105,9 @@ public class MultiCortex {
 
     public MultiCortex() {
 
+        // Initialize OpenCL 
+        initCL();
+    	
         z_in = new CortexZoneSimple("Input", this);
 
         z_1st = new CortexZoneComplex("1st", this, 100, 100,
@@ -86,21 +118,21 @@ public class MultiCortex {
         z_1st.speed = Integer.MAX_VALUE;
 //        z_in.nextLayers(new CortexZoneSimple[] {z_1st});
 
-        z_attention = new AttentionZone("attention", this, 20, 20,
-            new Mapping[]{
-                new Mapping(z_1st, 80, 1, false)
-            }
-        );
-        z_attention.inhibitory_links = 0;
-        z_attention.speed = Integer.MAX_VALUE;
-
-        z_motoric = new AttentionZone("motoric", this, 2, 2,
-            new Mapping[]{
-                new Mapping(z_attention, 0, 0, false)
-            }
-        );
-        z_motoric.inhibitory_links = 0;
-        z_motoric.speed = Integer.MAX_VALUE;
+//        z_attention = new AttentionZone("attention", this, 20, 20,
+//            new Mapping[]{
+//                new Mapping(z_1st, 80, 1, false)
+//            }
+//        );
+//        z_attention.inhibitory_links = 0;
+//        z_attention.speed = Integer.MAX_VALUE;
+//
+//        z_motoric = new AttentionZone("motoric", this, 2, 2,
+//            new Mapping[]{
+//                new Mapping(z_attention, 0, 0, false)
+//            }
+//        );
+//        z_motoric.inhibitory_links = 0;
+//        z_motoric.speed = Integer.MAX_VALUE;
 
 //        z_goriz1 = new CortexZoneComplex("1st G", this, 20, 20,
 //            new Mapping[]{
@@ -112,13 +144,13 @@ public class MultiCortex {
 //
 //        z_1st.nextLayers(new CortexZoneSimple[] {z_goriz1});
 //
-        z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
-            new Mapping[]{
-                new Mapping(z_1st, 400, 2, false), //20x20
-//                new Mapping(z_goriz1, 300, 2, true)
-            }
-        );
-        z_2nd.speed = 4;
+//        z_2nd = new CortexZoneComplex("2nd", this, 50, 50,
+//            new Mapping[]{
+//                new Mapping(z_1st, 400, 2, false), //20x20
+////                new Mapping(z_goriz1, 300, 2, true)
+//            }
+//        );
+//        z_2nd.speed = 4;
 //        z_1st.nextLayers(new CortexZoneSimple[] {z_2nd});
 //        z_goriz1.nextLayers(new CortexZoneSimple[] {z_2nd});
 
@@ -129,41 +161,239 @@ public class MultiCortex {
 //        );
 
 //        zones = new CortexZoneSimple[]{z_in, z_1st, z_goriz1, z_2nd};
-        zones = new CortexZoneSimple[]{z_in, z_1st, z_attention, z_2nd};
+        zones = new CortexZoneSimple[]{z_in, z_1st};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);
     }
 
+    /** 
+     * The OpenCL context.
+     */
+    public cl_context context;
 
-	public void init() {
+    /**
+     * The number of OpenCL devices that may be used.
+     */
+    private int numDevices;
+
+    /**
+     * The OpenCL command queues.
+     */
+    private cl_command_queue commandQueues[];
+
+    /**
+     * The OpenCL kernels which will actually compute.
+     */
+    private Map<Class<? extends Task>, cl_kernel> kernels[];
+
+    /**
+     * The {@link TaskProcessor}s which will execute the tasks for computing kernels.
+     */
+    private TaskProcessor taskProcessors[];
+
+    /**
+     * The queue of {@link Task}s that are about to be executed by the {@link TaskProcessor}.
+     */
+    public BlockingQueue<Task> taskQueue = new ArrayBlockingQueue<Task>(1024, true);
+
+    /**
+     * Initialize OpenCL
+     */
+    private void initCL() {
+        // The platform and device type that will be used
+        final int platformIndex = 0;
+        final long deviceType = CL_DEVICE_TYPE_ALL;
+
+        // Enable exceptions and subsequently omit error checks in this sample
+        CL.setExceptionsEnabled(true);
+
+        // Obtain the number of platforms
+        int numPlatformsArray[] = new int[1];
+        clGetPlatformIDs(0, null, numPlatformsArray);
+        int numPlatforms = numPlatformsArray[0];
+
+        // Obtain a platform ID
+        cl_platform_id platforms[] = new cl_platform_id[numPlatforms];
+        clGetPlatformIDs(platforms.length, platforms, null);
+        cl_platform_id platform = platforms[platformIndex];
+        
+        System.out.println("Using plaform "+getPlatformInfoString(platform, CL.CL_PLATFORM_NAME));
+
+        // Initialize the context properties
+        cl_context_properties contextProperties = new cl_context_properties();
+        contextProperties.addProperty(CL_CONTEXT_PLATFORM, platform);
+        
+        // Obtain the number of devices for the platform
+        int numDevicesArray[] = new int[1];
+        clGetDeviceIDs(platform, deviceType, 0, null, numDevicesArray);
+        numDevices = numDevicesArray[0];
+        
+        // Obtain the device IDs 
+        cl_device_id devices[] = new cl_device_id[numDevices];
+        clGetDeviceIDs(platform, deviceType, numDevices, devices, null);
+        
+        for (int i=0; i < numDevices; i++) {
+            System.out.println("Device " + i + ": " + getDeviceInfoString(devices[i], CL.CL_DEVICE_NAME));
+        }
+
+        // Create a context for the selected devices
+        context = clCreateContext(
+            contextProperties, numDevices, devices, 
+            null, null, null);
+        
+        // Read the kernel files and set up the OpenCL program
+        String[] sources = new String[] {
+    		readFile("kernels/Retina.cl"),
+    		readFile("kernels/CNActivation.cl"),
+    		readFile("kernels/Inhibitory.cl"),
+    		readFile("kernels/Restructorization.cl")
+		};
+        cl_program program = clCreateProgramWithSource(context, sources.length, sources, null, null);
+        clBuildProgram(program, 0, null, "-cl-mad-enable", null, null);
+
+        // Create a the command-queues and kernels
+        commandQueues = new cl_command_queue[numDevices];
+        kernels = new Map[numDevices];
+        long properties = 0;
+        if (BENCHMARK) {
+            properties |= CL_QUEUE_PROFILING_ENABLE;
+        }
+        for (int i=0; i < numDevices; i++) {
+            commandQueues[i] = clCreateCommandQueue(context, devices[i], properties, null);
+            kernels[i] = new FastMap<Class<? extends Task>, cl_kernel>();
+            kernels[i].put(Retina.RetinaTask.class, clCreateKernel(program, "computeRetina", null));
+            kernels[i].put(CNActivation.class, clCreateKernel(program, "computeActivation", null));
+            kernels[i].put(Inhibitory.class, clCreateKernel(program, "computeInhibitory", null));
+            kernels[i].put(Restructorization.class, clCreateKernel(program, "computeRestructorization", null));
+        }
+        
+        // Start the task processors
+        taskProcessors = new TaskProcessor[numDevices];
+        for (int i=0; i<numDevices; i++)
+        {
+            taskProcessors[i] = new TaskProcessor(kernels[i], commandQueues[i]);
+            Thread thread = new Thread(taskProcessors[i], "taskProcessorThread"+i);
+            thread.setDaemon(true);
+            thread.start();
+        }
+
+        /* Get Device specific Information */
+        int status[] = new int[1];
+
+        int maxWorkGroupSize[] = new int[1];
+        int maxDimensions[] = new int[1];
+        long maxWorkItemSizes[] = new long[1];
+        long totalLocalMemory[] = new long[1];
+
+        status[0] = clGetDeviceInfo(
+            devices[0], CL_DEVICE_MAX_WORK_GROUP_SIZE, Sizeof.size_t,
+            Pointer.to(maxWorkGroupSize), null);
+
+        status[0] = clGetDeviceInfo(
+            devices[0], CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, Sizeof.cl_uint,
+            Pointer.to(maxDimensions), null);
+        
+        maxWorkItemSizes = new long[maxDimensions[0]];
+        status[0] = clGetDeviceInfo(
+            devices[0], CL_DEVICE_MAX_WORK_ITEM_SIZES, Sizeof.size_t * maxDimensions[0],
+                Pointer.to(maxWorkItemSizes), null);
+
+        status[0] = clGetDeviceInfo(
+            devices[0], CL_DEVICE_LOCAL_MEM_SIZE, Sizeof.cl_ulong,
+            Pointer.to(totalLocalMemory), null);
+
+        System.out.println("Max allowed work-items in a group = "+Arrays.toString(maxWorkGroupSize));
+        System.out.println("Max group dimensions allowed = "+Arrays.toString(maxDimensions));
+        System.out.println("Max work-items sizes in each dimensions = "+Arrays.toString(maxWorkItemSizes));
+        System.out.println("Max local memory allowed = "+Arrays.toString(totalLocalMemory));
+        
+        // Initialize the BufferedImage and the OpenCL memory
+//        initImage(
+//            DEFAULT_SIZE_X, DEFAULT_SIZE_Y, 
+//            DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE);
+    }
+    
+    private static String getPlatformInfoString(cl_platform_id platform, int paramName) {
+        // Obtain the length of the string that will be queried
+        long size[] = new long[1];
+        clGetPlatformInfo(platform, paramName, 0, null, size);
+
+        // Create a buffer of the appropriate size and fill it with the info
+        byte buffer[] = new byte[(int)size[0]];
+        clGetPlatformInfo(platform, paramName, buffer.length, Pointer.to(buffer), null);
+
+        // Create a string from the buffer (excluding the trailing \0 byte)
+        return new String(buffer, 0, buffer.length-1);
+    }    
+
+    private static String getDeviceInfoString(cl_device_id device, int paramName) {
+        // Obtain the length of the string that will be queried
+        long size[] = new long[1];
+        clGetDeviceInfo(device, paramName, 0, null, size);
+
+        // Create a buffer of the appropriate size and fill it with the info
+        byte buffer[] = new byte[(int)size[0]];
+        clGetDeviceInfo(device, paramName, buffer.length, Pointer.to(buffer), null);
+
+        // Create a string from the buffer (excluding the trailing \0 byte)
+        return new String(buffer, 0, buffer.length-1);
+    }
+
+    private static String readFile(String fileName) {
+        try {
+            BufferedReader br = new BufferedReader( new InputStreamReader( new FileInputStream(fileName) ) );
+            StringBuffer sb = new StringBuffer();
+            String line = null;
+            while (true) {
+                line = br.readLine();
+                if (line == null) {
+                    break;
+                }
+                sb.append(line).append("\n");
+            }
+            return sb.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.exit(1);
+        return null;
+    }
+
+    /**
+     * Flush all pending tasks and finish all running tasks
+     */
+    public void flush() {
+        taskQueue.drainTo(new ArrayList<Task>());
+        finish();
+    }
+
+    /**
+     * Flush all pending tasks and finish all running tasks
+     */
+    public void finish() {
+//        taskQueue.drainTo(new ArrayList<Task>());
+        for (int i=0; i<numDevices; i++) {
+            clFinish(commandQueues[i]);
+            taskProcessors[i].finish();
+        }
+    }
+    
+    public void init() {
+        // Flush all pending tasks
+        flush();
+
 		for (CortexZoneSimple zone : zones) {
 			zone.init();
 		}
 	}
-
-//    public void process() {
-//    	CortexZoneSimple prev = null;
-//		for (CortexZoneSimple zone : zones) {
-//			if (prev != null) {
-//				zone.zero();
-//				prev.process();
-//				prev.activateNextLayer();
-//			}
-//			prev = zone;
-//		}
-//		if (prev != null) {
-//			prev.process();
-//
-//			Application.count.setText(String.valueOf(count++));
-//		}
-//    }
 
     public void process() {
 		for (CortexZoneSimple zone : zones) {
 			zone.process();
 		}
 		Application.count.setText(String.valueOf(count++));
+//		finish();
     }
 
     public void save(Writer out) throws IOException {
@@ -267,7 +497,7 @@ public class MultiCortex {
 				zone.active = Boolean.valueOf(attrs.getValue("active"));
 				zone.learning = Boolean.valueOf(attrs.getValue("learning"));
 				
-				zone.initCols();
+				zone.init();
 
 				if (prevZone != null) {
 					fX = prevZone.width() / (double) zone.width();
@@ -296,4 +526,80 @@ public class MultiCortex {
 	    	mc = new MultiCortex(zones.toArray(new CortexZoneSimple[zones.size()]));
 	    }
 	}
+	
+    private class TaskProcessor implements Runnable {
+        /**
+         * The kernel which will be executed.
+         */
+        protected Map<Class<? extends Task>, cl_kernel> kernels;
+        
+        /**
+         * The OpenCL command queue.
+         */
+        protected cl_command_queue commandQueue;
+
+        /**
+         * The list of tasks which are currently active.
+         */
+        private List<Task> activeTasks = Collections.synchronizedList(new ArrayList<Task>());
+        
+        /**
+         * Creates a new TaskProcessor which will execute the
+         * given kernel on the given command queue
+         * 
+         * @param kernel The kernel
+         * @param commandQueue The command queue
+         */
+        public TaskProcessor(Map<Class<? extends Task>, cl_kernel> kernels, cl_command_queue commandQueue) {
+            this.kernels = kernels;
+            this.commandQueue = commandQueue;
+        }
+        
+        @Override
+        public void run() {
+            while (true) {
+                Task task = null;
+                try {
+                    task = taskQueue.take();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+                activeTasks.add(task);
+                
+                task.execute(kernels.get(task.getClass()), commandQueue);
+                
+                activeTasks.remove(task);
+                synchronized (activeTasks) {
+                    activeTasks.notifyAll();
+                }
+//                imageComponent.repaint();
+
+                // Tasks occupy the graphics card -  
+                // give it some time to breathe
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
+        
+        /**
+         * Wait until all tasks are finished.
+         */
+        public void finish() {
+            synchronized (activeTasks) {
+                while (!activeTasks.isEmpty()) {
+                    try {
+                        activeTasks.wait();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }

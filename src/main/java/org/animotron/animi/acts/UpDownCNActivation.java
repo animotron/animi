@@ -35,7 +35,7 @@ public class UpDownCNActivation implements Act<CortexZoneSimple> {
 
     @Override
     public void process(final CortexZoneSimple layer, final int x, final int y) {
-    	final NeuronComplex cn = layer.col[x][y];
+//    	final NeuronComplex cn = layer.col[x][y];
     	
 //    	if (cn.activity == 0) {
 //    		return;

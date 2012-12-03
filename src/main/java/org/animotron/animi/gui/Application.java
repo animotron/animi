@@ -192,7 +192,7 @@ public class Application extends JFrame {
 			            
 			            cortexs = MultiCortex.load(file);
 						
-			        	stimulator = new StaticStimulator(cortexs);
+			        	stimulator = new Stimulator(Application.this, cortexs);
 
 			        	createViews();
 
@@ -407,7 +407,7 @@ public class Application extends JFrame {
     protected void initialize() {
     	cortexs.init();
     	
-    	stimulator = new StaticStimulator(cortexs);
+    	stimulator = new Stimulator(this, cortexs);
     	
     	createViews();
     }
@@ -445,79 +445,12 @@ public class Application extends JFrame {
     	}
     }
 
-    Figure[] RANDOM_LINE = new Figure[] {
-        new RandomLineAnime(4, 4, Retina.WIDTH - 4, Retina.HEIGHT - 4)
-    };
-
-    Figure[] H_DOUBLE_LINE = new Figure[] {
-		new HLineAnime(
-				Retina.WIDTH - 4, 0,
-			new int[][] {
-				{Retina.WIDTH / 2, 2},
-				{Retina.WIDTH / 2, Retina.HEIGHT - 3},
-				{Retina.WIDTH / 2, 2}
-			}
-		)
-		,
-		new HLineAnime(
-				Retina.WIDTH - 4, 0,
-			new int[][] {
-				{Retina.WIDTH / 2, 3},
-				{Retina.WIDTH / 2, Retina.HEIGHT - 2},
-				{Retina.WIDTH / 2, 3}
-			}
-		)
-	};
-
-    Figure[] H_V_LINES = new Figure[] {
-		new HLineAnime(
-			10, 0,
-			new int[][] {
-					{4, 4},
-					{Retina.WIDTH - 8, 4},
-					{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-					{4, Retina.HEIGHT - 8},
-					{4, 4}
-			}
-    	),
-		new VLineAnime(
-			10, 0,
-			new int[][] {
-					{Retina.WIDTH - 8, 4},
-					{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-					{4, Retina.HEIGHT - 8},
-					{4, 4},
-					{Retina.WIDTH - 8, 4},
-			}
-		),
-		new HLineAnime(
-			10, 0,
-			new int[][] {
-					{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-					{4, Retina.HEIGHT - 8},
-					{4, 4},
-					{Retina.WIDTH - 8, 4},
-					{Retina.WIDTH - 8, Retina.HEIGHT - 8}
-			}
-		),
-		new VLineAnime(
-			10, 0,
-			new int[][] {
-					{4, Retina.HEIGHT - 8},
-					{4, 4},
-					{Retina.WIDTH - 8, 4},
-					{Retina.WIDTH - 8, Retina.HEIGHT - 8},
-					{4, Retina.HEIGHT - 8}
-			}
-		)
-	};
-
-    
-    StaticStimulator stimulator = null;
+    Stimulator stimulator = null;
 
     //Create a new internal frame.
     protected void createFrame(Imageable imageable) {
         Visualizer frame = new Visualizer( imageable );
+        frame.refresh();
         frame.setVisible(true); //necessary as of 1.3
         desktop.add(frame);
         try {
@@ -525,14 +458,17 @@ public class Application extends JFrame {
         } catch (java.beans.PropertyVetoException e1) {}
     }
     
-    private void clearFrames() {
+    public void refresh() {
         int count = desktop.getComponentCount();
         for (int i = 0; i < count; i++) {
             Component comp = desktop.getComponent(i);
             if (comp instanceof Visualizer) {
-            	((Visualizer)comp).close();
+            	((Visualizer)comp).refresh();
             }
         }
+    }
+
+    private void clearFrames() {
     	desktop.removeAll();
     	Visualizer.reset();
     	desktop.repaint();

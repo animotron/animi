@@ -20,9 +20,16 @@
  */
 package org.animotron.animi.cortex;
 
+import static org.jocl.CL.*;
+
 import org.animotron.animi.Utils;
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_kernel;
+import org.jocl.cl_mem;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -43,7 +50,7 @@ public class Retina {
 	private int height;
 	
 	//Числовое представление сетчатки. Черно-белая картинка.
-	private double preprocessed[][];
+	private float preprocessed[][];
 	
 //	private int receptiveField[][] = null;
 	private OnOffReceptiveField[][] sensorField;
@@ -58,15 +65,15 @@ public class Retina {
 		this.width = width;
 		this.height = height;
 		
-		preprocessed = new double[width][height];
+		preprocessed = new float[width][height];
 	}
 	
-	private Layer NL = null;
-	public void setNextLayer(Layer layer) {
-		NL = layer;
+	private CortexZoneSimple NL = null;
+	public void setNextLayer(CortexZoneSimple sz) {
+		NL = sz;
 		
-		width = layer.width();
-		height = layer.height();
+		width = sz.width();
+		height = sz.height();
 
 		initialize();
 	}
@@ -206,98 +213,117 @@ public class Retina {
 			flag = true;
 			steps = 0;
 		}
+		
+		float XScale = physicalImage.getWidth() / (float)NL.width;
+		float YScale = physicalImage.getHeight() / (float)NL.height;
 
-        double XScale = physicalImage.getWidth() / (double)width;
-        double YScale = physicalImage.getHeight() / (double)height;
+        DataBufferInt dataBuffer = (DataBufferInt)physicalImage.getRaster().getDataBuffer();
+        int data[] = dataBuffer.getData();
 
-        //preprocessing
-    	for (int x = 0; x < width; x++)
-        	for (int y = 0; y < height; y++)
-        		preprocessed[x][y] = Utils.calcGrey(physicalImage, (int)(x * XScale), (int)(y * YScale)) / 255;
-    	
-        XScale = width / (double)NL.width();
-        YScale = height / (double)NL.height();
+        RetinaTask retinaTask = 
+			new RetinaTask(
+    			(CortexZoneSimple)NL,
+    			thisX, thisY,
+    			XScale, YScale,
+    			data,
+    			physicalImage.getWidth(), physicalImage.getHeight()
+			);
 
-        //zero
-        for (int ix = 0; ix < NL.width(); ix++) {
-        	for (int iy = 0; iy < NL.height(); iy++) {
-        	}
-        }
+    	try {
+            NL.mc.taskQueue.put(retinaTask);
         
-        for (int ix = 0; ix < NL.width(); ix++) {
-        	for (int iy = 0; iy < NL.height(); iy++) {
-    			NL.shift(ix, iy, 0);
-        	}
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
-        
-        int nextX, nextY;
-        
-//    	double SP, SC, SA;
-//        double K_cont;
-        for (int ix = 0; ix < NL.width(); ix++) {
-        	for (int iy = 0; iy < NL.height(); iy++) {
+    	NL.mc.finish();
+		
 
-//        		OnOffReceptiveField mSensPol = sensorField[ix][iy];
-
-        		nextX = ix + thisX;
-        		nextY = iy + thisY;
-        		
-        		if (nextX >= 0 && nextX < width && nextY >= 0 && nextY < height) {
-        			NL.shift(nextX, nextY, preprocessed[(int)(ix * XScale)][(int)(iy * YScale)]);
-        		}
-
-//                NL.set(ix,iy,false);
+//        double XScale = physicalImage.getWidth() / (double)width;
+//        double YScale = physicalImage.getHeight() / (double)height;
 //
-//                SC = 0;
-//                for (int j = 0; j < onOff.numInCenter(); j++) {
+//        //preprocessing
+//    	for (int x = 0; x < width; x++)
+//        	for (int y = 0; y < height; y++)
+//        		preprocessed[x][y] = Utils.calcGrey(physicalImage, (int)(x * XScale), (int)(y * YScale)) / 255;
+//    	
+//        XScale = width / (double)NL.width();
+//        YScale = height / (double)NL.height();
+//        
+//        for (int ix = 0; ix < NL.width(); ix++) {
+//        	for (int iy = 0; iy < NL.height(); iy++) {
+//    			NL.shift(ix, iy, 0);
+//        	}
+//        }
+//        
+//        int nextX, nextY;
+//        
+////    	double SP, SC, SA;
+////        double K_cont;
+//        for (int ix = 0; ix < NL.width(); ix++) {
+//        	for (int iy = 0; iy < NL.height(); iy++) {
 //
-//                    SC += preprocessed[mSensPol.center[j][0]][mSensPol.center[j][1]];
-//                }
+////        		OnOffReceptiveField mSensPol = sensorField[ix][iy];
 //
-//                SP = 0;
-//                for (int j = 0; j < onOff.numInPeref(); j++) {
+//        		nextX = ix + thisX;
+//        		nextY = iy + thisY;
+//        		
+//        		if (nextX >= 0 && nextX < width && nextY >= 0 && nextY < height) {
+//        			NL.shift(nextX, nextY, preprocessed[(int)(ix * XScale)][(int)(iy * YScale)]);
+//        		}
 //
-//                    SP += preprocessed[mSensPol.periphery[j][0]][mSensPol.periphery[j][1]];
-//                }
-//
-//                SA = ((SP + SC) / (double)(onOff.numInCenter() + onOff.numInPeref()));
-//
-//                K_cont = KContr1 + SA * (KContr2 - KContr1) / Level_Bright;
-//
-//                if (K_cont < KContr3) K_cont = KContr3;
-//
-//                SC = SC / onOff.numInCenter();
-//                SP = SP / onOff.numInPeref();
-//
-//                if (SA > Lelel_min) {
-//                	switch (mSensPol.type) {
-//                    case 1:
-//
-//                        if (SC / SP > K_cont)
-//                        	NL.set(ix,iy,true);
-//
-//						break;
-//
-//                    case 2:
-//
-//                        if (SP / SC > K_cont)
-//                        	NL.set(ix,iy,true);
-//
-//                        break;
-//
-//                    case 3:
-//
-//                        if (SC / SP > K_cont || SP / SC > K_cont)
-//                        	NL.set(ix,iy,true);
-//
-//                        break;
-//					default:
-//						break;
-//					}
-//                }
-        	}
-        }
-        System.out.println("");
+////                NL.set(ix,iy,false);
+////
+////                SC = 0;
+////                for (int j = 0; j < onOff.numInCenter(); j++) {
+////
+////                    SC += preprocessed[mSensPol.center[j][0]][mSensPol.center[j][1]];
+////                }
+////
+////                SP = 0;
+////                for (int j = 0; j < onOff.numInPeref(); j++) {
+////
+////                    SP += preprocessed[mSensPol.periphery[j][0]][mSensPol.periphery[j][1]];
+////                }
+////
+////                SA = ((SP + SC) / (double)(onOff.numInCenter() + onOff.numInPeref()));
+////
+////                K_cont = KContr1 + SA * (KContr2 - KContr1) / Level_Bright;
+////
+////                if (K_cont < KContr3) K_cont = KContr3;
+////
+////                SC = SC / onOff.numInCenter();
+////                SP = SP / onOff.numInPeref();
+////
+////                if (SA > Lelel_min) {
+////                	switch (mSensPol.type) {
+////                    case 1:
+////
+////                        if (SC / SP > K_cont)
+////                        	NL.set(ix,iy,true);
+////
+////						break;
+////
+////                    case 2:
+////
+////                        if (SP / SC > K_cont)
+////                        	NL.set(ix,iy,true);
+////
+////                        break;
+////
+////                    case 3:
+////
+////                        if (SC / SP > K_cont || SP / SC > K_cont)
+////                        	NL.set(ix,iy,true);
+////
+////                        break;
+////					default:
+////						break;
+////					}
+////                }
+//        	}
+//        }
+//        System.out.println("");
+        NL.refreshImage();
     }
     
 	public int width() {
@@ -318,5 +344,60 @@ public class Retina {
             }
         }
         return image;
+    }
+    
+    public class RetinaTask extends Task {
+    	
+    	int offsetX, offsetY;
+    	float XScale, YScale;
+    	
+    	int input[];
+    	int inputSizeX, inputSizeY;
+    	protected cl_mem inputMem;
+
+		protected RetinaTask(CortexZoneSimple sz, 
+				int offsetX, int offsetY, 
+				float XScale, float YScale, 
+				int input[], 
+				int inputSizeX, int inputSizeY) {
+			
+			super(sz);
+			
+			this.offsetX = offsetX;
+	    	this.offsetY = offsetY;
+	    	this.XScale = XScale;
+	    	this.YScale = YScale;
+	    	
+	    	this.input = input;
+	    	this.inputSizeX = inputSizeX;
+	    	this.inputSizeY = inputSizeY;
+		}
+
+	    protected void setupArguments(cl_kernel kernel) {
+	    	super.setupArguments(kernel);
+
+	        clSetKernelArg(kernel,  2, Sizeof.cl_int, Pointer.to(new int[] {offsetX}));
+	        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {offsetY}));
+	        clSetKernelArg(kernel,  4, Sizeof.cl_float, Pointer.to(new float[] {XScale}));
+	        clSetKernelArg(kernel,  5, Sizeof.cl_float, Pointer.to(new float[] {YScale}));
+
+	        inputMem = clCreateBuffer(
+	    		sz.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
+	    		input.length * Sizeof.cl_int, Pointer.to(input), null
+			);
+	        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(inputMem));
+	        clSetKernelArg(kernel,  7, Sizeof.cl_int, Pointer.to(new int[] {inputSizeX}));
+	        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {inputSizeY}));
+	    }
+
+	    @Override
+		protected void release() {
+	    	clReleaseMemObject(inputMem);
+		}
+
+		@Override
+		protected void processColors(float[] array) {
+		}
+    	
     }
 }

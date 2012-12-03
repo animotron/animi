@@ -37,7 +37,7 @@ public abstract class Repainter implements Runnable {
 
 	public Repainter(JComponent comp, Imageable imageable) {
 		component = comp;
-		frequency = imageable.frequency();
+		frequency = 0.2;//imageable.frequency();
 		
 		th = new Thread(this);
 		th.setDaemon(true);

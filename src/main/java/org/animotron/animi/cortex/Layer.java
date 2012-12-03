@@ -32,8 +32,8 @@ public interface Layer extends Imageable {
 	int width();
 	int height();
 	
-    void set(int x, int y, double b);
-    void shift(int x, int y, double b);
+    void set(int x, int y, float b);
+    void shift(int x, int y, float b);
 
     public void process();
 }

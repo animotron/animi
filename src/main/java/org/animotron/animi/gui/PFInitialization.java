@@ -122,8 +122,8 @@ public class PFInitialization extends JInternalFrame {
 		
 		Class<?> clazz = obj.getClass();
 		
-		System.out.println(f);
-		System.out.println(clazz);
+//		System.out.println(f);
+//		System.out.println(clazz);
 
 		int gridx = gbc.gridx == -1 ? 1 : gbc.gridx;
 		int gridy = gbc.gridy;

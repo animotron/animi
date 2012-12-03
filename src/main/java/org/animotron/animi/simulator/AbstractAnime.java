@@ -34,7 +34,7 @@ public abstract class AbstractAnime implements Figure {
 
     protected int maxX = 0, maxY = 0;
 
-    private int[][] anime;
+    protected int[][] anime;
 
     private int i = 0;
     private double dx, dy, dt;
