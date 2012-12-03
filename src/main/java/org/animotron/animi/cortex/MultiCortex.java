@@ -216,8 +216,22 @@ public class MultiCortex {
         // Obtain a platform ID
         cl_platform_id platforms[] = new cl_platform_id[numPlatforms];
         clGetPlatformIDs(platforms.length, platforms, null);
-        cl_platform_id platform = platforms[platformIndex];
+        cl_platform_id platform = null;
         
+        for (cl_platform_id plat : platforms) {
+            int numDevices[] = new int[1];
+            clGetDeviceIDs(plat, CL_DEVICE_TYPE_ALL, 0, null, numDevices);
+            
+            cl_device_id devicesArray[] = new cl_device_id[numDevices[0]];
+            clGetDeviceIDs(plat, CL_DEVICE_TYPE_ALL, numDevices[0], devicesArray, null);
+
+            long dType = getLong(devicesArray[0], CL_DEVICE_TYPE);
+	        if( (dType & CL_DEVICE_TYPE_GPU) != 0)
+	        	platform = plat;
+        }
+        if (platform == null)
+            platform = platforms[platformIndex];
+
         System.out.println("Using plaform "+getPlatformInfoString(platform, CL.CL_PLATFORM_NAME));
 
         // Initialize the context properties
@@ -314,6 +328,33 @@ public class MultiCortex {
 //            DEFAULT_TILE_SIZE, DEFAULT_TILE_SIZE);
     }
     
+    /**
+     * Returns the value of the device info parameter with the given name
+     *
+     * @param device The device
+     * @param paramName The parameter name
+     * @return The value
+     */
+    private static long getLong(cl_device_id device, int paramName)
+    {
+        return getLongs(device, paramName, 1)[0];
+    }
+
+    /**
+     * Returns the values of the device info parameter with the given name
+     *
+     * @param device The device
+     * @param paramName The parameter name
+     * @param numValues The number of values
+     * @return The value
+     */
+    private static long[] getLongs(cl_device_id device, int paramName, int numValues)
+    {
+        long values[] = new long[numValues];
+        clGetDeviceInfo(device, paramName, Sizeof.cl_long * numValues, Pointer.to(values), null);
+        return values;
+    }
+
     private static String getPlatformInfoString(cl_platform_id platform, int paramName) {
         // Obtain the length of the string that will be queried
         long size[] = new long[1];
