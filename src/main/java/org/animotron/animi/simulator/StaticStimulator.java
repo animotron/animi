@@ -21,6 +21,7 @@
 package org.animotron.animi.simulator;
 
 import static org.animotron.animi.gui.Application.cortexs;
+import static org.animotron.animi.cortex.MultiCortex.*;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -110,7 +111,7 @@ public class StaticStimulator implements Runnable, Imageable {
 	public void prosess() {
 		final BufferedImage image = getImage();
 
-        if (cortexs != null && cortexs.active && image != null) {
+        if (cortexs != null && MODE >= STEP && image != null) {
         	cortexs.retina.process(image);
         	
     		cortexs.process();

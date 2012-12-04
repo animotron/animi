@@ -22,10 +22,6 @@ package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
 
-import java.awt.Color;
-import java.awt.image.DataBufferInt;
-import java.util.Arrays;
-
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 import org.jocl.Pointer;
@@ -76,8 +72,8 @@ public class Inhibitory extends Task {
 
 	@Override
 	protected void processColors(float[] array) {
-    	System.out.println("Inhibitory "+array.length);
-        System.out.println(Arrays.toString(array));
+//    	System.out.println("Inhibitory "+array.length);
+//        System.out.println(Arrays.toString(array));
         
 //        cz.refreshImage();
     }

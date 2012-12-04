@@ -20,12 +20,10 @@
  */
 package org.animotron.animi.gui;
 
+import static org.animotron.animi.cortex.MultiCortex.*;
+
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -220,11 +218,13 @@ public class Application extends JFrame {
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 			            File file = fc.getSelectedFile();
 
-						boolean was = cortexs.active;
-						pause();
+						int was = MODE;
+						if (was == RUN)
+							pause();
+						
 						//cortexs.prepareForSerialization();
 						try {
-							if (was) Thread.sleep(1000);
+							if (was >= STEP) Thread.sleep(1000);
 							
 							BufferedWriter out = new BufferedWriter(new FileWriter(file));
 							cortexs.save(out);
@@ -234,7 +234,8 @@ public class Application extends JFrame {
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
-						run();
+						if (was == RUN)
+							run();
 					}
 				}
 			}
@@ -426,23 +427,22 @@ public class Application extends JFrame {
     
     private void run() {
     	if (cortexs != null) {
-			cortexs.active = true;
+			MODE = RUN;
 	        stimulator.start();
     	}
     }
     
     private void step() {
-    	if (cortexs != null && !cortexs.active) {
-			cortexs.active = true;
+    	if (cortexs != null && MODE <= STEP) {
+			MODE = STEP;
 	        stimulator.prosess();
-			cortexs.active = false;
     	}
     }
 
     private void pause() {
     	if (cortexs != null) {
 			stimulator.pause();
-			cortexs.active = false;
+			MODE = (MODE == RUN) ? PAUSE : STOP;
     	}
     }
 

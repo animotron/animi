@@ -70,14 +70,13 @@ public class MultiCortex {
 
     private static final boolean BENCHMARK = true;
 
-    public static final int STOP = -1;
-    public static final int STEP = 0;
-    public static final int RUN = 1;
+    public static final int STOP = 0;
+    public static final int PAUSE = 1;
+    public static final int STEP = 2;
+    public static final int RUN = 3;
 
     public static int MODE = STOP;
 
-    public boolean active = false;
-    
     public long count = 0;
     
     public Retina retina;

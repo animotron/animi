@@ -22,13 +22,10 @@ package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
 
-import java.util.Arrays;
-
 import org.animotron.animi.cortex.*;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_kernel;
-import org.jocl.cl_mem;
 
 /**
  * Активация простых нейронов при узнавании запомненной картины
@@ -74,19 +71,9 @@ public class CNActivation extends Task {
 
 	@Override
 	protected void processColors(float[] array) {
-		System.arraycopy(array, 0, cz.beforeInhibitoryCols, 0, array.length);
+//		System.arraycopy(array, 0, cz.beforeInhibitoryCols, 0, array.length);
 //    	System.out.println("Activation "+array.length);
 //        System.out.println(Arrays.toString(array));
-//        
-//    	// Write the colors into the bufferedImage
-//        DataBufferInt dataBuffer = (DataBufferInt)cz.image.getRaster().getDataBuffer();
-//        int data[] = dataBuffer.getData();
-//        
-//        for (int i = 0; i < array.length; i++) {
-//        	final float value = array[i];
-//        	
-//        	data[i] = Float.isNaN(value) ? Color.RED.getRGB() : value > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-//        }
     }
 
 //public class CNActivation implements Act<CortexZoneSimple> {

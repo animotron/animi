@@ -86,7 +86,7 @@ public class CortexZoneSimple implements Layer {
     public cl_mem cl_cols;
     public float cols[];
     
-    public float beforeInhibitoryCols[];
+//    public float beforeInhibitoryCols[];
     
     public cl_mem cl_colsNy;
     public float colsNy[];
@@ -106,8 +106,8 @@ public class CortexZoneSimple implements Layer {
     	cols = new float[width * height];
     	Arrays.fill(cols, 0);
     	
-    	beforeInhibitoryCols = new float[width * height];
-    	Arrays.fill(beforeInhibitoryCols, 0);
+//    	beforeInhibitoryCols = new float[width * height];
+//    	Arrays.fill(beforeInhibitoryCols, 0);
     	
         cl_cols = clCreateBuffer(
     		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 

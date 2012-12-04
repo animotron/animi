@@ -21,6 +21,7 @@
 package org.animotron.animi.gui;
 
 import static org.jocl.CL.*;
+import static org.animotron.animi.cortex.MultiCortex.*;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -96,7 +97,7 @@ public class PFInitialization extends JInternalFrame {
         btInit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (!mc.active) {
+				if (MODE <= STEP) {
 					long _type_ = CL_DEVICE_TYPE_CPU;
 					if ("GPU".equals( type.getSelectedItem() )) {
 						_type_ = CL_DEVICE_TYPE_GPU;

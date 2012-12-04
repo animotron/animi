@@ -21,10 +21,7 @@
 package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
-
-import java.awt.Color;
-import java.awt.image.DataBufferInt;
-import java.util.Arrays;
+import static org.animotron.animi.cortex.MultiCortex.*;
 
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
@@ -45,6 +42,8 @@ public class Restructorization extends Task {
 	
 	@RuntimeParam(name = "count")
 	public int count = 10000;
+	
+	private volatile int cycles = 0;
 
 	public Restructorization(CortexZoneComplex cz) {
 		super(cz);
@@ -78,25 +77,19 @@ public class Restructorization extends Task {
 	protected void processColors(float[] array) {
 //    	System.out.println("Restructorization "+array.length);
 //        System.out.println(Arrays.toString(array));
+		
         
-        cz.refreshImage();
-//        
-//    	// Write the colors into the bufferedImage
-//        DataBufferInt dataBuffer = (DataBufferInt)cz.image.getRaster().getDataBuffer();
-//        int data[] = dataBuffer.getData();
-//        
-//        for (int i = 0; i < cz.cols.length; i++) {
-//        	final float value = cz.cols[i];
-//        	
-//        	data[i] = 
-//    			Float.isNaN(value) ? 
-//        			Color.RED   .getRGB() : 
-//				value == 0 ? 
-//					Color.BLACK .getRGB() : 
-//				value > 0 ? 
-//					Color.WHITE .getRGB() :
-//					Color.YELLOW.getRGB();
-//        }
+		if (MODE == RUN) {
+			cycles++;
+			if (cycles > 100) {
+				cz.refreshImage();
+				cycles = 0;
+			}
+		}
+
+		if (MODE == STEP) {
+			cz.refreshImage();
+		}
     }
 
 	/**
