@@ -41,6 +41,8 @@ public class Inhibitory extends Task {
 	@RuntimeParam(name = "k")
 	public float k = 0.3f;
 	
+	cl_mem _cols;
+	
 	public Inhibitory(CortexZoneComplex cz) {
 		super(cz);
 	}
@@ -59,27 +61,21 @@ public class Inhibitory extends Task {
         
         final float cols[] = new float[cz.cols.length];
         System.arraycopy(cz.cols, 0, cols, 0, cols.length);
-        cl_mem _cols = clCreateBuffer(
+        _cols = clCreateBuffer(
     		cz.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
     		cols.length * Sizeof.cl_float, Pointer.to(cols), null
 		);
         
-//        System.out.println("Inhibitory Original");
-//        System.out.println(Arrays.toString(cols));
-
         clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(_cols));
     }
 
 	@Override
 	protected void processColors(float[] array) {
-//    	System.out.println("Inhibitory "+array.length);
-//        System.out.println(Arrays.toString(array));
-        
-//        cz.refreshImage();
     }
 
 	@Override
 	protected void release() {
+		clReleaseMemObject(_cols);
 	}
 	
 //	@Override

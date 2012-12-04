@@ -22,13 +22,7 @@ package org.animotron.animi.cortex;
 
 import static org.jocl.CL.*;
 
-import org.animotron.animi.InitParam;
-import org.animotron.animi.RuntimeParam;
-import org.animotron.animi.Utils;
-import org.animotron.animi.acts.old.Act;
-import org.animotron.animi.acts.old.ActWithMax;
-import org.animotron.animi.acts.old.UpDownCNActivation;
-import org.animotron.animi.acts.old.Zero;
+import org.animotron.animi.*;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_mem;
@@ -40,7 +34,6 @@ import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -86,8 +79,6 @@ public class CortexZoneSimple implements Layer {
     public cl_mem cl_cols;
     public float cols[];
     
-//    public float beforeInhibitoryCols[];
-    
     public cl_mem cl_colsNy;
     public float colsNy[];
 
@@ -105,9 +96,6 @@ public class CortexZoneSimple implements Layer {
     	
     	cols = new float[width * height];
     	Arrays.fill(cols, 0);
-    	
-//    	beforeInhibitoryCols = new float[width * height];
-//    	Arrays.fill(beforeInhibitoryCols, 0);
     	
         cl_cols = clCreateBuffer(
     		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
@@ -144,12 +132,7 @@ public class CortexZoneSimple implements Layer {
     			data[i] = Color.RED.getRGB();
     		else {
     			int c = (int)(value * 255);
-    			if (this instanceof CortexZoneComplex) {
-    				if (value != 1 && value > 0)
-    					System.out.println(value);
-    			}
-    			if (c > 255) 
-    				c = 255;
+    			if (c > 255) c = 255;
 					
 				data[i] = Utils.create_rgb(255, c, c, c);
     		}
@@ -182,50 +165,10 @@ public class CortexZoneSimple implements Layer {
         return height;
     }
 
-    Random rnd = new Random();
-
-    public boolean saccade = false;
-    
-    private int next() {
-		return rnd.nextInt(40) - 20;
-//		int r = 20 + rnd.nextInt(20);
-//		
-//		if (rnd.nextBoolean())
-//			return -r;
-//		
-//		return r;
-    }
-
 	@Override
 	public void process() {
-//    	if (saccade) {
-//    		int vX = next();
-//    		int vY = next();
-//    		int steps = 10;//rnd.nextInt(20);
-//    		
-//    		int dx, dy = 0;
-//    		for (int step = 1; step <= steps; step++) {
-//    			dx = vX * step;
-//    			dy = vY * step;
-//    			for (int x = 0; x < width; x++) {
-//    	    		if (x+dx < 0 || x+dx >= width)
-//    	    			continue;
-//    	    		
-//        			for (int y = 0; y < height; y++) {
-//        	    		if (y+dy < 0 || y+dy >= height)
-//        	    			continue;
-//        	    		
-//        	    		col[x][y].activity[0] += col[x + dx][y + dy].activity[0];
-//        	    		if (col[x][y].activity[0] > 1)
-//        	    			col[x][y].activity[0] = 1;
-//        			}
-//    			}
-//    		}
-//    	}
 	}
 
-	CortexZoneSimple[] nextLayers = null;
-	
 	@Override
 	public void set(int x, int y, float b) {
 //		final NeuronComplex cn = col[x][y];
@@ -268,37 +211,12 @@ public class CortexZoneSimple implements Layer {
 		return null;//col[x][y];
 	}
 	
-    public void cycle (int x1, int y1, int x2, int y2, Act<CortexZoneSimple> task) {
-    	try {
-	        for (int x = x1; x < x2; x++) {
-	            for (int y = y1; y < y2; y++) {
-	                task.process(this, x, y);
-	            }
-	        }
-    	} catch (Throwable e) {
-    		e.printStackTrace();
-		}
-    }
-
-    public double cycle (int x1, int y1, int x2, int y2, ActWithMax<CortexZoneSimple> task, double max) {
-    	try {
-	        for (int x = x1; x < x2; x++) {
-	            for (int y = y1; y < y2; y++) {
-	            	max = task.process(this, x, y, max);
-	            }
-	        }
-		} catch (Throwable e) {
-		}
-        return max;
-    }
-    
 	public boolean learning = false;
 	public boolean isLearning() {
 		return learning;
 	}
 	
     public boolean active = false;
-
 	public boolean isActive() {
 		return active;
 	}

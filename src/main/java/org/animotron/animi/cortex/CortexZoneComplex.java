@@ -254,29 +254,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		public void init() {
 
-//			int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
-			int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
-//
-//			for (int x = 1; x < width() - 1; x++) {
-//				for (int y = 1; y < height() - 1; y++) {
-//					minX = Integer.MAX_VALUE; minY = Integer.MAX_VALUE;
-//					maxX = Integer.MIN_VALUE; maxY = Integer.MIN_VALUE;
-//
-//					for (LinkQ link : col[x][y].Qs.values()) {
-//			        	minX = Math.min(minX, link.synapse.x);
-//			        	minY = Math.min(minY, link.synapse.y);
-//			
-//			        	maxX = Math.max(maxX, link.synapse.x);
-//			        	maxY = Math.max(maxY, link.synapse.y);
-//			        }
-//					boxSize = Math.max(maxX - minX, maxY - minY);
-//				}
-//			}
-	        
-	        if (boxSize < 5) boxSize = 5;
+	        boxSize = 5;
 
-			maxX = width() * boxSize;
-	        maxY = height() * boxSize;
+			int maxX = width() * boxSize;
+	        int maxY = height() * boxSize;
 	        
 	        if (maxX > 600) {
 	        	maxX = 600;
@@ -409,72 +390,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		        		x, y, 
 		        		in_zones[0]
 		    		);
-					
-//					final NeuronComplex cn = col[x][y];
-//					
-//					for (LinkQ link : cn.Qs.values()) {
-//
-//						try {
-//					        value = image.getRGB(link.synapse.x, link.synapse.y);
-//
-//					        G = Utils.get_green(value);
-//					        B = Utils.get_blue(value);
-//					        R = Utils.get_red(value);
-//
-//					        switch (link.delay) {
-//							case 0:
-//								G += 255 * cn.backProjection[0] * link.q;
-//								if (G > 255) G = 255;
-//								
-//								break;
-//							
-//							case 1:
-//								B += 255 * cn.backProjection[0] * link.q;
-//								if (B > 255) B = 255;
-//
-//								break;
-//							default:
-//								R += 255 * cn.backProjection[0] * link.q;
-//								if (R > 255) R = 255;
-//
-//								break;
-//							}
-//
-//							max = Math.max(max, G);
-//							max = Math.max(max, B);
-//							max = Math.max(max, R);
-//		            		
-//		            		image.setRGB(link.synapse.x, link.synapse.y, Utils.create_rgb(255, R, G, B));
-//						} catch (Exception e) {
-//							System.out.println(image.getWidth()+" - "+link.synapse.x);;
-//						}
-//					}
 				}
 			}
-//			if (max != 255 || max != 0) {
-//				double bright = 255 / (double)max;
-//				for (int x = 0; x < image.getWidth(); x++) {
-//					for (int y = 0; y < image.getHeight(); y++) {
-//						
-//				        value = image.getRGB(x, y);
-//
-//				        G = Utils.get_green(value);
-//				        B = Utils.get_blue(value);
-//				        R = Utils.get_red(value);
-//
-//						G *= bright;
-//						if (G > 255) G = 255;
-//	            		
-//						B *= bright;
-//						if (B > 255) B = 255;
-//
-//						R *= bright;
-//						if (R > 255) R = 255;
-//
-//						image.setRGB(x, y, Utils.create_rgb(255, R, G, B));
-//					}
-//				}
-//			}
 			return image;
 		}
 
@@ -563,6 +480,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			out.write("/>");
 			
 		}
+		//XXX: fix save
 //		for (int x = 0; x < width; x++) {
 //			for (int y = 0; y < height; y++) {
 //				NeuronComplex cn = col[x][y];

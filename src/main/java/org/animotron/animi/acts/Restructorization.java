@@ -43,8 +43,6 @@ public class Restructorization extends Task {
 	@RuntimeParam(name = "count")
 	public int count = 10000;
 	
-	private volatile int cycles = 0;
-
 	public Restructorization(CortexZoneComplex cz) {
 		super(cz);
 	}
@@ -66,30 +64,23 @@ public class Restructorization extends Task {
         clSetKernelArg(kernel,  5, Sizeof.cl_float, Pointer.to(new float[] {sz.ny}));
         clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(sz.cl_colsNy));
         
-//        System.out.println("Restructorization Original");
-//        System.out.println(m.linksWeight[0]);
-
         clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
         clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
     }
 
 	@Override
 	protected void processColors(float[] array) {
-//    	System.out.println("Restructorization "+array.length);
-//        System.out.println(Arrays.toString(array));
-		
-        
-		if (MODE == RUN) {
-			cycles++;
-			if (cycles > 100) {
-				cz.refreshImage();
-				cycles = 0;
-			}
-		}
-
-		if (MODE == STEP) {
-			cz.refreshImage();
-		}
+//		if (MODE == RUN) {
+//			cycles++;
+//			if (cycles > 100) {
+//				cz.refreshImage();
+//				cycles = 0;
+//			}
+//		}
+//
+//		if (MODE == STEP) {
+//			cz.refreshImage();
+//		}
     }
 
 	/**

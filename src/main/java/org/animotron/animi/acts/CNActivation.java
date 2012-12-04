@@ -65,7 +65,6 @@ public class CNActivation extends Task {
     }
     
     protected void release() {
-    	
     }
 
 
