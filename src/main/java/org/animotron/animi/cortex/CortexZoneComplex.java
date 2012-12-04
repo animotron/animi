@@ -259,12 +259,12 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			int maxX = width() * boxSize;
 	        int maxY = height() * boxSize;
 	        
-	        if (maxX > 600) {
-	        	maxX = 600;
-	        }
-	        if (maxY > 600) {
-	        	maxY = 600;
-	        }
+//	        if (maxX > 600) {
+//	        	maxX = 600;
+//	        }
+//	        if (maxY > 600) {
+//	        	maxY = 600;
+//	        }
 	        
 	        image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
 		}

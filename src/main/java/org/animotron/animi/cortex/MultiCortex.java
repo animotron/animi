@@ -112,7 +112,7 @@ public class MultiCortex {
     	
         z_in = new CortexZoneSimple("Input", this);
 
-        z_1st = new CortexZoneComplex("1st", this, 100, 100,
+        z_1st = new CortexZoneComplex("1st", this, 160, 120,
             new Mapping[]{
                 new Mapping(z_in, 50, 1, false) //7x7 (50)
             }

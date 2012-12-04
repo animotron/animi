@@ -63,105 +63,96 @@ public class Stimulator implements Runnable, Imageable {
 	}
 
 	public void init() {
-		int bb = 15;
+		int b1 = 40;
+		int b2 = 30;
         figures = new Figure[] {
     		new LineAnime(
-        		5, 0,
+        		15, 0,
         		new int[][] {
-        				{bb, bb},
-        				{mc.retina.width() - bb, bb},
-        				{mc.retina.width() - bb, mc.retina.height() - bb},
-        				{bb, mc.retina.height() - bb},
-        				{bb, bb}
-        		}
-        	),
-        	new LineAnime(
-        		5, -.03,
-        		new int[][] {
-        				{mc.retina.width() - bb, mc.retina.height() - bb},
-        				{bb, mc.retina.width() - bb},
-        				{bb, bb},
-        				{mc.retina.width() - bb, bb},
-        				{mc.retina.width() - bb, mc.retina.height() - bb}
+        				{b1, b1},
+        				{mc.retina.width() - b1, b1},
+        				{mc.retina.width() - b1, mc.retina.height() - b1},
+        				{b1, mc.retina.height() - b1},
+        				{b1, b1}
         		}
         	),
         	new LineAnime(
         	    15, -0.03,
         	    new int[][] {
-        	            {bb, bb},
-        	            {mc.retina.width() - bb, bb},
-        	            {mc.retina.width() - bb, mc.retina.height() - bb},
-        	            {bb, mc.retina.height() - bb},
-        	            {bb, bb}
+        	            {b1, b1},
+        	            {mc.retina.width() - b1, b1},
+        	            {mc.retina.width() - b1, mc.retina.height() - b1},
+        	            {b1, mc.retina.height() - b1},
+        	            {b1, b1}
         	    }
         	),
         	new LineAnime(
         	    15, 0.03,
         	    new int[][] {
-        	            {mc.retina.width() - bb, bb},
-        	            {mc.retina.width() - bb, mc.retina.height() - bb},
-        	            {bb, mc.retina.height() - bb},
-        	            {bb, bb},
-        	            {mc.retina.width() - bb, bb},
+        	            {mc.retina.width() - b1, b1},
+        	            {mc.retina.width() - b1, mc.retina.height() - b1},
+        	            {b1, mc.retina.height() - b1},
+        	            {b1, b1},
+        	            {mc.retina.width() - b1, b1},
         	    }
         	),
         	new LineAnime(
         	    15, -0.07,
         	    new int[][] {
-        	            {mc.retina.width() - bb, mc.retina.height() - bb},
-        	            {bb, mc.retina.height() - bb},
-        	            {bb, bb},
-        	            {mc.retina.width() - bb, bb},
-        	            {mc.retina.width() - bb, mc.retina.height() - bb}
+        	            {mc.retina.width() - b1, mc.retina.height() - b1},
+        	            {b1, mc.retina.height() - b1},
+        	            {b1, b1},
+        	            {mc.retina.width() - b1, b1},
+        	            {mc.retina.width() - b1, mc.retina.height() - b1}
         	    }
         	),
         	new LineAnime(
         	    15, 0.07,
         	    new int[][] {
-        	            {bb, mc.retina.height() - bb},
-        	            {bb, bb},
-        	            {mc.retina.width() - bb, bb},
-        	            {mc.retina.width() - bb, mc.retina.height() - bb},
-        	            {bb, mc.retina.height() - bb}
+        	            {b1, mc.retina.height() - b1},
+        	            {b1, b1},
+        	            {mc.retina.width() - b1, b1},
+        	            {mc.retina.width() - b1, mc.retina.height() - b1},
+        	            {b1, mc.retina.height() - b1}
         	    }
         	),
-        	new OvalAnime(15,
+        	new OvalAnime(30,
         	    new int[][] {
-        	            {bb, bb},
-        	            {mc.retina.width() - bb, mc.retina.height() - bb},
-        	            {mc.retina.width() - bb, bb},
-        	            {bb, mc.retina.height() - bb},
-        	            {bb, bb}
-        	    }
-        	),
-        	new RectAnime(
-        	    10, 0.05,
-        	    new int[][] {
-        	            {10, 10},
-        	            {10, mc.retina.height() - 10},
-        	            {mc.retina.width() - 10, mc.retina.height() - 10},
-        	            {mc.retina.width() - 10, 10},
-        	            {10, 10}
+        	            {b1, b1},
+        	            {mc.retina.width() - b1, mc.retina.height() - b1},
+        	            {mc.retina.width() - b1, b1},
+        	            {b1, mc.retina.height() - b1},
+        	            {b1, b1}
         	    }
         	),
         	new RectAnime(
-        	    15, 0.05,
+        	    30, 0.05,
         	    new int[][] {
-        	            {10, mc.retina.height() - 10},
-        	            {mc.retina.width() - 10, mc.retina.height() - 10},
-        	            {mc.retina.width() - 10, 10},
-        	            {10, 10},
-        	            {10, mc.retina.height() - 10}
+        	            {b2, b2},
+        	            {b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, b2},
+        	            {b2, b2}
         	    }
         	),
         	new RectAnime(
-        	    10, 0,
+        	    40, 0.05,
         	    new int[][] {
-        	            {mc.retina.width() - 10, mc.retina.height() - 10},
-        	            {mc.retina.width() - 10, 10},
-        	            {10, 10},
-        	            {10, mc.retina.height() - 10},
-        	            {mc.retina.width() - 10, mc.retina.height() - 10}
+        	            {b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, b2},
+        	            {b2, b2},
+        	            {b2, mc.retina.height() - b2}
+        	    }
+        	),
+        	new RectAnime(
+        	    30, 0,
+        	    new int[][] {
+        	            {mc.retina.width() - b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, b2},
+        	            {b2, b2},
+        	            {b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, mc.retina.height() - b2}
         	    }
         	)
         };
