@@ -20,7 +20,6 @@
  */
 package org.animotron.animi.acts.old;
 
-import org.animotron.animi.acts.Act;
 import org.animotron.animi.cortex.*;
 
 /**

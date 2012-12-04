@@ -18,7 +18,7 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.acts;
+package org.animotron.animi.acts.old;
 
 import org.animotron.animi.cortex.*;
 

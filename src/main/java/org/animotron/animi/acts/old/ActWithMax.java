@@ -18,7 +18,7 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.acts;
+package org.animotron.animi.acts.old;
 
 import org.animotron.animi.cortex.Layer;
 
@@ -28,7 +28,7 @@ import org.animotron.animi.cortex.Layer;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public interface Act<L extends Layer> {
+public interface ActWithMax<L extends Layer> {
 
-	public abstract void process(L layer, int x, int y);
+	public abstract double process(L layer, int x, int y, double max);
 }

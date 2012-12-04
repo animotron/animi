@@ -18,17 +18,27 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.acts;
+package org.animotron.animi.acts.old;
 
-import org.animotron.animi.cortex.Layer;
+import java.util.Arrays;
+
+import org.animotron.animi.cortex.*;
 
 /**
+ * 
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public interface ActWithMax<L extends Layer> {
+public class FinalActivity implements Act<CortexZoneSimple> {
 
-	public abstract double process(L layer, int x, int y, double max);
+	public FinalActivity() {}
+
+    @Override
+    public void process(CortexZoneSimple layer, final int x, final int y) {
+//    	NeuronComplex cn = layer.col[x][y];
+//    	
+//    	cn.backProjection = Arrays.copyOf(cn.activity, cn.activity.length);
+    }
 }
