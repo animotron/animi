@@ -105,8 +105,7 @@ public class MultiCortex {
 
     public MultiCortex() {
 
-        // Initialize OpenCL 
-        initCL();
+    	preInitCL();
     	
         z_in = new CortexZoneSimple("Input", this);
 
@@ -166,6 +165,8 @@ public class MultiCortex {
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);
     }
+    
+    public Map<String, cl_platform_id> platforms = new FastMap<String, cl_platform_id>();
 
     /** 
      * The OpenCL context.
@@ -200,11 +201,7 @@ public class MultiCortex {
     /**
      * Initialize OpenCL
      */
-    private void initCL() {
-        // The platform and device type that will be used
-        final int platformIndex = 0;
-        final long deviceType = CL_DEVICE_TYPE_ALL;
-
+    private void preInitCL() {
         // Enable exceptions and subsequently omit error checks in this sample
         CL.setExceptionsEnabled(true);
 
@@ -214,25 +211,29 @@ public class MultiCortex {
         int numPlatforms = numPlatformsArray[0];
 
         // Obtain a platform ID
-        cl_platform_id platforms[] = new cl_platform_id[numPlatforms];
-        clGetPlatformIDs(platforms.length, platforms, null);
-        cl_platform_id platform = null;
+        cl_platform_id _platforms[] = new cl_platform_id[numPlatforms];
+        clGetPlatformIDs(_platforms.length, _platforms, null);
         
-        for (cl_platform_id plat : platforms) {
-            int numDevices[] = new int[1];
-            clGetDeviceIDs(plat, CL_DEVICE_TYPE_ALL, 0, null, numDevices);
-            
-            cl_device_id devicesArray[] = new cl_device_id[numDevices[0]];
-            clGetDeviceIDs(plat, CL_DEVICE_TYPE_ALL, numDevices[0], devicesArray, null);
-
-            long dType = getLong(devicesArray[0], CL_DEVICE_TYPE);
-	        if( (dType & CL_DEVICE_TYPE_GPU) != 0)
-	        	platform = plat;
+        for (cl_platform_id plat : _platforms) {
+        	platforms.put(getPlatformInfoString(plat, CL.CL_PLATFORM_NAME), plat);
         }
-        if (platform == null)
-            platform = platforms[platformIndex];
+//            int numDevices[] = new int[1];
+//            clGetDeviceIDs(plat, CL_DEVICE_TYPE_ALL, 0, null, numDevices);
+//            
+//            cl_device_id devicesArray[] = new cl_device_id[numDevices[0]];
+//            clGetDeviceIDs(plat, CL_DEVICE_TYPE_ALL, numDevices[0], devicesArray, null);
+//
+//            long dType = getLong(devicesArray[0], CL_DEVICE_TYPE);
+//	        if( (dType & CL_DEVICE_TYPE_GPU) != 0)
+//	        	platform = plat;
+//        }
+    }
 
-        System.out.println("Using plaform "+getPlatformInfoString(platform, CL.CL_PLATFORM_NAME));
+    /**
+     * Initialize OpenCL
+     */
+    private void initCL(final cl_platform_id platform, final long deviceType) {
+		System.out.println("Using plaform "+getPlatformInfoString(platform, CL.CL_PLATFORM_NAME));
 
         // Initialize the context properties
         cl_context_properties contextProperties = new cl_context_properties();
@@ -420,8 +421,11 @@ public class MultiCortex {
         }
     }
     
-    public void init() {
-        // Flush all pending tasks
+    public void init(final cl_platform_id platform, final long deviceType) {
+        // Initialize OpenCL 
+        initCL(platform, deviceType);
+
+    	// Flush all pending tasks
         flush();
 
 		for (CortexZoneSimple zone : zones) {

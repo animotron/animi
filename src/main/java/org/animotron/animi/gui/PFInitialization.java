@@ -20,6 +20,8 @@
  */
 package org.animotron.animi.gui;
 
+import static org.jocl.CL.*;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -28,6 +30,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Field;
+import java.util.Vector;
 
 import javax.swing.*;
 
@@ -46,6 +49,10 @@ public class PFInitialization extends JInternalFrame {
 	private static final long serialVersionUID = -2223763417833552625L;
 	
 	JPanel panel;
+	
+	JComboBox<String> platform;
+	JComboBox<String> type;
+	
 	boolean readOnly;
 
 	public PFInitialization(final Application app, final MultiCortex mc) {
@@ -68,6 +75,19 @@ public class PFInitialization extends JInternalFrame {
         gbc.insets.left = 5;
         gbc.insets.bottom = 5;
         
+        gbc.gridy++;
+        gbc.gridx = 0;
+
+        platform = addCombo(gbc, "Platform: ", new Vector<String>( mc.platforms.keySet() ));
+        
+        gbc.gridy++;
+        gbc.gridx = 0;
+
+        Vector<String> types = new Vector<String>();
+        types.add("CPU");
+        types.add("GPU");
+        type = addCombo(gbc, "Device type: ", types);
+        
         scan(gbc, null, mc);
 		
         JButton btInit = new JButton(!readOnly ? "Init" : "Apply");
@@ -77,7 +97,11 @@ public class PFInitialization extends JInternalFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (!mc.active) {
-					app.initialize();
+					long _type_ = CL_DEVICE_TYPE_CPU;
+					if ("GPU".equals( type.getSelectedItem() )) {
+						_type_ = CL_DEVICE_TYPE_GPU;
+					}
+					app.initialize(mc.platforms.get(platform.getSelectedItem()), _type_);
 					app.closeFrame(PFInitialization.this);
 				}
 			}
@@ -253,6 +277,21 @@ public class PFInitialization extends JInternalFrame {
 	        gbc.gridx++;
 	        panel.add(text, gbc);
 		}
+	}
+
+	private JComboBox<String> addCombo(GridBagConstraints gbc, String name, Vector<String> items) {
+
+        final JComboBox<String> combo = new JComboBox<String>(items);
+		
+		JLabel label = new JLabel(name);
+
+        gbc.gridy++;
+        panel.add(label, gbc);
+
+        gbc.gridx++;
+        panel.add(combo, gbc);
+        
+        return combo;
 	}
 
 	private String getName(Field f) {
