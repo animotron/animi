@@ -66,56 +66,56 @@ public class Stimulator implements Runnable, Imageable {
 		int b1 = 40;
 		int b2 = 30;
         figures = new Figure[] {
-    		new LineAnime(
-        		15, 0,
-        		new int[][] {
-        				{b1, b1},
-        				{mc.retina.width() - b1, b1},
-        				{mc.retina.width() - b1, mc.retina.height() - b1},
-        				{b1, mc.retina.height() - b1},
-        				{b1, b1}
-        		}
-        	),
-        	new LineAnime(
-        	    15, -0.03,
-        	    new int[][] {
-        	            {b1, b1},
-        	            {mc.retina.width() - b1, b1},
-        	            {mc.retina.width() - b1, mc.retina.height() - b1},
-        	            {b1, mc.retina.height() - b1},
-        	            {b1, b1}
-        	    }
-        	),
-        	new LineAnime(
-        	    15, 0.03,
-        	    new int[][] {
-        	            {mc.retina.width() - b1, b1},
-        	            {mc.retina.width() - b1, mc.retina.height() - b1},
-        	            {b1, mc.retina.height() - b1},
-        	            {b1, b1},
-        	            {mc.retina.width() - b1, b1},
-        	    }
-        	),
-        	new LineAnime(
-        	    15, -0.07,
-        	    new int[][] {
-        	            {mc.retina.width() - b1, mc.retina.height() - b1},
-        	            {b1, mc.retina.height() - b1},
-        	            {b1, b1},
-        	            {mc.retina.width() - b1, b1},
-        	            {mc.retina.width() - b1, mc.retina.height() - b1}
-        	    }
-        	),
-        	new LineAnime(
-        	    15, 0.07,
-        	    new int[][] {
-        	            {b1, mc.retina.height() - b1},
-        	            {b1, b1},
-        	            {mc.retina.width() - b1, b1},
-        	            {mc.retina.width() - b1, mc.retina.height() - b1},
-        	            {b1, mc.retina.height() - b1}
-        	    }
-        	),
+//    		new LineAnime(
+//        		15, 0,
+//        		new int[][] {
+//        				{b1, b1},
+//        				{mc.retina.width() - b1, b1},
+//        				{mc.retina.width() - b1, mc.retina.height() - b1},
+//        				{b1, mc.retina.height() - b1},
+//        				{b1, b1}
+//        		}
+//        	),
+//        	new LineAnime(
+//        	    15, -0.03,
+//        	    new int[][] {
+//        	            {b1, b1},
+//        	            {mc.retina.width() - b1, b1},
+//        	            {mc.retina.width() - b1, mc.retina.height() - b1},
+//        	            {b1, mc.retina.height() - b1},
+//        	            {b1, b1}
+//        	    }
+//        	),
+//        	new LineAnime(
+//        	    15, 0.03,
+//        	    new int[][] {
+//        	            {mc.retina.width() - b1, b1},
+//        	            {mc.retina.width() - b1, mc.retina.height() - b1},
+//        	            {b1, mc.retina.height() - b1},
+//        	            {b1, b1},
+//        	            {mc.retina.width() - b1, b1},
+//        	    }
+//        	),
+//        	new LineAnime(
+//        	    15, -0.07,
+//        	    new int[][] {
+//        	            {mc.retina.width() - b1, mc.retina.height() - b1},
+//        	            {b1, mc.retina.height() - b1},
+//        	            {b1, b1},
+//        	            {mc.retina.width() - b1, b1},
+//        	            {mc.retina.width() - b1, mc.retina.height() - b1}
+//        	    }
+//        	),
+//        	new LineAnime(
+//        	    15, 0.07,
+//        	    new int[][] {
+//        	            {b1, mc.retina.height() - b1},
+//        	            {b1, b1},
+//        	            {mc.retina.width() - b1, b1},
+//        	            {mc.retina.width() - b1, mc.retina.height() - b1},
+//        	            {b1, mc.retina.height() - b1}
+//        	    }
+//        	),
         	new OvalAnime(30,
         	    new int[][] {
         	            {b1, b1},

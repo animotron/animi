@@ -254,7 +254,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		public void init() {
 
-	        boxSize = 5;
+	        boxSize = 3;
 
 			int maxX = width() * boxSize;
 	        int maxY = height() * boxSize;
