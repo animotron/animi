@@ -47,6 +47,8 @@ public class Stimulator implements Runnable, Imageable {
     @Params
     public Figure[] figures;
     
+    private BufferedImage img = null;
+    
     private long fps;
     private long frame = 0;
     private long t0 = System.currentTimeMillis();
@@ -63,6 +65,8 @@ public class Stimulator implements Runnable, Imageable {
 	}
 
 	public void init() {
+        img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
+		
 		int b1 = 40;
 		int b2 = 30;
         figures = new Figure[] {
@@ -180,6 +184,13 @@ public class Stimulator implements Runnable, Imageable {
 
                     if (t > 0)
                     	Thread.sleep(t);
+                    else
+                    	//give some rest any way
+                    	Thread.sleep(5);
+
+                } else {
+                	//give some rest any way
+                	Thread.sleep(5);
                 }
 
 			} catch (Throwable e) {
@@ -198,6 +209,8 @@ public class Stimulator implements Runnable, Imageable {
 	}
 	
 	public void prosess() {
+		step();
+
 		final BufferedImage image = getImage();
 
         if (cortexs != null && MODE >= STEP && image != null) {
@@ -239,14 +252,13 @@ public class Stimulator implements Runnable, Imageable {
 			notifyAll();
 		}
 	}
-	
 
 	@Override
 	public String getImageName() {
 		return this.getClass().getSimpleName();
 	}
 
-	public BufferedImage getImage() {
+	public void step() {
 
         for (Figure i : figures) {
         	if (i.isActive()) {
@@ -254,30 +266,26 @@ public class Stimulator implements Runnable, Imageable {
         	}
         }
         
-        //workaround
-        BufferedImage img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();
+        g.clearRect(0, 0, img.getWidth(), img.getHeight());
 
         for (Figure i : figures) {
         	if (i.isActive()) {
         		i.drawImage(g);
         	}
         }
+	}
 
+	public BufferedImage getImage() {
         return img;
 	}
 	
 	public BufferedImage getUserImage() {
         //workaround
         BufferedImage img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
-
         Graphics g = img.getGraphics();
+        g.drawImage(getImage(), 0, 0, img.getWidth(), img.getHeight(), null);
 
-        for (Figure i : figures) {
-        	if (i.isActive()) {
-        		i.drawImage(g);
-        	}
-        }
         drawUImage(g);
         
     	return img;

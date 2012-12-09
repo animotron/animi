@@ -2,7 +2,7 @@
  *  Copyright (C) 2012 The Animo Project
  *  http://animotron.org
  *
- *  This file is part of Animi.
+ *  This file is part of Animotron.
  *
  *  Animotron is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as
@@ -18,14 +18,22 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.cortex;
+ 
+ /*
+  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+  */
 
-/**
- * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
- *
- */
-public enum LinkType {
-	
-	NORMAL, INHIBITORY
+__kernel void computeWinnerGetsAll(
+    __global float* output,
+    int sizeX,
 
+    __global float* input
+) {
+
+    int x = get_global_id(0);
+    int y = get_global_id(1);
+    
+    int pos = (y * sizeX) + x;
+    
+    output[pos] = input[pos];
 }

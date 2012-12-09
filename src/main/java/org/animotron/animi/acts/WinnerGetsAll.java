@@ -24,11 +24,10 @@ import static org.jocl.CL.*;
 
 import java.awt.Color;
 import java.awt.image.DataBufferInt;
-import java.util.Arrays;
 
-import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.Utils;
 import org.animotron.animi.cortex.*;
+import org.animotron.animi.gui.Application;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_command_queue;
@@ -37,20 +36,17 @@ import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
 
 /**
- * Активация простых нейронов при узнавании запомненной картины
+ * Winner gets all
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Inhibitory extends Task {
+public class WinnerGetsAll extends Task {
 
-	@RuntimeParam(name = "k")
-	public float k = 0.3f;
-	
 	cl_mem _cols;
 	
-	public Inhibitory(CortexZoneComplex cz) {
+	public WinnerGetsAll(CortexZoneComplex cz) {
 		super(cz);
 	}
 
@@ -61,27 +57,65 @@ public class Inhibitory extends Task {
      */
 	@Override
     protected void setupArguments(cl_kernel kernel) {
-    	super.setupArguments(kernel);
+        clSetKernelArg(kernel,  0, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
+        clSetKernelArg(kernel,  1, Sizeof.cl_int, Pointer.to(new int[] {cz.width}));
 
-        clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_senapseOfinhibitoryLinks));
-        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.number_of_inhibitory_links}));
-        
-        clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
-        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(cz.cl_freeCols));
+    	//max is winner & winner gets all
+    	int maxPos = -1;
+    	float max = 0;
+        int cPos = -1;
 
-        final float cols[] = new float[cz.cols.length];
-        System.arraycopy(cz.cols, 0, cols, 0, cols.length);
+        final int linksNumber = cz.number_of_inhibitory_links;
+    	
+    	float[] rememberCols = new float[sz.rememberCols.length];
+    	System.arraycopy(sz.rememberCols, 0, rememberCols, 0, sz.rememberCols.length);
+
+    	float[] cols = new float[sz.rememberCols.length];
+    	System.arraycopy(sz.rememberCols, 0, cols, 0, sz.rememberCols.length);
+    	
+    	while (true) {
+	    	maxPos = -1;
+	    	max = 0;
+	    	for (int pos = 0; pos < cols.length; pos++) {
+	    		if (cols[pos] > max) {
+	    			max = cols[pos];
+	    			maxPos = pos;
+	    		}
+	    	}
+	    	
+	        if (maxPos == -1) {
+	        	break;
+	        }
+	        
+        	int y = (int)(maxPos / cz.width);
+        	int x = maxPos - (y * cz.width);
+        	
+            int XSize = (linksNumber * 2);
+            int offset = (y * cz.width * XSize) + (x * XSize);
+            
+    		for (int l = 0; l < linksNumber; l++) {
+    	    	int xi = cz.inhibitoryLinksSenapse[offset + (l * 2)    ];
+    	    	int yi = cz.inhibitoryLinksSenapse[offset + (l * 2) + 1];
+    	        
+    	    	cPos = (yi * cz.width) + xi;
+            	cols[cPos] = 0;
+            	if (cPos != maxPos)
+            		rememberCols[cPos] = 0;
+    		}
+        	cols[(y * cz.width) + x] = 0;
+    	}
+
         _cols = clCreateBuffer(
     		cz.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
-    		cols.length * Sizeof.cl_float, Pointer.to(cols), null
+    		rememberCols.length * Sizeof.cl_float, Pointer.to(rememberCols), null
 		);
         
-        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(_cols));
+        clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(_cols));
     }
 
 	@Override
     protected void enqueueReads(cl_command_queue commandQueue, cl_event events[]) {
-    	super.enqueueReads(commandQueue, events);
+//    	super.enqueueReads(commandQueue, events);
     	
         // Read the contents of the cl_neighborCols memory object
     	Pointer target = Pointer.to(sz.rememberCols);
@@ -93,13 +127,17 @@ public class Inhibitory extends Task {
     	clWaitForEvents(1, events);
 	}
 
-//	@Override
+	@Override
+	protected void release() {
+		clReleaseMemObject(_cols);
+	}
+//	
 //    protected void processColors(float array[]) {
 //    	DataBufferInt dataBuffer = (DataBufferInt)cz.image.getRaster().getDataBuffer();
 //    	int data[] = dataBuffer.getData();
 //      
 //    	for (int i = 0; i < data.length; i++) {
-//    		final float value = sz.rememberCols[i];
+//    		final float value = array[i];
 //      	
 //    		if (Float.isNaN(value))
 //    			data[i] = Color.RED.getRGB();
@@ -111,9 +149,4 @@ public class Inhibitory extends Task {
 //    		}
 //    	}
 //    }
-
-	@Override
-	protected void release() {
-		clReleaseMemObject(_cols);
-	}
 }

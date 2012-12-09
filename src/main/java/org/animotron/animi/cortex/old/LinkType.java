@@ -18,19 +18,14 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.cortex;
-
-import org.animotron.animi.Imageable;
+package org.animotron.animi.cortex.old;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public interface Layer extends Imageable {
+public enum LinkType {
 	
-	//neural image size & set methods
-	int width();
-	int height();
-	
-    public void process();
+	NORMAL, INHIBITORY
+
 }

@@ -44,7 +44,7 @@ public class Application extends JFrame {
 	
 	private static final long serialVersionUID = 3243253015790558286L;
 	
-	static Application _ = null;
+	public static Application _ = null;
 
 	public static MultiCortex cortexs = null;
 	
@@ -268,8 +268,10 @@ public class Application extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				stimulator.reset();
-				cortexs.retina.resetShift();
+				if (stimulator != null) {
+					stimulator.reset();
+					cortexs.retina.resetShift();
+				}
 			}
         });
         bar.add(button);

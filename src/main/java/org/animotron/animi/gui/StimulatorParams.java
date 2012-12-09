@@ -34,7 +34,6 @@ import javax.swing.*;
 import org.animotron.animi.InitParam;
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
-import org.animotron.animi.simulator.StaticStimulator;
 import org.animotron.animi.simulator.Stimulator;
 
 /**

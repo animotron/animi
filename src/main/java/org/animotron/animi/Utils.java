@@ -20,21 +20,15 @@
  */
 package org.animotron.animi;
 
-import static org.jocl.CL.CL_PROFILING_COMMAND_END;
-import static org.jocl.CL.CL_PROFILING_COMMAND_START;
-import static org.jocl.CL.CL_TRUE;
-import static org.jocl.CL.clEnqueueReadBuffer;
-import static org.jocl.CL.clGetEventProfilingInfo;
+import static org.jocl.CL.*;
 
 import java.awt.image.BufferedImage;
-import java.nio.IntBuffer;
 
+import org.animotron.animi.cortex.CortexZoneComplex;
 import org.animotron.animi.cortex.Mapping;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
-import org.jocl.cl_command_queue;
 import org.jocl.cl_event;
-import org.jocl.cl_mem;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -84,13 +78,19 @@ public class Utils {
 	public static BufferedImage drawRF(
 			final BufferedImage image, final int boxSize,
 			final int offsetX, final int offsetY,
-			final int cnX, final int cnY, 
+			final int cnX, final int cnY,
+			final int pN,
 			final Mapping m) {
 
-		final int offset = (cnY * m.toZone.width * m.linksSenapseRecordSize) + (m.linksSenapseRecordSize * cnX);
-        final int offsetWeight = (cnY * m.toZone.width * m.linksWeightRecordSize) + (m.linksWeightRecordSize * cnX);
+		final CortexZoneComplex cz = m.toZone;
+
+		final int offset = (cnY * cz.width * m.linksSenapseRecordSize) + (m.linksSenapseRecordSize * cnX);
+//        final int offsetWeight = (cnY * cz.width * m.linksWeightRecordSize) + (m.linksWeightRecordSize * cnX);
+	    
+        int offsetPackagers = cz.package_size * m.ns_links;
+		int lOffset = (cnY * cz.width * offsetPackagers) + (cnX * offsetPackagers) + (pN * m.ns_links);        
         
-        int pX = 0, pY = 0;
+		int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
         	int xi = m.linksSenapse[offset + 2*l    ];
         	int yi = m.linksSenapse[offset + 2*l + 1];
@@ -103,12 +103,12 @@ public class Utils {
         			&& pY > 0 
         			&& pY < boxSize) {
 
-//		        int value = image.getRGB(pX, pY);
-//
-//		        int g = Utils.get_green(value);
-//		        int b = Utils.get_blue(value);
-//		        int r = Utils.get_red(value);
-//
+		        int value = image.getRGB(offsetX + pX, offsetY + pY);
+
+		        int G = Utils.get_green(value);
+		        int B = Utils.get_blue(value);
+		        int R = Utils.get_red(value);
+
 //		        switch (link.delay) {
 //				case 0:
 //					g += 255 * link.q;;
@@ -128,10 +128,20 @@ public class Utils {
 //				}
 //				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
 
-				int c = calcGrey(image, offsetX + pX, offsetY + pY);
-				c += 255 * (double)m.linksWeight[offsetWeight + l];
-				if (c > 255) c = 255;
-				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, c, c, c));
+//				int c = calcGrey(image, offsetX + pX, offsetY + pY);
+//				c += 255 * m.linksWeight[lOffset + l];
+//				if (c > 255) c = 255;
+//				else if (c < 0) c = 0;
+//				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, c, c, c));
+
+				if (m.linksWeight[lOffset + l] > 0.0f) {
+					B += 255 * m.linksWeight[lOffset + l];
+					if (B > 255) B = 255;
+				} else {
+					G += 255 * m.linksWeight[lOffset + l];
+					if (G > 255) G = 255;
+				};
+				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, R, G, B));
         	}
         }
         return image;
@@ -141,9 +151,13 @@ public class Utils {
 			final BufferedImage image,
 			final int cnX, final int cnY, 
 			final Mapping m) {
+		
+		final CortexZoneComplex cz = m.toZone;
+		
+		final int pos = cnY * cz.width + cnX;
 
-		final int offset = (cnY * m.toZone.width * m.linksSenapseRecordSize) + (m.linksSenapseRecordSize * cnX);
-        final int offsetWeight = (cnY * m.toZone.width * m.linksWeightRecordSize) + (m.linksWeightRecordSize * cnX);
+		final int offset = (cnY * cz.width * m.linksSenapseRecordSize) + (m.linksSenapseRecordSize * cnX);
+        final int offsetWeight = (cnY * cz.width * m.linksWeightRecordSize) + (m.linksWeightRecordSize * cnX);
         
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
@@ -182,9 +196,18 @@ public class Utils {
 //					break;
 //				}
 //				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
+				
+				int packageNumber = 0;
+				for (int p = 0; p < cz.package_size; p++) {
+					if (cz.pCols[(cnY * cz.width * cz.package_size) + (cnX * cz.package_size) + p] >= cz.cols[pos]) {
+						packageNumber = p;
+						break;
+					}
+				}
+
 
 				int c = calcGrey(image, pX, pY);
-				c += 255 * m.toZone.cols[cnY * m.toZone.width + cnX] * m.linksWeight[offsetWeight + l] / 5;
+				c += 255 * cz.cols[pos] * m.linksWeight[offsetWeight + (packageNumber * m.ns_links) + l] / 5;
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, create_rgb(255, c, c, c));
         	}
@@ -218,4 +241,16 @@ public class Utils {
             Sizeof.cl_ulong, Pointer.to(startTime), null);
         return (endTime[0]-startTime[0]) / 1e6;
     }
+
+	public static String debug(float[] array) {
+		return debug(array, 7);
+	}
+	
+	public static String debug(float[] array, int count) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < count; i++) {
+			sb.append(array[i]).append(", ");
+		}
+		return sb.append(array[count]).toString();
+	}
 }

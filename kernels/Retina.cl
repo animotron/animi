@@ -38,15 +38,15 @@ __kernel void computeRetina(
     int x = get_global_id(0);
     int y = get_global_id(1);
     
-    output[mul24(y, outputSizeX)+y] = 0;
+    output[(y * outputSizeX) + y] = 0;
 
-    barrier(CLK_GLOBAL_MEM_FENCE);
+    barrier(CLK_LOCAL_MEM_FENCE);
 
-    int pos = mul24(y+offsetY, outputSizeX)+x+offsetX;
+    int pos = ((y + offsetY) * outputSizeX) + x + offsetX;
     
-    if (pos < mul24(inputSizeX, inputSizeY))
+    if (pos < (inputSizeX * inputSizeY))
     {
-	    int rgb = input[mul24(inputSizeX, mul24(y, YScale)) + mul24(x, XScale)];
+	    int rgb = input[(inputSizeX * (int)(y * YScale)) + (int)(x * XScale)];
 	    int R = (rgb >> 16) & 0xFF;
 	    int G = (rgb >> 8 ) & 0xFF;
 	    int B = (rgb      ) & 0xFF;
@@ -55,8 +55,8 @@ __kernel void computeRetina(
 	    float value = (R + G + B) / 3;
 	    
 	    //normalize
-	    output[pos] = value / 255;
+	    output[pos] = value / 255.0f;
     }
     
-    barrier(CLK_LOCAL_MEM_FENCE);
+//    barrier(CLK_LOCAL_MEM_FENCE);
 }

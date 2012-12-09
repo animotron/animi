@@ -21,7 +21,6 @@
 package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
-import static org.animotron.animi.cortex.MultiCortex.*;
 
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
@@ -52,133 +51,50 @@ public class Restructorization extends Task {
      * 
      * @param kernel The OpenCL kernel for which the arguments will be set
      */
+	@Override
     protected void setupArguments(cl_kernel kernel) {
         clSetKernelArg(kernel,  0, Sizeof.cl_mem, Pointer.to(cz.cl_cols));
         clSetKernelArg(kernel,  1, Sizeof.cl_int, Pointer.to(new int[] {cz.width}));
 
     	Mapping m = cz.in_zones[0];
 
-    	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(m.cl_links));
-        clSetKernelArg(kernel,  3, Sizeof.cl_mem, Pointer.to(m.cl_senapseOfLinks));
-        clSetKernelArg(kernel,  4, Sizeof.cl_int, Pointer.to(new int[] {m.ns_links}));
-        clSetKernelArg(kernel,  5, Sizeof.cl_float, Pointer.to(new float[] {sz.ny}));
-        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(sz.cl_colsNy));
+    	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_pCols));
+        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.package_size}));
+
+        clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(m.cl_linksWeight));
+        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(m.cl_senapseOfLinks));
+        clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {m.ns_links}));
         
-        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
-        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
+        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
+        clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(cz.cl_freeCols));
+        
+//        System.out.println("Rest");
+//        System.out.println("neighborCols: "+Utils.debug(cz.rememberCols));
+//        System.out.println("cycleCols   : "+Utils.debug(cz.cycleCols));
+//        System.out.println("freeCols    : "+Utils.debug(cz.freeCols));
+//        System.out.println("linksWeight : "+Utils.debug(cz.in_zones[0].linksWeight, 100));
+
+        clSetKernelArg(kernel,  9, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
+        clSetKernelArg(kernel,  10, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
     }
 
 	@Override
-	protected void processColors(float[] array) {
-//		if (MODE == RUN) {
-//			cycles++;
-//			if (cycles > 100) {
-//				cz.refreshImage();
-//				cycles = 0;
-//			}
-//		}
-//
-//		if (MODE == STEP) {
-//			cz.refreshImage();
-//		}
-    }
-
-	/**
-     * Will execute this task with the given kernel on the given 
-     * command queue
-     * 
-     * @param kernel The kernel
-     * @param commandQueue The command queue
-     */
-    public void execute(cl_kernel kernel, cl_command_queue commandQueue) {
-        setupArguments(kernel);
-        
-        cl_event events[] = new cl_event[] { new cl_event() };
-        
-        long globalWorkSize[] = new long[2];
-        globalWorkSize[0] = sz.width;
-        globalWorkSize[1] = sz.height;
-
-        clEnqueueNDRangeKernel(
-            commandQueue, 
-            kernel, 2, null, 
-            globalWorkSize, null, 0, null, events[0]);
-        
-        clWaitForEvents(1, events);
-        
-//        Utils.printBenchmarkInfo("Calc", events[0]);
-
+    protected void enqueueReads(cl_command_queue commandQueue, cl_event events[]) {
+//    	super.enqueueReads(commandQueue, events);
+        	
         // Read the contents of the cols memory object
         Mapping m = cz.in_zones[0];
-
-//        float result[] = new float[m.linksWeight.length];
         Pointer target = Pointer.to(m.linksWeight);
         clEnqueueReadBuffer(
-            commandQueue, m.cl_links, 
+            commandQueue, m.cl_linksWeight, 
             CL_TRUE, 0, m.linksWeight.length * Sizeof.cl_float, 
             target, 0, null, events[0]);
 
         clWaitForEvents(1, events);
-
-        target = Pointer.to(sz.colsNy);
-        clEnqueueReadBuffer(
-            commandQueue, sz.cl_colsNy, 
-            CL_TRUE, 0, sz.colsNy.length * Sizeof.cl_float, 
-            target, 0, null, events[0]);
-
-        clWaitForEvents(1, events);
-        
-//        Utils.printBenchmarkInfo("Reading", events[0]);
-
-//        m.linksWeight = result;
-
-//        System.out.println(Arrays.toString(sz.colsNy));
-        processColors(sz.cols);
-        
-        release();
-        
-        clReleaseEvent(events[0]);
     }
 	
+	@Override
     protected void release() {
 //		clReleaseMemObject(_cols);
     }
-
-//    @Override
-//    public void process(final CortexZoneSimple layer, final int x, final int y) {
-//    	
-//		final NeuronComplex cn = layer.col[x][y];
-//		
-//		final double activity = cn.activity[0];
-//		if (activity == 0)
-//			return;
-//		
-//		double factor = ny / Math.pow(2, layer.count / count);
-//		double sumQ2 = 0;
-//
-//		for (LinkQ link : cn.Qs.values()) {
-//			
-//			link.q += activity * link.synapse.activity[link.delay] * factor;
-//
-//			sumQ2 += link.q * link.q;
-//		}
-//			
-//		double norm = Math.sqrt(sumQ2);
-//		for (LinkQ link : cn.Qs.values()) {
-//			link.q = link.q / norm;
-//		}
-		
-		//inhibitory restructorization & normlization
-//		sumQ2 = 0;
-//		for (Link link : cn.s_inhibitoryLinks) {
-//			link.w += cn.activity * link.synapse.activity * inhibitoryNy;
-//
-//			sumQ2 += link.w * link.w;
-//		}
-//
-//		norm = Math.sqrt(sumQ2);
-//		for (Link link : cn.s_inhibitoryLinks) {
-//			link.w = link.w / norm;
-//		}
-//    }
 }

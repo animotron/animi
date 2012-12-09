@@ -18,7 +18,7 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.cortex;
+package org.animotron.animi.cortex.old;
 
 import java.util.Map;
 
@@ -26,6 +26,7 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 
 import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.cortex.CortexZoneSimple;
 
 /**
  * Complex neuron

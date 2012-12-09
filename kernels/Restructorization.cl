@@ -27,12 +27,15 @@ __kernel void computeRestructorization(
     __global float* cols,
     int sizeX,
 
+    __global float* package,
+    int numberOfPackages,
+
     __global float* linksWeight,
     __global int*   linksSenapse,
     int linksNumber,
     
-    float ny,
-    __global float* nys,
+    __global float* rememberCols,
+    __global float* freeCols,
 
     __global float* input,
     int inputSizeX
@@ -41,45 +44,64 @@ __kernel void computeRestructorization(
     int x = get_global_id(0);
     int y = get_global_id(1);
     
-    float activity = cols[mul24(y, sizeX)+x];
-    if (activity > 0)
+    int pos = (y * sizeX)+x;
+    
+    //current activity
+    float activity = cols[pos];
+    
+    //free package number
+    int pN = -1; 
+    for (int p = 0; p < numberOfPackages; p++)
     {
-	    int XSize = mul24(linksNumber, 2);
-	    int offset = mul24(y, mul24(sizeX, XSize)) + mul24(x, XSize);
+    	if (package[(y * sizeX * numberOfPackages) + (x * numberOfPackages) + p] < 0.0f)
+    	{
+    		pN = p;
+    		break;
+    	}
+    }
+
+	if (pN > -1 && rememberCols[pos] > 0.0f)
+    {
+	    int XSize = (linksNumber * 2);
+	    int offset = (y * sizeX * XSize) + (x * XSize);
 	    
-		int linksOffset = mul24(y, mul24(sizeX, linksNumber)) + mul24(x, linksNumber);
+	    int offsetPackagers = linksNumber * numberOfPackages;
+		int lOffset = (y * sizeX * offsetPackagers) + (x * offsetPackagers) + (pN * linksNumber);
 		
-		float factor = 1;
-		if (nys[mul24(y, sizeX)+x] != ny)
-		{
-			factor = nys[mul24(y, sizeX)+x];
-			nys[mul24(y, sizeX)+x] = ny;
-		} else {
-			factor = activity * nys[mul24(y, sizeX)+x];
-		}
-	
-		float w;
-		float sumQ2 = 0;
+    	int count = 0;
+    	float sumQ2 = 0;
+    	float w = 0;
+	    
 	    for(int l = 0; l < linksNumber; l++)
 	    {
-	    	int xi = linksSenapse[offset + mul24(l, 2)  ];
-	    	int yi = linksSenapse[offset + mul24(l, 2)+1];
+	    	int xi = linksSenapse[offset + (l * 2)    ];
+	    	int yi = linksSenapse[offset + (l * 2) + 1];
 	    	
-	    	w = linksWeight[linksOffset + l];
+	    	w = input[ ( yi * inputSizeX ) + xi ];
 	    	
-	    	w += input[mul24(yi, inputSizeX)+xi] * factor;
-	
 			sumQ2 += w * w;
 			
-			linksWeight[linksOffset + l] = w;
+			linksWeight[lOffset + l] = w;
+			
+			if (w > 0.0f)
+			{
+				count++;
+			}
 		}
 	
 		float norm = sqrt(sumQ2);
 	    for(int l = 0; l < linksNumber; l++)
 	    {
-			linksWeight[linksOffset + l] = linksWeight[linksOffset + l] / norm;
+	    	if (linksWeight[lOffset + l] == 0.0f)
+	    	{
+	    		linksWeight[lOffset + l] = -1 / (float)count * 0.5;
+    		}
+    		else
+    		{
+				linksWeight[lOffset + l] = linksWeight[lOffset + l] / norm;
+			}
 		}
 	}
 	
-	barrier(CLK_LOCAL_MEM_FENCE);
+//	barrier(CLK_LOCAL_MEM_FENCE);
 }

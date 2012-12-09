@@ -23,6 +23,7 @@ package org.animotron.animi.cortex;
 import static org.jocl.CL.*;
 
 import org.animotron.animi.*;
+import org.animotron.animi.cortex.old.NeuronComplex;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_mem;
@@ -58,8 +59,34 @@ public class CortexZoneSimple implements Layer {
 	@InitParam(name="height")
 	public int height = 120;
 	
-	@InitParam(name="speed")
-	public double speed = Integer.MAX_VALUE;
+    /**
+     * The OpenCL memory object which store the activity for each neuron.
+     */
+    public cl_mem cl_cols;
+    public float cols[];
+    
+    /**
+     * The OpenCL memory object which store the remember or not activity at RF of neuron.
+     */
+    public cl_mem cl_rememberCols;
+    public float rememberCols[];
+
+    /**
+     * The OpenCL memory object which store the maximum activity of neuron during cycle.
+     */
+    public cl_mem cl_cycleCols;
+    public float cycleCols[];
+
+    /**
+     * The OpenCL memory object which store the activity of free package of neuron.
+     */
+    public cl_mem cl_freeCols;
+    public float freeCols[];
+
+	public BufferedImage image;
+
+//	@InitParam(name="speed")
+//	public double speed = Integer.MAX_VALUE;
 	
 	public int count = 0;
 
@@ -74,22 +101,6 @@ public class CortexZoneSimple implements Layer {
     }
     
     /**
-     * The OpenCL memory object which store the activity for each neuron.
-     */
-    public cl_mem cl_cols;
-    public float cols[];
-    
-    public cl_mem cl_colsNy;
-    public float colsNy[];
-
-	@RuntimeParam(name = "first_ny")
-	public float first_ny = 1f;
-	@RuntimeParam(name = "ny")
-	public float ny = 0.15f;
-
-	public BufferedImage image;
-
-    /**
      * Initializes the OpenCL memory object and the BufferedImage which will later receive the pixels
      */
     public void init() {
@@ -102,12 +113,28 @@ public class CortexZoneSimple implements Layer {
     		cols.length * Sizeof.cl_float, Pointer.to(cols), null
 		);
         
-        colsNy = new float[width * height];
-    	Arrays.fill(colsNy, first_ny);
+        rememberCols = new float[width * height];
+    	Arrays.fill(rememberCols, 0);
     	
-        cl_colsNy = clCreateBuffer(
+    	cl_rememberCols = clCreateBuffer(
     		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-    		colsNy.length * Sizeof.cl_float, Pointer.to(colsNy), null
+    		rememberCols.length * Sizeof.cl_float, Pointer.to(rememberCols), null
+		);
+
+    	cycleCols = new float[width * height];
+    	Arrays.fill(cycleCols, 0);
+    	
+    	cl_cycleCols = clCreateBuffer(
+    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
+    		cycleCols.length * Sizeof.cl_float, Pointer.to(cycleCols), null
+		);
+
+    	freeCols = new float[width * height];
+    	Arrays.fill(freeCols, 0);
+    	
+    	cl_freeCols = clCreateBuffer(
+    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
+    		freeCols.length * Sizeof.cl_float, Pointer.to(freeCols), null
 		);
 
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -170,32 +197,6 @@ public class CortexZoneSimple implements Layer {
 	}
 
 	@Override
-	public void set(int x, int y, float b) {
-//		final NeuronComplex cn = col[x][y];
-//		if (b != 0)
-//			System.out.println();
-//		cn.activity[0] = b;
-////		cn.backProjection[0] = b;
-//		cn.posActivity[0] = b;
-		
-		cols[(y*width)+x] = b;
-	}
-
-	@Override
-	public void shift(int x, int y, float b) {
-    	//XXX: optimize
-
-//		final NeuronComplex cn = col[x][y];
-//		for (int i = cn.activity.length - 1; i > 0 ; i--) {
-//			cn.activity[i] = cn.activity[i-1];
-////			cn.backProjection[i] = cn.backProjection[i-1];
-//			cn.posActivity[i] = cn.posActivity[i-1];
-//		}
-//		
-		set(x, y, b);
-	}
-
-	@Override
 	public void focusGained(Point point) {
 	}
 
@@ -237,7 +238,7 @@ public class CortexZoneSimple implements Layer {
 		write(out, "height", height);
 		write(out, "active", active);
 		write(out, "learning", learning);
-		write(out, "speed", speed);
+//		write(out, "speed", speed);
 		out.write("/>");
 	}
 }

@@ -53,7 +53,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	CNActivation cnActivation = new CNActivation(this);
 	@Params
     Inhibitory inhibitory = new Inhibitory(this);
-	@Params
+    WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
+
+    @Params
 	Restructorization restructorization = new Restructorization(this);
 
 	@InitParam(name="disper")
@@ -78,6 +80,14 @@ public class CortexZoneComplex extends CortexZoneSimple {
      * The OpenCL memory object which store the neuron links for each zone.
      */
     public cl_mem cl_senapseOfinhibitoryLinks;
+
+    /**
+     * The OpenCL memory object which store the activity for each package.
+     */
+    public cl_mem cl_pCols;
+    public float pCols[];
+	@InitParam(name="package_size")
+	public int package_size = 3;
 
     CortexZoneComplex() {
 		super();
@@ -200,37 +210,23 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
 					inhibitoryLinksSenapse.length * Sizeof.cl_int, Pointer.to(inhibitoryLinksSenapse), null);
 
-//        
-//        if (CRF != null) {
-//        	CRF.init();
-//        }
-//        
-//        if (RRF != null) {
-//        	RRF.init();
-//        }
+    	pCols = new float[width * height * package_size];
+    	Arrays.fill(pCols, -1);
+    	
+        cl_pCols = clCreateBuffer(
+    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
+    		pCols.length * Sizeof.cl_float, Pointer.to(pCols), null
+		);
+
+        if (CRF != null) {
+        	CRF.init();
+        }
+        
+        if (RRF != null) {
+        	RRF.init();
+        }
 	}
     
-	// Картинка активных нейронов по колонкам
-//	public BufferedImage[] getSImage() {
-//		BufferedImage[] a = new BufferedImage[deep];
-//		for (int z = 0; z < deep; z++) {
-//			BufferedImage image = new BufferedImage(width(), height(), BufferedImage.TYPE_INT_ARGB);
-//			for (int x = 0; x < width(); x++) {
-//				for (int y = 0; y < height(); y++) {
-//					int c = s[x][y][z].activity > 0 ? Color.WHITE.getRGB() : Color.BLACK.getRGB();
-//					image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
-//				}
-//			}
-//			a[z] = image;
-//		}
-//		return a;
-//	}
-	
-	public void prepareForSerialization() {
-		CRF = null;
-		RRF = null;
-	}
-	
 	ColumnRF_Image CRF = null;
 	
 	public Imageable getCRF() {
@@ -242,7 +238,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 	class ColumnRF_Image implements Imageable {
 		
-	    private int boxSize = 5;
+	    private int currentPackage = 0;
+		private int boxSize = 5;
 	    private BufferedImage image;
 	    
 	    private List<Point> watching = new ArrayList<Point>();
@@ -254,18 +251,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		public void init() {
 
-	        boxSize = 3;
+	        boxSize = 5;
 
 			int maxX = width() * boxSize;
 	        int maxY = height() * boxSize;
-	        
-//	        if (maxX > 600) {
-//	        	maxX = 600;
-//	        }
-//	        if (maxY > 600) {
-//	        	maxY = 600;
-//	        }
-	        
+
 	        image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
 		}
 	
@@ -294,7 +284,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		        		image, 
 		        		boxSize,
 		        		x*boxSize, y*boxSize,
-		        		x, y, 
+		        		x, y,
+		        		currentPackage,
 		        		in_zones[0]
 		    		);
 				}
@@ -302,7 +293,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			
 			int textY = g.getFontMetrics(g.getFont()).getHeight();
 			int x = 0, y = textY;
-			g.drawString("count: "+count, x, y);		
+			g.drawString("count: "+count+"; package: "+currentPackage, x, y);
+			
+//			currentPackage++;
+//			if (!(currentPackage < package_size))
+//				currentPackage = 0;
 			
 			return image;
 		}
@@ -318,8 +313,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 				if (pos.x > 1 && pos.x < width && pos.y > 1 && pos.y < height) {
 					
 					watching.add(pos);
-					
-//					System.out.println("x = "+pos.x+" y = "+pos.y);
 					
 					return new Object[] { CortexZoneComplex.this, pos };
 				}
@@ -376,8 +369,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		public BufferedImage getImage() {
 			
-			int max = 0, value = 0, R = 0, G = 0, B = 0;
-
 	        Graphics g = image.getGraphics();
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, image.getWidth(), image.getHeight());
@@ -428,6 +419,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
     	
     		count++;
     	}
+    	
+//    	step++;
+//    	if (step > 4) step = 1;
     }
     
     private void performTask(Task task) {
@@ -439,19 +433,26 @@ public class CortexZoneComplex extends CortexZoneSimple {
         }
         mc.finish();
     }
-
+    
+//    int step = 1;
+    
     //Такт 1. Активация колонок (узнавание)
     protected void cycleActivation() {
     	
+//    	if (step == 1)
     	performTask(cnActivation);
 //		for (int i : new int[] {1,2,3,4,5}) {
-			performTask(inhibitory);
+//			if (step == 2)
+    		performTask(inhibitory);
+//			if (step == 3)
+			performTask(winnerGetsAll);
 //		}
     }
 
     //Граничные нейроны не задействованы.
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     private void cycleLearning() {
+//		if (step == 4)
     	performTask(restructorization);
     }
 
@@ -461,7 +462,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		write(out, "id", id);
 		write(out, "width", width);
 		write(out, "height", height);
-		write(out, "speed", speed);
+//		write(out, "speed", speed);
 		write(out, "active", active);
 		write(out, "learning", learning);
 		write(out, "count", count);

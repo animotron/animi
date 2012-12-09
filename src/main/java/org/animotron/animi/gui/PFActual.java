@@ -29,7 +29,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.event.InternalFrameEvent;
@@ -37,6 +36,9 @@ import javax.swing.event.InternalFrameListener;
 
 import org.animotron.animi.*;
 import org.animotron.animi.cortex.*;
+import org.animotron.animi.cortex.old.LinkQ;
+import org.animotron.animi.cortex.old.NeuronComplex;
+import org.animotron.animi.cortex.old.NeuronSimple;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -111,11 +113,16 @@ public class PFActual implements Imageable, InternalFrameListener {
 		y += textY;
         g.drawString("RF", x, y);
         
-		BufferedImage img = drawRF();
-		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
-		g.drawImage(
-				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
-				x+1, y+1, null);
+        BufferedImage img = null;
+        for (int pN = 0; pN < zone.package_size; pN++) {
+			img = drawRF(pN);
+			g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
+			g.drawImage(
+					img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
+					x+1, y+1, null);
+			
+			x += (2+(img.getWidth()*zoom)) + 2;
+        }
 
 		x = 0;
 		y += 2+img.getHeight()*zoom;
@@ -280,11 +287,12 @@ public class PFActual implements Imageable, InternalFrameListener {
         boxSize = 10;//Math.max(maxX - minX, maxY - minY) + 2;
 	}
 
-	private BufferedImage drawRF() {
+	private BufferedImage drawRF(int packageNumber) {
         return Utils.drawRF(
     		new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB), 
     		boxSize, 0, 0, 
-    		point.x, point.y, 
+    		point.x, point.y,
+    		packageNumber,
     		zone.in_zones[0]
 		);
 	}

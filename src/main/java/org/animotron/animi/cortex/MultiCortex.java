@@ -45,6 +45,9 @@ import org.animotron.animi.Params;
 import org.animotron.animi.acts.CNActivation;
 import org.animotron.animi.acts.Inhibitory;
 import org.animotron.animi.acts.Restructorization;
+import org.animotron.animi.acts.WinnerGetsAll;
+import org.animotron.animi.cortex.old.LinkQ;
+import org.animotron.animi.cortex.old.NeuronComplex;
 import org.animotron.animi.gui.Application;
 import org.jocl.CL;
 import org.jocl.Pointer;
@@ -117,7 +120,7 @@ public class MultiCortex {
                 new Mapping(z_in, 50, 1, false) //7x7 (50)
             }
         );
-        z_1st.speed = Integer.MAX_VALUE;
+//        z_1st.speed = Integer.MAX_VALUE;
 //        z_in.nextLayers(new CortexZoneSimple[] {z_1st});
 
 //        z_attention = new AttentionZone("attention", this, 20, 20,
@@ -265,6 +268,7 @@ public class MultiCortex {
     		readFile("kernels/Retina.cl"),
     		readFile("kernels/CNActivation.cl"),
     		readFile("kernels/Inhibitory.cl"),
+    		readFile("kernels/WinnerGetsAll.cl"),
     		readFile("kernels/Restructorization.cl")
 		};
         cl_program program = clCreateProgramWithSource(context, sources.length, sources, null, null);
@@ -283,6 +287,7 @@ public class MultiCortex {
             kernels[i].put(Retina.RetinaTask.class, clCreateKernel(program, "computeRetina", null));
             kernels[i].put(CNActivation.class, clCreateKernel(program, "computeActivation", null));
             kernels[i].put(Inhibitory.class, clCreateKernel(program, "computeInhibitory", null));
+            kernels[i].put(WinnerGetsAll.class, clCreateKernel(program, "computeWinnerGetsAll", null));
             kernels[i].put(Restructorization.class, clCreateKernel(program, "computeRestructorization", null));
         }
         
@@ -501,15 +506,15 @@ public class MultiCortex {
 
 			} else if ("linkI".equals(qName)) {
 				
-				new Link(
-						zone.getCol(
-							Integer.valueOf(attrs.getValue("sX")),
-							Integer.valueOf(attrs.getValue("sY"))
-						),
-						cn, 
-						Double.valueOf(attrs.getValue("w")),
-						LinkType.INHIBITORY
-					);
+//				new Link(
+//						zone.getCol(
+//							Integer.valueOf(attrs.getValue("sX")),
+//							Integer.valueOf(attrs.getValue("sY"))
+//						),
+//						cn, 
+//						Double.valueOf(attrs.getValue("w")),
+//						LinkType.INHIBITORY
+//					);
 				
 				
 			} else if ("cn".equals(qName)) {

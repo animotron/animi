@@ -27,53 +27,42 @@ __kernel void computeInhibitory(
     __global float* output,
     int sizeX,
 
-    __global int* linksSenapse,
+    float linkWeight,
+    __global int*   linksSenapse,
     int linksNumber,
 
-    __global float* rememberCols,
-    __global float* freeCols,
+    __global float* neighborCols,
     __global float* input
 ) {
 
     int x = get_global_id(0);
     int y = get_global_id(1);
     
-    int pos = (y * sizeX) + x;
-    
-//    rememberCols[pos] = 1;
+    int XSize = mul24(linksNumber, 2);
+    int offset = mul24(y, mul24(sizeX, XSize)) + mul24(x, XSize);
 
-//	barrier(CLK_LOCAL_MEM_FENCE);
+    float delta = 0.0f;
 
-//	if (input[pos] > 0)
-//	{
-//	    int XSize = (linksNumber * 2);
-//    	int offset = (y * sizeX * XSize) + (x * XSize);
-//    
-//	    for(int l = 0; l < linksNumber; l++)
-//	    {
-//	    	int xi = linksSenapse[offset + (l * 2)    ];
-//	    	int yi = linksSenapse[offset + (l * 2) + 1];
-//	        
-//        	rememberCols[(yi * sizeX) + xi] = 0;
-//	    }
-//    }
+    for(int l = 0; l < linksNumber; l++)
+    {
+    	int xi = linksSenapse[offset + mul24(l, 2)  ];
+    	int yi = linksSenapse[offset + mul24(l, 2)+1];
+        
+        delta += input[mul24(yi, sizeX) + xi] * linkWeight;
+        
+        //max for neighbor
+        if (input[mul24(yi, sizeX) + xi] > neighborCols[mul24(y, sizeX) + x])
+        {
+        	neighborCols[mul24(y, sizeX) + x] = input[mul24(yi, sizeX) + xi];
+    	}
+    }
+
+    delta = input[mul24(y, sizeX) + x] - delta;
+    if (delta < 0)
+    {
+    	delta = 0;
+	}
+	output[mul24(y, sizeX)+x] = delta;
 	
-//	barrier(CLK_LOCAL_MEM_FENCE);
-	
-//	if (rememberCols[pos] > 0.0f)
-//	{
-//		if (freeCols[pos] > 0)
-//		{
-			rememberCols[pos] = input[pos] + freeCols[pos];
-//			rememberCols[pos] = freeCols[pos];
-//		}
-//		else
-//		{
-//			rememberCols[pos] = 0;
-//		}
-//	};
-	
-	//barrier(CLK_LOCAL_MEM_FENCE);
-	
-	//TODO: winner get all 
+	barrier(CLK_LOCAL_MEM_FENCE);
 }

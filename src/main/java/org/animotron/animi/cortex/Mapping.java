@@ -38,7 +38,7 @@ import org.jocl.cl_mem;
  */
 public class Mapping {
 	public CortexZoneSimple frZone;
-	public CortexZoneSimple toZone;
+	public CortexZoneComplex toZone;
 	
 	@InitParam(name="ns_links")
     public int ns_links;           // Number of synaptic connections for the zone
@@ -62,8 +62,7 @@ public class Mapping {
     /**
      * The OpenCL memory object which store the neuron links for each zone.
      */
-    public cl_mem cl_links;
-    public Pointer pnt_links;
+    public cl_mem cl_linksWeight;
     public cl_mem cl_senapseOfLinks;
 
 	Mapping () {}
@@ -86,15 +85,15 @@ public class Mapping {
 	    
 		System.out.println(toZone);
 
-	    linksWeight = new float[frZone.width() * frZone.height() * ns_links];
+		linksWeightRecordSize = ns_links * toZone.package_size;
+
+	    linksWeight = new float[frZone.width() * frZone.height() * linksWeightRecordSize];
 		Arrays.fill(linksWeight, 0);
 		
-		linksWeightRecordSize = ns_links;
-
 		linksSenapse = new int[frZone.width() * frZone.height() * ns_links * 2];
 		Arrays.fill(linksSenapse, 0);
 		
-		linksSenapseRecordSize = ns_links*2;
+		linksSenapseRecordSize = ns_links * 2;
 
 //        for (int x = 0; x < zone.width(); x++) {
 //			for (int y = 0; y < zone.height(); y++) {
@@ -179,9 +178,13 @@ public class Mapping {
                         nerv_links[lx][ly] = true;
 	
 						// Создаем синаптическую связь
-                        linksWeight [(y*toZone.width*ns_links  )+ (ns_links  *x)+ i     ] = w;
-                        linksSenapse[(y*toZone.width*ns_links*2)+ (ns_links*2*x)+ i*2   ] = lx;
-                        linksSenapse[(y*toZone.width*ns_links*2)+ (ns_links*2*x)+ i*2 +1] = ly;
+                        for (int pN = 0; pN < toZone.package_size; pN++) {
+                        	linksWeight[
+                	            (y * toZone.width * toZone.package_size * ns_links) + 
+                	            (x * toZone.package_size * ns_links) + (pN * ns_links) + i] = w;
+                        }
+                        linksSenapse[(y*toZone.width * linksSenapseRecordSize) + (linksSenapseRecordSize * x) + i*2   ] = lx;
+                        linksSenapse[(y*toZone.width * linksSenapseRecordSize) + (linksSenapseRecordSize * x) + i*2 +1] = ly;
 //						new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY, toZone.speed);
                     } else {
                     	System.out.print("!");
@@ -191,7 +194,7 @@ public class Mapping {
 			}
 		}
         
-		cl_links = 
+		cl_linksWeight = 
 			clCreateBuffer(
 				frZone.mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
 				linksWeight.length * Sizeof.cl_float, Pointer.to(linksWeight), null

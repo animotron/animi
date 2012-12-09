@@ -28,6 +28,7 @@ import org.jocl.Sizeof;
 import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
@@ -200,8 +201,8 @@ public class Retina {
 		
 		steps++;
 		
-		int thisX = (int)(deltaX * steps) + fromX;
-		int thisY = (int)(deltaY * steps) + fromY;
+		int thisX = (int)(deltaX * steps);// + fromX;
+		int thisY = (int)(deltaY * steps);// + fromY;
 		
 		if (speed * steps >= required) {
 			deltaX = 0;
@@ -216,9 +217,16 @@ public class Retina {
 		
 		float XScale = physicalImage.getWidth() / (float)NL.width;
 		float YScale = physicalImage.getHeight() / (float)NL.height;
+		
+		Graphics g = physicalImage.getGraphics();
+		g.drawRect(0, 0, physicalImage.getWidth(), physicalImage.getHeight());
 
         DataBufferInt dataBuffer = (DataBufferInt)physicalImage.getRaster().getDataBuffer();
-        int data[] = dataBuffer.getData();
+        int[] _data_ = dataBuffer.getData();
+        int[] data = new int[_data_.length];
+        System.arraycopy(_data_, 0, data, 0, _data_.length);
+        
+//        System.out.println("image: "+Arrays.toString(data));
 
         RetinaTask retinaTask = 
 			new RetinaTask(
@@ -394,10 +402,5 @@ public class Retina {
 		protected void release() {
 	    	clReleaseMemObject(inputMem);
 		}
-
-		@Override
-		protected void processColors(float[] array) {
-		}
-    	
     }
 }

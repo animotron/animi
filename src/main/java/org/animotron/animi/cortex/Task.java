@@ -22,6 +22,10 @@ package org.animotron.animi.cortex;
 
 import static org.jocl.CL.*;
 
+import java.awt.Color;
+import java.awt.image.DataBufferInt;
+
+import org.animotron.animi.Utils;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_command_queue;
@@ -62,13 +66,6 @@ public abstract class Task {
      * @param kernel The OpenCL kernel for which the arguments will be set
      */
     protected void setupArguments(cl_kernel kernel) {
-//    	final float[] cols = cz.cols;
-//    	
-//    	outputMem = clCreateBuffer(
-//    		cz.mc.context, CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR, 
-//    		cols.length * Sizeof.cl_float, Pointer.to(cols), null
-//		);
-
         clSetKernelArg(kernel,  0, Sizeof.cl_mem, Pointer.to(sz.cl_cols));
         clSetKernelArg(kernel,  1, Sizeof.cl_int, Pointer.to(new int[] {sz.width}));
     }
@@ -82,6 +79,8 @@ public abstract class Task {
      */
     public void execute(cl_kernel kernel, cl_command_queue commandQueue) {
         setupArguments(kernel);
+        
+//        System.out.println(""+this.getClass().getName()+" "+sz.width+":"+sz.height);
         
         cl_event events[] = new cl_event[] { new cl_event() };
         
@@ -98,15 +97,9 @@ public abstract class Task {
         
 //        Utils.printBenchmarkInfo("Event calc", events[0]);
         
-        // Read the contents of the cols memory object
-//        float result[] = new float[size];
-        Pointer target = Pointer.to(sz.cols);
-        clEnqueueReadBuffer(
-            commandQueue, sz.cl_cols, 
-            CL_TRUE, 0, sz.width*sz.height * Sizeof.cl_float, 
-            target, 0, null, events[0]);
+        enqueueReads(commandQueue, events);
 
-        clWaitForEvents(1, events);
+//        clWaitForEvents(1, events);
         
 //        Utils.printBenchmarkInfo("Reading", events[0]);
 
@@ -116,20 +109,29 @@ public abstract class Task {
 //        System.out.println(Arrays.toString(cz.cols));
 
 //        convertIterationsToColors(result);
-        processColors(sz.cols);
+//        processColors(sz.cols);
         
         release();
         
         clReleaseEvent(events[0]);
     }
     
-    protected abstract void release();
+    protected void enqueueReads(cl_command_queue commandQueue, cl_event events[]) {
+        // Read the contents of the cols memory object
+    	Pointer target = Pointer.to(sz.cols);
+    	clEnqueueReadBuffer(
+			commandQueue, sz.cl_cols, 
+			CL_TRUE, 0, sz.width*sz.height * Sizeof.cl_float, 
+			target, 0, null, events[0]);
+
+    	clWaitForEvents(1, events);
+    	
+//    	System.out.println("cols "+Utils.debug(sz.cols));
+	}
+
+	protected abstract void release();
     
-    /**
-     * Process the given RGB colors
-     * 
-     * @param rgbColors The RGB colors
-     */
-    protected abstract void processColors(float array[]);
-    
+//    protected void processColors(float array[]) {
+//    	cz.refreshImage();
+//    }
 }

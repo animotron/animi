@@ -22,9 +22,16 @@ package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
 
+import java.awt.Color;
+import java.awt.image.DataBufferInt;
+import java.util.Arrays;
+
+import org.animotron.animi.Utils;
 import org.animotron.animi.cortex.*;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
+import org.jocl.cl_command_queue;
+import org.jocl.cl_event;
 import org.jocl.cl_kernel;
 
 /**
@@ -44,50 +51,92 @@ public class CNActivation extends Task {
      * 
      * @param kernel The OpenCL kernel for which the arguments will be set
      */
+	@Override
     protected void setupArguments(cl_kernel kernel) {
     	super.setupArguments(kernel);
     	Mapping m = cz.in_zones[0];
-        clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(m.cl_links));
-        clSetKernelArg(kernel,  3, Sizeof.cl_mem, Pointer.to(m.cl_senapseOfLinks));
-        clSetKernelArg(kernel,  4, Sizeof.cl_int, Pointer.to(new int[] {m.ns_links}));
         
-//        final float[] cols = m.frZone.cols;
-//        cl_mem _cols = clCreateBuffer(
-//    		cz.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
-//    		cols.length * Sizeof.cl_float, Pointer.to(cols), null
-//		);
-        
-//        System.out.println("Activation Original");
-//        System.out.println(Arrays.toString(cols));
+//    	System.out.println("before activation");
+////    	System.out.println("frZone.cols "+Arrays.toString(m.frZone.cols));
+//    	System.out.println("sz.cols "+Utils.debug(sz.cols));
+//    	System.out.println("sz.freeCols "+Arrays.toString(sz.freeCols));
+//    	System.out.println("cz.pCols "+Utils.debug(cz.pCols));
 
-        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
-        clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
+    	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_pCols));
+        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.package_size}));
+
+        clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(m.cl_linksWeight));
+        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(m.cl_senapseOfLinks));
+        clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {m.ns_links}));
+        
+        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(sz.cl_cycleCols));
+        clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(sz.cl_freeCols));
+
+        clSetKernelArg(kernel,  9, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
+        clSetKernelArg(kernel,  10, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
     }
     
-    protected void release() {
+	@Override
+    protected void enqueueReads(cl_command_queue commandQueue, cl_event events[]) {
+    	super.enqueueReads(commandQueue, events);
+    	
+        // Read the contents of the cl_cycleCols memory object
+    	Pointer cycleColsTarget = Pointer.to(sz.cycleCols);
+    	clEnqueueReadBuffer(
+			commandQueue, sz.cl_cycleCols, 
+			CL_TRUE, 0, sz.cycleCols.length * Sizeof.cl_float, 
+			cycleColsTarget, 0, null, events[0]);
+
+    	clWaitForEvents(1, events);
+
+    	// Read the contents of the cl_freeCols memory object
+    	Pointer freeColsTarget = Pointer.to(sz.freeCols);
+    	clEnqueueReadBuffer(
+			commandQueue, sz.cl_freeCols, 
+			CL_TRUE, 0, sz.freeCols.length * Sizeof.cl_float, 
+			freeColsTarget, 0, null, events[0]);
+
+    	clWaitForEvents(1, events);
+
+    	Mapping m = cz.in_zones[0];
+
+    	// Read the contents of the cl_pCols memory object
+    	Pointer pColsTarget = Pointer.to(m.toZone.pCols);
+    	clEnqueueReadBuffer(
+			commandQueue, m.toZone.cl_pCols, 
+			CL_TRUE, 0, m.toZone.pCols.length * Sizeof.cl_float, 
+			pColsTarget, 0, null, events[0]);
+
+    	clWaitForEvents(1, events);
+    	
+//    	System.out.println("after activation");
+////    	System.out.println("frZone.cols "+Arrays.toString(m.frZone.cols));
+//    	System.out.println("sz.cols     "+Utils.debug(sz.cols));
+//    	System.out.println("sz.freeCols "+Utils.debug(sz.freeCols));
+////    	System.out.println("sz.freeCols "+Arrays.toString(sz.freeCols));
+//    	System.out.println("cz.pCols    "+Utils.debug(cz.pCols));
     }
 
+//	@Override
+//    protected void processColors(float array[]) {
+//    	DataBufferInt dataBuffer = (DataBufferInt)cz.image.getRaster().getDataBuffer();
+//    	int data[] = dataBuffer.getData();
+//      
+//    	for (int i = 0; i < data.length; i++) {
+//    		final float value = sz.freeCols[i];
+//      	
+//    		if (Float.isNaN(value))
+//    			data[i] = Color.RED.getRGB();
+//    		else {
+//    			int c = (int)(value * 255);
+//    			if (c > 255) c = 255;
+//					
+//				data[i] = Utils.create_rgb(255, c, c, c);
+//    		}
+//    	}
+//    }
 
 	@Override
-	protected void processColors(float[] array) {
-//		System.arraycopy(array, 0, cz.beforeInhibitoryCols, 0, array.length);
-//    	System.out.println("Activation "+array.length);
-//        System.out.println(Arrays.toString(array));
+    protected void release() {
     }
-
-//public class CNActivation implements Act<CortexZoneSimple> {
-//
-//    @Override
-//    public void process(CortexZoneSimple layer, final int x, final int y) {
-//    	NeuronComplex cn = layer.col[x][y];
-//    	
-//    	double activity = 0;
-//    	
-//    	for (LinkQ q : cn.Qs.values()) {
-//    		if (q.delay < q.synapse.activity.length)
-//    			activity += q.synapse.activity[q.delay] * q.q;
-//    	}
-//    	
-//    	layer.shift(x, y, activity);
-//    }
 }
