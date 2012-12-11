@@ -31,6 +31,7 @@ __kernel void computeInhibitory(
     int linksNumber,
 
     __global float* rememberCols,
+    __global float* cycleCols,
     __global float* freeCols,
     __global float* input
 ) {
@@ -40,40 +41,35 @@ __kernel void computeInhibitory(
     
     int pos = (y * sizeX) + x;
     
-//    rememberCols[pos] = 1;
+    rememberCols[pos] = 1;
 
-//	barrier(CLK_LOCAL_MEM_FENCE);
+	barrier(CLK_LOCAL_MEM_FENCE);
 
-//	if (input[pos] > 0)
-//	{
-//	    int XSize = (linksNumber * 2);
-//    	int offset = (y * sizeX * XSize) + (x * XSize);
-//    
-//	    for(int l = 0; l < linksNumber; l++)
-//	    {
-//	    	int xi = linksSenapse[offset + (l * 2)    ];
-//	    	int yi = linksSenapse[offset + (l * 2) + 1];
-//	        
-//        	rememberCols[(yi * sizeX) + xi] = 0;
-//	    }
-//    }
+	if (input[pos] > 0)
+	{
+	    int XSize = (linksNumber * 2);
+    	int offset = (y * sizeX * XSize) + (x * XSize);
+    
+	    for(int l = 0; l < linksNumber; l++)
+	    {
+	    	int xi = linksSenapse[offset + (l * 2)    ];
+	    	int yi = linksSenapse[offset + (l * 2) + 1];
+	        
+        	rememberCols[(yi * sizeX) + xi] = 0;
+	    }
+    }
 	
-//	barrier(CLK_LOCAL_MEM_FENCE);
+	barrier(CLK_LOCAL_MEM_FENCE);
 	
-//	if (rememberCols[pos] > 0.0f)
-//	{
-//		if (freeCols[pos] > 0)
-//		{
-			rememberCols[pos] = input[pos] + freeCols[pos];
-//			rememberCols[pos] = freeCols[pos];
-//		}
-//		else
-//		{
-//			rememberCols[pos] = 0;
-//		}
-//	};
-	
-	//barrier(CLK_LOCAL_MEM_FENCE);
-	
-	//TODO: winner get all 
+	if (rememberCols[pos] > 0.0f)
+	{
+		if (freeCols[pos] > 0)
+		{
+			rememberCols[pos] = input[pos] + freeCols[pos] + cycleCols[pos];
+		}
+		else
+		{
+			rememberCols[pos] = 0;
+		}
+	};
 }

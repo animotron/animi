@@ -295,9 +295,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			int x = 0, y = textY;
 			g.drawString("count: "+count+"; package: "+currentPackage, x, y);
 			
-//			currentPackage++;
-//			if (!(currentPackage < package_size))
-//				currentPackage = 0;
+			currentPackage++;
+			if (!(currentPackage < package_size))
+				currentPackage = 0;
 			
 			return image;
 		}

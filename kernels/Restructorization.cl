@@ -101,6 +101,8 @@ __kernel void computeRestructorization(
 				linksWeight[lOffset + l] = linksWeight[lOffset + l] / norm;
 			}
 		}
+		
+	    package[(y * sizeX * numberOfPackages) + (x * numberOfPackages) + pN] = 0;
 	}
 	
 //	barrier(CLK_LOCAL_MEM_FENCE);

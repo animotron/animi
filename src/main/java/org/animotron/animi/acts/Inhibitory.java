@@ -67,7 +67,8 @@ public class Inhibitory extends Task {
         clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.number_of_inhibitory_links}));
         
         clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
-        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(cz.cl_freeCols));
+        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(cz.cl_cycleCols));
+        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(cz.cl_freeCols));
 
         final float cols[] = new float[cz.cols.length];
         System.arraycopy(cz.cols, 0, cols, 0, cols.length);
@@ -76,7 +77,7 @@ public class Inhibitory extends Task {
     		cols.length * Sizeof.cl_float, Pointer.to(cols), null
 		);
         
-        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(_cols));
+        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(_cols));
     }
 
 	@Override

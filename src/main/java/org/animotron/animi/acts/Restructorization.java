@@ -23,6 +23,7 @@ package org.animotron.animi.acts;
 import static org.jocl.CL.*;
 
 import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.Utils;
 import org.animotron.animi.cortex.*;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -57,7 +58,7 @@ public class Restructorization extends Task {
         clSetKernelArg(kernel,  1, Sizeof.cl_int, Pointer.to(new int[] {cz.width}));
 
     	Mapping m = cz.in_zones[0];
-
+    	
     	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_pCols));
         clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.package_size}));
 
@@ -82,8 +83,9 @@ public class Restructorization extends Task {
     protected void enqueueReads(cl_command_queue commandQueue, cl_event events[]) {
 //    	super.enqueueReads(commandQueue, events);
         	
-        // Read the contents of the cols memory object
         Mapping m = cz.in_zones[0];
+
+        // Read the contents of the cols memory object
         Pointer target = Pointer.to(m.linksWeight);
         clEnqueueReadBuffer(
             commandQueue, m.cl_linksWeight, 
@@ -91,6 +93,15 @@ public class Restructorization extends Task {
             target, 0, null, events[0]);
 
         clWaitForEvents(1, events);
+
+        // Read the contents of the cl_pCols memory object
+    	Pointer pColsTarget = Pointer.to(cz.pCols);
+    	clEnqueueReadBuffer(
+			commandQueue, cz.cl_pCols, 
+			CL_TRUE, 0, cz.pCols.length * Sizeof.cl_float, 
+			pColsTarget, 0, null, events[0]);
+
+    	clWaitForEvents(1, events);
     }
 	
 	@Override

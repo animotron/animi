@@ -55,8 +55,9 @@ __kernel void computeActivation(
 
     float maximum = 0.0f;
     float sum = 0.0f;
-    for (int p = 0; p < numberOfPackages; p++) {
-	
+    for (int p = 0; p < numberOfPackages; p++)
+    {
+    
 		sum = 0.0f;
 	    for(int l = 0; l < linksNumber; l++)
 	    {

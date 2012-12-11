@@ -219,7 +219,7 @@ public class Retina {
 		float YScale = physicalImage.getHeight() / (float)NL.height;
 		
 		Graphics g = physicalImage.getGraphics();
-		g.drawRect(0, 0, physicalImage.getWidth(), physicalImage.getHeight());
+		g.drawRect(10, 10, physicalImage.getWidth() - 20, physicalImage.getHeight() - 20);
 
         DataBufferInt dataBuffer = (DataBufferInt)physicalImage.getRaster().getDataBuffer();
         int[] _data_ = dataBuffer.getData();
