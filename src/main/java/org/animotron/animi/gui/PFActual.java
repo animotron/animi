@@ -87,7 +87,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		
 		calcBoxSize();
 		
-		int num = 3;
+		int num = 7;
 //		Iterator<LinkQ> iter = cn.Qs.values().iterator();
 //		if (!iter.next().synapse.Qs.isEmpty()) {
 //			num = 5;
@@ -188,23 +188,23 @@ public class PFActual implements Imageable, InternalFrameListener {
 //				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 //				x+1, y+1, null);
 		
-		if (num == 5) {
-			//next block
-			y = rY; x = (col+1)*(boxSize*zoom + 2);
-
-			y += textY;
-	        g.drawString("restore uppest levels RF", x, y);
-
-			img = draw2upRF();
-			g.drawRect(x, y, 2+(img.getWidth()), 2+(img.getHeight()));
-			g.drawImage(
-					img,
-					x+1, y+1, null);
-			
-			y += 2+img.getHeight() + textY;
-		} else {
+//		if (num == 5) {
+//			//next block
+//			y = rY; x = (col+1)*(boxSize*zoom + 2);
+//
+//			y += textY;
+//	        g.drawString("restore uppest levels RF", x, y);
+//
+//			img = draw2upRF();
+//			g.drawRect(x, y, 2+(img.getWidth()), 2+(img.getHeight()));
+//			g.drawImage(
+//					img,
+//					x+1, y+1, null);
+//			
+//			y += 2+img.getHeight() + textY;
+//		} else {
 			y += 2+img.getHeight()*zoom;
-		}
+//		}
 
 		x = 0;
 

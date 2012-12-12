@@ -87,7 +87,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public cl_mem cl_pCols;
     public float pCols[];
 	@InitParam(name="package_size")
-	public int package_size = 3;
+	public int package_size = 7;
 
     CortexZoneComplex() {
 		super();
@@ -295,9 +295,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			int x = 0, y = textY;
 			g.drawString("count: "+count+"; package: "+currentPackage, x, y);
 			
-			currentPackage++;
-			if (!(currentPackage < package_size))
-				currentPackage = 0;
+//			currentPackage++;
+//			if (!(currentPackage < package_size))
+//				currentPackage = 0;
 			
 			return image;
 		}

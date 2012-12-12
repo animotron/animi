@@ -220,6 +220,8 @@ public class Retina {
 
 			XScale = (image.getWidth()  - (safeZone*2)) / (float)NL.width;
 			YScale = (image.getHeight() - (safeZone*2)) / (float)NL.height;
+			
+			NL.reset();
 		}
 		
 		int shiftX = shiftMatrix[step*2  ];
@@ -355,14 +357,6 @@ public class Retina {
 	}
 
     public BufferedImage getImage() {
-    	
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                int c = (int)(preprocessed[x][y] * 255);
-                image.setRGB(x, y, Utils.create_rgb(255, c, c, c));
-            }
-        }
         return image;
     }
     

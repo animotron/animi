@@ -241,4 +241,8 @@ public class CortexZoneSimple implements Layer {
 //		write(out, "speed", speed);
 		out.write("/>");
 	}
+
+	public void reset() {
+		Arrays.fill(cycleCols, 0);
+	}
 }
