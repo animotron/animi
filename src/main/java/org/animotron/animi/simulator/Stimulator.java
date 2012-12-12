@@ -32,6 +32,7 @@ import org.animotron.animi.Imageable;
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.MultiCortex;
+import org.animotron.animi.cortex.Retina;
 import org.animotron.animi.gui.Application;
 
 /**
@@ -65,7 +66,12 @@ public class Stimulator implements Runnable, Imageable {
 	}
 
 	public void init() {
-        img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
+		Retina retina = mc.retina;
+		
+        img = new BufferedImage(
+        		retina.width()  + (retina.safeZone * 2), 
+        		retina.height() + (retina.safeZone * 2),
+        		BufferedImage.TYPE_INT_RGB);
 		
 		int b1 = 40;
 		int b2 = 30;
@@ -209,12 +215,8 @@ public class Stimulator implements Runnable, Imageable {
 	}
 	
 	public void prosess() {
-		step();
-
-		final BufferedImage image = getImage();
-
-        if (cortexs != null && MODE >= STEP && image != null) {
-        	cortexs.retina.process(image);
+        if (cortexs != null && MODE >= STEP) {
+        	cortexs.retina.process(this);
         	
     		cortexs.process();
     		
@@ -274,6 +276,12 @@ public class Stimulator implements Runnable, Imageable {
         		i.drawImage(g);
         	}
         }
+	}
+
+	public BufferedImage getNextImage() {
+		step();
+		
+		return getImage();
 	}
 
 	public BufferedImage getImage() {

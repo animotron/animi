@@ -80,7 +80,7 @@ public abstract class Task {
     public void execute(cl_kernel kernel, cl_command_queue commandQueue) {
         setupArguments(kernel);
         
-//        System.out.println(""+this.getClass().getName()+" "+sz.width+":"+sz.height);
+        System.out.println(""+this.getClass().getName()+" "+sz.width+":"+sz.height);
         
         cl_event events[] = new cl_event[] { new cl_event() };
         
@@ -121,7 +121,7 @@ public abstract class Task {
     	Pointer target = Pointer.to(sz.cols);
     	clEnqueueReadBuffer(
 			commandQueue, sz.cl_cols, 
-			CL_TRUE, 0, sz.width*sz.height * Sizeof.cl_float, 
+			CL_TRUE, 0, sz.cols.length * Sizeof.cl_float, 
 			target, 0, null, events[0]);
 
     	clWaitForEvents(1, events);

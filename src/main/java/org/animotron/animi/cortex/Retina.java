@@ -23,12 +23,12 @@ package org.animotron.animi.cortex;
 import static org.jocl.CL.*;
 
 import org.animotron.animi.Utils;
+import org.animotron.animi.simulator.Stimulator;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
 
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
@@ -151,77 +151,84 @@ public class Retina {
     public static int Level_Bright = 100;
     public static int Lelel_min = 10;// * N_Col;
 
-    public int fromX = 0;
-    public int fromY = 0;
+//    public int fromX = 0;
+//    public int fromY = 0;
     
-    double delta = 0;
-    double deltaX = 0;
-    double deltaY = 0;
+//    double delta = 0;
+//    double deltaX = 0;
+//    double deltaY = 0;
 
-    double speed = 2;
+//    double speed = 2;
     
-    int steps = 0;
-    int required = 0;
-    
-    boolean flag = true;
+    int step = 0;
+//    int required = 0;
+//    
+//    boolean flag = true;
+//
+//    public void shift(int x, int y) {
+//    	int shiftX = fromX + (width / 2) - x;
+//    	int shiftY = fromY + (height / 2) - y;
+//    	
+//    	required = (int)Math.sqrt(shiftX*shiftX + shiftY*shiftY);
+//    	
+//    	delta = required / speed;
+//    	
+//    	deltaX = (shiftX - fromX) / delta;
+//    	deltaY = (shiftY - fromY) / delta;
+//    	
+//    	required = Math.abs(required);
+//    	
+//    	step = 0;
+//    	flag = false;
+//	}
+//    
+//    public boolean needShift() {
+//    	return flag;
+//    }
+//
+//	public void resetShift() {
+//		deltaX = 0;
+//		deltaY = 0;
+//		
+//		fromX = 0;
+//		fromY = 0;
+//
+//		flag = true;
+//		step = 0;
+//	}
+	
+	BufferedImage image = null;
+	float XScale = 0;
+	float YScale = 0;
+	
+	int[] shiftMatrix = new int[] {
+		0, 0,
+		1, 1,
+		1,-1,
+		2, 0,
+		3, 1,
+		3,-1,
+		4, 0,
+	};
+	
+	public final int safeZone = 20;
 
-    public void shift(int x, int y) {
-    	int shiftX = fromX + (width / 2) - x;
-    	int shiftY = fromY + (height / 2) - y;
-    	
-    	required = (int)Math.sqrt(shiftX*shiftX + shiftY*shiftY);
-    	
-    	delta = required / speed;
-    	
-    	deltaX = (shiftX - fromX) / delta;
-    	deltaY = (shiftY - fromY) / delta;
-    	
-    	required = Math.abs(required);
-    	
-    	steps = 0;
-    	flag = false;
-	}
-    
-    public boolean needShift() {
-    	return flag;
-    }
-
-	public void resetShift() {
-		deltaX = 0;
-		deltaY = 0;
+	public void process(Stimulator stimulator) {
 		
-		fromX = 0;
-		fromY = 0;
+		if (step == 0) {
+			image = stimulator.getNextImage();
 
-		flag = true;
-		steps = 0;
-	}
-
-	public void process(BufferedImage physicalImage) {
-		
-		steps++;
-		
-		int thisX = (int)(deltaX * steps);// + fromX;
-		int thisY = (int)(deltaY * steps);// + fromY;
-		
-		if (speed * steps >= required) {
-			deltaX = 0;
-			deltaY = 0;
-			
-			fromX = thisX;
-			fromY = thisY;
-
-			flag = true;
-			steps = 0;
+			XScale = (image.getWidth()  - (safeZone*2)) / (float)NL.width;
+			YScale = (image.getHeight() - (safeZone*2)) / (float)NL.height;
 		}
 		
-		float XScale = physicalImage.getWidth() / (float)NL.width;
-		float YScale = physicalImage.getHeight() / (float)NL.height;
+		int shiftX = shiftMatrix[step*2  ];
+		int shiftY = shiftMatrix[step*2+1];
 		
-		Graphics g = physicalImage.getGraphics();
-		g.drawRect(10, 10, physicalImage.getWidth() - 20, physicalImage.getHeight() - 20);
+//		Graphics g = image.getGraphics();
+//		g.drawRect(10, 10, image.getWidth() - 20, image.getHeight() - 20);
 
-        DataBufferInt dataBuffer = (DataBufferInt)physicalImage.getRaster().getDataBuffer();
+        DataBufferInt dataBuffer = (DataBufferInt)image.getRaster().getDataBuffer();
         int[] _data_ = dataBuffer.getData();
         int[] data = new int[_data_.length];
         System.arraycopy(_data_, 0, data, 0, _data_.length);
@@ -231,10 +238,10 @@ public class Retina {
         RetinaTask retinaTask = 
 			new RetinaTask(
     			(CortexZoneSimple)NL,
-    			thisX, thisY,
+    			shiftX, shiftY,
     			XScale, YScale,
     			data,
-    			physicalImage.getWidth(), physicalImage.getHeight()
+    			image.getWidth(), image.getHeight()
 			);
 
     	try {
@@ -332,6 +339,11 @@ public class Retina {
 //        }
 //        System.out.println("");
         NL.refreshImage();
+        
+		step++;
+		if (step * 2 >= shiftMatrix.length) {
+			step = 0;
+		}
     }
     
 	public int width() {
@@ -384,18 +396,19 @@ public class Retina {
 	    protected void setupArguments(cl_kernel kernel) {
 	    	super.setupArguments(kernel);
 
-	        clSetKernelArg(kernel,  2, Sizeof.cl_int, Pointer.to(new int[] {offsetX}));
-	        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {offsetY}));
-	        clSetKernelArg(kernel,  4, Sizeof.cl_float, Pointer.to(new float[] {XScale}));
-	        clSetKernelArg(kernel,  5, Sizeof.cl_float, Pointer.to(new float[] {YScale}));
+	        clSetKernelArg(kernel,  2, Sizeof.cl_int, Pointer.to(new int[] {safeZone}));
+	        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {offsetX}));
+	        clSetKernelArg(kernel,  4, Sizeof.cl_int, Pointer.to(new int[] {offsetY}));
+	        clSetKernelArg(kernel,  5, Sizeof.cl_float, Pointer.to(new float[] {XScale}));
+	        clSetKernelArg(kernel,  6, Sizeof.cl_float, Pointer.to(new float[] {YScale}));
 
 	        inputMem = clCreateBuffer(
 	    		sz.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
 	    		input.length * Sizeof.cl_int, Pointer.to(input), null
 			);
-	        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(inputMem));
-	        clSetKernelArg(kernel,  7, Sizeof.cl_int, Pointer.to(new int[] {inputSizeX}));
-	        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {inputSizeY}));
+	        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(inputMem));
+	        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {inputSizeX}));
+	        clSetKernelArg(kernel,  9, Sizeof.cl_int, Pointer.to(new int[] {inputSizeY}));
 	    }
 
 	    @Override

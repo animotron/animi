@@ -109,10 +109,8 @@ public class StaticStimulator implements Runnable, Imageable {
 	}
 	
 	public void prosess() {
-		final BufferedImage image = getImage();
-
-        if (cortexs != null && MODE >= STEP && image != null) {
-        	cortexs.retina.process(image);
+        if (cortexs != null && MODE >= STEP) {
+//        	cortexs.retina.process(this);
         	
     		cortexs.process();
         }

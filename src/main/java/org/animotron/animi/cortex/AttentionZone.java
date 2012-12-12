@@ -35,7 +35,7 @@ public class AttentionZone extends CortexZoneComplex {
 	Random rnd = new Random();
 	
     public void process() {
-    	if (!isActive() || !mc.retina.needShift())
+    	if (!isActive())// || !mc.retina.needShift())
     		return;
     	
     	cycleActivation();
@@ -69,7 +69,7 @@ public class AttentionZone extends CortexZoneComplex {
         X = (int)(X * in_zones[0].frZone.width / (double) width());
 		Y = (int)(Y * in_zones[0].frZone.height / (double) height());
 		
-		mc.retina.shift(X + nextRandom(), Y + nextRandom());
+//		mc.retina.shift(X + nextRandom(), Y + nextRandom());
     }
     
     private int nextRandom() {

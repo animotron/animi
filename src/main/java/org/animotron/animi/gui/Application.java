@@ -270,7 +270,7 @@ public class Application extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (stimulator != null) {
 					stimulator.reset();
-					cortexs.retina.resetShift();
+//					cortexs.retina.resetShift();
 				}
 			}
         });
