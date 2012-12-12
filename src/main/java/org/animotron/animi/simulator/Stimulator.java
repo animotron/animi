@@ -135,8 +135,27 @@ public class Stimulator implements Runnable, Imageable {
         	            {b1, b1}
         	    }
         	),
+        	new OvalAnime(32,
+        	    new int[][] {
+        	            {b1, b1},
+        	            {mc.retina.width() - b1, mc.retina.height() - b1},
+        	            {mc.retina.width() - b1, b1},
+        	            {b1, mc.retina.height() - b1},
+        	            {b1, b1}
+        	    }
+        	),
         	new RectAnime(
         	    30, 0.05,
+        	    new int[][] {
+        	            {b2, b2},
+        	            {b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, b2},
+        	            {b2, b2}
+        	    }
+        	),
+        	new RectAnime(
+        	    32, 0.05,
         	    new int[][] {
         	            {b2, b2},
         	            {b2, mc.retina.height() - b2},
@@ -156,7 +175,27 @@ public class Stimulator implements Runnable, Imageable {
         	    }
         	),
         	new RectAnime(
+        	    42, 0.05,
+        	    new int[][] {
+        	            {b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, b2},
+        	            {b2, b2},
+        	            {b2, mc.retina.height() - b2}
+        	    }
+        	),
+        	new RectAnime(
         	    30, 0,
+        	    new int[][] {
+        	            {mc.retina.width() - b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, b2},
+        	            {b2, b2},
+        	            {b2, mc.retina.height() - b2},
+        	            {mc.retina.width() - b2, mc.retina.height() - b2}
+        	    }
+        	),
+        	new RectAnime(
+        	    32, 0,
         	    new int[][] {
         	            {mc.retina.width() - b2, mc.retina.height() - b2},
         	            {mc.retina.width() - b2, b2},
