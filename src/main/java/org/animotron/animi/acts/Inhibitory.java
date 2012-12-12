@@ -22,12 +22,7 @@ package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
 
-import java.awt.Color;
-import java.awt.image.DataBufferInt;
-import java.util.Arrays;
-
 import org.animotron.animi.RuntimeParam;
-import org.animotron.animi.Utils;
 import org.animotron.animi.cortex.*;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -66,9 +61,12 @@ public class Inhibitory extends Task {
         clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_senapseOfinhibitoryLinks));
         clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.number_of_inhibitory_links}));
         
-        clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
-        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(cz.cl_cycleCols));
-        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(cz.cl_freeCols));
+    	clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(cz.cl_pCols));
+        clSetKernelArg(kernel,  5, Sizeof.cl_int, Pointer.to(new int[] {cz.package_size}));
+
+        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
+        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(cz.cl_cycleCols));
+        clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(cz.cl_freeCols));
 
         final float cols[] = new float[cz.cols.length];
         System.arraycopy(cz.cols, 0, cols, 0, cols.length);
@@ -77,7 +75,7 @@ public class Inhibitory extends Task {
     		cols.length * Sizeof.cl_float, Pointer.to(cols), null
 		);
         
-        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(_cols));
+        clSetKernelArg(kernel,  9, Sizeof.cl_mem, Pointer.to(_cols));
     }
 
 	@Override

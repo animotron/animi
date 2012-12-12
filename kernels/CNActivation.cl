@@ -67,24 +67,30 @@ __kernel void computeActivation(
 	        sum += input[(yi * inputSizeX) + xi] * linksWeight[linksOffset + (p * linksNumber) + l];
 	    }
 	    
-	    if (sum < 0.5f) 
-	    {
-	    	sum = 0.0f;
-    	}
-    	else if (sum > 1.0f)
+    	if (sum > 1.0f)
     	{
     		sum = 1.0f;
 		}
 	    
 	    if (package[(y * outputSizeX * numberOfPackages) + (x * numberOfPackages) + p] < 0.0f)
     	{
-    		if (freeCols[pos] < sum)
+    		//free
+    		if (sum >= 0.1f) //10% of RF
     		{
-    			freeCols[pos] = sum;
+	    		if (freeCols[pos] < sum)
+	    		{
+	    			freeCols[pos] = sum;
+				}
 			}
     	}
     	else
     	{
+    		//busy
+		    if (sum < 0.5f) 
+		    {
+	    		sum = 0.0f;
+    		}
+
 		    package[(y * outputSizeX * numberOfPackages) + (x * numberOfPackages) + p] = sum;
 		    maximum = max(sum, maximum);
     	}

@@ -135,10 +135,10 @@ public class Utils {
 //				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, c, c, c));
 
 				if (m.linksWeight[lOffset + l] > 0.0f) {
-					B += 255 * m.linksWeight[lOffset + l];
+					B += 255 * m.linksWeight[lOffset + l] * 5;
 					if (B > 255) B = 255;
 				} else {
-					G += 255 * m.linksWeight[lOffset + l];
+					G += 255 * m.linksWeight[lOffset + l] * 5;
 					if (G > 255) G = 255;
 				};
 				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, R, G, B));
@@ -207,7 +207,7 @@ public class Utils {
 
 
 				int c = calcGrey(image, pX, pY);
-				c += 255 * cz.cols[pos] * m.linksWeight[offsetWeight + (packageNumber * m.ns_links) + l] / 5;
+				c += 255 * cz.cols[pos] * m.linksWeight[offsetWeight + (packageNumber * m.ns_links) + l];
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, create_rgb(255, c, c, c));
         	}

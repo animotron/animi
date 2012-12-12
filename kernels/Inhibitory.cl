@@ -30,6 +30,9 @@ __kernel void computeInhibitory(
     __global int* linksSenapse,
     int linksNumber,
 
+    __global float* package,
+    int numberOfPackages,
+
     __global float* rememberCols,
     __global float* cycleCols,
     __global float* freeCols,
@@ -45,6 +48,7 @@ __kernel void computeInhibitory(
 
 	barrier(CLK_LOCAL_MEM_FENCE);
 
+	//set 0 in inhibitory zone of the active column
 	if (input[pos] > 0)
 	{
 	    int XSize = (linksNumber * 2);
@@ -55,21 +59,49 @@ __kernel void computeInhibitory(
 	    	int xi = linksSenapse[offset + (l * 2)    ];
 	    	int yi = linksSenapse[offset + (l * 2) + 1];
 	        
-        	rememberCols[(yi * sizeX) + xi] = 0;
+        	rememberCols[(yi * sizeX) + xi] = 0.0f;
 	    }
+    	rememberCols[(y * sizeX) + x] = 0.0f;
     }
 	
 	barrier(CLK_LOCAL_MEM_FENCE);
 	
 	if (rememberCols[pos] > 0.0f)
 	{
-		if (freeCols[pos] > 0)
+	    //free package number
+    	int pN = -1; 
+    	for (int p = 0; p < numberOfPackages; p++)
+    	{
+    		if (package[(y * sizeX * numberOfPackages) + (x * numberOfPackages) + p] < 0.0f)
+    		{
+    			pN = p;
+    			break;
+    		}
+    	}
+    	
+		if (pN == 0.0f)
 		{
-			rememberCols[pos] = input[pos] + freeCols[pos] + cycleCols[pos];
+	    	//empty
+			if (freeCols[pos] > 0.0f) 
+			{
+				rememberCols[pos] = freeCols[pos];
+			}
+			else
+			{
+				rememberCols[pos] = 0;
+			}
 		}
 		else
 		{
-			rememberCols[pos] = 0;
+			//busy
+			if (cycleCols[pos] > 0.0f && freeCols[pos] > 0.0f)
+			{
+				rememberCols[pos] = 1.0f + freeCols[pos];
+			}
+			else
+			{
+				rememberCols[pos] = 0;
+			}
 		}
 	};
 }

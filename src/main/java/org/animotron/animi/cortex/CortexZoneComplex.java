@@ -152,6 +152,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						nerv_links[n1][n2] = false;
 					}
 				}
+				
+				nerv_links[x][y] = true;
 
 				// преобразование Бокса — Мюллера для получения
 				// нормально распределенной величины

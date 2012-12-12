@@ -111,9 +111,9 @@ public class Mapping {
 
         boolean[][] nerv_links = new boolean[frZone.width()][frZone.height()];
         
-		float sumQ2 = (1 / (float)ns_links * 1 / (float)ns_links) * ns_links;
-		float norm = (float) Math.sqrt(sumQ2);
-		float w = (1 / (float)ns_links) / norm;
+//		float sumQ2 = (1 / (float)ns_links * 1 / (float)ns_links) * ns_links;
+//		float norm = (float) Math.sqrt(sumQ2);
+		float w = (1 / (float)ns_links);// / norm;
 
         for (int x = 0; x < toZone.width(); x++) {
 			for (int y = 0; y < toZone.height(); y++) {
