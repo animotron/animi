@@ -69,7 +69,7 @@ __kernel void computeRestructorization(
 		int lOffset = (y * sizeX * offsetPackagers) + (x * offsetPackagers) + (pN * linksNumber);
 		
     	int count = 0;
-    	float sumQ2 = 0;
+    	float sumW = 0;
     	float w = 0;
 	    
 	    for(int l = 0; l < linksNumber; l++)
@@ -79,7 +79,7 @@ __kernel void computeRestructorization(
 	    	
 	    	w = input[ ( yi * inputSizeX ) + xi ];
 	    	
-			sumQ2 += w * w;
+			sumW += w;
 			
 			linksWeight[lOffset + l] = w;
 			
@@ -89,16 +89,15 @@ __kernel void computeRestructorization(
 			}
 		}
 	
-		float norm = sqrt(sumQ2);
 	    for(int l = 0; l < linksNumber; l++)
 	    {
 	    	if (linksWeight[lOffset + l] == 0.0f)
 	    	{
-	    		linksWeight[lOffset + l] = -1 / (float)count * 0.5;
+	    		linksWeight[lOffset + l] = -1 / (float)(count * 0.5);
     		}
     		else
     		{
-				linksWeight[lOffset + l] = linksWeight[lOffset + l] / norm;
+				linksWeight[lOffset + l] = linksWeight[lOffset + l] / sumW;
 			}
 		}
 		
