@@ -80,7 +80,7 @@ public abstract class Task {
     public void execute(cl_kernel kernel, cl_command_queue commandQueue) {
         setupArguments(kernel);
         
-        System.out.println(""+this.getClass().getName()+" "+sz.width+":"+sz.height);
+//        System.out.println(""+this.getClass().getName()+" "+sz.width+":"+sz.height);
         
         cl_event events[] = new cl_event[] { new cl_event() };
         
