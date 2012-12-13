@@ -32,18 +32,18 @@ import org.jocl.cl_event;
 import org.jocl.cl_kernel;
 
 /**
- * Активация простых нейронов при узнавании запомненной картины
+ * 
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class Restructorization extends Task {
+public class Restructurization extends Task {
 	
 	@RuntimeParam(name = "count")
 	public int count = 10000;
 	
-	public Restructorization(CortexZoneComplex cz) {
+	public Restructurization(CortexZoneComplex cz) {
 		super(cz);
 	}
 

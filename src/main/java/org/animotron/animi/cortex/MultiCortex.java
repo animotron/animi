@@ -42,10 +42,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javolution.util.FastMap;
 
 import org.animotron.animi.Params;
-import org.animotron.animi.acts.CNActivation;
-import org.animotron.animi.acts.Inhibitory;
-import org.animotron.animi.acts.Restructorization;
-import org.animotron.animi.acts.WinnerGetsAll;
+import org.animotron.animi.acts.*;
 import org.animotron.animi.cortex.old.LinkQ;
 import org.animotron.animi.cortex.old.NeuronComplex;
 import org.animotron.animi.gui.Application;
@@ -269,7 +266,8 @@ public class MultiCortex {
     		readFile("kernels/CNActivation.cl"),
     		readFile("kernels/Inhibitory.cl"),
     		readFile("kernels/WinnerGetsAll.cl"),
-    		readFile("kernels/Restructorization.cl")
+    		readFile("kernels/Memorization.cl"),
+    		readFile("kernels/Restructurization.cl")
 		};
         cl_program program = clCreateProgramWithSource(context, sources.length, sources, null, null);
         clBuildProgram(program, 0, null, "-cl-mad-enable", null, null);
@@ -288,7 +286,8 @@ public class MultiCortex {
             kernels[i].put(CNActivation.class, clCreateKernel(program, "computeActivation", null));
             kernels[i].put(Inhibitory.class, clCreateKernel(program, "computeInhibitory", null));
             kernels[i].put(WinnerGetsAll.class, clCreateKernel(program, "computeWinnerGetsAll", null));
-            kernels[i].put(Restructorization.class, clCreateKernel(program, "computeRestructorization", null));
+            kernels[i].put(Memorization.class, clCreateKernel(program, "computeMemorization", null));
+            kernels[i].put(Restructurization.class, clCreateKernel(program, "computeRestructurization", null));
         }
         
         // Start the task processors

@@ -55,8 +55,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
     Inhibitory inhibitory = new Inhibitory(this);
     WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
 
-    @Params
-	Restructorization restructorization = new Restructorization(this);
+//    @Params
+    Restructurization restructorization = new Restructurization(this);
+
+//    @Params
+	Memorization memorization = new Memorization(this);
 
 	@InitParam(name="disper")
 	public double disper = 1.5;
@@ -455,6 +458,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     private void cycleLearning() {
 //		if (step == 4)
+    	performTask(memorization);
     	performTask(restructorization);
     }
 

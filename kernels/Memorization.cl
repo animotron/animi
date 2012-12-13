@@ -23,7 +23,7 @@
   * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
   */
 
-__kernel void computeRestructorization(
+__kernel void computeMemorization(
     __global float* cols,
     int sizeX,
 
