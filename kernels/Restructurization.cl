@@ -103,7 +103,7 @@ __kernel void computeRestructurization(
 		    		}
 		    		else
 		    		{
-			    		linksWeight[lOffset + l] = linksWeight[lOffset + l] / sumWn;
+			    		linksWeight[lOffset + l] = linksWeight[lOffset + l] / -sumWn;
 					}
 				}
     		}
