@@ -20,15 +20,22 @@
  */
 package org.animotron.animi;
 
-import static org.jocl.CL.*;
-
-import java.awt.image.BufferedImage;
-
+import javolution.xml.stream.XMLInputFactory;
+import javolution.xml.stream.XMLStreamException;
+import javolution.xml.stream.XMLStreamReader;
 import org.animotron.animi.cortex.CortexZoneComplex;
 import org.animotron.animi.cortex.Mapping;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_event;
+
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+
+import static javolution.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.jocl.CL.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -253,4 +260,31 @@ public class Utils {
 		}
 		return sb.append(array[count]).toString();
 	}
+
+    private static final XMLInputFactory FACTORY = XMLInputFactory.newInstance();
+
+    public static void grabImages(URL source, File target) throws IOException, XMLStreamException {
+        URLConnection connection = source.openConnection();
+        connection.connect();
+        XMLStreamReader reader = FACTORY.createXMLStreamReader(connection.getInputStream());
+        while (reader.hasNext()) {
+            if (reader.next() == START_ELEMENT) {
+                if (reader.getLocalName().equals("img")) {
+                    String src = reader.getAttributeValue(null, "src").toString();
+                    URL image = new URL(source, src);
+                    InputStream is = image.openConnection().getInputStream();
+                    OutputStream os = new FileOutputStream(new File(target, image.getFile()));
+                    byte[] buff = new byte[1024 * 4];
+                    int len;
+                    while ((len = is.read(buff)) > 0) {
+                        os.write(buff, 0, len);
+                    }
+                    os.close();
+                    is.close();
+                }
+            }
+        }
+        reader.close();
+    }
+
 }
