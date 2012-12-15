@@ -413,7 +413,8 @@ public class Application extends JFrame {
     }
     
     private void createViews() {
-    	stimulator = new StimulatorImage(this, cortexs);
+    	stimulator = new StimulatorWebcam(this, cortexs);
+//    	stimulator = new StimulatorImage(this, cortexs);
 //    	stimulator = new StimulatorStatic(this, cortexs);
     	
     	clearFrames();

@@ -28,7 +28,6 @@
 
     <dependencies>
 		<!-- web camera -->
-		<!-- 
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
 			<artifactId>webcam-capture</artifactId>
@@ -39,7 +38,6 @@
     		<artifactId>webcam-capture-driver-openimaj</artifactId>
     		<version>0.3.4</version>
    		</dependency>
-   		-->
    		
 		<!-- 
         <dependency>
