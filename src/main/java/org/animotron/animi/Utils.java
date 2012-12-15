@@ -269,17 +269,18 @@ public class Utils {
 
 	private static final XMLInputFactory FACTORY = XMLInputFactory.newInstance();
 
-    public static void grabImages(URL source, File target) {
+    public static void grabImages(String source, File target) {
     	XMLStreamReader reader = null;
     	InputStream is = null;
     	OutputStream os = null;
     	try {
-	        reader = FACTORY.createXMLStreamReader(source.openStream());
+    		URL url = new URL(source);
+	        reader = FACTORY.createXMLStreamReader(url.openStream());
 	        while (reader.hasNext()) {
 	            if (reader.next() == START_ELEMENT) {
 	                if (reader.getLocalName().equals("img")) {
 	                    String src = reader.getAttributeValue(null, "src").toString();
-	                    URL image = new URL(source, src);
+	                    URL image = new URL(url, src);
 	                    is = image.openConnection().getInputStream();
 	                    os = new FileOutputStream(new File(target, fileName(image)));
 	                    byte[] buff = new byte[1024 * 4];
@@ -320,18 +321,13 @@ public class Utils {
     }
     
     public static void main(String[] args) {
-    	try {
-    		File folder = new File("images");
-    		folder.mkdirs();
-    		
-			Utils.grabImages(
-				new URL(
-					"http://www.freefoto.com/gallery/homepage?count=2"
-				),
-				folder
-			);
-		} catch (MalformedURLException e) {
-		}
+		File folder = new File("images");
+		folder.mkdirs();
+		
+		Utils.grabImages(
+			"http://www.freefoto.com/gallery/homepage?count=2",
+			folder
+		);
 	}
 
 }

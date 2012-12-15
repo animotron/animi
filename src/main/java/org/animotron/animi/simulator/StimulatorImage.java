@@ -21,52 +21,71 @@
 package org.animotron.animi.simulator;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
-import org.animotron.animi.Params;
+import javax.imageio.ImageIO;
+
+import org.animotron.animi.Utils;
 import org.animotron.animi.cortex.MultiCortex;
 import org.animotron.animi.gui.Application;
-import org.animotron.animi.simulator.figures.Figure;
-import org.animotron.animi.simulator.figures.OvalAnime;
-import org.animotron.animi.simulator.figures.RectAnime;
-import org.animotron.animi.simulator.figures.Triangle;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public class StimulatorStatic extends AbstractStimulator {
+public class StimulatorImage extends AbstractStimulator {
 	
-    @Params
-    public Figure[] figures;
-    
-    public StimulatorStatic(Application application, MultiCortex cortexs) {
+	File folder = null;
+	File[] imagers;
+	int current = 0;
+
+    public StimulatorImage(Application application, MultiCortex cortexs) {
     	super(application, cortexs);
 	}
 
 	public void init() {
-        figures = new Figure[] {
-        	new OvalAnime(15, mc.retina.width(), mc.retina.height()),
-        	new RectAnime(15, mc.retina.width(), mc.retina.height()),
-        	new Triangle(15, mc.retina.width(), mc.retina.height())
-        };
+		if (folder == null) {
+			folder = new File("images");
+		}
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		
+		imagers = folder.listFiles();
+		if (imagers.length == 0) {
+			Utils.grabImages("http://www.freefoto.com/gallery/homepage?count=10", folder);
+			imagers = folder.listFiles();
+		}
+		
+		//prepare first image
+		getNextImage();
 	}
     
-	public void reset() {
-		for (Figure figure : figures) {
-			figure.reset();
-        };
-	}
-
 	@Override
 	public BufferedImage getNextImage() {
+		Image loaded;
+		try {
+			loaded = loadImage(imagers[current]);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return img;
+		} finally {
+			current++;
+		}
+
         img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();
+        
+        g.drawImage(loaded, 0, 0, img.getWidth(), img.getHeight(), null);
 
-        for (Figure i : figures) {
-    		i.drawImage(g);
-        }
         return img;
+	}
+
+	private Image loadImage(File file) throws IOException {
+		return ImageIO.read(file);
 	}
 }
