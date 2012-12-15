@@ -28,7 +28,6 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
-import org.animotron.animi.Imageable;
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.MultiCortex;
@@ -38,7 +37,7 @@ import org.animotron.animi.cortex.MultiCortex;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public class StaticStimulator implements Runnable, Imageable {
+public class StaticStimulator implements Stimulator {
 	
 	@RuntimeParam(name = "frequency")
 	public int frequency = 0; // Hz
@@ -46,6 +45,8 @@ public class StaticStimulator implements Runnable, Imageable {
     @Params
     public Figure[] figures;
     
+    private BufferedImage img = null;
+
     private long fps;
     private long frame = 0;
     private long t0 = System.currentTimeMillis();
@@ -146,15 +147,18 @@ public class StaticStimulator implements Runnable, Imageable {
 		return this.getClass().getSimpleName();
 	}
 
-	public BufferedImage getImage() {
-
-        BufferedImage img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
+	@Override
+	public BufferedImage getNextImage() {
+        img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();
 
         for (Figure i : figures) {
     		i.drawImage(g);
         }
+        return img;
+	}
 
+	public BufferedImage getImage() {
         return img;
 	}
 	
@@ -163,10 +167,8 @@ public class StaticStimulator implements Runnable, Imageable {
         BufferedImage img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
 
         Graphics g = img.getGraphics();
+        g.drawImage(getImage(), 0, 0, img.getWidth(), img.getHeight(), null);
 
-        for (Figure i : figures) {
-    		i.drawImage(g);
-        }
         drawUImage(g);
         
     	return img;
@@ -199,7 +201,5 @@ public class StaticStimulator implements Runnable, Imageable {
 
 	@Override
 	public void refreshImage() {
-		// TODO Auto-generated method stub
-		
 	}
 }
