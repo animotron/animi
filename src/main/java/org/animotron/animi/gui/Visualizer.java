@@ -53,7 +53,7 @@ public class Visualizer extends JInternalFrame {
 	
 	private BufferedImage image = null;
 	
-	private int zoom = 2;
+	private int zoom = 1;
 	
 	public Visualizer(Imageable imageable) {
 	    super(imageable.getImageName(),
@@ -67,7 +67,7 @@ public class Visualizer extends JInternalFrame {
 	    if (imageable instanceof InternalFrameListener)
 	    	addInternalFrameListener((InternalFrameListener) imageable);
 
-		BufferedImage img = imageable.getImage();
+	    BufferedImage img = imageable.getImage();
 
 		Dimension size = new Dimension(img.getWidth()*zoom+20, img.getHeight()*zoom+40);
 	    

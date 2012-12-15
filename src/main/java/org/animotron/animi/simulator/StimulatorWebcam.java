@@ -47,7 +47,7 @@ public class StimulatorWebcam extends AbstractStimulator implements WebcamListen
             System.exit(1);
         }
 //        webcam.setViewSize(new Dimension(Retina.WIDTH, Retina.HEIGHT));
-        webcam.setViewSize(new Dimension(320, 240));
+        webcam.setViewSize(new Dimension(640, 480));
         webcam.addWebcamListener(this);
 
         if (!webcam.isOpen()) {
@@ -68,12 +68,8 @@ public class StimulatorWebcam extends AbstractStimulator implements WebcamListen
 	public void webcamClosed(WebcamEvent we) {
 	}
 
-	public void step() {
-        img = webcam.getImage();
-	}
-	
 	public BufferedImage getNextImage() {
-		step();
+        img = webcam.getImage();
 		
 		return img;
 	}
