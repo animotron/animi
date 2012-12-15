@@ -31,6 +31,7 @@ import org.jocl.cl_event;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -261,30 +262,76 @@ public class Utils {
 		return sb.append(array[count]).toString();
 	}
 
-    private static final XMLInputFactory FACTORY = XMLInputFactory.newInstance();
-
-    public static void grabImages(URL source, File target) throws IOException, XMLStreamException {
-        URLConnection connection = source.openConnection();
-        connection.connect();
-        XMLStreamReader reader = FACTORY.createXMLStreamReader(connection.getInputStream());
-        while (reader.hasNext()) {
-            if (reader.next() == START_ELEMENT) {
-                if (reader.getLocalName().equals("img")) {
-                    String src = reader.getAttributeValue(null, "src").toString();
-                    URL image = new URL(source, src);
-                    InputStream is = image.openConnection().getInputStream();
-                    OutputStream os = new FileOutputStream(new File(target, image.getFile()));
-                    byte[] buff = new byte[1024 * 4];
-                    int len;
-                    while ((len = is.read(buff)) > 0) {
-                        os.write(buff, 0, len);
-                    }
-                    os.close();
-                    is.close();
-                }
-            }
-        }
-        reader.close();
+    public static String fileName(URL url) {
+    	final String path = url.getPath();
+    	return path.substring(path.lastIndexOf('/'), path.length()-1);
     }
+
+	private static final XMLInputFactory FACTORY = XMLInputFactory.newInstance();
+
+    public static void grabImages(URL source, File target) {
+    	XMLStreamReader reader = null;
+    	InputStream is = null;
+    	OutputStream os = null;
+    	try {
+	        reader = FACTORY.createXMLStreamReader(source.openStream());
+	        while (reader.hasNext()) {
+	            if (reader.next() == START_ELEMENT) {
+	                if (reader.getLocalName().equals("img")) {
+	                    String src = reader.getAttributeValue(null, "src").toString();
+	                    URL image = new URL(source, src);
+	                    is = image.openConnection().getInputStream();
+	                    os = new FileOutputStream(new File(target, fileName(image)));
+	                    byte[] buff = new byte[1024 * 4];
+	                    int len;
+	                    while ((len = is.read(buff)) > 0) {
+	                        os.write(buff, 0, len);
+	                    }
+	                    os.close();
+	                    is.close();
+	                    os = null;
+	                    is = null;
+	                }
+	            }
+	        }
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} finally {
+    		if (reader != null) {
+				try {
+					reader.close();
+				} catch (XMLStreamException e) {
+				}
+    		}
+    		
+    		if (os != null) {
+    			try {
+					os.close();
+				} catch (IOException e) {
+				}
+    		}
+    		if (is != null) {
+    			try {
+					is.close();
+				} catch (IOException e) {
+				}
+    		}
+    	}
+    }
+    
+    public static void main(String[] args) {
+    	try {
+    		File folder = new File("images");
+    		folder.mkdirs();
+    		
+			Utils.grabImages(
+				new URL(
+					"http://www.freefoto.com/gallery/homepage?count=2"
+				),
+				folder
+			);
+		} catch (MalformedURLException e) {
+		}
+	}
 
 }
