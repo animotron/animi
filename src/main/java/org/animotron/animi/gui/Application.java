@@ -191,7 +191,7 @@ public class Application extends JFrame {
 			            
 			            cortexs = MultiCortex.load(file);
 						
-			        	stimulator = new AnimeStimulator(Application.this, cortexs);
+			        	stimulator = new StimulatorAnime(Application.this, cortexs);
 
 			        	createViews();
 
@@ -411,7 +411,7 @@ public class Application extends JFrame {
     protected void initialize(final cl_platform_id platform, final long deviceType) {
     	cortexs.init(platform, deviceType);
     	
-    	stimulator = new AnimeStimulator(this, cortexs);
+    	stimulator = new StimulatorAnime(this, cortexs);
     	
     	createViews();
     }

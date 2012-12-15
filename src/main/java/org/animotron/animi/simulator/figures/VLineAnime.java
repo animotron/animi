@@ -18,7 +18,7 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.simulator;
+package org.animotron.animi.simulator.figures;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -28,45 +28,16 @@ import java.awt.geom.Point2D;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public class Triangle extends AbstractAnime {
+public class VLineAnime extends LineAnime {
 
-    
-    public Triangle(int d, int maxX, int maxY) {
-        super(0, null);
-        
-        this.maxX = maxX;
-        this.maxY = maxY;
-
-        reset();
-    }
-    
-    public void reset() {
-        int X1 = rnd.nextInt(maxX);
-        int Y1 = rnd.nextInt(maxY);
-
-        int X2 = rnd.nextInt(maxX);
-        int Y2 = rnd.nextInt(maxY);
-
-        int X3 = rnd.nextInt(maxX);
-        int Y3 = rnd.nextInt(maxY);
-
+    public VLineAnime(int a, double dt, int[][] anime) {
+        super(dt, anime);
         this.p = new Point2D[] {
-	        new Point(X1, Y1),
-	        new Point(X2, Y2),
-	        new Point(X3, Y3),
-	        new Point(X1, Y1)
+                new Point(anime[0][0], anime[0][1]),
+                new Point(anime[0][0], anime[0][1] - a / 2),
+                new Point(anime[0][0], anime[0][1] + a / 2)
         };
-    }
 
-	public void drawImage(Graphics g) {
-        g.setColor(Color.WHITE);
-        Polygon polygon = new Polygon();
-        for (int i = 0; i < p.length; i++) {
-            if (i > 0) {
-                polygon.addPoint((int) Math.round(p[i].getX()), (int) Math.round(p[i].getY()));
-            }
-        }
-        g.drawPolygon(polygon);
     }
-
+	
 }

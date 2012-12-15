@@ -31,13 +31,17 @@ import java.awt.image.BufferedImage;
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.MultiCortex;
+import org.animotron.animi.simulator.figures.Figure;
+import org.animotron.animi.simulator.figures.OvalAnime;
+import org.animotron.animi.simulator.figures.RectAnime;
+import org.animotron.animi.simulator.figures.Triangle;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public class StaticStimulator implements Stimulator {
+public class StimulatorStatic implements Stimulator {
 	
 	@RuntimeParam(name = "frequency")
 	public int frequency = 0; // Hz
@@ -55,7 +59,7 @@ public class StaticStimulator implements Stimulator {
     
     MultiCortex mc;
 
-    public StaticStimulator(MultiCortex cortexs) {
+    public StimulatorStatic(MultiCortex cortexs) {
     	mc = cortexs;
     	init();
 	}

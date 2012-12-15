@@ -18,26 +18,25 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.simulator;
+package org.animotron.animi.simulator.figures;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
+import java.util.Random;
 
 /**
- * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public class HLineAnime extends LineAnime {
-
-    public HLineAnime(int a, double dt, int[][] anime) {
-        super(dt, anime);
-        this.p = new Point2D[] {
-                new Point(anime[0][0], anime[0][1]),
-                new Point(anime[0][0] - a / 2, anime[0][1]),
-                new Point(anime[0][0] + a / 2, anime[0][1])
-        };
-
-    }
+public interface Figure {
 	
+    final static Random rnd = new Random();
+    
+	public void drawImage(Graphics g);
+
+	public void step();
+	
+	public boolean isActive();
+
+	public void reset();
+
 }

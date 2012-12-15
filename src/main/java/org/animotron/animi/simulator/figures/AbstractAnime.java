@@ -18,7 +18,7 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.simulator;
+package org.animotron.animi.simulator.figures;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
