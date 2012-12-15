@@ -191,8 +191,6 @@ public class Application extends JFrame {
 			            
 			            cortexs = MultiCortex.load(file);
 						
-			        	stimulator = new StimulatorImage(Application.this, cortexs);
-
 			        	createViews();
 
 						run();
@@ -411,12 +409,13 @@ public class Application extends JFrame {
     protected void initialize(final cl_platform_id platform, final long deviceType) {
     	cortexs.init(platform, deviceType);
     	
-    	stimulator = new StimulatorImage(this, cortexs);
-    	
     	createViews();
     }
     
     private void createViews() {
+    	stimulator = new StimulatorImage(this, cortexs);
+//    	stimulator = new StimulatorStatic(this, cortexs);
+    	
     	clearFrames();
     	
     	createToolBar();

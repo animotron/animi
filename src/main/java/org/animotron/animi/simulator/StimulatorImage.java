@@ -40,7 +40,7 @@ import org.animotron.animi.gui.Application;
 public class StimulatorImage extends AbstractStimulator {
 	
 	File folder = null;
-	File[] imagers;
+	File[] images;
 	int current = 0;
 
     public StimulatorImage(Application application, MultiCortex cortexs) {
@@ -55,10 +55,10 @@ public class StimulatorImage extends AbstractStimulator {
 			folder.mkdirs();
 		}
 		
-		imagers = folder.listFiles();
-		if (imagers.length == 0) {
+		images = folder.listFiles();
+		if (images.length == 0) {
 			Utils.grabImages("http://www.freefoto.com/gallery/homepage?count=10", folder);
-			imagers = folder.listFiles();
+			images = folder.listFiles();
 		}
 		
 		//prepare first image
@@ -69,7 +69,11 @@ public class StimulatorImage extends AbstractStimulator {
 	public BufferedImage getNextImage() {
 		Image loaded;
 		try {
-			loaded = loadImage(imagers[current]);
+			if (images.length <= current)
+				current = 0;
+			
+			loaded = loadImage(images[current]);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return img;

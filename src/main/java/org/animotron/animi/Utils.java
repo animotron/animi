@@ -31,9 +31,7 @@ import org.jocl.cl_event;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 import static javolution.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.jocl.CL.*;
@@ -149,7 +147,7 @@ public class Utils {
 					G += 255 * m.linksWeight[lOffset + l] * 5;
 					if (G > 255) G = 255;
 				};
-				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, 0, G, B));
+				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, R, G, B));
         	}
         }
         return image;

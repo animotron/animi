@@ -20,6 +20,15 @@
  */
 package org.animotron.animi.cortex;
 
+import static org.jocl.CL.CL_MEM_READ_ONLY;
+import static org.jocl.CL.CL_MEM_USE_HOST_PTR;
+import static org.jocl.CL.clCreateBuffer;
+
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_context;
+import org.jocl.cl_mem;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
@@ -29,21 +38,23 @@ public class OnOffMatrix {
 	//Параметры преобразования сетчатки в сигналы полей с он-центом и офф-центром
 
 	//Радиус сенсорного поля
-    int radius = 8;//8;
+    int radius = 2;//8
     //Радиус центра сенсорного поля
-    int centeRadius = 1;//4;
+    int centeRadius = 1;//4
 
     //Кол-во элементов в центре и переферии сенсорного поля
     int numCenter = 0;
     int numsPeriphery = 0;
     
     int regionSize = 0;
-    int[][] matrix;
+    int[] matrix;
+    cl_mem cl_matrix;
     
-    public OnOffMatrix() {
+    public OnOffMatrix(cl_context context) {
+    	initialize(context);
     };
     
-    public void initialize() {
+    public void initialize(cl_context context) {
 //    	radius = 4;
 //    			
 //    	regionSize = 8;
@@ -64,7 +75,7 @@ public class OnOffMatrix {
 
     	regionSize = 2 * radius + 1;
         
-        matrix = new int[regionSize][regionSize];
+        matrix = new int[regionSize * regionSize];
 
         int radius2 = radius * radius;
         int centeRadius2 = centeRadius * centeRadius;
@@ -75,34 +86,41 @@ public class OnOffMatrix {
         //Разметка квадратного массива двумя кругами (центром и переферией сенсорного поля)
         for (int x = 0; x < regionSize; x++) {
         	for (int y = 0; y < regionSize; y++) {
+        		
+        		int pos = (y * regionSize) + x;
 
                 dx = radius - x;
                 dy = radius - y;
                 R2 = dx * dx + dy * dy;
 
                 if (R2 > radius2)
-                    matrix[x][y] = 0;
+                    matrix[pos] = 0;
                 else {
                     if (R2 > centeRadius2) {
-                        matrix[x][y] = 1;
+                        matrix[pos] = 1;
                         numsPeriphery++;
                     } else {
-                        matrix[x][y] = 2;
+                        matrix[pos] = 2;
                         numCenter++;
                     }
                 }
-                System.out.print(" "+matrix[x][y]);
+                System.out.print(" "+matrix[pos]);
         	}
         	System.out.println();
         }
+        
+        cl_matrix = clCreateBuffer(
+    		context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
+    		matrix.length * Sizeof.cl_int, Pointer.to(matrix), null
+		);
 	}
     
     public int regionSize() {
     	return regionSize;
     }
 
-	public int getType(int i, int j) {
-		return matrix[i][j];
+	public int getType(int x, int y) {
+		return matrix[(y * regionSize) + x];
 	}
 
 	public int numInCenter() {

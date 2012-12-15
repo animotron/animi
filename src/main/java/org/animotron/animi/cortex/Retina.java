@@ -22,7 +22,6 @@ package org.animotron.animi.cortex;
 
 import static org.jocl.CL.*;
 
-import org.animotron.animi.Utils;
 import org.animotron.animi.simulator.Stimulator;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -50,13 +49,7 @@ public class Retina {
 	/* y */
 	private int height;
 	
-	//Числовое представление сетчатки. Черно-белая картинка.
-	private float preprocessed[][];
-	
-//	private int receptiveField[][] = null;
-	private OnOffReceptiveField[][] sensorField;
-	
-	private OnOffMatrix onOff = new OnOffMatrix();
+	private OnOffMatrix onOff = null;
 	
 	public Retina() {
 		this(WIDTH, HEIGHT);
@@ -65,8 +58,6 @@ public class Retina {
 	public Retina(int width, int height) {
 		this.width = width;
 		this.height = height;
-		
-		preprocessed = new float[width][height];
 	}
 	
 	private CortexZoneSimple NL = null;
@@ -81,123 +72,79 @@ public class Retina {
 	
     // создание связей сенсорных полей
 	private void initialize() {
-		sensorField = new OnOffReceptiveField[NL.width()][NL.height()];
-
-        double XScale = (width - onOff.regionSize()) / (double)NL.width();
-        double YScale = (height - onOff.regionSize()) / (double)NL.height();
-
-        int X, Y;
-        int NC, NP;
-
-        int fl = 3;
-        
-        for (int ix = 0; ix < NL.width(); ix++) {
-//        	fl++; if (fl == 3) fl = 1;
-        	for (int iy = 0; iy < NL.height(); iy++) {
-
-        		OnOffReceptiveField mSensPol = new OnOffReceptiveField();
-                sensorField[ix][iy] = mSensPol;
-                mSensPol.center = new int[onOff.numInCenter()][2];
-        		mSensPol.periphery = new int[onOff.numInPeref()][2];
-
-                // распределение он и офф полей
-            	mSensPol.type = fl;
-
-                X = (int)Math.round( ix * XScale + onOff.radius() + 1 );
-                Y = (int)Math.round( iy * YScale + onOff.radius() + 1 );
-
-                NC = 0;
-                NP = 0;
-
-                for (int i = 0; i < onOff.regionSize(); i++) {
-                    for (int j = 0; j < onOff.regionSize(); j++) {
-
-                    	switch (onOff.getType(i, j)) {
-
-                        case 0:
-                            break;
-                        case 1:
-
-                            mSensPol.periphery[NP][0] = X - onOff.radius() + i;
-                            mSensPol.periphery[NP][1] = Y - onOff.radius() + j;
-
-                            NP = NP + 1;
-                            break;
-                        case 2:
-
-                        	mSensPol.center[NC][0] = X - onOff.radius() + i;
-                        	mSensPol.center[NC][1] = Y - onOff.radius() + j;
-
-                            NC = NC + 1;
-                            break;
-						default:
-							break;
-                		}
-                    }
-                }
-        	}
-        }
+//		sensorField = new OnOffReceptiveField[NL.width()][NL.height()];
+//
+//        double XScale = (width - onOff.regionSize()) / (double)NL.width();
+//        double YScale = (height - onOff.regionSize()) / (double)NL.height();
+//
+//        int X, Y;
+//        int NC, NP;
+//
+//        int fl = 3;
+//        
+//        for (int ix = 0; ix < NL.width(); ix++) {
+////        	fl++; if (fl == 3) fl = 1;
+//        	for (int iy = 0; iy < NL.height(); iy++) {
+//
+//        		OnOffReceptiveField mSensPol = new OnOffReceptiveField();
+//                sensorField[ix][iy] = mSensPol;
+//                mSensPol.center = new int[onOff.numInCenter()][2];
+//        		mSensPol.periphery = new int[onOff.numInPeref()][2];
+//
+//                // распределение он и офф полей
+//            	mSensPol.type = fl;
+//
+//                X = (int)Math.round( ix * XScale + onOff.radius() + 1 );
+//                Y = (int)Math.round( iy * YScale + onOff.radius() + 1 );
+//
+//                NC = 0;
+//                NP = 0;
+//
+//                for (int i = 0; i < onOff.regionSize(); i++) {
+//                    for (int j = 0; j < onOff.regionSize(); j++) {
+//
+//                    	switch (onOff.getType(i, j)) {
+//
+//                        case 0:
+//                            break;
+//                        case 1:
+//
+//                            mSensPol.periphery[NP][0] = X - onOff.radius() + i;
+//                            mSensPol.periphery[NP][1] = Y - onOff.radius() + j;
+//
+//                            NP = NP + 1;
+//                            break;
+//                        case 2:
+//
+//                        	mSensPol.center[NC][0] = X - onOff.radius() + i;
+//                        	mSensPol.center[NC][1] = Y - onOff.radius() + j;
+//
+//                            NC = NC + 1;
+//                            break;
+//						default:
+//							break;
+//                		}
+//                    }
+//                }
+//        	}
+//        }
     }
 	
 	//constants
     //минимальное соотношение средней контрасности переферии и центра сенсорного поля, необходимое для активации
     //контрастность для темных элементов (0)
-    public static double KContr1 = 1.45;
+    public static float KContr1 = 1.45f;
     //контрастность для светлых элементов (Level_Bright)
-    public static double KContr2 = 1.15;
+    public static float KContr2 = 1.15f;
 	//минимальная контрастность
-    public static double KContr3 = 1.15;
+    public static float KContr3 = 1.15f;
 	//(0..255)
     public static int Level_Bright = 100;
     public static int Lelel_min = 10;// * N_Col;
 
-//    public int fromX = 0;
-//    public int fromY = 0;
-    
-//    double delta = 0;
-//    double deltaX = 0;
-//    double deltaY = 0;
-
-//    double speed = 2;
-    
     int step = 0;
-//    int required = 0;
-//    
-//    boolean flag = true;
-//
-//    public void shift(int x, int y) {
-//    	int shiftX = fromX + (width / 2) - x;
-//    	int shiftY = fromY + (height / 2) - y;
-//    	
-//    	required = (int)Math.sqrt(shiftX*shiftX + shiftY*shiftY);
-//    	
-//    	delta = required / speed;
-//    	
-//    	deltaX = (shiftX - fromX) / delta;
-//    	deltaY = (shiftY - fromY) / delta;
-//    	
-//    	required = Math.abs(required);
-//    	
-//    	step = 0;
-//    	flag = false;
-//	}
-//    
-//    public boolean needShift() {
-//    	return flag;
-//    }
-//
-//	public void resetShift() {
-//		deltaX = 0;
-//		deltaY = 0;
-//		
-//		fromX = 0;
-//		fromY = 0;
-//
-//		flag = true;
-//		step = 0;
-//	}
-	
-	BufferedImage image = null;
+
+    BufferedImage image = null;
 	float XScale = 0;
 	float YScale = 0;
 	
@@ -214,6 +161,9 @@ public class Retina {
 	public final int safeZone = 20;
 
 	public void process(Stimulator stimulator) {
+		
+		if (onOff == null)
+			onOff = new OnOffMatrix(NL.mc.context);
 		
 		if (step == 0) {
 			image = stimulator.getNextImage();
@@ -396,13 +346,23 @@ public class Retina {
 	        clSetKernelArg(kernel,  5, Sizeof.cl_float, Pointer.to(new float[] {XScale}));
 	        clSetKernelArg(kernel,  6, Sizeof.cl_float, Pointer.to(new float[] {YScale}));
 
+	        clSetKernelArg(kernel,  7, Sizeof.cl_int, Pointer.to(new int[] {onOff.radius}));
+	        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {onOff.regionSize}));
+	        clSetKernelArg(kernel,  9, Sizeof.cl_mem, Pointer.to(onOff.cl_matrix));
+	        clSetKernelArg(kernel,  10, Sizeof.cl_int, Pointer.to(new int[] {3}));
+	        clSetKernelArg(kernel,  11, Sizeof.cl_float, Pointer.to(new float[] {KContr1}));
+	        clSetKernelArg(kernel,  12, Sizeof.cl_float, Pointer.to(new float[] {KContr2}));
+	        clSetKernelArg(kernel,  13, Sizeof.cl_float, Pointer.to(new float[] {KContr3}));
+	        clSetKernelArg(kernel,  14, Sizeof.cl_int, Pointer.to(new int[] {Level_Bright}));
+	        clSetKernelArg(kernel,  15, Sizeof.cl_int, Pointer.to(new int[] {Lelel_min}));
+
 	        inputMem = clCreateBuffer(
 	    		sz.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
 	    		input.length * Sizeof.cl_int, Pointer.to(input), null
 			);
-	        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(inputMem));
-	        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {inputSizeX}));
-	        clSetKernelArg(kernel,  9, Sizeof.cl_int, Pointer.to(new int[] {inputSizeY}));
+	        clSetKernelArg(kernel,  16, Sizeof.cl_mem, Pointer.to(inputMem));
+	        clSetKernelArg(kernel,  17, Sizeof.cl_int, Pointer.to(new int[] {inputSizeX}));
+	        clSetKernelArg(kernel,  18, Sizeof.cl_int, Pointer.to(new int[] {inputSizeY}));
 	    }
 
 	    @Override

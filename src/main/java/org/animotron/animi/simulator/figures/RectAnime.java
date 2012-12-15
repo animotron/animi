@@ -32,13 +32,21 @@ import java.awt.geom.Point2D;
 public class RectAnime extends AbstractAnime {
 	
 	private int d;
+	
+	private boolean filled = false;
 
     public RectAnime(int d, int maxX, int maxY) {
+    	this(d, maxX, maxY, false);
+    }
+    
+    public RectAnime(int d, int maxX, int maxY, boolean filled) {
         super(0, null);
 
         this.d = d;
         this.maxX = maxX;
         this.maxY = maxY;
+        
+        this.filled = filled;
         
         reset();
     }
@@ -78,7 +86,10 @@ public class RectAnime extends AbstractAnime {
                 polygon.addPoint((int) Math.round(p[i].getX()), (int) Math.round(p[i].getY()));
             }
         }
-        g.drawPolygon(polygon);
+        if (filled)
+        	g.fillPolygon(polygon);
+        else
+        	g.drawPolygon(polygon);
     }
 
 }

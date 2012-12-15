@@ -26,10 +26,7 @@ import java.awt.image.BufferedImage;
 import org.animotron.animi.Params;
 import org.animotron.animi.cortex.MultiCortex;
 import org.animotron.animi.gui.Application;
-import org.animotron.animi.simulator.figures.Figure;
-import org.animotron.animi.simulator.figures.OvalAnime;
-import org.animotron.animi.simulator.figures.RectAnime;
-import org.animotron.animi.simulator.figures.Triangle;
+import org.animotron.animi.simulator.figures.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -47,16 +44,23 @@ public class StimulatorStatic extends AbstractStimulator {
 
 	public void init() {
         figures = new Figure[] {
-        	new OvalAnime(15, mc.retina.width(), mc.retina.height()),
-        	new RectAnime(15, mc.retina.width(), mc.retina.height()),
-        	new Triangle(15, mc.retina.width(), mc.retina.height())
+//        	new OvalAnime(15, mc.retina.width(), mc.retina.height()),
+        	new RectAnime(15, mc.retina.width(), mc.retina.height(), true)
+//        	,
+//        	new Triangle(15, mc.retina.width(), mc.retina.height())
         };
+        
+        //prepare first image
+        getNextImage();
 	}
     
 	public void reset() {
 		for (Figure figure : figures) {
 			figure.reset();
         };
+
+        //prepare first image
+        getNextImage();
 	}
 
 	@Override
