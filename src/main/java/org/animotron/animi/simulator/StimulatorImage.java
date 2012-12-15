@@ -84,7 +84,7 @@ public class StimulatorImage extends AbstractStimulator {
         img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();
         
-        g.drawImage(loaded, 0, 0, img.getWidth(), img.getHeight(), null);
+        g.drawImage(loaded, 0, 0, img.getWidth(), img.getHeight(), 0, 0, img.getWidth(), img.getHeight(), null);
 
         return img;
 	}
