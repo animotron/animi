@@ -27,6 +27,7 @@ import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.lang.reflect.Constructor;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -46,13 +47,18 @@ public class Application extends JFrame {
 	
 	public static Application _ = null;
 
-	public static MultiCortex cortexs = null;
+	public MultiCortex cortexs = null;
 	
-	JDesktopPane desktop;
+    public long fps;
+
+    JDesktopPane desktop;
 
 	private JMenuBar menuBar;
 	
-	public static JLabel count;
+	public JLabel count;
+	
+    String stimulatorClass = "org.animotron.animi.simulator.StimulatorAnime";
+    Stimulator stimulator = null;
 	
 	private Application() {
 		
@@ -107,7 +113,6 @@ public class Application extends JFrame {
     protected JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
  
-        //Set up the lone menu.
         JMenu menu = new JMenu("File");
         menu.setMnemonic(KeyEvent.VK_D);
         menuBar.add(menu);
@@ -126,6 +131,33 @@ public class Application extends JFrame {
         });
         menu.add(menuItem);
  
+        menu = new JMenu("Stimulator");
+        menu.setMnemonic(KeyEvent.VK_D);
+        menuBar.add(menu);
+
+        String[][] sets = 
+    		new String[][] {
+        		new String[] {"Webcamera", "org.animotron.animi.simulator.StimulatorWebcam"},
+        		new String[] {"Image", "org.animotron.animi.simulator.StimulatorImage"},
+        		new String[] {"Static", "org.animotron.animi.simulator.StimulatorStatic"},
+        		new String[] {"Anime", "org.animotron.animi.simulator.StimulatorAnime"}
+			};
+        
+        ButtonGroup group = new ButtonGroup();
+        for (final String[] set : sets) {
+	        menuItem = new JRadioButtonMenuItem(set[0]);
+	        menuItem.setSelected(set[1] == stimulatorClass);
+	        menuItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					stimulatorClass = set[1];
+					createStimulator();
+				}
+	        });
+	        menu.add(menuItem);
+	        group.add(menuItem);
+        }
+
         return menuBar;
     }
     
@@ -189,7 +221,7 @@ public class Application extends JFrame {
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 			            File file = fc.getSelectedFile();
 			            
-			            cortexs = MultiCortex.load(file);
+			            cortexs = MultiCortex.load(Application.this, file);
 						
 			        	createViews();
 
@@ -326,6 +358,20 @@ public class Application extends JFrame {
         });
         bar.add(button);
 
+        bar.addSeparator();
+
+        button = new JButton("Refresh");
+        button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.ALT_MASK));
+        button.setMnemonic(KeyEvent.VK_F);
+        button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				refresh();
+			}
+        });
+        bar.add(button);
+
         return bar;
     }
 
@@ -396,7 +442,7 @@ public class Application extends JFrame {
     	//CortexInit
     	//Начальный сброс "хорошо - плохо"
     	if (cortexs == null)
-    		cortexs = new MultiCortex();
+    		cortexs = new MultiCortex(this);
     	
     	PFInitialization form = new PFInitialization(this, cortexs);
     	form.setVisible(true);
@@ -412,10 +458,24 @@ public class Application extends JFrame {
     	createViews();
     }
     
+    private void createStimulator() {
+    	if (cortexs == null)
+    		return;
+    	
+    	try {
+			@SuppressWarnings("unchecked")
+			Class<Stimulator> clazz = (Class<Stimulator>) Class.forName(stimulatorClass);
+			Constructor<Stimulator> constructor = clazz.getConstructor(Application.class);
+			
+			stimulator = constructor.newInstance(this);
+			
+	    	createFrame(stimulator);
+    	} catch (Exception e) {
+		}
+    }
+    
     private void createViews() {
-    	stimulator = new StimulatorWebcam(this, cortexs);
-//    	stimulator = new StimulatorImage(this, cortexs);
-//    	stimulator = new StimulatorStatic(this, cortexs);
+    	createStimulator();
     	
     	clearFrames();
     	
@@ -430,25 +490,23 @@ public class Application extends JFrame {
     private void run() {
     	if (cortexs != null) {
 			MODE = RUN;
-	        stimulator.start();
+			cortexs.start();
     	}
     }
     
     private void step() {
     	if (cortexs != null && MODE <= STEP) {
 			MODE = STEP;
-	        stimulator.prosess();
+			cortexs.process();
     	}
     }
 
     private void pause() {
     	if (cortexs != null) {
-			stimulator.pause();
+    		cortexs.pause();
 			MODE = (MODE == RUN) ? PAUSE : STOP;
     	}
     }
-
-    Stimulator stimulator = null;
 
     //Create a new internal frame.
     protected void createFrame(Imageable imageable) {
@@ -510,4 +568,8 @@ public class Application extends JFrame {
             }
         });
     }
+
+	public Stimulator getStimulator() {
+		return stimulator;
+	}
 }

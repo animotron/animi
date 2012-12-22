@@ -151,7 +151,7 @@ public class Visualizer extends JInternalFrame {
 
 		public void paint(Graphics g) {
 			if (image == null) return;
-//			g.drawImage(image, 0, 0, this);
+
 			g.drawImage(
 				image.getScaledInstance(image.getWidth()*zoom, image.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 				0, 0, this);

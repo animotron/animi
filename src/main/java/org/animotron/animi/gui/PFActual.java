@@ -107,25 +107,38 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 		x = 0;
 		y += textY;
-
-		int rY = y;
-		
-		y += textY;
         g.drawString("RF", x, y);
         
         BufferedImage img = null;
         for (int pN = 0; pN < zone.package_size; pN++) {
+        	
+        	int cY = y;
+        	
 			img = drawRF(pN);
-			g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
+			g.drawRect(x, cY, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
 			g.drawImage(
 					img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
-					x+1, y+1, null);
+					x+1, cY+1, null);
+			
+			cY += 2+(img.getHeight()*zoom);
+			
+			cY += textY;
+			
+        	int pos = 
+        			(zone.package_size * zone.width * point.y) + 
+        			(zone.package_size * point.x) + 
+        			(pN);
+			
+			g.drawString("free "+String.valueOf(zone.freePackageCols[pos]), x, cY);		
+
+			cY += textY;
+			g.drawString("act "+String.valueOf(zone.packageCols[pos]).substring(0, 3), x, cY);		
 			
 			x += (2+(img.getWidth()*zoom)) + 2;
         }
 
 		x = 0;
-		y += 2+img.getHeight()*zoom;
+		y += 2+img.getHeight()*zoom + textY*2;
 
 		y += textY;
         g.drawString("Total RF", x, y);
@@ -137,137 +150,6 @@ public class PFActual implements Imageable, InternalFrameListener {
 				x+1, y+1, null);
 
 		
-		//next block
-//		y = rY; x = boxSize*zoom + 2;
-		
-//		y += textY;
-//        g.drawString("Original", x, y);
-//
-//		img = drawIn();
-//		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
-//		g.drawImage(
-//				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
-//				x+1, y+1, null);
-//
-//		x = boxSize*zoom + 2;
-//		y += 2+img.getHeight()*zoom;
-
-//		y += textY;
-//        g.drawString("Minus", x, y);
-//
-//		img = drawMinus();
-//		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
-//		g.drawImage(
-//				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
-//				x+1, y+1, null);
-//
-//
-		int col = 1;
-		
-		//next block (Inhibitory)
-//		y = rY; x = col*(boxSize*zoom + 2);
-//		
-//		y += textY;
-//        g.drawString("Inhibitory RF", x, y);
-//
-//		img = drawInhibitoryRF();
-//		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
-//		g.drawImage(
-//				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
-//				x+1, y+1, null);
-//
-//		x = col*(boxSize*zoom + 2);
-//		y += 2+img.getHeight()*zoom;
-//
-//		y += textY;
-//        g.drawString("Total inhibitory RF", x, y);
-//
-//		img = drawTotalInhibitoryRF();
-//		g.drawRect(x, y, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
-//		g.drawImage(
-//				img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
-//				x+1, y+1, null);
-		
-//		if (num == 5) {
-//			//next block
-//			y = rY; x = (col+1)*(boxSize*zoom + 2);
-//
-//			y += textY;
-//	        g.drawString("restore uppest levels RF", x, y);
-//
-//			img = draw2upRF();
-//			g.drawRect(x, y, 2+(img.getWidth()), 2+(img.getHeight()));
-//			g.drawImage(
-//					img,
-//					x+1, y+1, null);
-//			
-//			y += 2+img.getHeight() + textY;
-//		} else {
-			y += 2+img.getHeight()*zoom;
-//		}
-
-		x = 0;
-
-		for (Field f : cnFds) {
-			y += textY;
-	        g.drawString(getName(f), x, y);		
-
-	        y += textY;
-	        g.drawString(getValue(f, cn), x, y);		
-		}
-//		
-//		for (int dx = -1; dx <= 1; dx++) {
-//			for (int dy = -1; dy <= 1; dy++) {
-//
-//		        x = 0;
-//				y += textY;
-//				g.drawString(""+dx+" : "+dy, x, y);
-//				
-//				for (Field f : snFds) {
-//					y += textY;
-//			        x = 0;
-//			        
-//					for (int z = 0; z < zone.deep; z++) {
-//						final NeuronSimple sn = zone.s[point.x+dx][point.y+dy][z];
-//
-//						String str = getValue(f, sn);
-//						if (str.length() > 3)
-//							str = str.substring(0, 3);
-//						
-//						g.setColor(sn.isOccupy() ? Color.WHITE : Color.YELLOW);
-//				        g.drawString(str, x, y);		
-//						x += 35;
-//				        g.setColor(Color.WHITE);
-//					}
-//			        g.drawString(getName(f), x, y);		
-//				}
-//		        x = 0;
-//				y += textY;
-//				for (int z = 0; z < zone.deep; z++) {
-//					final NeuronSimple sn = zone.s[point.x+dx][point.y+dy][z];
-//			        g.setColor(sn.isOccupy() ? Color.WHITE : Color.YELLOW);
-//					
-//			        Link lnk = null;
-//					for (Link l : sn.a_links) {
-//						if (l.axon == cn) {
-//							lnk = l;
-//							break;
-//						}
-//					}
-//					if (lnk != null) {
-//						String str = String.valueOf(lnk.w);
-//						if (str.length() > 3)
-//							str = str.substring(0, 3);
-//					
-//						g.drawString(str, x, y);
-//					}
-//					x += 35;
-//			        g.setColor(Color.WHITE);
-//				}
-//		        g.drawString("w to CN", x, y);		
-//			}
-//		}
-
 		return image;
 	}
 	
@@ -308,12 +190,14 @@ public class PFActual implements Imageable, InternalFrameListener {
 
         Mapping m = zone.in_zones[0];
         
-        final int offset = (cnY * zone.width * m.linksSenapseRecordSize) + (m.linksSenapseRecordSize * cnX);
-        
+		final int offset = 
+				(2 * m.ns_links * zone.width * cnY) + 
+				(2 * m.ns_links * cnX);
+
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	int xi = m.linksSenapse[offset + 2*l    ];
-        	int yi = m.linksSenapse[offset + 2*l + 1];
+        	int xi = m.linksSenapse[offset + 2*l +0];
+        	int yi = m.linksSenapse[offset + 2*l +1];
 
         	pX = (boxSize / 2) + (xi - (int)(cnX * m.fX));
 			pY = (boxSize / 2) + (yi - (int)(cnY * m.fY));

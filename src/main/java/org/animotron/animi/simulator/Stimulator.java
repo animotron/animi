@@ -29,15 +29,10 @@ import org.animotron.animi.Imageable;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  *
  */
-public interface Stimulator extends Runnable, Imageable {
+public interface Stimulator extends Imageable {
 	
 	public void init();
 	public void reset();
-	public void prosess();
-	
-	public void start();
-	public void pause();
-	public void resume();
 	
 	public BufferedImage getNextImage();
 	public BufferedImage getUserImage();

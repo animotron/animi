@@ -23,11 +23,10 @@ package org.animotron.animi.simulator;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 
-import org.animotron.animi.cortex.MultiCortex;
 import org.animotron.animi.gui.Application;
 
 import com.github.sarxos.webcam.*;
-import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
+//import com.github.sarxos.webcam.ds.openimaj.OpenImajDriver;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -37,10 +36,10 @@ public class StimulatorWebcam extends AbstractStimulator implements WebcamListen
 
 	private Webcam webcam = null;
 
-    public StimulatorWebcam(Application application, MultiCortex cortexs) {
-    	super(application, cortexs);
+    public StimulatorWebcam(Application application) {
+    	super(application);
     	
-        Webcam.setDriver(new OpenImajDriver());
+//        Webcam.setDriver(new OpenImajDriver());
         webcam = Webcam.getDefault();
         if (webcam == null) {
             System.out.println("No webcams found...");

@@ -29,7 +29,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.animotron.animi.Utils;
-import org.animotron.animi.cortex.MultiCortex;
 import org.animotron.animi.gui.Application;
 
 /**
@@ -43,8 +42,8 @@ public class StimulatorImage extends AbstractStimulator {
 	File[] images;
 	int current = 0;
 
-    public StimulatorImage(Application application, MultiCortex cortexs) {
-    	super(application, cortexs);
+    public StimulatorImage(Application application) {
+    	super(application);
 	}
 
 	public void init() {
@@ -80,11 +79,24 @@ public class StimulatorImage extends AbstractStimulator {
 		} finally {
 			current++;
 		}
+		
+		int width = 640;
+		int height = 480;
 
-        img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
+//		final Retina retina = app.cortexs.retina;
+//		int width = retina.width()+retina.safeZone*2;
+//		if (width < loaded.getWidth(null))
+//			width = loaded.getWidth(null);
+//			
+//		int height = retina.height()+retina.safeZone*2;
+//		if (height < loaded.getHeight(null))
+//			height = loaded.getHeight(null);
+		
+
+        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();
         
-        g.drawImage(loaded, 0, 0, img.getWidth(), img.getHeight(), 0, 0, img.getWidth(), img.getHeight(), null);
+        g.drawImage(loaded, 0, 0, width, height, 0, 0, width, height, null);
 
         return img;
 	}

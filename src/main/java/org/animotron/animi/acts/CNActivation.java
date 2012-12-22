@@ -22,11 +22,6 @@ package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
 
-import java.awt.Color;
-import java.awt.image.DataBufferInt;
-import java.util.Arrays;
-
-import org.animotron.animi.Utils;
 import org.animotron.animi.cortex.*;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -62,18 +57,21 @@ public class CNActivation extends Task {
 //    	System.out.println("sz.freeCols "+Arrays.toString(sz.freeCols));
 //    	System.out.println("cz.pCols "+Utils.debug(cz.pCols));
 
-    	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_pCols));
-        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.package_size}));
+    	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_tremor));
+        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.tremor.length / 2}));
 
-        clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(m.cl_linksWeight));
-        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(m.cl_senapseOfLinks));
-        clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {m.ns_links}));
+    	clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(cz.cl_packageCols));
+        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(cz.cl_freePackageCols));
+        clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {cz.package_size}));
+
+        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(m.cl_linksWeight));
+        clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(m.cl_senapseOfLinks));
+        clSetKernelArg(kernel,  9, Sizeof.cl_int, Pointer.to(new int[] {m.ns_links}));
         
-        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(sz.cl_cycleCols));
-        clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(sz.cl_freeCols));
+        clSetKernelArg(kernel,  10, Sizeof.cl_mem, Pointer.to(sz.cl_cycleCols));
 
-        clSetKernelArg(kernel,  9, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
-        clSetKernelArg(kernel,  10, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
+        clSetKernelArg(kernel,  11, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
+        clSetKernelArg(kernel,  12, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
     }
     
 	@Override
@@ -89,26 +87,26 @@ public class CNActivation extends Task {
 
     	clWaitForEvents(1, events);
 
-    	// Read the contents of the cl_freeCols memory object
-    	Pointer freeColsTarget = Pointer.to(sz.freeCols);
-    	clEnqueueReadBuffer(
-			commandQueue, sz.cl_freeCols, 
-			CL_TRUE, 0, sz.freeCols.length * Sizeof.cl_float, 
-			freeColsTarget, 0, null, events[0]);
-
-    	clWaitForEvents(1, events);
-
     	Mapping m = cz.in_zones[0];
 
     	// Read the contents of the cl_pCols memory object
-    	Pointer pColsTarget = Pointer.to(m.toZone.pCols);
+    	Pointer pColsTarget = Pointer.to(cz.packageCols);
     	clEnqueueReadBuffer(
-			commandQueue, m.toZone.cl_pCols, 
-			CL_TRUE, 0, m.toZone.pCols.length * Sizeof.cl_float, 
+			commandQueue, cz.cl_packageCols, 
+			CL_TRUE, 0, cz.packageCols.length * Sizeof.cl_float, 
 			pColsTarget, 0, null, events[0]);
 
     	clWaitForEvents(1, events);
-    	
+
+        // Read the contents of the cl_linksWeight memory object
+        Pointer target = Pointer.to(m.linksWeight);
+        clEnqueueReadBuffer(
+            commandQueue, m.cl_linksWeight, 
+            CL_TRUE, 0, m.linksWeight.length * Sizeof.cl_float, 
+            target, 0, null, events[0]);
+
+        clWaitForEvents(1, events);
+
 //    	System.out.println("after activation");
 ////    	System.out.println("frZone.cols "+Arrays.toString(m.frZone.cols));
 //    	System.out.println("sz.cols     "+Utils.debug(sz.cols));

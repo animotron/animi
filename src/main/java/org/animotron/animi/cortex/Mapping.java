@@ -57,7 +57,6 @@ public class Mapping {
 	public int linksWeightRecordSize;
 	
 	public int linksSenapse[];
-	public int linksSenapseRecordSize;
 	
     /**
      * The OpenCL memory object which store the neuron links for each zone.
@@ -93,8 +92,6 @@ public class Mapping {
 		linksSenapse = new int[frZone.width() * frZone.height() * ns_links * 2];
 		Arrays.fill(linksSenapse, 0);
 		
-		linksSenapseRecordSize = ns_links * 2;
-
 //        for (int x = 0; x < zone.width(); x++) {
 //			for (int y = 0; y < zone.height(); y++) {
 //				zone.col[x][y].a_links.clear();
@@ -183,8 +180,12 @@ public class Mapping {
                 	            (y * toZone.width * toZone.package_size * ns_links) + 
                 	            (x * toZone.package_size * ns_links) + (pN * ns_links) + i] = w;
                         }
-                        linksSenapse[(y*toZone.width * linksSenapseRecordSize) + (linksSenapseRecordSize * x) + i*2   ] = lx;
-                        linksSenapse[(y*toZone.width * linksSenapseRecordSize) + (linksSenapseRecordSize * x) + i*2 +1] = ly;
+                		final int offset = 
+                				(2 * ns_links * toZone.width * y) + 
+                				(2 * ns_links * x);
+                        
+                        linksSenapse[offset + i*2 +0] = lx;
+                        linksSenapse[offset + i*2 +1] = ly;
 //						new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY, toZone.speed);
                     } else {
                     	System.out.print("!");

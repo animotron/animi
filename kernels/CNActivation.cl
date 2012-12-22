@@ -27,7 +27,11 @@ __kernel void computeActivation(
     __global float* output,
     int outputSizeX,
 
+    __global int* tremor,
+    int numberOfSteps,
+
     __global float* package,
+    __global int* packageFree,
     int numberOfPackages,
 
     __global float* linksWeight,
@@ -35,7 +39,6 @@ __kernel void computeActivation(
     int linksNumber,
 
     __global float* cycleCols,
-    __global float* freeCols,
 
     __global float* input,
     int inputSizeX
@@ -46,61 +49,134 @@ __kernel void computeActivation(
     
     int pos = (y * outputSizeX) + x;
     
+    int packagePos = 0;
+    
     int XSize = linksNumber * 2;
     int offset = (y * outputSizeX * XSize) + (x * XSize);
 
     int linksOffset = (y * outputSizeX * linksNumber * numberOfPackages) + (x * linksNumber * numberOfPackages);
-
-	freeCols[pos] = 0.0f;
+	int wOffset = 0;
 
     float maximum = 0.0f;
     float sum = 0.0f;
-    for (int p = 0; p < numberOfPackages; p++)
+    
+    int empty = 1;
+	bool toRemember = true;
+    
+    for (int step = 0; step < numberOfSteps; step++)
     {
-    
-		sum = 0.0f;
-	    for(int l = 0; l < linksNumber; l++)
-	    {
-	    	int xi = linksSenapse[offset + (l * 2)  ];
-	    	int yi = linksSenapse[offset + (l * 2)+1];
-	        
-	        sum += input[(yi * inputSizeX) + xi] * linksWeight[linksOffset + (p * linksNumber) + l];
-	    }
-	    
-    	if (sum > 1.0f)
-    	{
-    		sum = 1.0f;
-		}
-	    
-	    if (package[(y * outputSizeX * numberOfPackages) + (x * numberOfPackages) + p] < 0.0f)
-    	{
-    		//free
-    		if (sum >= 0.1f) //10% of RF
-    		{
-	    		if (freeCols[pos] < sum)
-	    		{
-	    			freeCols[pos] = sum;
-				}
-			}
-    	}
-    	else
-    	{
-    		//busy
-		    if (sum < 0.5f) 
-		    {
-	    		sum = 0.0f;
-    		}
+		int shiftX = tremor[step*2 +0];
+		int shiftY = tremor[step*2 +1];
+		
+		toRemember = true;
 
-		    package[(y * outputSizeX * numberOfPackages) + (x * numberOfPackages) + p] = sum;
-		    maximum = max(sum, maximum);
-    	}
-    }
-    
+	    for (int p = 0; p < numberOfPackages; p++)
+	    {
+	    	wOffset = linksOffset + (p * linksNumber);
+
+			packagePos = (y * outputSizeX * numberOfPackages) + (x * numberOfPackages) + p;
+			empty = packageFree[packagePos];
+
+			sum = 0.0f;
+		    for(int l = 0; l < linksNumber; l++)
+		    {
+		    	int xi = linksSenapse[offset + (l * 2) +0] + shiftX;
+		    	int yi = linksSenapse[offset + (l * 2) +1] + shiftY;
+		        
+		        if (empty == 1)
+		        	sum += input[(yi * inputSizeX) + xi];
+	        	else
+		        	sum += input[(yi * inputSizeX) + xi] * linksWeight[wOffset + l];
+		    }
+		    
+		    //should not be more then one
+	    	if (sum > 1.0f)
+	    	{
+	    		sum = 1.0f;
+			}
+			
+		    package[packagePos] = 0.0f;
+		    
+		    if (empty == 1)
+	    	{
+	    		//free
+	    		if (sum < 0.1f) //10% of RF
+	    		{
+				    sum = 0.0f;
+				}
+				else if (toRemember)
+				{
+					toRemember = false;
+					
+			    	int count = 0;
+			    	float sumW = 0;
+			    	float w = 0;
+			    	
+				    for(int l = 0; l < linksNumber; l++)
+				    {
+				    	int xi = linksSenapse[offset + (l * 2) +0] + shiftX;
+				    	int yi = linksSenapse[offset + (l * 2) +1] + shiftY;
+				        
+				        w = input[(yi * inputSizeX) + xi];
+				        linksWeight[wOffset + l] = w;
+						sumW += w;
+
+						if (w > 0.0f)
+						{
+							count++;
+						}
+				    }
+				
+				    for(int l = 0; l < linksNumber; l++)
+				    {
+				    	if (linksWeight[wOffset + l] == 0.0f)
+				    	{
+				    		linksWeight[wOffset + l] = -1 / ((float)count * 0.5);
+			    		}
+			    		else
+			    		{
+							linksWeight[wOffset + l] = linksWeight[wOffset + l] / sumW;
+						}
+					}
+				}
+	    	}
+	    	else
+	    	{
+	    		//busy
+			    if (sum < 0.5f) 
+			    {
+		    		sum = 0.0f;
+	    		}
+	    		else
+	    		{
+				    maximum = max(sum, maximum);
+	    		}
+	    	}
+	    	
+	    	//record maximum of package activity
+		    if (package[packagePos] < sum)
+		    {
+			    package[packagePos] = sum;
+		    }
+	    }
+	}
     output[pos] = maximum;
     
-    //activity during cycle
-    if (cycleCols[pos] < maximum)
+    int _cycleCols = 0;
+    int pN = 0;
+    for (int p = 0; p < numberOfPackages; p++)
     {
-    	cycleCols[pos] = maximum;
-	}
+		packagePos = (y * outputSizeX * numberOfPackages) + (x * numberOfPackages) + p;
+	    
+	    if (packageFree[packagePos] < 1)
+	    {
+		    pN++;
+		    if (package[packagePos] > 0.0f)
+		    {
+				_cycleCols++;
+			}
+	    }
+    }
+    
+	cycleCols[pos] = _cycleCols / (float)pN;
 }

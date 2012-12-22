@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -42,6 +43,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javolution.util.FastMap;
 
 import org.animotron.animi.Params;
+import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.acts.*;
 import org.animotron.animi.cortex.old.LinkQ;
 import org.animotron.animi.cortex.old.NeuronComplex;
@@ -66,7 +68,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class MultiCortex {
+public class MultiCortex implements Runnable {
 
     private static final boolean BENCHMARK = true;
 
@@ -77,6 +79,16 @@ public class MultiCortex {
 
     public static int MODE = STOP;
 
+    private final Application app;
+    
+    @RuntimeParam(name = "frequency")
+	public int frequency = 0; // Hz
+
+    private long frame = 0;
+    private long t0 = System.currentTimeMillis();
+
+    private boolean run = true;
+    
     public long count = 0;
     
     public Retina retina;
@@ -95,28 +107,42 @@ public class MultiCortex {
 //  public CortexZoneSimple z_good;
 //  @Params
 //  public CortexZoneSimple z_bad;
-
+    
     @Params
     public CortexZoneSimple [] zones;
 
-    private MultiCortex(CortexZoneSimple [] zones) {
+    private MultiCortex(Application app, CortexZoneSimple [] zones) {
+    	this.app = app;
     	this.zones = zones;
 
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(zones[0]);
     }
 
-    public MultiCortex() {
-
+    public MultiCortex(Application app) {
+    	this.app = app;
+    	
     	preInitCL();
     	
         z_in = new CortexZoneSimple("Input", this);
-
+        
         z_1st = new CortexZoneComplex("1st", this, 160, 120,
             new Mapping[]{
                 new Mapping(z_in, 50, 1, false) //7x7 (50)
             }
         );
+        z_1st.tremor = new int[] {
+			0, 0,
+			1, 1,
+			1,-1,
+			2, 0,
+			3, 1,
+			3,-1,
+			4, 0,
+		};
+
+
+
 //        z_1st.speed = Integer.MAX_VALUE;
 //        z_in.nextLayers(new CortexZoneSimple[] {z_1st});
 
@@ -390,8 +416,9 @@ public class MultiCortex {
     }
 
     private static String readFile(String fileName) {
-        try {
-            BufferedReader br = new BufferedReader( new InputStreamReader( new FileInputStream(fileName) ) );
+    	BufferedReader br = null;
+    	try {
+            br = new BufferedReader( new InputStreamReader( new FileInputStream(fileName) ) );
             StringBuffer sb = new StringBuffer();
             String line = null;
             while (true) {
@@ -404,6 +431,12 @@ public class MultiCortex {
             return sb.toString();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+        	if (br != null) {
+        		try {
+					br.close();
+				} catch (IOException e) {}
+        	}
         }
         System.exit(1);
         return null;
@@ -438,15 +471,187 @@ public class MultiCortex {
 		for (CortexZoneSimple zone : zones) {
 			zone.init();
 		}
+		
+        //первоначальные центры кристализации
+		Random rd = new Random();
+    	int x, y, pos, lx, ly;
+
+    	Mapping m = z_1st.in_zones[0];
+
+    	long n = Math.round(z_1st.cols.length * 0.005); // 0.5%
+        for (int i = 0; i < n; i++) {
+        	do {
+	        	x = rd.nextInt(z_1st.width);
+	        	y = rd.nextInt(z_1st.height);
+        	
+	        	//XXX: should be nothing at inhibitory area?
+//				for (int i = 0; i < z_1st.number_of_inhibitory_links; i++) {
+//				}
+	        	
+	        	pos = 
+	        			(z_1st.package_size * z_1st.width * y) + 
+	        			(z_1st.package_size * x) + 
+	        			(0);
+	        	
+        	} while (z_1st.freePackageCols[pos] < 1);
+        	
+        	System.out.print("-");
+        	
+        	z_1st.freePackageCols[pos] = 0;
+
+        	int offset = 
+        			(2 * m.ns_links * z_1st.width * y) + 
+        			(2 * m.ns_links * x);
+        	
+        	int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+        	int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+        	
+            for (int l = 0; l < m.ns_links; l++) {
+            	lx = m.linksSenapse[offset + l*2 +0];
+            	ly = m.linksSenapse[offset + l*2 +1];
+            	
+            	minX = Math.min(minX, lx);
+            	minY = Math.min(minY, ly);
+
+            	maxX = Math.max(maxX, lx);
+            	maxY = Math.max(maxY, ly);
+            }
+            
+            int centerX = minX + (maxX - minX) / 2;
+//            int centerY = minY + (maxY - minY) / 2;
+            
+            int wOffset = 
+            		(m.ns_links * z_1st.package_size * z_1st.width * y) + 
+    	            (m.ns_links * z_1st.package_size * x) + 
+    	            (m.ns_links * 0);
+            
+            float sumW = 0;
+            int count = 0;
+
+        	for (int l = 0; l < m.ns_links; l++) {
+            	lx = m.linksSenapse[offset + l*2 +0];
+//            	ly = m.linksSenapse[offset + l*2 +1];
+            	
+            	int w = 0;
+            	
+            	//make vertical line
+            	if (lx >= centerX - 1 &&  lx <= centerX + 1) { // && ly >= centerY - 1 &&  ly <= centerY + 1) {
+            		w = 1;
+            	}
+                m.linksWeight[wOffset + l] = w;
+
+				sumW += w;
+
+				if (w > 0.0f)
+				{
+					count++;
+				}
+        	}
+
+        	//normalization
+    	    for(int l = 0; l < m.ns_links; l++)
+    	    {
+    	    	if (m.linksWeight[wOffset + l] == 0.0f)
+    	    	{
+    	    		m.linksWeight[wOffset + l] = -1 / (float)(count * 0.5);
+        		}
+        		else
+        		{
+        			m.linksWeight[wOffset + l] = m.linksWeight[wOffset + l] / sumW;
+    			}
+    		}
+        }
+
+    }
+
+	
+	@Override
+	public void run() {
+        while (run) {
+			try {
+				if (paused) {
+					synchronized (this) {
+						this.wait();
+					}
+				}
+                long t = System.currentTimeMillis();
+				
+				process();
+                
+                if (frequency != 0) {
+                    t = (1000 / frequency) - (System.currentTimeMillis() - t);
+
+                    if (t > 0)
+                    	Thread.sleep(t);
+                    else
+                    	//give some rest any way
+                    	Thread.sleep(5);
+
+                } else {
+                	//give some rest any way
+                	Thread.sleep(5);
+                }
+
+			} catch (Throwable e) {
+				e.printStackTrace();
+			} finally {
+                frame++;
+                long t = System.currentTimeMillis();
+                long dt = t - t0;
+                if (dt > 1000) {
+                    app.fps = 1000 * frame / dt;
+                    frame = 0;
+                    t0 = t;
+                }
+            }
+		}
+	}
+	
+	public void process() {
+        if (MODE >= STEP) {
+        	retina.process(app.getStimulator());
+        	
+    		for (CortexZoneSimple zone : zones) {
+    			zone.process();
+    		}
+    		count++;
+    		
+    		if (MODE == STEP) {
+    			MODE = STOP;
+        		app.count.setText(String.valueOf(count));
+        		app.refresh();
+    		
+    		} else if (MODE == RUN && count % 100 == 0) {
+        		app.count.setText(String.valueOf(count));
+    			app.refresh();
+
+    		}
+        }
+	}
+	
+	private Thread th = null;
+	private volatile boolean paused = false;
+	
+	public synchronized void start() {
+		resume();
+		
+		if (th != null) return;
+		
+		th = new Thread(this);
+		th.setDaemon(true);
+		th.start();
 	}
 
-    public void process() {
-		for (CortexZoneSimple zone : zones) {
-			zone.process();
+	public void pause() {
+		paused = true;
+	}
+
+	public void resume() {
+		paused = false;
+		synchronized (this) {
+			notifyAll();
 		}
-		Application.count.setText(String.valueOf(count++));
-//		finish();
-    }
+	}
 
     public void save(Writer out) throws IOException {
     	out.write("<cortex>");
@@ -457,11 +662,11 @@ public class MultiCortex {
     }
 
 
-	public static MultiCortex load(File file) throws IOException {
+	public static MultiCortex load(Application app, File file) throws IOException {
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			SAXPars saxp = new SAXPars();
+			SAXPars saxp = new SAXPars(app);
 	
 			parser.parse(file, saxp);
 			
@@ -475,6 +680,8 @@ public class MultiCortex {
 	
 	public static class SAXPars extends DefaultHandler { 
 		
+		Application app;
+		
 		MultiCortex mc = null;
 		List<CortexZoneSimple> zones = new ArrayList<CortexZoneSimple>();
 		
@@ -486,6 +693,10 @@ public class MultiCortex {
 		NeuronComplex cn = null;
 		
 		List<Mapping> mappings = new ArrayList<Mapping>();
+		
+		public SAXPars(Application app) {
+			this.app = app;
+		}
 		
 		@Override
 	    public void startElement (String uri, String localName, String qName, Attributes attrs) {
@@ -575,7 +786,7 @@ public class MultiCortex {
 		}
 		
 	    public void endDocument() throws SAXException {
-	    	mc = new MultiCortex(zones.toArray(new CortexZoneSimple[zones.size()]));
+	    	mc = new MultiCortex(app, zones.toArray(new CortexZoneSimple[zones.size()]));
 	    }
 	}
 	

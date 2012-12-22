@@ -23,7 +23,6 @@ package org.animotron.animi.acts;
 import static org.jocl.CL.*;
 
 import org.animotron.animi.RuntimeParam;
-import org.animotron.animi.Utils;
 import org.animotron.animi.cortex.*;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -59,7 +58,7 @@ public class Restructurization extends Task {
 
     	Mapping m = cz.in_zones[0];
     	
-    	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_pCols));
+    	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_packageCols));
         clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.package_size}));
 
         clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(m.cl_linksWeight));
@@ -67,7 +66,6 @@ public class Restructurization extends Task {
         clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {m.ns_links}));
         
         clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
-        clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(cz.cl_freeCols));
         
 //        System.out.println("Rest");
 //        System.out.println("neighborCols: "+Utils.debug(cz.rememberCols));
@@ -75,8 +73,8 @@ public class Restructurization extends Task {
 //        System.out.println("freeCols    : "+Utils.debug(cz.freeCols));
 //        System.out.println("linksWeight : "+Utils.debug(cz.in_zones[0].linksWeight, 100));
 
-        clSetKernelArg(kernel,  9, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
-        clSetKernelArg(kernel,  10, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
+        clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
+        clSetKernelArg(kernel,  9, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
     }
 
 	@Override
@@ -95,10 +93,10 @@ public class Restructurization extends Task {
         clWaitForEvents(1, events);
 
         // Read the contents of the cl_pCols memory object
-    	Pointer pColsTarget = Pointer.to(cz.pCols);
+    	Pointer pColsTarget = Pointer.to(cz.packageCols);
     	clEnqueueReadBuffer(
-			commandQueue, cz.cl_pCols, 
-			CL_TRUE, 0, cz.pCols.length * Sizeof.cl_float, 
+			commandQueue, cz.cl_packageCols, 
+			CL_TRUE, 0, cz.packageCols.length * Sizeof.cl_float, 
 			pColsTarget, 0, null, events[0]);
 
     	clWaitForEvents(1, events);

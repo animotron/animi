@@ -22,12 +22,7 @@ package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
 
-import java.awt.Color;
-import java.awt.image.DataBufferInt;
-
-import org.animotron.animi.Utils;
 import org.animotron.animi.cortex.*;
-import org.animotron.animi.gui.Application;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_command_queue;
@@ -67,8 +62,8 @@ public class WinnerGetsAll extends Task {
 
         final int linksNumber = cz.number_of_inhibitory_links;
     	
-    	float[] rememberCols = new float[sz.rememberCols.length];
-    	System.arraycopy(sz.rememberCols, 0, rememberCols, 0, sz.rememberCols.length);
+    	float[] rememberCols = new float[sz.cycleCols.length];
+    	System.arraycopy(sz.cycleCols, 0, rememberCols, 0, sz.cycleCols.length);
 
     	float[] cols = new float[sz.rememberCols.length];
     	System.arraycopy(sz.rememberCols, 0, cols, 0, sz.rememberCols.length);

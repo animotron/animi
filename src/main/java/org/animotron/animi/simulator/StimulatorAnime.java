@@ -24,7 +24,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import org.animotron.animi.Params;
-import org.animotron.animi.cortex.MultiCortex;
 import org.animotron.animi.cortex.Retina;
 import org.animotron.animi.gui.Application;
 import org.animotron.animi.simulator.figures.Figure;
@@ -41,12 +40,12 @@ public class StimulatorAnime extends AbstractStimulator {
     @Params
     public Figure[] figures;
     
-    public StimulatorAnime(Application application, MultiCortex cortexs) {
-    	super(application, cortexs);
+    public StimulatorAnime(Application application) {
+    	super(application);
 	}
 
 	public void init() {
-		Retina retina = mc.retina;
+		Retina retina = app.cortexs.retina;
 		
         img = new BufferedImage(
         		retina.width()  + (retina.safeZone * 2), 
@@ -109,18 +108,9 @@ public class StimulatorAnime extends AbstractStimulator {
         	new OvalAnime(30,
         	    new int[][] {
         	            {b1, b1},
-        	            {mc.retina.width() - b1, mc.retina.height() - b1},
-        	            {mc.retina.width() - b1, b1},
-        	            {b1, mc.retina.height() - b1},
-        	            {b1, b1}
-        	    }
-        	),
-        	new OvalAnime(32,
-        	    new int[][] {
-        	            {b1, b1},
-        	            {mc.retina.width() - b1, mc.retina.height() - b1},
-        	            {mc.retina.width() - b1, b1},
-        	            {b1, mc.retina.height() - b1},
+        	            {retina.width() - b1, retina.height() - b1},
+        	            {retina.width() - b1, b1},
+        	            {b1, retina.height() - b1},
         	            {b1, b1}
         	    }
         	),
@@ -128,60 +118,30 @@ public class StimulatorAnime extends AbstractStimulator {
         	    30, 0.05,
         	    new int[][] {
         	            {b2, b2},
-        	            {b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, b2},
-        	            {b2, b2}
-        	    }
-        	),
-        	new RectAnime(
-        	    32, 0.05,
-        	    new int[][] {
-        	            {b2, b2},
-        	            {b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, b2},
+        	            {b2, retina.height() - b2},
+        	            {retina.width() - b2, retina.height() - b2},
+        	            {retina.width() - b2, b2},
         	            {b2, b2}
         	    }
         	),
         	new RectAnime(
         	    40, 0.05,
         	    new int[][] {
-        	            {b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, b2},
+        	            {b2, retina.height() - b2},
+        	            {retina.width() - b2, retina.height() - b2},
+        	            {retina.width() - b2, b2},
         	            {b2, b2},
-        	            {b2, mc.retina.height() - b2}
-        	    }
-        	),
-        	new RectAnime(
-        	    42, 0.05,
-        	    new int[][] {
-        	            {b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, b2},
-        	            {b2, b2},
-        	            {b2, mc.retina.height() - b2}
+        	            {b2, retina.height() - b2}
         	    }
         	),
         	new RectAnime(
         	    30, 0,
         	    new int[][] {
-        	            {mc.retina.width() - b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, b2},
+        	            {retina.width() - b2, retina.height() - b2},
+        	            {retina.width() - b2, b2},
         	            {b2, b2},
-        	            {b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, mc.retina.height() - b2}
-        	    }
-        	),
-        	new RectAnime(
-        	    32, 0,
-        	    new int[][] {
-        	            {mc.retina.width() - b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, b2},
-        	            {b2, b2},
-        	            {b2, mc.retina.height() - b2},
-        	            {mc.retina.width() - b2, mc.retina.height() - b2}
+        	            {b2, retina.height() - b2},
+        	            {retina.width() - b2, retina.height() - b2}
         	    }
         	)
         };

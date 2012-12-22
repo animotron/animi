@@ -142,21 +142,9 @@ public class Retina {
     public static int Level_Bright = 100;
     public static int Lelel_min = 10;// * N_Col;
 
-    int step = 0;
-
     BufferedImage image = null;
 	float XScale = 0;
 	float YScale = 0;
-	
-	int[] shiftMatrix = new int[] {
-		0, 0,
-		1, 1,
-		1,-1,
-		2, 0,
-		3, 1,
-		3,-1,
-		4, 0,
-	};
 	
 	public final int safeZone = 20;
 
@@ -165,17 +153,12 @@ public class Retina {
 		if (onOff == null)
 			onOff = new OnOffMatrix(NL.mc.context);
 		
-		if (step == 0) {
-			image = stimulator.getNextImage();
+		image = stimulator.getNextImage();
 
-			XScale = (image.getWidth()  - (safeZone*2)) / (float)NL.width;
-			YScale = (image.getHeight() - (safeZone*2)) / (float)NL.height;
+		XScale = (image.getWidth()  - (safeZone*2)) / (float)NL.width;
+		YScale = (image.getHeight() - (safeZone*2)) / (float)NL.height;
 			
-			NL.reset();
-		}
-		
-		int shiftX = shiftMatrix[step*2  ];
-		int shiftY = shiftMatrix[step*2+1];
+		NL.reset();
 		
 //		Graphics g = image.getGraphics();
 //		g.drawRect(10, 10, image.getWidth() - 20, image.getHeight() - 20);
@@ -190,7 +173,6 @@ public class Retina {
         RetinaTask retinaTask = 
 			new RetinaTask(
     			(CortexZoneSimple)NL,
-    			shiftX, shiftY,
     			XScale, YScale,
     			data,
     			image.getWidth(), image.getHeight()
@@ -203,99 +185,7 @@ public class Retina {
             Thread.currentThread().interrupt();
         }
     	NL.mc.finish();
-		
-
-//        double XScale = physicalImage.getWidth() / (double)width;
-//        double YScale = physicalImage.getHeight() / (double)height;
-//
-//        //preprocessing
-//    	for (int x = 0; x < width; x++)
-//        	for (int y = 0; y < height; y++)
-//        		preprocessed[x][y] = Utils.calcGrey(physicalImage, (int)(x * XScale), (int)(y * YScale)) / 255;
-//    	
-//        XScale = width / (double)NL.width();
-//        YScale = height / (double)NL.height();
-//        
-//        for (int ix = 0; ix < NL.width(); ix++) {
-//        	for (int iy = 0; iy < NL.height(); iy++) {
-//    			NL.shift(ix, iy, 0);
-//        	}
-//        }
-//        
-//        int nextX, nextY;
-//        
-////    	double SP, SC, SA;
-////        double K_cont;
-//        for (int ix = 0; ix < NL.width(); ix++) {
-//        	for (int iy = 0; iy < NL.height(); iy++) {
-//
-////        		OnOffReceptiveField mSensPol = sensorField[ix][iy];
-//
-//        		nextX = ix + thisX;
-//        		nextY = iy + thisY;
-//        		
-//        		if (nextX >= 0 && nextX < width && nextY >= 0 && nextY < height) {
-//        			NL.shift(nextX, nextY, preprocessed[(int)(ix * XScale)][(int)(iy * YScale)]);
-//        		}
-//
-////                NL.set(ix,iy,false);
-////
-////                SC = 0;
-////                for (int j = 0; j < onOff.numInCenter(); j++) {
-////
-////                    SC += preprocessed[mSensPol.center[j][0]][mSensPol.center[j][1]];
-////                }
-////
-////                SP = 0;
-////                for (int j = 0; j < onOff.numInPeref(); j++) {
-////
-////                    SP += preprocessed[mSensPol.periphery[j][0]][mSensPol.periphery[j][1]];
-////                }
-////
-////                SA = ((SP + SC) / (double)(onOff.numInCenter() + onOff.numInPeref()));
-////
-////                K_cont = KContr1 + SA * (KContr2 - KContr1) / Level_Bright;
-////
-////                if (K_cont < KContr3) K_cont = KContr3;
-////
-////                SC = SC / onOff.numInCenter();
-////                SP = SP / onOff.numInPeref();
-////
-////                if (SA > Lelel_min) {
-////                	switch (mSensPol.type) {
-////                    case 1:
-////
-////                        if (SC / SP > K_cont)
-////                        	NL.set(ix,iy,true);
-////
-////						break;
-////
-////                    case 2:
-////
-////                        if (SP / SC > K_cont)
-////                        	NL.set(ix,iy,true);
-////
-////                        break;
-////
-////                    case 3:
-////
-////                        if (SC / SP > K_cont || SP / SC > K_cont)
-////                        	NL.set(ix,iy,true);
-////
-////                        break;
-////					default:
-////						break;
-////					}
-////                }
-//        	}
-//        }
-//        System.out.println("");
         NL.refreshImage();
-        
-		step++;
-		if (step * 2 >= shiftMatrix.length) {
-			step = 0;
-		}
     }
     
 	public int width() {
@@ -312,7 +202,6 @@ public class Retina {
     
     public class RetinaTask extends Task {
     	
-    	int offsetX, offsetY;
     	float XScale, YScale;
     	
     	int input[];
@@ -320,15 +209,12 @@ public class Retina {
     	protected cl_mem inputMem;
 
 		protected RetinaTask(CortexZoneSimple sz, 
-				int offsetX, int offsetY, 
 				float XScale, float YScale, 
 				int input[], 
 				int inputSizeX, int inputSizeY) {
 			
 			super(sz);
 			
-			this.offsetX = offsetX;
-	    	this.offsetY = offsetY;
 	    	this.XScale = XScale;
 	    	this.YScale = YScale;
 	    	
@@ -341,28 +227,27 @@ public class Retina {
 	    	super.setupArguments(kernel);
 
 	        clSetKernelArg(kernel,  2, Sizeof.cl_int, Pointer.to(new int[] {safeZone}));
-	        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {offsetX}));
-	        clSetKernelArg(kernel,  4, Sizeof.cl_int, Pointer.to(new int[] {offsetY}));
-	        clSetKernelArg(kernel,  5, Sizeof.cl_float, Pointer.to(new float[] {XScale}));
-	        clSetKernelArg(kernel,  6, Sizeof.cl_float, Pointer.to(new float[] {YScale}));
+	        clSetKernelArg(kernel,  3, Sizeof.cl_float, Pointer.to(new float[] {XScale}));
+	        clSetKernelArg(kernel,  4, Sizeof.cl_float, Pointer.to(new float[] {YScale}));
 
-	        clSetKernelArg(kernel,  7, Sizeof.cl_int, Pointer.to(new int[] {onOff.radius}));
-	        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {onOff.regionSize}));
-	        clSetKernelArg(kernel,  9, Sizeof.cl_mem, Pointer.to(onOff.cl_matrix));
-	        clSetKernelArg(kernel,  10, Sizeof.cl_int, Pointer.to(new int[] {3}));
-	        clSetKernelArg(kernel,  11, Sizeof.cl_float, Pointer.to(new float[] {KContr1}));
-	        clSetKernelArg(kernel,  12, Sizeof.cl_float, Pointer.to(new float[] {KContr2}));
-	        clSetKernelArg(kernel,  13, Sizeof.cl_float, Pointer.to(new float[] {KContr3}));
-	        clSetKernelArg(kernel,  14, Sizeof.cl_int, Pointer.to(new int[] {Level_Bright}));
-	        clSetKernelArg(kernel,  15, Sizeof.cl_int, Pointer.to(new int[] {Lelel_min}));
+	        clSetKernelArg(kernel,  5, Sizeof.cl_int, Pointer.to(new int[] {onOff.radius}));
+	        clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {onOff.regionSize}));
+	        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(onOff.cl_matrix));
+	        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {3}));
+	        
+	        clSetKernelArg(kernel,  9, Sizeof.cl_float, Pointer.to(new float[] {KContr1}));
+	        clSetKernelArg(kernel,  10, Sizeof.cl_float, Pointer.to(new float[] {KContr2}));
+	        clSetKernelArg(kernel,  11, Sizeof.cl_float, Pointer.to(new float[] {KContr3}));
+	        clSetKernelArg(kernel,  12, Sizeof.cl_int, Pointer.to(new int[] {Level_Bright}));
+	        clSetKernelArg(kernel,  13, Sizeof.cl_int, Pointer.to(new int[] {Lelel_min}));
 
 	        inputMem = clCreateBuffer(
 	    		sz.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
 	    		input.length * Sizeof.cl_int, Pointer.to(input), null
 			);
-	        clSetKernelArg(kernel,  16, Sizeof.cl_mem, Pointer.to(inputMem));
-	        clSetKernelArg(kernel,  17, Sizeof.cl_int, Pointer.to(new int[] {inputSizeX}));
-	        clSetKernelArg(kernel,  18, Sizeof.cl_int, Pointer.to(new int[] {inputSizeY}));
+	        clSetKernelArg(kernel,  14, Sizeof.cl_mem, Pointer.to(inputMem));
+	        clSetKernelArg(kernel,  15, Sizeof.cl_int, Pointer.to(new int[] {inputSizeX}));
+	        clSetKernelArg(kernel,  16, Sizeof.cl_int, Pointer.to(new int[] {inputSizeY}));
 	    }
 
 	    @Override

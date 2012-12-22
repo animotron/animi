@@ -90,16 +90,19 @@ public class Utils {
 
 		final CortexZoneComplex cz = m.toZone;
 
-		final int offset = (cnY * cz.width * m.linksSenapseRecordSize) + (m.linksSenapseRecordSize * cnX);
-//        final int offsetWeight = (cnY * cz.width * m.linksWeightRecordSize) + (m.linksWeightRecordSize * cnX);
+		final int offset = 
+				(2 * m.ns_links * cz.width * cnY) + 
+				(2 * m.ns_links * cnX);
 	    
-        int offsetPackagers = cz.package_size * m.ns_links;
-		int lOffset = (cnY * cz.width * offsetPackagers) + (cnX * offsetPackagers) + (pN * m.ns_links);        
+		int lOffset = 
+				(m.ns_links * cz.package_size * cz.width * cnY) + 
+				(m.ns_links * cz.package_size * cnX) + 
+				(m.ns_links * pN);        
         
 		int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	int xi = m.linksSenapse[offset + 2*l    ];
-        	int yi = m.linksSenapse[offset + 2*l + 1];
+        	int xi = m.linksSenapse[offset + 2*l +0];
+        	int yi = m.linksSenapse[offset + 2*l +1];
         	
         	pX = (boxSize / 2) + (xi - (int)(cnX * m.fX));
 			pY = (boxSize / 2) + (yi - (int)(cnY * m.fY));
@@ -162,13 +165,16 @@ public class Utils {
 		
 		final int pos = cnY * cz.width + cnX;
 
-		final int offset = (cnY * cz.width * m.linksSenapseRecordSize) + (m.linksSenapseRecordSize * cnX);
-        final int offsetWeight = (cnY * cz.width * m.linksWeightRecordSize) + (m.linksWeightRecordSize * cnX);
+		final int offset = 
+				(2 * m.ns_links * cz.width * cnY) + 
+				(2 * m.ns_links * cnX);
+
+		final int offsetWeight = (cnY * cz.width * m.linksWeightRecordSize) + (m.linksWeightRecordSize * cnX);
         
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	int xi = m.linksSenapse[offset + 2*l    ];
-        	int yi = m.linksSenapse[offset + 2*l + 1];
+        	int xi = m.linksSenapse[offset + 2*l +0];
+        	int yi = m.linksSenapse[offset + 2*l +1];
         	
         	pX = xi;
 			pY = yi;
@@ -205,7 +211,7 @@ public class Utils {
 				
 				int packageNumber = 0;
 				for (int p = 0; p < cz.package_size; p++) {
-					if (cz.pCols[(cnY * cz.width * cz.package_size) + (cnX * cz.package_size) + p] >= cz.cols[pos]) {
+					if (cz.packageCols[(cnY * cz.width * cz.package_size) + (cnX * cz.package_size) + p] >= cz.cols[pos]) {
 						packageNumber = p;
 						break;
 					}

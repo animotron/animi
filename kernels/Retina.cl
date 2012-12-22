@@ -28,7 +28,6 @@ __kernel void computeRetina(
     int outputSizeX,
 
     int safeZone,
-    int offsetX, int offsetY,
 
     float XScale, float YScale,
 
@@ -78,7 +77,7 @@ __kernel void computeRetina(
 	        xi = x - onOff_radius + onOffX;
 	        yi = y - onOff_radius + onOffY;
 	        
-		    rgb = input[(inputSizeX * (int)((yi + offsetY + safeZone) * YScale)) + (int)((xi + offsetX + safeZone) * XScale)];
+		    rgb = input[(inputSizeX * (int)((yi + safeZone) * YScale)) + (int)((xi + safeZone) * XScale)];
     		R = (rgb >> 16) & 0xFF;
     		G = (rgb >> 8 ) & 0xFF;
     		B = (rgb      ) & 0xFF;
@@ -111,35 +110,37 @@ __kernel void computeRetina(
 	SC = SC / numInCenter;
 	SP = SP / numInPeref;
 
-	output[pos] = 0;
+	float value = 0;
 	if (SA > Lelel_min)
 	{
 		if (type == 1)
 		{
 			if (SC / SP > K_cont)
 			{
-				output[pos] = 1;
+				value = 1;
 			}
 		}
 		else if (type == 2)
 		{
 			if (SP / SC > K_cont)
 			{
-				output[pos] = 1;
+				value = 1;
 			}
 		}
 		if (type == 3)
 		{
 			if (SC / SP > K_cont)
 			{
-				output[pos] = 1;
+				value = 1;
 			}
 			else if (SP / SC > K_cont)
 			{
-				output[pos] = 1;
+				value = 1;
 			}
 		}
 	}
+	
+	output[pos] = value;
 
     //normalize
     //output[pos] = output[pos] / 255.0f;

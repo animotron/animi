@@ -24,18 +24,13 @@
   */
 
 __kernel void computeMemorization(
-    __global float* cols,
     int sizeX,
 
     __global float* package,
+    __global int* packageFree,
     int numberOfPackages,
 
-    __global float* linksWeight,
-    __global int*   linksSenapse,
-    int linksNumber,
-    
     __global float* rememberCols,
-    __global float* freeCols,
 
     __global float* input,
     int inputSizeX
@@ -44,65 +39,27 @@ __kernel void computeMemorization(
     int x = get_global_id(0);
     int y = get_global_id(1);
     
-    int pos = (y * sizeX)+x;
+    int pos = (y * sizeX) + x;
+    int packagePos = 0;
     
-    //current activity
-    float activity = cols[pos];
-    
-    //free package number
-    int pN = -1; 
-    for (int p = 0; p < numberOfPackages; p++)
+	if (rememberCols[pos] > 0.0f)
     {
-    	if (package[(y * sizeX * numberOfPackages) + (x * numberOfPackages) + p] < 0.0f)
-    	{
-    		pN = p;
-    		break;
-    	}
+	    for (int p = 0; p < numberOfPackages; p++)
+	    {
+			packagePos = 
+				(numberOfPackages * sizeX * y) + 
+				(numberOfPackages * x) + 
+				p;
+		    
+		    if (packageFree[packagePos] >= 1.0f)
+		    {
+			    if (package[packagePos] > 0.0f)
+			    {
+					packageFree[packagePos] = 0.0f;
+				}
+		    }
+	    }
     }
-
-	if (pN > -1 && rememberCols[pos] > 0.0f)
-    {
-	    int XSize = (linksNumber * 2);
-	    int offset = (y * sizeX * XSize) + (x * XSize);
-	    
-	    int offsetPackagers = linksNumber * numberOfPackages;
-		int lOffset = (y * sizeX * offsetPackagers) + (x * offsetPackagers) + (pN * linksNumber);
-		
-    	int count = 0;
-    	float sumW = 0;
-    	float w = 0;
-	    
-	    for(int l = 0; l < linksNumber; l++)
-	    {
-	    	int xi = linksSenapse[offset + (l * 2)    ];
-	    	int yi = linksSenapse[offset + (l * 2) + 1];
-	    	
-	    	w = input[ ( yi * inputSizeX ) + xi ];
-	    	
-			sumW += w;
-			
-			linksWeight[lOffset + l] = w;
-			
-			if (w > 0.0f)
-			{
-				count++;
-			}
-		}
-	
-	    for(int l = 0; l < linksNumber; l++)
-	    {
-	    	if (linksWeight[lOffset + l] == 0.0f)
-	    	{
-	    		linksWeight[lOffset + l] = -1 / (float)(count * 0.5);
-    		}
-    		else
-    		{
-				linksWeight[lOffset + l] = linksWeight[lOffset + l] / sumW;
-			}
-		}
-		
-	    package[(y * sizeX * numberOfPackages) + (x * numberOfPackages) + pN] = 0;
-	}
 	
 //	barrier(CLK_LOCAL_MEM_FENCE);
 }

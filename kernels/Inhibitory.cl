@@ -31,11 +31,11 @@ __kernel void computeInhibitory(
     int linksNumber,
 
     __global float* package,
+    __global int* packageFree,
     int numberOfPackages,
 
     __global float* rememberCols,
     __global float* cycleCols,
-    __global float* freeCols,
     __global float* input
 ) {
 
@@ -49,7 +49,7 @@ __kernel void computeInhibitory(
 	barrier(CLK_LOCAL_MEM_FENCE);
 
 	//set 0 in inhibitory zone of the active column
-	if (input[pos] > 0)
+	if (cycleCols[pos] > 0)
 	{
 	    int XSize = (linksNumber * 2);
     	int offset = (y * sizeX * XSize) + (x * XSize);
@@ -64,44 +64,5 @@ __kernel void computeInhibitory(
     	rememberCols[(y * sizeX) + x] = 0.0f;
     }
 	
-	barrier(CLK_LOCAL_MEM_FENCE);
-	
-	if (rememberCols[pos] > 0.0f)
-	{
-	    //free package number
-    	int pN = -1; 
-    	for (int p = 0; p < numberOfPackages; p++)
-    	{
-    		if (package[(y * sizeX * numberOfPackages) + (x * numberOfPackages) + p] < 0.0f)
-    		{
-    			pN = p;
-    			break;
-    		}
-    	}
-    	
-		if (pN == 0.0f)
-		{
-	    	//empty
-			if (freeCols[pos] > 0.0f) 
-			{
-				rememberCols[pos] = freeCols[pos];
-			}
-			else
-			{
-				rememberCols[pos] = 0;
-			}
-		}
-		else
-		{
-			//busy
-			if (cycleCols[pos] > 0.0f && freeCols[pos] > 0.0f)
-			{
-				rememberCols[pos] = 1.0f + freeCols[pos];
-			}
-			else
-			{
-				rememberCols[pos] = 0;
-			}
-		}
-	};
+//	barrier(CLK_LOCAL_MEM_FENCE);
 }

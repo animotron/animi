@@ -77,12 +77,6 @@ public class CortexZoneSimple implements Layer {
     public cl_mem cl_cycleCols;
     public float cycleCols[];
 
-    /**
-     * The OpenCL memory object which store the activity of free package of neuron.
-     */
-    public cl_mem cl_freeCols;
-    public float freeCols[];
-
 	public BufferedImage image;
 
 //	@InitParam(name="speed")
@@ -127,14 +121,6 @@ public class CortexZoneSimple implements Layer {
     	cl_cycleCols = clCreateBuffer(
     		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
     		cycleCols.length * Sizeof.cl_float, Pointer.to(cycleCols), null
-		);
-
-    	freeCols = new float[width * height];
-    	Arrays.fill(freeCols, 0);
-    	
-    	cl_freeCols = clCreateBuffer(
-    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-    		freeCols.length * Sizeof.cl_float, Pointer.to(freeCols), null
 		);
 
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);

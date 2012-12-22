@@ -31,14 +31,16 @@
 		<dependency>
 			<groupId>com.github.sarxos</groupId>
 			<artifactId>webcam-capture</artifactId>
-			<version>0.3.4-SNAPSHOT</version>
+			<version>0.3.6</version>
 		</dependency>
+		<!-- 
 		<dependency>
     		<groupId>com.github.sarxos</groupId>
     		<artifactId>webcam-capture-driver-openimaj</artifactId>
-    		<version>0.3.4</version>
+    		<version>0.3.6</version>
    		</dependency>
-   		
+   		-->
+		
 		<!-- 
         <dependency>
             <groupId>net.java.dev.java3d</groupId>

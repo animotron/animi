@@ -24,7 +24,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import org.animotron.animi.Params;
-import org.animotron.animi.cortex.MultiCortex;
+import org.animotron.animi.cortex.Retina;
 import org.animotron.animi.gui.Application;
 import org.animotron.animi.simulator.figures.*;
 
@@ -38,14 +38,16 @@ public class StimulatorStatic extends AbstractStimulator {
     @Params
     public Figure[] figures;
     
-    public StimulatorStatic(Application application, MultiCortex cortexs) {
-    	super(application, cortexs);
+    public StimulatorStatic(Application application) {
+    	super(application);
 	}
 
 	public void init() {
+		final Retina retina = app.cortexs.retina;
+		
         figures = new Figure[] {
 //        	new OvalAnime(15, mc.retina.width(), mc.retina.height()),
-        	new RectAnime(15, mc.retina.width(), mc.retina.height(), true)
+        	new RectAnime(15, retina.width(), retina.height(), true)
 //        	,
 //        	new Triangle(15, mc.retina.width(), mc.retina.height())
         };
@@ -65,7 +67,9 @@ public class StimulatorStatic extends AbstractStimulator {
 
 	@Override
 	public BufferedImage getNextImage() {
-        img = new BufferedImage(mc.retina.width(), mc.retina.height(), BufferedImage.TYPE_INT_RGB);
+		final Retina retina = app.cortexs.retina;
+
+		img = new BufferedImage(retina.width() + retina.safeZone*2, retina.height() + retina.safeZone*2, BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();
 
         for (Figure i : figures) {

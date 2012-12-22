@@ -54,6 +54,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	@Params
     Inhibitory inhibitory = new Inhibitory(this);
     WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
+    
+    public cl_mem cl_tremor;
+	public int[] tremor = new int[] {0, 0};
 
 //    @Params
     Restructurization restructorization = new Restructurization(this);
@@ -87,8 +90,16 @@ public class CortexZoneComplex extends CortexZoneSimple {
     /**
      * The OpenCL memory object which store the activity for each package.
      */
-    public cl_mem cl_pCols;
-    public float pCols[];
+    public cl_mem cl_packageCols;
+    public float packageCols[];
+    
+    /**
+     * The OpenCL memory object which store the .... package of neuron.
+     */
+    public cl_mem cl_freePackageCols;
+    public int freePackageCols[];
+
+    
 	@InitParam(name="package_size")
 	public int package_size = 7;
 
@@ -128,6 +139,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		double X, Y, S;
 		double x_in_nerv, y_in_nerv;
+		int offset = 0;
 
 		//разброс торозных связей
 		inhibitoryLinksSenapse = new int[width * height * number_of_inhibitory_links * 2];
@@ -203,8 +215,13 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 						// Создаем синаптическую связь
 //						new Link(getCol(lx, ly), getCol(x, y), w, LinkType.INHIBITORY);
-						inhibitoryLinksSenapse[(y*width*number_of_inhibitory_links*2)+ (number_of_inhibitory_links*2*x)+ i*2   ] = lx;
-						inhibitoryLinksSenapse[(y*width*number_of_inhibitory_links*2)+ (number_of_inhibitory_links*2*x)+ i*2 +1] = ly;
+						
+						offset = 
+								(2 * number_of_inhibitory_links * width * y)+
+								(2 * number_of_inhibitory_links * x);
+						
+						inhibitoryLinksSenapse[offset + i*2 +0] = lx;
+						inhibitoryLinksSenapse[offset + i*2 +1] = ly;
                     }
 				}
 //				System.out.println();
@@ -215,12 +232,25 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
 					inhibitoryLinksSenapse.length * Sizeof.cl_int, Pointer.to(inhibitoryLinksSenapse), null);
 
-    	pCols = new float[width * height * package_size];
-    	Arrays.fill(pCols, -1);
+    	packageCols = new float[width * height * package_size];
+    	Arrays.fill(packageCols, 0);
     	
-        cl_pCols = clCreateBuffer(
+        cl_packageCols = clCreateBuffer(
     		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-    		pCols.length * Sizeof.cl_float, Pointer.to(pCols), null
+    		packageCols.length * Sizeof.cl_float, Pointer.to(packageCols), null
+		);
+
+    	freePackageCols = new int[width * height * package_size];
+    	Arrays.fill(freePackageCols, 1);
+    	
+        cl_freePackageCols = clCreateBuffer(
+    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
+    		freePackageCols.length * Sizeof.cl_int, Pointer.to(freePackageCols), null
+		);
+
+        cl_tremor = clCreateBuffer(
+    		mc.context, CL_MEM_READ_ONLY| CL_MEM_USE_HOST_PTR, 
+    		tremor.length * Sizeof.cl_int, Pointer.to(tremor), null
 		);
 
         if (CRF != null) {
@@ -425,8 +455,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
     		count++;
     	}
     	
-//    	step++;
-//    	if (step > 4) step = 1;
+    	step++;
+    	if (step >= 3) step = 1;
     }
     
     private void performTask(Task task) {
@@ -439,17 +469,17 @@ public class CortexZoneComplex extends CortexZoneSimple {
         mc.finish();
     }
     
-//    int step = 1;
+    int step = 1;
     
     //Такт 1. Активация колонок (узнавание)
     protected void cycleActivation() {
     	
-//    	if (step == 1)
+    	if (step == 1)
     	performTask(cnActivation);
 //		for (int i : new int[] {1,2,3,4,5}) {
 //			if (step == 2)
-    		performTask(inhibitory);
-//			if (step == 3)
+//    		performTask(inhibitory);
+			if (step == 2)
 			performTask(winnerGetsAll);
 //		}
     }
@@ -457,9 +487,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Граничные нейроны не задействованы.
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     private void cycleLearning() {
-//		if (step == 4)
+		if (step == 3)
     	performTask(memorization);
-    	performTask(restructorization);
+//    	performTask(restructorization);
     }
 
 	public void save(Writer out) throws IOException {
