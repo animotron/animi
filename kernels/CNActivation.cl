@@ -62,6 +62,7 @@ __kernel void computeActivation(
     
     int empty = 1;
 	bool toRemember = true;
+	int rememberOn = 0;
     
     for (int step = 0; step < numberOfSteps; step++)
     {
@@ -69,7 +70,7 @@ __kernel void computeActivation(
 		int shiftY = tremor[step*2 +1];
 		
 		toRemember = true;
-
+		
 	    for (int p = 0; p < numberOfPackages; p++)
 	    {
 	    	wOffset = linksOffset + (p * linksNumber);
@@ -104,9 +105,10 @@ __kernel void computeActivation(
 	    		{
 				    sum = 0.0f;
 				}
-				else if (toRemember)
+				else if (toRemember && p >= rememberOn)
 				{
 					toRemember = false;
+					rememberOn = p+1;
 					
 			    	int count = 0;
 			    	float sumW = 0;
@@ -151,6 +153,12 @@ __kernel void computeActivation(
 	    		{
 				    maximum = max(sum, maximum);
 	    		}
+	    		
+			    for(int l = 0; l < linksNumber; l++)
+			    {
+			        linksWeight[wOffset + l] = 1;
+			    }
+	    		
 	    	}
 	    	
 	    	//record maximum of package activity
