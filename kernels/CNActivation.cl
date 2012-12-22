@@ -85,7 +85,7 @@ __kernel void computeActivation(
 		    	int yi = linksSenapse[offset + (l * 2) +1] + shiftY;
 		        
 		        if (empty == 1)
-		        	sum += input[(yi * inputSizeX) + xi];
+		        	sum += input[(yi * inputSizeX) + xi] / (float)linksNumber;
 	        	else
 		        	sum += input[(yi * inputSizeX) + xi] * linksWeight[wOffset + l];
 		    }
