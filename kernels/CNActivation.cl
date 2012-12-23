@@ -179,5 +179,12 @@ __kernel void computeActivation(
 	    }
     }
     
-	output[pos] = _cycleCols / (float)pN;
+    if (pN > 0)
+    {
+		output[pos] = _cycleCols / (float)pN;
+	}
+	else
+	{
+		output[pos] = 0;
+	}
 }

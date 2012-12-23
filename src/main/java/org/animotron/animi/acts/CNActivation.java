@@ -117,6 +117,7 @@ public class CNActivation extends Task {
 	@Override
     protected void release() {
 //		clReleaseMemObject(cl_linksWeight);
-//		clReleaseMemObject(cl_freePackageCols);
+		clReleaseMemObject(cl_freePackageCols);
+		cl_freePackageCols = null;
     }
 }

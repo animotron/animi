@@ -24,6 +24,7 @@
   */
 
 __kernel void computeMemorization(
+    __global float* output,
     int sizeX,
 
     __global float* package,
@@ -51,11 +52,11 @@ __kernel void computeMemorization(
 				(numberOfPackages * x) + 
 				p;
 		    
-		    if (packageFree[packagePos] >= 1.0f)
+		    if (packageFree[packagePos] >= 1)
 		    {
 			    if (package[packagePos] > 0.0f)
 			    {
-					packageFree[packagePos] = 0.0f;
+					packageFree[packagePos] = 0;
 				}
 		    }
 	    }

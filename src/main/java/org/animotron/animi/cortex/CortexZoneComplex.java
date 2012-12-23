@@ -455,8 +455,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
     		count++;
     	}
     	
-    	step++;
-    	if (step >= 3) step = 1;
+//    	step++;
+//    	if (step >= 3) step = 1;
     }
     
     private void performTask(Task task) {
@@ -469,17 +469,17 @@ public class CortexZoneComplex extends CortexZoneSimple {
         mc.finish();
     }
     
-    int step = 1;
+//    int step = 1;
     
     //Такт 1. Активация колонок (узнавание)
     protected void cycleActivation() {
     	
-    	if (step == 1)
+//    	if (step == 1)
     	performTask(cnActivation);
 //		for (int i : new int[] {1,2,3,4,5}) {
 //			if (step == 2)
 //    		performTask(inhibitory);
-			if (step == 2)
+//			if (step == 2)
 			performTask(winnerGetsAll);
 //		}
     }
@@ -487,7 +487,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     //Граничные нейроны не задействованы.
     //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
     private void cycleLearning() {
-		if (step == 3)
+//		if (step == 3)
     	performTask(memorization);
 //    	performTask(restructorization);
     }

@@ -29,6 +29,7 @@ import org.jocl.Sizeof;
 import org.jocl.cl_command_queue;
 import org.jocl.cl_event;
 import org.jocl.cl_kernel;
+import org.jocl.cl_mem;
 
 /**
  * Активация простых нейронов при узнавании запомненной картины
@@ -39,6 +40,8 @@ import org.jocl.cl_kernel;
  */
 public class Memorization extends Task {
 	
+	cl_mem cl_freePackageCols = null;
+
 	@RuntimeParam(name = "count")
 	public int count = 10000;
 	
@@ -53,36 +56,50 @@ public class Memorization extends Task {
      */
 	@Override
     protected void setupArguments(cl_kernel kernel) {
-        clSetKernelArg(kernel,  0, Sizeof.cl_int, Pointer.to(new int[] {cz.width}));
+    	clSetKernelArg(kernel,  0, Sizeof.cl_mem, Pointer.to(cz.cl_cols));
+        clSetKernelArg(kernel,  1, Sizeof.cl_int, Pointer.to(new int[] {cz.width}));
 
-    	clSetKernelArg(kernel,  1, Sizeof.cl_mem, Pointer.to(cz.cl_packageCols));
-    	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_freePackageCols));
-        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.package_size}));
+    	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_packageCols));
+    	
+        if (cl_freePackageCols == null) {
+	        cl_freePackageCols = clCreateBuffer(
+	    		cz.mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
+	    		cz.freePackageCols.length * Sizeof.cl_int, Pointer.to(cz.freePackageCols), null
+			);
+        }
+    	clSetKernelArg(kernel,  3, Sizeof.cl_mem, Pointer.to(cl_freePackageCols));
+        clSetKernelArg(kernel,  4, Sizeof.cl_int, Pointer.to(new int[] {cz.package_size}));
 
-        clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
+        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
         
     	Mapping m = cz.in_zones[0];
     	
-        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
-        clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
+        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
+        clSetKernelArg(kernel,  7, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
     }
 
 	@Override
-    protected void enqueueReads(cl_command_queue commandQueue, cl_event events[]) {
-//    	super.enqueueReads(commandQueue, events);
+    protected void enqueueReads(cl_command_queue commandQueue) {
+        cl_event events[] = new cl_event[] { new cl_event(), new cl_event() };
+
+        super.enqueueReads(commandQueue, events);
         	
     	// Read the contents of the cl_freePackageCols memory object
     	Pointer freePackageColsTarget = Pointer.to(cz.freePackageCols);
     	clEnqueueReadBuffer(
-			commandQueue, cz.cl_freePackageCols, 
+			commandQueue, cl_freePackageCols, 
 			CL_TRUE, 0, cz.freePackageCols.length * Sizeof.cl_int, 
-			freePackageColsTarget, 0, null, events[0]);
+			freePackageColsTarget, 0, null, events[1]);
 
-    	clWaitForEvents(1, events);
+    	clWaitForEvents(2, events);
+    	
+    	clReleaseEvent(events[0]);
+    	clReleaseEvent(events[1]);
     }
 	
 	@Override
     protected void release() {
-//		clReleaseMemObject(_cols);
+		clReleaseMemObject(cl_freePackageCols);
+		cl_freePackageCols = null;
     }
 }
