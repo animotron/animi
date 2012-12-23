@@ -78,7 +78,7 @@ public abstract class Task {
      * @param commandQueue The command queue
      */
     public void execute(cl_kernel kernel, cl_command_queue commandQueue) {
-        System.out.println(""+this.getClass().getName()+" "+sz.width+":"+sz.height);
+//        System.out.println(""+this.getClass().getName()+" "+sz.width+":"+sz.height);
         
         setupArguments(kernel);
         
@@ -97,7 +97,7 @@ public abstract class Task {
         
 //        Utils.printBenchmarkInfo("Event calc", events[0]);
         
-        enqueueReads(commandQueue, events);
+        enqueueReads(commandQueue);
 
 //        clWaitForEvents(1, events);
         
@@ -116,6 +116,16 @@ public abstract class Task {
         clReleaseEvent(events[0]);
     }
     
+    protected void enqueueReads(cl_command_queue commandQueue) {
+        cl_event events[] = new cl_event[] { new cl_event() };
+
+    	enqueueReads(commandQueue, events);
+    	
+    	clWaitForEvents(1, events);
+    	
+        clReleaseEvent(events[0]);
+    }
+
     protected void enqueueReads(cl_command_queue commandQueue, cl_event events[]) {
         // Read the contents of the cols memory object
     	Pointer target = Pointer.to(sz.cols);
@@ -124,8 +134,6 @@ public abstract class Task {
 			CL_TRUE, 0, sz.cols.length * Sizeof.cl_float, 
 			target, 0, null, events[0]);
 
-    	clWaitForEvents(1, events);
-    	
 //    	System.out.println("cols "+Utils.debug(sz.cols));
 	}
 

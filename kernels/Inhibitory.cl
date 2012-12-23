@@ -35,8 +35,7 @@ __kernel void computeInhibitory(
     int numberOfPackages,
 
     __global float* rememberCols,
-    __global float* cycleCols,
-    __global float* input
+    __global float* cycleCols
 ) {
 
     int x = get_global_id(0);

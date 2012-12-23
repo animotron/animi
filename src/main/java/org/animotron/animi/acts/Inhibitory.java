@@ -66,7 +66,6 @@ public class Inhibitory extends Task {
         clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {cz.package_size}));
 
         clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
-        clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(cz.cl_cycleCols));
 
         final float cols[] = new float[cz.cols.length];
         System.arraycopy(cz.cols, 0, cols, 0, cols.length);
@@ -75,11 +74,14 @@ public class Inhibitory extends Task {
     		cols.length * Sizeof.cl_float, Pointer.to(cols), null
 		);
         
-        clSetKernelArg(kernel,  9, Sizeof.cl_mem, Pointer.to(_cols));
+        clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(_cols));
     }
 
 	@Override
-    protected void enqueueReads(cl_command_queue commandQueue, cl_event events[]) {
+    protected void enqueueReads(cl_command_queue commandQueue, cl_event _events[]) {
+		
+        cl_event events[] = new cl_event[] { new cl_event(), new cl_event() };
+		
     	super.enqueueReads(commandQueue, events);
     	
         // Read the contents of the cl_neighborCols memory object
@@ -87,9 +89,13 @@ public class Inhibitory extends Task {
     	clEnqueueReadBuffer(
 			commandQueue, sz.cl_rememberCols, 
 			CL_TRUE, 0, sz.rememberCols.length * Sizeof.cl_float, 
-			target, 0, null, events[0]);
+			target, 0, null, events[1]);
 
-    	clWaitForEvents(1, events);
+    	clWaitForEvents(2, events);
+    	
+        clReleaseEvent(events[0]);
+        clReleaseEvent(events[1]);
+
 	}
 
 //	@Override

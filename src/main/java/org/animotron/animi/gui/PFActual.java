@@ -150,6 +150,11 @@ public class PFActual implements Imageable, InternalFrameListener {
 				x+1, y+1, null);
 
 		
+		x = 0;
+		y += 2+(img.getHeight()*zoom);
+		y += textY;
+		g.drawString("act "+String.valueOf(zone.cols[(point.y * zone.width) + point.x]), x, y);		
+
 		return image;
 	}
 	

@@ -55,7 +55,7 @@ public class Utils {
         
 //        return r+g+b;
 //        return (r+g+b) /3;
-        return (int) Math.round(r * LUM_RED + g * LUM_GREEN + b * LUM_BLUE);
+        return (int) Math.round((r + g + b) / (double)3);
     }
 
     public static int create_rgb(int alpha, int r, int g, int b) {
@@ -90,14 +90,9 @@ public class Utils {
 
 		final CortexZoneComplex cz = m.toZone;
 
-		final int offset = 
-				(2 * m.ns_links * cz.width * cnY) + 
-				(2 * m.ns_links * cnX);
+		final int offset = ((cnY * cz.width) + cnX) * 2 * m.ns_links;
 	    
-		int lOffset = 
-				(m.ns_links * cz.package_size * cz.width * cnY) + 
-				(m.ns_links * cz.package_size * cnX) + 
-				(m.ns_links * pN);        
+		final int lOffset = ((((cnY * cz.width) + cnX) * cz.package_size) + pN) * m.ns_links;        
         
 		int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
@@ -143,7 +138,9 @@ public class Utils {
 //				else if (c < 0) c = 0;
 //				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, c, c, c));
 
-				if (m.linksWeight[lOffset + l] > 0.0f) {
+				if (m.linksWeight[lOffset + l] == 0.0f) {
+					R = 255;
+				} else if (m.linksWeight[lOffset + l] > 0.0f) {
 					B += 255 * m.linksWeight[lOffset + l] * 5;
 					if (B > 255) B = 255;
 				} else {
@@ -169,7 +166,7 @@ public class Utils {
 				(2 * m.ns_links * cz.width * cnY) + 
 				(2 * m.ns_links * cnX);
 
-		final int offsetWeight = (cnY * cz.width * m.linksWeightRecordSize) + (m.linksWeightRecordSize * cnX);
+		final int offsetWeight = (cnY * cz.width * m.ns_links * m.toZone.package_size) + (m.ns_links * m.toZone.package_size * cnX);
         
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
@@ -209,17 +206,8 @@ public class Utils {
 //				}
 //				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
 				
-				int packageNumber = 0;
-				for (int p = 0; p < cz.package_size; p++) {
-					if (cz.packageCols[(cnY * cz.width * cz.package_size) + (cnX * cz.package_size) + p] >= cz.cols[pos]) {
-						packageNumber = p;
-						break;
-					}
-				}
-
-
 				int c = calcGrey(image, pX, pY);
-				c += 255 * cz.cols[pos] * m.linksWeight[offsetWeight + (packageNumber * m.ns_links) + l];
+				c += 255 * cz.cols[pos] * m.linksWeight[offsetWeight + (0 * m.ns_links) + l];
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, create_rgb(255, c, c, c));
         	}

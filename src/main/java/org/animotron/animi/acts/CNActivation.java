@@ -28,6 +28,7 @@ import org.jocl.Sizeof;
 import org.jocl.cl_command_queue;
 import org.jocl.cl_event;
 import org.jocl.cl_kernel;
+import org.jocl.cl_mem;
 
 /**
  * Активация простых нейронов при узнавании запомненной картины
@@ -36,6 +37,9 @@ import org.jocl.cl_kernel;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class CNActivation extends Task {
+	
+	cl_mem cl_linksWeight = null;
+	cl_mem cl_freePackageCols = null;
 	
 	public CNActivation(CortexZoneComplex cz) {
 		super(cz);
@@ -51,90 +55,68 @@ public class CNActivation extends Task {
     	super.setupArguments(kernel);
     	Mapping m = cz.in_zones[0];
         
-//    	System.out.println("before activation");
-////    	System.out.println("frZone.cols "+Arrays.toString(m.frZone.cols));
-//    	System.out.println("sz.cols "+Utils.debug(sz.cols));
-//    	System.out.println("sz.freeCols "+Arrays.toString(sz.freeCols));
-//    	System.out.println("cz.pCols "+Utils.debug(cz.pCols));
-
     	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_tremor));
         clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.tremor.length / 2}));
 
     	clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(cz.cl_packageCols));
-        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(cz.cl_freePackageCols));
+    	
+        if (cl_freePackageCols == null) {
+	        cl_freePackageCols = clCreateBuffer(
+	    		cz.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
+	    		cz.freePackageCols.length * Sizeof.cl_int, Pointer.to(cz.freePackageCols), null
+			);
+        }
+        clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(cl_freePackageCols));
+
         clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {cz.package_size}));
 
-        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(m.cl_linksWeight));
+        if (cl_linksWeight == null) {
+			cl_linksWeight = clCreateBuffer(
+				cz.mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+				m.linksWeight.length * Sizeof.cl_float, Pointer.to(m.linksWeight), null
+			);
+        }
+
+		clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(cl_linksWeight));
         clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(m.cl_senapseOfLinks));
         clSetKernelArg(kernel,  9, Sizeof.cl_int, Pointer.to(new int[] {m.ns_links}));
         
-        clSetKernelArg(kernel,  10, Sizeof.cl_mem, Pointer.to(sz.cl_cycleCols));
-
-        clSetKernelArg(kernel,  11, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
-        clSetKernelArg(kernel,  12, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
+        clSetKernelArg(kernel,  10, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
+        clSetKernelArg(kernel,  11, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
     }
     
 	@Override
-    protected void enqueueReads(cl_command_queue commandQueue, cl_event events[]) {
+    protected void enqueueReads(cl_command_queue commandQueue) {
+        cl_event events[] = new cl_event[] { new cl_event() , new cl_event() , new cl_event() };
+
     	super.enqueueReads(commandQueue, events);
     	
-        // Read the contents of the cl_cycleCols memory object
-    	Pointer cycleColsTarget = Pointer.to(sz.cycleCols);
-    	clEnqueueReadBuffer(
-			commandQueue, sz.cl_cycleCols, 
-			CL_TRUE, 0, sz.cycleCols.length * Sizeof.cl_float, 
-			cycleColsTarget, 0, null, events[0]);
-
-    	clWaitForEvents(1, events);
-
-    	Mapping m = cz.in_zones[0];
-
     	// Read the contents of the cl_pCols memory object
     	Pointer pColsTarget = Pointer.to(cz.packageCols);
     	clEnqueueReadBuffer(
 			commandQueue, cz.cl_packageCols, 
 			CL_TRUE, 0, cz.packageCols.length * Sizeof.cl_float, 
-			pColsTarget, 0, null, events[0]);
+			pColsTarget, 0, null, events[1]);
 
-    	clWaitForEvents(1, events);
+    	Mapping m = cz.in_zones[0];
 
         // Read the contents of the cl_linksWeight memory object
         Pointer target = Pointer.to(m.linksWeight);
         clEnqueueReadBuffer(
-            commandQueue, m.cl_linksWeight, 
+            commandQueue, cl_linksWeight, 
             CL_TRUE, 0, m.linksWeight.length * Sizeof.cl_float, 
-            target, 0, null, events[0]);
+            target, 0, null, events[2]);
 
-        clWaitForEvents(1, events);
-
-//    	System.out.println("after activation");
-////    	System.out.println("frZone.cols "+Arrays.toString(m.frZone.cols));
-//    	System.out.println("sz.cols     "+Utils.debug(sz.cols));
-//    	System.out.println("sz.freeCols "+Utils.debug(sz.freeCols));
-////    	System.out.println("sz.freeCols "+Arrays.toString(sz.freeCols));
-//    	System.out.println("cz.pCols    "+Utils.debug(cz.pCols));
+        clWaitForEvents(3, events);
+        
+        clReleaseEvent(events[0]);
+        clReleaseEvent(events[1]);
+        clReleaseEvent(events[2]);
     }
-
-//	@Override
-//    protected void processColors(float array[]) {
-//    	DataBufferInt dataBuffer = (DataBufferInt)cz.image.getRaster().getDataBuffer();
-//    	int data[] = dataBuffer.getData();
-//      
-//    	for (int i = 0; i < data.length; i++) {
-//    		final float value = sz.freeCols[i];
-//      	
-//    		if (Float.isNaN(value))
-//    			data[i] = Color.RED.getRGB();
-//    		else {
-//    			int c = (int)(value * 255);
-//    			if (c > 255) c = 255;
-//					
-//				data[i] = Utils.create_rgb(255, c, c, c);
-//    		}
-//    	}
-//    }
 
 	@Override
     protected void release() {
+//		clReleaseMemObject(cl_linksWeight);
+//		clReleaseMemObject(cl_freePackageCols);
     }
 }

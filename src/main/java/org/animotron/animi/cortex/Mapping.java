@@ -53,10 +53,9 @@ public class Mapping {
 	public double fX = 1;
 	public double fY = 1;
 
-	public float linksWeight[];
-	public int linksWeightRecordSize;
+	public float[] linksWeight;
 	
-	public int linksSenapse[];
+	public int[] linksSenapse;
 	
     /**
      * The OpenCL memory object which store the neuron links for each zone.
@@ -84,9 +83,7 @@ public class Mapping {
 	    
 		System.out.println(toZone);
 
-		linksWeightRecordSize = ns_links * toZone.package_size;
-
-	    linksWeight = new float[frZone.width() * frZone.height() * linksWeightRecordSize];
+	    linksWeight = new float[frZone.width() * frZone.height() * ns_links * toZone.package_size];
 		Arrays.fill(linksWeight, 0);
 		
 		linksSenapse = new int[frZone.width() * frZone.height() * ns_links * 2];
@@ -175,14 +172,12 @@ public class Mapping {
                         nerv_links[lx][ly] = true;
 	
 						// Создаем синаптическую связь
-                        for (int pN = 0; pN < toZone.package_size; pN++) {
-                        	linksWeight[
-                	            (y * toZone.width * toZone.package_size * ns_links) + 
-                	            (x * toZone.package_size * ns_links) + (pN * ns_links) + i] = w;
-                        }
-                		final int offset = 
-                				(2 * ns_links * toZone.width * y) + 
-                				(2 * ns_links * x);
+//                        for (int pN = 0; pN < toZone.package_size; pN++) {
+//                        	linksWeight[
+//                	            (y * toZone.width * toZone.package_size * ns_links) + 
+//                	            (x * toZone.package_size * ns_links) + (pN * ns_links) + i] = w;
+//                        }
+                		final int offset = ((toZone.width * y) + x) * 2 * ns_links;
                         
                         linksSenapse[offset + i*2 +0] = lx;
                         linksSenapse[offset + i*2 +1] = ly;

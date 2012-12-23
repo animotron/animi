@@ -71,12 +71,6 @@ public class CortexZoneSimple implements Layer {
     public cl_mem cl_rememberCols;
     public float rememberCols[];
 
-    /**
-     * The OpenCL memory object which store the maximum activity of neuron during cycle.
-     */
-    public cl_mem cl_cycleCols;
-    public float cycleCols[];
-
 	public BufferedImage image;
 
 //	@InitParam(name="speed")
@@ -113,14 +107,6 @@ public class CortexZoneSimple implements Layer {
     	cl_rememberCols = clCreateBuffer(
     		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
     		rememberCols.length * Sizeof.cl_float, Pointer.to(rememberCols), null
-		);
-
-    	cycleCols = new float[width * height];
-    	Arrays.fill(cycleCols, 0);
-    	
-    	cl_cycleCols = clCreateBuffer(
-    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-    		cycleCols.length * Sizeof.cl_float, Pointer.to(cycleCols), null
 		);
 
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -226,9 +212,5 @@ public class CortexZoneSimple implements Layer {
 		write(out, "learning", learning);
 //		write(out, "speed", speed);
 		out.write("/>");
-	}
-
-	public void reset() {
-		Arrays.fill(cycleCols, 0);
 	}
 }

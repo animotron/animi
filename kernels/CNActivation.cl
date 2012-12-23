@@ -38,8 +38,6 @@ __kernel void computeActivation(
     __global int*   linksSenapse,
     int linksNumber,
 
-    __global float* cycleCols,
-
     __global float* input,
     int inputSizeX
 ) {
@@ -64,6 +62,18 @@ __kernel void computeActivation(
 	bool toRemember = true;
 	int rememberOn = 0;
     
+    for (int p = 0; p < numberOfPackages; p++)
+    {
+		packagePos = (y * outputSizeX * numberOfPackages) + (x * numberOfPackages) + p;
+	    package[packagePos] = 0.0f;
+
+    	wOffset = linksOffset + (p * linksNumber);
+	    for(int l = 0; l < linksNumber; l++)
+	    {
+	        linksWeight[wOffset + l] = linksWeight[wOffset + l];
+	    }
+    }
+    
     for (int step = 0; step < numberOfSteps; step++)
     {
 		int shiftX = tremor[step*2 +0];
@@ -78,6 +88,7 @@ __kernel void computeActivation(
 			packagePos = (y * outputSizeX * numberOfPackages) + (x * numberOfPackages) + p;
 			empty = packageFree[packagePos];
 
+	    		
 			sum = 0.0f;
 		    for(int l = 0; l < linksNumber; l++)
 		    {
@@ -96,16 +107,9 @@ __kernel void computeActivation(
 	    		sum = 1.0f;
 			}
 			
-		    package[packagePos] = 0.0f;
-		    
 		    if (empty == 1)
 	    	{
-	    		//free
-	    		if (sum < 0.1f) //10% of RF
-	    		{
-				    sum = 0.0f;
-				}
-				else if (toRemember && p >= rememberOn)
+				if (toRemember && p >= rememberOn)
 				{
 					toRemember = false;
 					rememberOn = p+1;
@@ -140,41 +144,30 @@ __kernel void computeActivation(
 							linksWeight[wOffset + l] = linksWeight[wOffset + l] / sumW;
 						}
 					}
+	    		
+				    package[packagePos] = sum;
 				}
 	    	}
 	    	else
 	    	{
 	    		//busy
-			    if (sum < 0.5f) 
+			    maximum = max(sum, maximum);
+    		
+		    	//record maximum of package activity
+			    if (package[packagePos] < sum)
 			    {
-		    		sum = 0.0f;
-	    		}
-	    		else
-	    		{
-				    maximum = max(sum, maximum);
-	    		}
-	    		
-			    for(int l = 0; l < linksNumber; l++)
-			    {
-			        linksWeight[wOffset + l] = 1;
+				    package[packagePos] = sum;
 			    }
-	    		
 	    	}
-	    	
-	    	//record maximum of package activity
-		    if (package[packagePos] < sum)
-		    {
-			    package[packagePos] = sum;
-		    }
 	    }
 	}
-    output[pos] = maximum;
+    //output[pos] = maximum;
     
     int _cycleCols = 0;
     int pN = 0;
     for (int p = 0; p < numberOfPackages; p++)
     {
-		packagePos = (y * outputSizeX * numberOfPackages) + (x * numberOfPackages) + p;
+		packagePos = ((y * outputSizeX) + x) * numberOfPackages + p;
 	    
 	    if (packageFree[packagePos] < 1)
 	    {
@@ -186,5 +179,5 @@ __kernel void computeActivation(
 	    }
     }
     
-	cycleCols[pos] = _cycleCols / (float)pN;
+	output[pos] = _cycleCols / (float)pN;
 }

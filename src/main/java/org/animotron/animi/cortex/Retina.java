@@ -158,8 +158,6 @@ public class Retina {
 		XScale = (image.getWidth()  - (safeZone*2)) / (float)NL.width;
 		YScale = (image.getHeight() - (safeZone*2)) / (float)NL.height;
 			
-		NL.reset();
-		
 //		Graphics g = image.getGraphics();
 //		g.drawRect(10, 10, image.getWidth() - 20, image.getHeight() - 20);
 
