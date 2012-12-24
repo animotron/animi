@@ -40,6 +40,7 @@ import org.jocl.cl_mem;
  */
 public class Memorization extends Task {
 	
+	cl_mem cl_linksWeight = null;
 	cl_mem cl_freePackageCols = null;
 
 	@RuntimeParam(name = "count")
@@ -72,15 +73,28 @@ public class Memorization extends Task {
 
         clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
         
-    	Mapping m = cz.in_zones[0];
+        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(cz.cl_senapseOfinhibitoryLinks));
+        clSetKernelArg(kernel,  7, Sizeof.cl_int, Pointer.to(new int[] {cz.number_of_inhibitory_links}));
+
+        Mapping m = cz.in_zones[0];
     	
-        clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
-        clSetKernelArg(kernel,  7, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
+        if (cl_linksWeight == null) {
+			cl_linksWeight = clCreateBuffer(
+				cz.mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+				m.linksWeight.length * Sizeof.cl_float, Pointer.to(m.linksWeight), null
+			);
+        }
+
+		clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(cl_linksWeight));
+        clSetKernelArg(kernel,  9, Sizeof.cl_int, Pointer.to(new int[] {m.ns_links}));
+
+        clSetKernelArg(kernel, 10, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
+        clSetKernelArg(kernel, 11, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
     }
 
 	@Override
     protected void enqueueReads(cl_command_queue commandQueue) {
-        cl_event events[] = new cl_event[] { new cl_event(), new cl_event() };
+        cl_event events[] = new cl_event[] { new cl_event(), new cl_event(), new cl_event() };
 
         super.enqueueReads(commandQueue, events);
         	
@@ -91,14 +105,27 @@ public class Memorization extends Task {
 			CL_TRUE, 0, cz.freePackageCols.length * Sizeof.cl_int, 
 			freePackageColsTarget, 0, null, events[1]);
 
-    	clWaitForEvents(2, events);
+    	Mapping m = cz.in_zones[0];
+
+        // Read the contents of the cl_linksWeight memory object
+        Pointer target = Pointer.to(m.linksWeight);
+        clEnqueueReadBuffer(
+            commandQueue, cl_linksWeight, 
+            CL_TRUE, 0, m.linksWeight.length * Sizeof.cl_float, 
+            target, 0, null, events[2]);
+
+        clWaitForEvents(3, events);
     	
     	clReleaseEvent(events[0]);
     	clReleaseEvent(events[1]);
+    	clReleaseEvent(events[2]);
     }
 	
 	@Override
     protected void release() {
+		clReleaseMemObject(cl_linksWeight);
+		cl_linksWeight = null;
+
 		clReleaseMemObject(cl_freePackageCols);
 		cl_freePackageCols = null;
     }

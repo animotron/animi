@@ -81,8 +81,8 @@ public class CNActivation extends Task {
         clSetKernelArg(kernel,  8, Sizeof.cl_mem, Pointer.to(m.cl_senapseOfLinks));
         clSetKernelArg(kernel,  9, Sizeof.cl_int, Pointer.to(new int[] {m.ns_links}));
         
-        clSetKernelArg(kernel,  10, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
-        clSetKernelArg(kernel,  11, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
+        clSetKernelArg(kernel, 10, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
+        clSetKernelArg(kernel, 11, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
     }
     
 	@Override
@@ -116,7 +116,9 @@ public class CNActivation extends Task {
 
 	@Override
     protected void release() {
-//		clReleaseMemObject(cl_linksWeight);
+		clReleaseMemObject(cl_linksWeight);
+		cl_linksWeight = null;
+
 		clReleaseMemObject(cl_freePackageCols);
 		cl_freePackageCols = null;
     }

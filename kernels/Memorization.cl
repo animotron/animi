@@ -33,6 +33,12 @@ __kernel void computeMemorization(
 
     __global float* rememberCols,
 
+    __global int* linksSenapse,
+    int linksNumber,
+
+    __global float* linksWeight,
+    int wLinksNumber,
+
     __global float* input,
     int inputSizeX
 ) {
@@ -43,6 +49,61 @@ __kernel void computeMemorization(
     int pos = (y * sizeX) + x;
     int packagePos = 0;
     
+    rememberCols[pos] = 1.0f;
+
+	barrier(CLK_LOCAL_MEM_FENCE);
+	
+	//set 0 in inhibitory zone of the active column
+	if (output[pos] > 0)
+	{
+	    int XSize = (linksNumber * 2);
+    	int offset = pos * XSize;
+    
+	    for(int l = 0; l < linksNumber; l++)
+	    {
+	    	int xi = linksSenapse[offset + (l * 2)    ];
+	    	int yi = linksSenapse[offset + (l * 2) + 1];
+	        
+	        if (xi != x && yi != y)
+	        {
+        		rememberCols[(yi * sizeX) + xi] = 0.0f;
+    		}
+	    }
+    }
+	
+	barrier(CLK_LOCAL_MEM_FENCE);
+
+	//all packages should be active 
+	int pN = 0;
+	int pP = 0;
+
+	if (rememberCols[pos] > 0.0f)
+	{
+	    for (int p = 0; p < numberOfPackages; p++)
+	    {
+			packagePos = pos * numberOfPackages + p;
+		    if (packageFree[packagePos] > 0.0f)
+		    {
+		    	pN++;
+		    	if (package[packagePos] > 0.0f)
+		    	{
+		    		pP++;
+		    	}
+		    }
+	    }
+	    
+	    if (pN != pP)
+	    {
+		   	rememberCols[pos] = 0.0f;
+	    }
+    }
+
+	barrier(CLK_LOCAL_MEM_FENCE);
+	
+	//соседи...
+
+	barrier(CLK_LOCAL_MEM_FENCE);
+
 	if (rememberCols[pos] > 0.0f)
     {
 	    for (int p = 0; p < numberOfPackages; p++)
@@ -62,5 +123,24 @@ __kernel void computeMemorization(
 	    }
     }
 	
-//	barrier(CLK_LOCAL_MEM_FENCE);
+	barrier(CLK_LOCAL_MEM_FENCE);
+	
+	//free up
+    
+    int linksOffset = (y * sizeX + x) * wLinksNumber * numberOfPackages;
+	int wOffset = 0;
+    
+    for (int p = 0; p < numberOfPackages; p++)
+    {
+		packagePos = pos * numberOfPackages + p;
+	    if (packageFree[packagePos] > 0.0f)
+	    {
+	
+	    	wOffset = linksOffset + (p * wLinksNumber);
+		    for (int l = 0; l < linksNumber; l++)
+		    {
+		        linksWeight[wOffset + l] = 0;
+		    }
+	    }
+    }
 }

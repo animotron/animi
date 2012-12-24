@@ -50,9 +50,9 @@ __kernel void computeActivation(
     int packagePos = 0;
     
     int XSize = linksNumber * 2;
-    int offset = (y * outputSizeX * XSize) + (x * XSize);
+    int offset = (y * outputSizeX + x) * XSize;
 
-    int linksOffset = (y * outputSizeX * linksNumber * numberOfPackages) + (x * linksNumber * numberOfPackages);
+    int linksOffset = (y * outputSizeX + x) * linksNumber * numberOfPackages;
 	int wOffset = 0;
 
     float maximum = 0.0f;
@@ -172,10 +172,7 @@ __kernel void computeActivation(
 	    if (packageFree[packagePos] < 1)
 	    {
 		    pN++;
-		    if (package[packagePos] > 0.0f)
-		    {
-				_cycleCols++;
-			}
+		    _cycleCols += package[packagePos];
 	    }
     }
     
