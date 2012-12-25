@@ -184,20 +184,20 @@ __kernel void computeMemorization(
 	barrier(CLK_LOCAL_MEM_FENCE);
 	
 	//free up
-//    int linksOffset = (y * sizeX + x) * wLinksNumber * numberOfPackages;
-//	int wOffset = 0;
-//    
-//    for (int p = 0; p < numberOfPackages; p++)
-//    {
-//		packagePos = pos * numberOfPackages + p;
-//	    if (packageFree[packagePos] > 0.0f)
-//	    {
-//	
-//	    	wOffset = linksOffset + (p * wLinksNumber);
-//		    for (int l = 0; l < linksNumber; l++)
-//		    {
-//		        linksWeight[wOffset + l] = 0;
-//		    }
-//	    }
-//    }
+    int linksOffset = (y * sizeX + x) * wLinksNumber * numberOfPackages;
+	int wOffset = 0;
+    
+    for (int p = 0; p < numberOfPackages; p++)
+    {
+		packagePos = pos * numberOfPackages + p;
+	    if (packageFree[packagePos] > 0.0f)
+	    {
+	
+	    	wOffset = linksOffset + (p * wLinksNumber);
+		    for (int l = 0; l < linksNumber; l++)
+		    {
+		        linksWeight[wOffset + l] = 0;
+		    }
+	    }
+    }
 }
