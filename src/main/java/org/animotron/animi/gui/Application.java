@@ -89,7 +89,7 @@ public class Application extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                pause();
+                stop();
             }
 
 			@Override
@@ -250,7 +250,7 @@ public class Application extends JFrame {
 
 						int was = MODE;
 						if (was == RUN)
-							pause();
+							stop();
 						
 						//cortexs.prepareForSerialization();
 						try {
@@ -346,14 +346,14 @@ public class Application extends JFrame {
         });
         bar.add(button);
 
-        button = new JButton("Pause");
+        button = new JButton("Stop");
         button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.ALT_MASK));
         button.setMnemonic(KeyEvent.VK_P);
         button.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				pause();
+				stop();
 			}
         });
         bar.add(button);
@@ -501,9 +501,9 @@ public class Application extends JFrame {
     	}
     }
 
-    private void pause() {
+    private void stop() {
     	if (cortexs != null) {
-    		cortexs.pause();
+    		cortexs.stop();
 			MODE = (MODE == RUN) ? PAUSE : STOP;
     	}
     }

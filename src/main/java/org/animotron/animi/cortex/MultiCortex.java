@@ -642,8 +642,15 @@ public class MultiCortex implements Runnable {
 		th.start();
 	}
 
-	public void pause() {
+	public synchronized void stop() {
+		run = false;
+		try {
+			th.join();
+		} catch (InterruptedException e) {
+			th.interrupt();
+		}
 		paused = true;
+		th = null;
 	}
 
 	public void resume() {

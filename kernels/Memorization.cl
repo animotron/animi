@@ -92,15 +92,64 @@ __kernel void computeMemorization(
 		    }
 	    }
 	    
-	    if (pN != pP)
+	    if (pN == pP)
 	    {
-		   	rememberCols[pos] = 0.0f;
+		    for (int p = 0; p < numberOfPackages; p++)
+		    {
+				packagePos = ((sizeX * y) + x) * numberOfPackages + p;
+			    
+			    if (packageFree[packagePos] >= 1)
+			    {
+				    if (package[packagePos] > 0.0f)
+				    {
+						packageFree[packagePos] = 0;
+					}
+			    }
+		    }
 	    }
+	   	rememberCols[pos] = 0.0f;
     }
 
 	barrier(CLK_LOCAL_MEM_FENCE);
 	
-	//соседи...
+	//neighborhood...
+	if (output[pos] > 0.2f) // 20% of RF for new
+	{
+		rememberCols[pos] = 0.0f;
+	}
+	
+	if (rememberCols[pos] > 0.0f)
+    {
+    	float maximum = 0.0f;
+    	
+	    int XSize = (linksNumber * 2);
+    	int offset = pos * XSize;
+    
+	    for(int l = 0; l < linksNumber; l++)
+	    {
+	    	int xi = linksSenapse[offset + (l * 2)    ];
+	    	int yi = linksSenapse[offset + (l * 2) + 1];
+	        
+	        if (xi != x && yi != y)
+	        {
+			    for (int p = 0; p < numberOfPackages; p++)
+			    {
+					packagePos = ((sizeX * yi) + xi) * numberOfPackages + p;
+				    
+				    if (packageFree[packagePos] < 1)
+				    {
+	        			maximum = max(maximum, output[(yi * sizeX) + xi]);
+	        			break;
+	        		}
+        		}
+    		}
+	    }
+	    
+	    if (maximum == 0.0f || maximum > output[(y * sizeX) + x])
+	    {
+	    	rememberCols[pos] = 0.0f;
+	    }
+    }
 
 	barrier(CLK_LOCAL_MEM_FENCE);
 
@@ -126,7 +175,6 @@ __kernel void computeMemorization(
 	barrier(CLK_LOCAL_MEM_FENCE);
 	
 	//free up
-    
     int linksOffset = (y * sizeX + x) * wLinksNumber * numberOfPackages;
 	int wOffset = 0;
     
