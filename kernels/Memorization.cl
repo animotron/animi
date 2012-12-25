@@ -96,22 +96,25 @@ __kernel void computeMemorization(
 		    }
 	    }
 	    
-	    if (pN != 0 && pN == pP)
+	    if (pN != 0)
 	    {
-		    for (int p = 0; p < numberOfPackages; p++)
+		    if (pN == pP)
 		    {
-				packagePos = ((sizeX * y) + x) * numberOfPackages + p;
-			    
-			    if (packageFree[packagePos] >= 1)
+			    for (int p = 0; p < numberOfPackages; p++)
 			    {
-				    if (package[packagePos] >= 0.1f) //recognition 10%
+					packagePos = ((sizeX * y) + x) * numberOfPackages + p;
+				    
+				    if (packageFree[packagePos] >= 1)
 				    {
-						packageFree[packagePos] = 0;
-					}
+					    if (package[packagePos] >= 0.1f) //recognition 10%
+					    {
+							packageFree[packagePos] = 0;
+						}
+				    }
 			    }
 		    }
-	    }
-	   	rememberCols[pos] = 0.0f;
+		   	rememberCols[pos] = 0.0f;
+	   	}
     }
 
 	barrier(CLK_LOCAL_MEM_FENCE);
