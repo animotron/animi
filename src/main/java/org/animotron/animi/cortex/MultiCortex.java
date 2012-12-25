@@ -535,7 +535,7 @@ public class MultiCortex implements Runnable {
             	int w = 0;
             	
             	//make vertical line
-            	if (lx >= centerX - 1 &&  lx <= centerX + 1) { // && ly >= centerY - 1 &&  ly <= centerY + 1) {
+            	if (lx >= centerX &&  lx <= centerX) { // && ly >= centerY - 1 &&  ly <= centerY + 1) {
             		w = 1;
             	}
                 m.linksWeight[wOffset + l] = w;

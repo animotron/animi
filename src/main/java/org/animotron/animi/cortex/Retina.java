@@ -231,7 +231,7 @@ public class Retina {
 	        clSetKernelArg(kernel,  5, Sizeof.cl_int, Pointer.to(new int[] {onOff.radius}));
 	        clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {onOff.regionSize}));
 	        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(onOff.cl_matrix));
-	        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {3}));
+	        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {1}));
 	        
 	        clSetKernelArg(kernel,  9, Sizeof.cl_float, Pointer.to(new float[] {KContr1}));
 	        clSetKernelArg(kernel,  10, Sizeof.cl_float, Pointer.to(new float[] {KContr2}));
