@@ -283,6 +283,14 @@ public class PFInitialization extends JInternalFrame {
 	private JComboBox<String> addCombo(GridBagConstraints gbc, String name, Vector<String> items) {
 
         final JComboBox<String> combo = new JComboBox<String>(items);
+        
+        //hack to select "Intel" by default
+        for (int i = 0; i < items.size(); i++) {
+        	if (items.get(i).contains("Intel")) {
+                combo.setSelectedIndex(i);
+                break;
+        	}
+        }
 		
 		JLabel label = new JLabel(name);
 

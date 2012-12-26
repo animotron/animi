@@ -64,13 +64,20 @@ __kernel void computeActivation(
     
     for (int p = 0; p < numberOfPackages; p++)
     {
-		packagePos = (y * outputSizeX * numberOfPackages) + (x * numberOfPackages) + p;
+		packagePos = (((y * outputSizeX) + x) * numberOfPackages) + p;
 	    package[packagePos] = 0.0f;
 
     	wOffset = linksOffset + (p * linksNumber);
 	    for(int l = 0; l < linksNumber; l++)
 	    {
-	        linksWeight[wOffset + l] = linksWeight[wOffset + l];
+	    	if (packageFree[packagePos] == 1)
+	    	{
+	        	linksWeight[wOffset + l] = 0;
+	    	}
+//	    	else
+//	    	{
+//	        	linksWeight[wOffset + l] = linksWeight[wOffset + l];
+//        	}
 	    }
     }
     
@@ -85,7 +92,7 @@ __kernel void computeActivation(
 	    {
 	    	wOffset = linksOffset + (p * linksNumber);
 
-			packagePos = (y * outputSizeX * numberOfPackages) + (x * numberOfPackages) + p;
+			packagePos = (((y * outputSizeX) + x) * numberOfPackages) + p;
 			empty = packageFree[packagePos];
 
 	    		
@@ -109,6 +116,29 @@ __kernel void computeActivation(
 			
 		    if (empty == 1)
 	    	{
+	    		if (toRemember)
+	    		{
+	    			//remember only if another do not recognize
+				    for (int pi = 0; pi < numberOfPackages; pi++)
+				    {
+				    	int _wOffset_ = linksOffset + (pi * linksNumber);
+			
+						float sumi = 0.0f;
+					    for(int l = 0; l < linksNumber; l++)
+					    {
+					    	int xi = linksSenapse[offset + (l * 2) +0] + shiftX;
+					    	int yi = linksSenapse[offset + (l * 2) +1] + shiftY;
+					        
+				        	sumi += input[(yi * inputSizeX) + xi] * linksWeight[_wOffset_ + l];
+					    }
+					    
+					    if (sumi >= 0.3)
+					    {
+					    	toRemember = false;
+					    	break;
+					    }
+				    }
+			    }
 				if (toRemember && p >= rememberOn)
 				{
 					toRemember = false;
