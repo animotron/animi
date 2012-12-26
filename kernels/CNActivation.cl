@@ -49,10 +49,8 @@ __kernel void computeActivation(
     
     int packagePos = 0;
     
-    int XSize = linksNumber * 2;
-    int offset = (y * outputSizeX + x) * XSize;
+    int offset = ((y * outputSizeX) + x) * linksNumber * 2;
 
-    int linksOffset = (y * outputSizeX + x) * linksNumber * numberOfPackages;
 	int wOffset = 0;
 
     float maximum = 0.0f;
@@ -67,7 +65,7 @@ __kernel void computeActivation(
 		packagePos = (((y * outputSizeX) + x) * numberOfPackages) + p;
 	    package[packagePos] = 0.0f;
 
-    	wOffset = linksOffset + (p * linksNumber);
+    	wOffset = ((((y * outputSizeX) + x) * numberOfPackages) + p) * linksNumber;
 	    for(int l = 0; l < linksNumber; l++)
 	    {
 	    	if (packageFree[packagePos] == 1)
@@ -90,7 +88,7 @@ __kernel void computeActivation(
 		
 	    for (int p = 0; p < numberOfPackages; p++)
 	    {
-	    	wOffset = linksOffset + (p * linksNumber);
+	    	wOffset = ((((y * outputSizeX) + x) * numberOfPackages) + p) * linksNumber;
 
 			packagePos = (((y * outputSizeX) + x) * numberOfPackages) + p;
 			empty = packageFree[packagePos];
@@ -121,7 +119,7 @@ __kernel void computeActivation(
 	    			//remember only if another do not recognize
 				    for (int pi = 0; pi < numberOfPackages; pi++)
 				    {
-				    	int _wOffset_ = linksOffset + (pi * linksNumber);
+				    	int _wOffset_ = ((((y * outputSizeX) + x) * numberOfPackages) + pi) * linksNumber;
 			
 						float sumi = 0.0f;
 					    for(int l = 0; l < linksNumber; l++)

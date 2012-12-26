@@ -56,8 +56,7 @@ __kernel void computeMemorization(
 	//set 0 in inhibitory zone of the active column
 	if (output[pos] > 0.4f) // recognition 40% 
 	{
-	    int XSize = (linksNumber * 2);
-    	int offset = pos * XSize;
+    	int offset = pos * (linksNumber * 2);
     
 	    for(int l = 0; l < linksNumber; l++)
 	    {
@@ -85,7 +84,7 @@ __kernel void computeMemorization(
 	{
 	    for (int p = 0; p < numberOfPackages; p++)
 	    {
-			packagePos = pos * numberOfPackages + p;
+			packagePos = (pos * numberOfPackages) + p;
 		    if (packageFree[packagePos] < 1.0f)
 		    {
 		    	pN++;
@@ -102,7 +101,7 @@ __kernel void computeMemorization(
 		    {
 			    for (int p = 0; p < numberOfPackages; p++)
 			    {
-					packagePos = ((sizeX * y) + x) * numberOfPackages + p;
+					packagePos = (((sizeX * y) + x) * numberOfPackages) + p;
 				    
 				    if (packageFree[packagePos] >= 1)
 				    {
@@ -125,8 +124,7 @@ __kernel void computeMemorization(
     	float maximum = 0.0f;
     	float own = 0.0f;
     	
-	    int XSize = (linksNumber * 2);
-    	int offset = pos * XSize;
+    	int offset = pos * linksNumber * 2;
     
 	    for(int l = 0; l < linksNumber; l++)
 	    {
@@ -137,7 +135,7 @@ __kernel void computeMemorization(
 	        {
 			    for (int p = 0; p < numberOfPackages; p++)
 			    {
-					packagePos = ((sizeX * yi) + xi) * numberOfPackages + p;
+					packagePos = (((sizeX * yi) + xi) * numberOfPackages) + p;
 				    
 				    if (packageFree[packagePos] < 1)
 				    {
@@ -166,10 +164,7 @@ __kernel void computeMemorization(
     {
 	    for (int p = 0; p < numberOfPackages; p++)
 	    {
-			packagePos = 
-				(numberOfPackages * sizeX * y) + 
-				(numberOfPackages * x) + 
-				p;
+			packagePos = (((sizeX * y) + x) * numberOfPackages) + p;
 		    
 		    if (packageFree[packagePos] >= 1)
 		    {
@@ -184,16 +179,15 @@ __kernel void computeMemorization(
 	barrier(CLK_LOCAL_MEM_FENCE);
 	
 	//free up
-    int linksOffset = (y * sizeX + x) * wLinksNumber * numberOfPackages;
+    int linksOffset = ((y * sizeX) + x) * numberOfPackages;
 	int wOffset = 0;
     
     for (int p = 0; p < numberOfPackages; p++)
     {
 		packagePos = pos * numberOfPackages + p;
-	    if (packageFree[packagePos] > 0.0f)
+	    if (packageFree[packagePos] != 0.0f)
 	    {
-	
-	    	wOffset = linksOffset + (p * wLinksNumber);
+	    	wOffset = (linksOffset + p) * wLinksNumber;
 		    for (int l = 0; l < linksNumber; l++)
 		    {
 		        linksWeight[wOffset + l] = 0;
