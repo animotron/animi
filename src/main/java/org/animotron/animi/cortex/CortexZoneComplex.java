@@ -286,7 +286,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		public void init() {
 
-	        boxSize = 5;
+	        boxSize = 6;
 
 			int maxX = width() * boxSize;
 	        int maxY = height() * boxSize;
@@ -295,7 +295,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 	
 		public String getImageName() {
-			return "input from output "+CortexZoneComplex.this.name;
+			return "cols map "+CortexZoneComplex.this.name;
 		}
 
 		public BufferedImage getImage() {
