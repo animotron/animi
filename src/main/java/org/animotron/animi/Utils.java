@@ -141,10 +141,12 @@ public class Utils {
 				if (m.linksWeight[lOffset + l] == 0.0f) {
 					R = 255;
 				} else if (m.linksWeight[lOffset + l] > 0.0f) {
-					B += 255 * m.linksWeight[lOffset + l] * 5;
+					B = 255;
+					//B += 255 * m.linksWeight[lOffset + l] * 5;
 					if (B > 255) B = 255;
 				} else {
-					G += 255 * m.linksWeight[lOffset + l] * 5;
+					G = 255;
+					//G += 255 * m.linksWeight[lOffset + l] * 5;
 					if (G > 255) G = 255;
 				};
 				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, R, G, B));

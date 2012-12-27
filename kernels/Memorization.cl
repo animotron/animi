@@ -40,7 +40,12 @@ __kernel void computeMemorization(
     int wLinksNumber,
 
     __global float* input,
-    int inputSizeX
+    int inputSizeX,
+    
+    float K_POROG_ACTIVATION_FINAL,
+    float K_POROG_ACT_PAKETA,
+    float K_POROG_ZNACH_OBRAZA
+    
 ) {
 
     int x = get_global_id(0);
@@ -54,7 +59,7 @@ __kernel void computeMemorization(
 	barrier(CLK_LOCAL_MEM_FENCE);
 	
 	//set 0 in inhibitory zone of the active column
-	if (output[pos] > 0.4f) // recognition 40% 
+	if (output[pos] > K_POROG_ACTIVATION_FINAL)
 	{
     	int offset = pos * (linksNumber * 2);
     
@@ -88,7 +93,7 @@ __kernel void computeMemorization(
 		    if (packageFree[packagePos] < 1.0f)
 		    {
 		    	pN++;
-		    	if (package[packagePos] > 0.0f)
+		    	if (package[packagePos] > K_POROG_ACT_PAKETA)
 		    	{
 		    		pP++;
 		    	}
@@ -105,7 +110,7 @@ __kernel void computeMemorization(
 				    
 				    if (packageFree[packagePos] >= 1)
 				    {
-					    if (package[packagePos] >= 0.1f) //recognition 10%
+					    if (package[packagePos] >= K_POROG_ZNACH_OBRAZA)
 					    {
 							packageFree[packagePos] = 0;
 						}
@@ -152,7 +157,7 @@ __kernel void computeMemorization(
 			own = max(own, package[packagePos]);
 		}
 
-	    if (own < 0.1f || maximum == 0.0f || maximum > own) //recognition 10%
+	    if (own < K_POROG_ZNACH_OBRAZA || maximum == 0.0f || maximum > own)
 	    {
 	    	rememberCols[pos] = 0.0f;
 	    }
@@ -168,7 +173,7 @@ __kernel void computeMemorization(
 		    
 		    if (packageFree[packagePos] >= 1)
 		    {
-			    if (package[packagePos] > 0.1f) //recognition 10%
+			    if (package[packagePos] >= K_POROG_ZNACH_OBRAZA)
 			    {
 					packageFree[packagePos] = 0;
 				}

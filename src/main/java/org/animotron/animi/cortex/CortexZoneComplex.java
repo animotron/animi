@@ -50,9 +50,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	@Params
 	public Mapping[] in_zones;
 
-	CNActivation cnActivation = new CNActivation(this);
 	@Params
-    Inhibitory inhibitory = new Inhibitory(this);
+	public CNActivation cnActivation = new CNActivation(this);
+//	@Params
+//    Inhibitory inhibitory = new Inhibitory(this);
     WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
     
     public cl_mem cl_tremor;
@@ -61,8 +62,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //    @Params
     Restructurization restructorization = new Restructurization(this);
 
-//    @Params
-	Memorization memorization = new Memorization(this);
+    @Params
+    public Memorization memorization = new Memorization(this);
 
 	@InitParam(name="disper")
 	public double disper = 1.5;

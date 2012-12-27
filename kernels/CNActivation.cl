@@ -39,7 +39,9 @@ __kernel void computeActivation(
     int linksNumber,
 
     __global float* input,
-    int inputSizeX
+    int inputSizeX,
+    
+    float K_POROG_PAKET_UZNAVANIYA
 ) {
 
     int x = get_global_id(0);
@@ -72,10 +74,10 @@ __kernel void computeActivation(
 	    	{
 	        	linksWeight[wOffset + l] = 0;
 	    	}
-//	    	else
-//	    	{
-//	        	linksWeight[wOffset + l] = linksWeight[wOffset + l];
-//        	}
+	    	else
+	    	{
+	        	linksWeight[wOffset + l] = linksWeight[wOffset + l];
+        	}
 	    }
     }
     
@@ -92,7 +94,6 @@ __kernel void computeActivation(
 
 			packagePos = (((y * outputSizeX) + x) * numberOfPackages) + p;
 			empty = packageFree[packagePos];
-
 	    		
 			sum = 0.0f;
 		    for(int l = 0; l < linksNumber; l++)
@@ -130,7 +131,7 @@ __kernel void computeActivation(
 				        	sumi += input[(yi * inputSizeX) + xi] * linksWeight[_wOffset_ + l];
 					    }
 					    
-					    if (sumi >= 0.3)
+					    if (sumi >= K_POROG_PAKET_UZNAVANIYA)
 					    {
 					    	toRemember = false;
 					    	break;
@@ -142,6 +143,8 @@ __kernel void computeActivation(
 					toRemember = false;
 					rememberOn = p+1;
 					
+				   	wOffset = ((((y * outputSizeX) + x) * numberOfPackages) + p) * linksNumber;
+
 			    	int count = 0;
 			    	float sumW = 0;
 			    	float w = 0;
@@ -160,7 +163,7 @@ __kernel void computeActivation(
 							count++;
 						}
 				    }
-				
+				    
 				    for(int l = 0; l < linksNumber; l++)
 				    {
 				    	if (linksWeight[wOffset + l] == 0.0f)
@@ -195,7 +198,7 @@ __kernel void computeActivation(
     int pN = 0;
     for (int p = 0; p < numberOfPackages; p++)
     {
-		packagePos = ((y * outputSizeX) + x) * numberOfPackages + p;
+		packagePos = (((y * outputSizeX) + x) * numberOfPackages) + p;
 	    
 	    if (packageFree[packagePos] < 1)
 	    {

@@ -22,6 +22,7 @@ package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
 
+import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -40,6 +41,9 @@ public class CNActivation extends Task {
 	
 	cl_mem cl_linksWeight = null;
 	cl_mem cl_freePackageCols = null;
+	
+	@RuntimeParam(name = "порог узнавания образа слоем, предотврощяющий кратковременное запоминание")
+	public float K_POROG_PAKET_UZNAVANIYA = 0.4f;
 	
 	public CNActivation(CortexZoneComplex cz) {
 		super(cz);
@@ -83,7 +87,9 @@ public class CNActivation extends Task {
         
         clSetKernelArg(kernel, 10, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
         clSetKernelArg(kernel, 11, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
-    }
+
+        clSetKernelArg(kernel, 12, Sizeof.cl_float, Pointer.to(new float[] {K_POROG_PAKET_UZNAVANIYA}));
+	}
     
 	@Override
     protected void enqueueReads(cl_command_queue commandQueue) {
