@@ -45,6 +45,12 @@ public class CNActivation extends Task {
 	@RuntimeParam(name = "порог узнавания образа слоем, предотврощяющий кратковременное запоминание")
 	public float K_POROG_PAKET_UZNAVANIYA = 0.4f;
 	
+	@RuntimeParam(name = "порог значимости образа при запоминании")
+	public float K_POROG_ZNACH_OBRAZA = 0.1f;
+
+	@RuntimeParam(name = "соотношение позитивных и негативных весов")
+	public float K_SOOTN_POS_I_NEGATIVE = 0.5f;
+
 	public CNActivation(CortexZoneComplex cz) {
 		super(cz);
 	}
@@ -89,6 +95,8 @@ public class CNActivation extends Task {
         clSetKernelArg(kernel, 11, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
 
         clSetKernelArg(kernel, 12, Sizeof.cl_float, Pointer.to(new float[] {K_POROG_PAKET_UZNAVANIYA}));
+        clSetKernelArg(kernel, 13, Sizeof.cl_float, Pointer.to(new float[] {K_POROG_ZNACH_OBRAZA}));
+        clSetKernelArg(kernel, 14, Sizeof.cl_float, Pointer.to(new float[] {K_SOOTN_POS_I_NEGATIVE}));
 	}
     
 	@Override

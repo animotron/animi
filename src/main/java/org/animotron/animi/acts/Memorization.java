@@ -49,9 +49,6 @@ public class Memorization extends Task {
 	@RuntimeParam(name = "порог активности пакета при дозапоминании")
 	public float K_POROG_ACT_PAKETA = 0.4f;
 
-	@RuntimeParam(name = "порог значимости образа при запоминании")
-	public float K_POROG_ZNACH_OBRAZA = 0.1f;
-
 	public Memorization(CortexZoneComplex cz) {
 		super(cz);
 	}
@@ -99,7 +96,6 @@ public class Memorization extends Task {
 
         clSetKernelArg(kernel, 12, Sizeof.cl_float, Pointer.to(new float[] {K_POROG_ACTIVATION_FINAL}));
         clSetKernelArg(kernel, 13, Sizeof.cl_float, Pointer.to(new float[] {K_POROG_ACT_PAKETA}));
-        clSetKernelArg(kernel, 14, Sizeof.cl_float, Pointer.to(new float[] {K_POROG_ZNACH_OBRAZA}));
 	}
 
 	@Override

@@ -41,7 +41,9 @@ __kernel void computeActivation(
     __global float* input,
     int inputSizeX,
     
-    float K_POROG_PAKET_UZNAVANIYA
+    float K_POROG_PAKET_UZNAVANIYA,
+    float K_POROG_ZNACH_OBRAZA,
+    float K_SOOTN_POS_I_NEGATIVE
 ) {
 
     int x = get_global_id(0);
@@ -107,12 +109,20 @@ __kernel void computeActivation(
 		        	sum += input[(yi * inputSizeX) + xi] * linksWeight[wOffset + l];
 		    }
 		    
+		    if (
+//		    	(empty == 0 && sum < K_POROG_ZNACH_OBRAZA) 
+//		    	||
+		    	(empty == 1 && sum < K_POROG_ZNACH_OBRAZA))
+	    	{
+	    		continue;
+	    	}
+		    
 		    //should not be more then one
 	    	if (sum > 1.0f)
 	    	{
 	    		sum = 1.0f;
 			}
-			
+
 		    if (empty == 1)
 	    	{
 	    		if (toRemember)
@@ -168,7 +178,7 @@ __kernel void computeActivation(
 				    {
 				    	if (linksWeight[wOffset + l] == 0.0f)
 				    	{
-				    		linksWeight[wOffset + l] = -1 / ((float)count * 0.5);
+				    		linksWeight[wOffset + l] = -1 / ((float)count * K_SOOTN_POS_I_NEGATIVE);
 			    		}
 			    		else
 			    		{

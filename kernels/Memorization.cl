@@ -43,9 +43,7 @@ __kernel void computeMemorization(
     int inputSizeX,
     
     float K_POROG_ACTIVATION_FINAL,
-    float K_POROG_ACT_PAKETA,
-    float K_POROG_ZNACH_OBRAZA
-    
+    float K_POROG_ACT_PAKETA
 ) {
 
     int x = get_global_id(0);
@@ -110,7 +108,7 @@ __kernel void computeMemorization(
 				    
 				    if (packageFree[packagePos] >= 1)
 				    {
-					    if (package[packagePos] >= K_POROG_ZNACH_OBRAZA)
+					    if (package[packagePos] > 0.0f)
 					    {
 							packageFree[packagePos] = 0;
 						}
@@ -157,7 +155,7 @@ __kernel void computeMemorization(
 			own = max(own, package[packagePos]);
 		}
 
-	    if (own < K_POROG_ZNACH_OBRAZA || maximum == 0.0f || maximum > own)
+	    if (maximum == 0.0f || maximum > own)
 	    {
 	    	rememberCols[pos] = 0.0f;
 	    }
@@ -173,7 +171,7 @@ __kernel void computeMemorization(
 		    
 		    if (packageFree[packagePos] >= 1)
 		    {
-			    if (package[packagePos] >= K_POROG_ZNACH_OBRAZA)
+			    if (package[packagePos] > 0)
 			    {
 					packageFree[packagePos] = 0;
 				}
@@ -189,7 +187,7 @@ __kernel void computeMemorization(
     
     for (int p = 0; p < numberOfPackages; p++)
     {
-		packagePos = pos * numberOfPackages + p;
+		packagePos = (pos * numberOfPackages) + p;
 	    if (packageFree[packagePos] != 0.0f)
 	    {
 	    	wOffset = (linksOffset + p) * wLinksNumber;
