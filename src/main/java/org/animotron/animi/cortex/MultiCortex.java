@@ -563,7 +563,6 @@ public class MultiCortex implements Runnable {
         }
 
     }
-
 	
 	@Override
 	public void run() {
@@ -633,9 +632,14 @@ public class MultiCortex implements Runnable {
 	private volatile boolean paused = false;
 	
 	public synchronized void start() {
-		resume();
+		if (th != null) {
+			th.interrupt();
+		}
 		
-		if (th != null) return;
+		MODE = RUN;
+
+		run = true;
+		paused = false;
 		
 		th = new Thread(this);
 		th.setDaemon(true);
@@ -643,6 +647,8 @@ public class MultiCortex implements Runnable {
 	}
 
 	public synchronized void stop() {
+		MODE = (MODE == RUN) ? PAUSE : STOP;
+
 		run = false;
 		try {
 			th.join();

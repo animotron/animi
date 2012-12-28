@@ -94,7 +94,7 @@ public class Application extends JFrame {
 
 			@Override
             public void windowDeiconified(WindowEvent e) {
-                run();
+//                run();
             }
 
             @Override
@@ -487,24 +487,22 @@ public class Application extends JFrame {
     	createFrame(stimulator);
     }
     
-    private void run() {
+    private synchronized void run() {
     	if (cortexs != null) {
-			MODE = RUN;
 			cortexs.start();
     	}
     }
     
-    private void step() {
+    private synchronized void step() {
     	if (cortexs != null && MODE <= STEP) {
 			MODE = STEP;
 			cortexs.process();
     	}
     }
 
-    private void stop() {
+    private synchronized void stop() {
     	if (cortexs != null) {
     		cortexs.stop();
-			MODE = (MODE == RUN) ? PAUSE : STOP;
     	}
     }
 
@@ -520,6 +518,7 @@ public class Application extends JFrame {
     }
     
     public void refresh() {
+    	System.out.println("refresh");
         int count = desktop.getComponentCount();
         for (int i = 0; i < count; i++) {
             Component comp = desktop.getComponent(i);

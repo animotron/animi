@@ -38,7 +38,7 @@ public class AttentionZone extends CortexZoneComplex {
     	if (!isActive())// || !mc.retina.needShift())
     		return;
     	
-    	cycleActivation();
+//    	cycleActivation();
     	
     	//inhibitory
     	int X = -1, Y = -1;

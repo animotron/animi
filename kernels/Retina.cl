@@ -57,7 +57,16 @@ __kernel void computeRetina(
 	    //calculate gray
 		float gray = (R + G + B) / (float)3;
 
-		output[pos] = gray;
+//		output[pos] = gray / (float) 255;
+
+		if (gray > 0.0f)
+		{
+			output[pos] = 1;
+		}
+		else
+		{
+			output[pos] = 0;
+		}
 	}
 	else
 	{

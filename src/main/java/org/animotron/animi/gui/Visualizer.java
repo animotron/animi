@@ -52,6 +52,7 @@ public class Visualizer extends JInternalFrame {
 	private ImageCanvas canvas = new ImageCanvas();
 	
 	private BufferedImage image = null;
+	private Image bufImage = null;
 	
 	private int zoom = 1;
 	
@@ -110,6 +111,8 @@ public class Visualizer extends JInternalFrame {
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				zoom += e.getWheelRotation();
 				if (zoom <= 0) zoom = 1;
+				
+				bufImage = null;
 			}
 		});
 	}
@@ -151,10 +154,14 @@ public class Visualizer extends JInternalFrame {
 
 		public void paint(Graphics g) {
 			if (image == null) return;
+			
+			if (bufImage == null) {
+				bufImage = image.getScaledInstance(image.getWidth()*zoom, image.getHeight()*zoom, Image.SCALE_AREA_AVERAGING);
+			}
 
 			g.drawImage(
-				image.getScaledInstance(image.getWidth()*zoom, image.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
-				0, 0, this);
+					bufImage,
+					0, 0, this);
 		}
 	}
 	
@@ -162,8 +169,12 @@ public class Visualizer extends JInternalFrame {
 		if (simulator instanceof Stimulator) {
 			image = ((Stimulator) simulator).getUserImage();
 			
-		} else
+		} else {
 			image = simulator.getImage();
+		
+		}
+		
+		bufImage = null;
 
 		repaint();
 	}

@@ -108,7 +108,6 @@ __kernel void computeActivation(
 	        	else
 		        	sum += input[(yi * inputSizeX) + xi] * linksWeight[wOffset + l];
 		    }
-		    
 		    if (
 //		    	(empty == 0 && sum < K_POROG_ZNACH_OBRAZA) 
 //		    	||
@@ -118,10 +117,10 @@ __kernel void computeActivation(
 	    	}
 		    
 		    //should not be more then one
-	    	if (sum > 1.0f)
-	    	{
-	    		sum = 1.0f;
-			}
+//	    	if (sum > 1.0f)
+//	    	{
+//	    		sum = 1.0f;
+//			}
 
 		    if (empty == 1)
 	    	{

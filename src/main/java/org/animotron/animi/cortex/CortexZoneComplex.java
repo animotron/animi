@@ -448,16 +448,16 @@ public class CortexZoneComplex extends CortexZoneSimple {
     	if (!isActive())
     		return;
     	
-    	cycleActivation();
-    	
+        //Такт 1. Активация колонок (узнавание)
+    	performTask(cnActivation);
+
     	if (isLearning()) {
-    		cycleLearning();
+    	    //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
+        	performTask(memorization);
     	
     		count++;
     	}
-    	
-//    	step++;
-//    	if (step >= 3) step = 1;
+		performTask(winnerGetsAll);
     }
     
     private void performTask(Task task) {
@@ -470,29 +470,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
         mc.finish();
     }
     
-//    int step = 1;
-    
-    //Такт 1. Активация колонок (узнавание)
-    protected void cycleActivation() {
-    	
-//    	if (step == 1)
-    	performTask(cnActivation);
-//		for (int i : new int[] {1,2,3,4,5}) {
-//			if (step == 2)
-//    		performTask(inhibitory);
-//			if (step == 2)
-			performTask(winnerGetsAll);
-//		}
-    }
-
-    //Граничные нейроны не задействованы.
-    //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
-    private void cycleLearning() {
-//		if (step == 3)
-    	performTask(memorization);
-//    	performTask(restructorization);
-    }
-
 	public void save(Writer out) throws IOException {
 		out.write("<zone type='complex'");
 		write(out, "name", name);

@@ -46,7 +46,7 @@ public class CNActivation extends Task {
 	public float K_POROG_PAKET_UZNAVANIYA = 0.4f;
 	
 	@RuntimeParam(name = "порог значимости образа при запоминании")
-	public float K_POROG_ZNACH_OBRAZA = 0.1f;
+	public float K_POROG_ZNACH_OBRAZA = 0.14f;
 
 	@RuntimeParam(name = "соотношение позитивных и негативных весов")
 	public float K_SOOTN_POS_I_NEGATIVE = 0.5f;

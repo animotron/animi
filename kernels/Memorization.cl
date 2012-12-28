@@ -191,7 +191,7 @@ __kernel void computeMemorization(
 	    if (packageFree[packagePos] != 0.0f)
 	    {
 	    	wOffset = (linksOffset + p) * wLinksNumber;
-		    for (int l = 0; l < linksNumber; l++)
+		    for (int l = 0; l < wLinksNumber; l++)
 		    {
 		        linksWeight[wOffset + l] = 0;
 		    }
