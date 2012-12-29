@@ -493,11 +493,11 @@ public class MultiCortex implements Runnable {
 	        			(z_1st.package_size * x) + 
 	        			(0);
 	        	
-        	} while (z_1st.freePackageCols[pos] < 1);
+        	} while (z_1st.freePackageCols[pos] > 0);
         	
         	System.out.print("-");
         	
-        	z_1st.freePackageCols[pos] = 0;
+        	z_1st.freePackageCols[pos] = 1;
 
         	int offset = 
         			(2 * m.ns_links * z_1st.width * y) + 

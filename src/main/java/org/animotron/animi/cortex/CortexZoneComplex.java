@@ -242,7 +242,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		);
 
     	freePackageCols = new int[width * height * package_size];
-    	Arrays.fill(freePackageCols, 1);
+    	Arrays.fill(freePackageCols, 0);
     	
         cl_freePackageCols = clCreateBuffer(
     		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 

@@ -42,6 +42,8 @@ public class Memorization extends Task {
 	
 	cl_mem cl_linksWeight = null;
 	cl_mem cl_freePackageCols = null;
+	
+	int count = 0;
 
 	@RuntimeParam(name = "порог активации колонки в цикле тремора для блокирования записей в окружении")
 	public float K_POROG_ACTIVATION_FINAL = 0.4f;
@@ -94,8 +96,10 @@ public class Memorization extends Task {
         clSetKernelArg(kernel, 10, Sizeof.cl_mem, Pointer.to(m.frZone.cl_cols));
         clSetKernelArg(kernel, 11, Sizeof.cl_int, Pointer.to(new int[] {m.frZone.width}));
 
-        clSetKernelArg(kernel, 12, Sizeof.cl_float, Pointer.to(new float[] {K_POROG_ACTIVATION_FINAL}));
-        clSetKernelArg(kernel, 13, Sizeof.cl_float, Pointer.to(new float[] {K_POROG_ACT_PAKETA}));
+        clSetKernelArg(kernel, 12, Sizeof.cl_int, Pointer.to(new int[] {count++}));
+
+        clSetKernelArg(kernel, 13, Sizeof.cl_float, Pointer.to(new float[] {K_POROG_ACTIVATION_FINAL}));
+        clSetKernelArg(kernel, 14, Sizeof.cl_float, Pointer.to(new float[] {K_POROG_ACT_PAKETA}));
 	}
 
 	@Override

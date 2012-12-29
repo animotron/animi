@@ -60,7 +60,7 @@ __kernel void computeActivation(
     float maximum = 0.0f;
     float sum = 0.0f;
     
-    int empty = 1;
+    int empty = 0;
 	bool toRemember = true;
 	int rememberOn = 0;
     
@@ -72,7 +72,7 @@ __kernel void computeActivation(
     	wOffset = ((((y * outputSizeX) + x) * numberOfPackages) + p) * linksNumber;
 	    for(int l = 0; l < linksNumber; l++)
 	    {
-	    	if (packageFree[packagePos] == 1)
+	    	if (packageFree[packagePos] == 0)
 	    	{
 	        	linksWeight[wOffset + l] = 0;
 	    	}
@@ -103,7 +103,7 @@ __kernel void computeActivation(
 		    	int xi = linksSenapse[offset + (l * 2) +0] + shiftX;
 		    	int yi = linksSenapse[offset + (l * 2) +1] + shiftY;
 		        
-		        if (empty == 1)
+		        if (empty == 0)
 		        	sum += input[(yi * inputSizeX) + xi] / (float)linksNumber;
 	        	else
 		        	sum += input[(yi * inputSizeX) + xi] * linksWeight[wOffset + l];
@@ -111,7 +111,7 @@ __kernel void computeActivation(
 		    if (
 //		    	(empty == 0 && sum < K_POROG_ZNACH_OBRAZA) 
 //		    	||
-		    	(empty == 1 && sum < K_POROG_ZNACH_OBRAZA))
+		    	(empty == 0 && sum < K_POROG_ZNACH_OBRAZA))
 	    	{
 	    		continue;
 	    	}
@@ -122,7 +122,7 @@ __kernel void computeActivation(
 //	    		sum = 1.0f;
 //			}
 
-		    if (empty == 1)
+		    if (empty == 0)
 	    	{
 	    		if (toRemember)
 	    		{
@@ -209,7 +209,7 @@ __kernel void computeActivation(
     {
 		packagePos = (((y * outputSizeX) + x) * numberOfPackages) + p;
 	    
-	    if (packageFree[packagePos] < 1)
+	    if (packageFree[packagePos] > 0)
 	    {
 		    pN++;
 		    _cycleCols += package[packagePos];

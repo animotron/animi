@@ -22,6 +22,35 @@
  /*
   * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
   */
+float Neighbor(int x, int y, __global float* package, __global int* packageFree, int numberOfPackages, int sizeX)
+{
+	int packagePos = 0;
+	
+	float neighbor = 0.0f;
+    for (int dx = -1; dx <= 1; dx++)
+    {
+    	if (dx == 0) continue;
+    	
+	    for (int dy = -1; dy <= 1; dy++)
+	    {
+	    	if (dy == 0) continue;
+	    	
+	    	int xi = x + dx;
+	    	int yi = y + dy;
+
+	    	for (int p = 0; p < numberOfPackages; p++)
+		    {
+				packagePos = (((sizeX * yi) + xi) * numberOfPackages) + p;
+			    
+			    if (packageFree[packagePos] > 0)
+			    {
+			    	neighbor = max(neighbor, package[packagePos]);
+	    		}
+			}
+	    }
+    }
+    return neighbor;
+}
 
 __kernel void computeMemorization(
     __global float* output,
@@ -42,6 +71,8 @@ __kernel void computeMemorization(
     __global float* input,
     int inputSizeX,
     
+    int cycle,
+
     float K_POROG_ACTIVATION_FINAL,
     float K_POROG_ACT_PAKETA
 ) {
@@ -88,7 +119,7 @@ __kernel void computeMemorization(
 	    for (int p = 0; p < numberOfPackages; p++)
 	    {
 			packagePos = (pos * numberOfPackages) + p;
-		    if (packageFree[packagePos] < 1.0f)
+		    if (packageFree[packagePos] > 0)
 		    {
 		    	pN++;
 		    	if (package[packagePos] > K_POROG_ACT_PAKETA)
@@ -106,11 +137,11 @@ __kernel void computeMemorization(
 			    {
 					packagePos = (((sizeX * y) + x) * numberOfPackages) + p;
 				    
-				    if (packageFree[packagePos] >= 1)
+				    if (packageFree[packagePos] == 0)
 				    {
 					    if (package[packagePos] > 0.0f)
 					    {
-							packageFree[packagePos] = 0;
+							packageFree[packagePos] = cycle;
 						}
 				    }
 			    }
@@ -124,11 +155,10 @@ __kernel void computeMemorization(
 	//neighborhood...
 	if (rememberCols[pos] > 0.0f)
     {
-    	float maximum = 0.0f;
-    	float own = 0.0f;
-    	
     	int offset = pos * linksNumber * 2;
     
+    	float maximum = 0.0f;
+    	
 	    for(int l = 0; l < linksNumber; l++)
 	    {
 	    	int xi = linksSenapse[offset + (l * 2)    ];
@@ -140,7 +170,7 @@ __kernel void computeMemorization(
 			    {
 					packagePos = (((sizeX * yi) + xi) * numberOfPackages) + p;
 				    
-				    if (packageFree[packagePos] < 1)
+				    if (packageFree[packagePos] == 0)
 				    {
 	        			maximum = max(maximum, package[packagePos]);
 	        		}
@@ -148,14 +178,20 @@ __kernel void computeMemorization(
     		}
 	    }
 	    
+    	float own = 0.0f;
 	    for (int p = 0; p < numberOfPackages; p++)
 	    {
 			packagePos = pos * numberOfPackages + p;
 		    
-			own = max(own, package[packagePos]);
+			if (packageFree[packagePos] == 0)
+			{
+				own = max(own, package[packagePos]);
+			}
 		}
+	    
+	    float neighbor = Neighbor(x, y, package, packageFree, numberOfPackages, sizeX);
 
-	    if (maximum == 0.0f || maximum > own)
+	    if (neighbor == 0.0f || maximum > own)
 	    {
 	    	rememberCols[pos] = 0.0f;
 	    }
@@ -169,11 +205,11 @@ __kernel void computeMemorization(
 	    {
 			packagePos = (((sizeX * y) + x) * numberOfPackages) + p;
 		    
-		    if (packageFree[packagePos] >= 1)
+		    if (packageFree[packagePos] == 0)
 		    {
 			    if (package[packagePos] > 0)
 			    {
-					packageFree[packagePos] = 0;
+					packageFree[packagePos] = cycle;
 				}
 		    }
 	    }
@@ -188,7 +224,7 @@ __kernel void computeMemorization(
     for (int p = 0; p < numberOfPackages; p++)
     {
 		packagePos = (pos * numberOfPackages) + p;
-	    if (packageFree[packagePos] != 0.0f)
+	    if (packageFree[packagePos] == 0)
 	    {
 	    	wOffset = (linksOffset + p) * wLinksNumber;
 		    for (int l = 0; l < wLinksNumber; l++)

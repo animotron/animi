@@ -129,7 +129,7 @@ public class PFActual implements Imageable, InternalFrameListener {
         			(zone.package_size * point.x) + 
         			(pN);
 			
-			g.drawString("free "+String.valueOf(zone.freePackageCols[pos]), x, cY);		
+			g.drawString(String.valueOf(zone.freePackageCols[pos]), x, cY);		
 
 			cY += textY;
 			g.drawString("act "+Math.round(zone.packageCols[pos]*100)/(double)100, x, cY);		
