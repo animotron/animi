@@ -42,7 +42,7 @@ int Neighbor(int x, int y, __global float* package, __global int* packageFree, i
 		    {
 				packagePos = (((sizeX * yi) + xi) * numberOfPackages) + p;
 				
-				if (packagePos < 0 || packagePos >= 160*120)
+				if (packagePos < 0 || packagePos >= ((160*120*7) - 1))
 					continue;
 			    
 			    if (packageFree[packagePos] > 0)
