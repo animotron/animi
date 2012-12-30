@@ -22,11 +22,11 @@
  /*
   * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
   */
-float Neighbor(int x, int y, __global float* package, __global int* packageFree, int numberOfPackages, int sizeX)
+int Neighbor(int x, int y, __global float* package, __global int* packageFree, int numberOfPackages, int sizeX)
 {
 	int packagePos = 0;
 	
-	float neighbor = 0.0f;
+	int neighbor = 0;
     for (int dx = -1; dx <= 1; dx++)
     {
     	if (dx == 0) continue;
@@ -41,10 +41,14 @@ float Neighbor(int x, int y, __global float* package, __global int* packageFree,
 	    	for (int p = 0; p < numberOfPackages; p++)
 		    {
 				packagePos = (((sizeX * yi) + xi) * numberOfPackages) + p;
+				
+				if (packagePos < 0 || packagePos >= 160*120)
+					continue;
 			    
 			    if (packageFree[packagePos] > 0)
 			    {
-			    	neighbor = max(neighbor, package[packagePos]);
+			    	neighbor++;
+			    	break;
 	    		}
 			}
 	    }
