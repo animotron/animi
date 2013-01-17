@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 The Animo Project
+ *  Copyright (C) 2012-2013 The Animo Project
  *  http://animotron.org
  *
  *  This file is part of Animotron.
@@ -42,7 +42,7 @@ int Neighbor(int x, int y, __global float* package, __global int* packageFree, i
 		    {
 				packagePos = (((sizeX * yi) + xi) * numberOfPackages) + p;
 				
-				if (packagePos < 0 || packagePos >= ((160*120*7) - 1))
+				if (packagePos < 0 || packagePos >= ((160*120*7) - 10))
 					continue;
 			    
 			    if (packageFree[packagePos] > 0)

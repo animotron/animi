@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 The Animo Project
+ *  Copyright (C) 2012-2013 The Animo Project
  *  http://animotron.org
  *
  *  This file is part of Animi.
@@ -22,10 +22,6 @@ package org.animotron.animi.cortex;
 
 import static org.jocl.CL.*;
 
-import java.awt.Color;
-import java.awt.image.DataBufferInt;
-
-import org.animotron.animi.Utils;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_command_queue;

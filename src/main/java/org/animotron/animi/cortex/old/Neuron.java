@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 The Animo Project
+ *  Copyright (C) 2012-2013 The Animo Project
  *  http://animotron.org
  *
  *  This file is part of Animi.

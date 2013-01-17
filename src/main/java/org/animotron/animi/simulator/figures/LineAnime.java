@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2012 The Animo Project
+ *  Copyright (C) 2012-2013 The Animo Project
  *  http://animotron.org
  *
  *  This file is part of Animi.
@@ -22,7 +22,6 @@ package org.animotron.animi.simulator.figures;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
