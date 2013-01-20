@@ -22,6 +22,60 @@
  /*
   * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
   */
+void restructorization()
+{
+	float activity = output[pos];
+	if (activity == 0)
+		return;
+		
+	double factor = 0.03f; // ny / Math.pow(2, layer.count / count);
+	double sumQ2 = 0;
+
+	//free up
+    int linksOffset = ((y * sizeX) + x) * numberOfPackages;
+	int wOffset = 0;
+    
+    for (int p = 0; p < numberOfPackages; p++)
+    {
+		packagePos = (pos * numberOfPackages) + p;
+	    if (packageFree[packagePos] == 0)
+	    {
+	    	wOffset = (linksOffset + p) * wLinksNumber;
+		    for (int l = 0; l < wLinksNumber; l++)
+		    {
+		    	int xi = linksSenapse[offset + (l * 2) +0] + shiftX;
+    			int yi = linksSenapse[offset + (l * 2) +1] + shiftY;
+			     
+				float synapse = input[(yi * inputSizeX) + xi];
+		        
+		        float q = activity * synapse * factor;
+		        
+		        linksWeight[wOffset + l] = q;
+		        
+		        sumQ2 = q * q;
+		    }
+
+			float norm = sqrt(sumQ2);
+		    for (int l = 0; l < wLinksNumber; l++)
+		    {
+		        linksWeight[wOffset + l] = linksWeight[wOffset + l] / norm;
+		    }
+	    }
+		//inhibitory restructorization & normlization
+//		sumQ2 = 0;
+//		for (Link link : cn.s_inhibitoryLinks) {
+//			link.w += cn.activity * link.synapse.activity * inhibitoryNy;
+//
+//			sumQ2 += link.w * link.w;
+//		}
+//
+//		norm = Math.sqrt(sumQ2);
+//		for (Link link : cn.s_inhibitoryLinks) {
+//			link.w = link.w / norm;
+//		}
+    }
+}
+
 int Neighbor(int x, int y, __global float* package, __global int* packageFree, int numberOfPackages, int sizeX)
 {
 	int packagePos = 0;

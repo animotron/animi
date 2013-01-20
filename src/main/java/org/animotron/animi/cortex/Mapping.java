@@ -55,9 +55,27 @@ public class Mapping {
 
 	public float[] linksWeight;
 	
+	public float linksWeight(int x, int y, int p, int l) {
+		return linksWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l];
+	}
+	
+	public void linksWeight(float value, int x, int y, int p, int l) {
+		linksWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l] = value;
+	}
+
 	public int[] linksSenapse;
 	
-    /**
+	public int linksSenapse(int x, int y, int l, int xy) {
+		return linksSenapse[(((((y * toZone.width) + x) * ns_links) + l) * 2) + xy];
+	}
+	
+	public void linksSenapse(int Sx, int Sy, int x, int y, int l) {
+		final int pos = (((((y * toZone.width) + x) * ns_links) + l) * 2);
+		linksSenapse[pos + 0] = Sx;
+		linksSenapse[pos + 1] = Sy;
+	}
+
+	/**
      * The OpenCL memory object which store the neuron links for each zone.
      */
     public cl_mem cl_linksWeight;
@@ -83,10 +101,10 @@ public class Mapping {
 	    
 		System.out.println(toZone);
 
-	    linksWeight = new float[frZone.width() * frZone.height() * ns_links * toZone.package_size];
+	    linksWeight = new float[toZone.width() * toZone.height() * ns_links * toZone.package_size];
 		Arrays.fill(linksWeight, 0);
 		
-		linksSenapse = new int[frZone.width() * frZone.height() * ns_links * 2];
+		linksSenapse = new int[toZone.width() * toZone.height() * ns_links * 2];
 		Arrays.fill(linksSenapse, 0);
 		
 //        for (int x = 0; x < zone.width(); x++) {
@@ -177,10 +195,12 @@ public class Mapping {
 //                	            (y * toZone.width * toZone.package_size * ns_links) + 
 //                	            (x * toZone.package_size * ns_links) + (pN * ns_links) + i] = w;
 //                        }
-                		final int offset = ((toZone.width * y) + x) * 2 * ns_links;
                         
-                        linksSenapse[offset + i*2 +0] = lx;
-                        linksSenapse[offset + i*2 +1] = ly;
+                        linksSenapse(lx, ly, x, y, i);
+//                		final int offset = ((toZone.width * y) + x) * 2 * ns_links;
+//                        
+//                        linksSenapse[offset + i*2 +0] = lx;
+//                        linksSenapse[offset + i*2 +1] = ly;
 //						new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY, toZone.speed);
                     } else {
                     	System.out.print("!");
@@ -190,15 +210,20 @@ public class Mapping {
 			}
 		}
         
-		cl_linksWeight = 
-			clCreateBuffer(
-				frZone.mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
-				linksWeight.length * Sizeof.cl_float, Pointer.to(linksWeight), null
-			);
-		
-		cl_senapseOfLinks = 
-			clCreateBuffer(
-				frZone.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-				linksSenapse.length * Sizeof.cl_int, Pointer.to(linksSenapse), null);
+        if (frZone.mc.context == null) {
+        	cl_linksWeight = null;
+        	cl_senapseOfLinks = null;
+        } else {
+			cl_linksWeight = 
+				clCreateBuffer(
+					frZone.mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+					linksWeight.length * Sizeof.cl_float, Pointer.to(linksWeight), null
+				);
+			
+			cl_senapseOfLinks = 
+				clCreateBuffer(
+					frZone.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+					linksSenapse.length * Sizeof.cl_int, Pointer.to(linksSenapse), null);
+        }
 	}
 }

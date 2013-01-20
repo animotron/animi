@@ -138,16 +138,21 @@ public class Utils {
 //				else if (c < 0) c = 0;
 //				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, c, c, c));
 
-				if (m.linksWeight[lOffset + l] == 0.0f) {
+		        final float w = m.linksWeight[lOffset + l];
+				if (Float.isNaN(w) || Float.isInfinite(w)) {
 					R = 255;
-				} else if (m.linksWeight[lOffset + l] > 0.0f) {
+				
+				} else if (w == 0.0f) {
+					B = G = R = 0;
+
+				} else if (w > 0.0f) {
+					int v = (int) (255 * w * 5);
+					if (v > 255) v = 255;
+					B = v; G = v; R = v;
+				} else {
 					B = 255;
 					//B += 255 * m.linksWeight[lOffset + l] * 5;
-					if (B > 255) B = 255;
-				} else {
-					G = 255;
-					//G += 255 * m.linksWeight[lOffset + l] * 5;
-					if (G > 255) G = 255;
+					if (B > 255) G = 255;
 				};
 				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, R, G, B));
         	}

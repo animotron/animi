@@ -106,4 +106,8 @@ public class Restructurization extends Task {
     protected void release() {
 //		clReleaseMemObject(_cols);
     }
+
+	@Override
+	public void gpuMethod(int x, int y) {
+	}
 }

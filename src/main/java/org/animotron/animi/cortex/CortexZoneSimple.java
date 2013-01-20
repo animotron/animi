@@ -65,6 +65,14 @@ public class CortexZoneSimple implements Layer {
     public cl_mem cl_cols;
     public float cols[];
     
+    public float cols(int x, int y) {
+		return cols[(y * width) + x];
+    }
+    
+    public void cols(float value, int x, int y) {
+    	cols[(y * width) + x] = value;
+    }
+
     /**
      * The OpenCL memory object which store the remember or not activity at RF of neuron.
      */
@@ -96,18 +104,26 @@ public class CortexZoneSimple implements Layer {
     	cols = new float[width * height];
     	Arrays.fill(cols, 0);
     	
-        cl_cols = clCreateBuffer(
-    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-    		cols.length * Sizeof.cl_float, Pointer.to(cols), null
-		);
+        if (mc.context == null) {
+        	cl_cols = null;
+        } else {
+	    	cl_cols = clCreateBuffer(
+	    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
+	    		cols.length * Sizeof.cl_float, Pointer.to(cols), null
+			);
+        }
         
         rememberCols = new float[width * height];
     	Arrays.fill(rememberCols, 0);
     	
-    	cl_rememberCols = clCreateBuffer(
-    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-    		rememberCols.length * Sizeof.cl_float, Pointer.to(rememberCols), null
-		);
+        if (mc.context == null) {
+        	cl_rememberCols = null;
+        } else {
+	    	cl_rememberCols = clCreateBuffer(
+	    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
+	    		rememberCols.length * Sizeof.cl_float, Pointer.to(rememberCols), null
+			);
+        }
 
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }

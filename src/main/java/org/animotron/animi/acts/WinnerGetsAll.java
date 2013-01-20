@@ -86,7 +86,7 @@ public class WinnerGetsAll extends Task {
         	int x = maxPos - (y * cz.width);
         	
             int XSize = (linksNumber * 2);
-            int offset = (y * cz.width * XSize) + (x * XSize);
+            int offset = ((y * cz.width) + x) * XSize;
             
     		for (int l = 0; l < linksNumber; l++) {
     	    	int xi = cz.inhibitoryLinksSenapse[offset + (l * 2)    ];
@@ -144,4 +144,8 @@ public class WinnerGetsAll extends Task {
 //    		}
 //    	}
 //    }
+
+	@Override
+	public void gpuMethod(int x, int y) {
+	}
 }

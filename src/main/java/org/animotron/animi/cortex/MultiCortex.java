@@ -226,6 +226,14 @@ public class MultiCortex implements Runnable {
      * The queue of {@link Task}s that are about to be executed by the {@link TaskProcessor}.
      */
     public BlockingQueue<Task> taskQueue = new ArrayBlockingQueue<Task>(1024, true);
+    
+    public void addTask(Task task) throws InterruptedException {
+    	if (kernels != null && kernels.length > 0) {
+    		taskQueue.put(task);
+    	} else {
+    		task.execute();
+    	}
+    }
 
     /**
      * Initialize OpenCL
@@ -462,8 +470,10 @@ public class MultiCortex implements Runnable {
     }
     
     public void init(final cl_platform_id platform, final long deviceType) {
-        // Initialize OpenCL 
-        initCL(platform, deviceType);
+    	if (deviceType != CL_DEVICE_TYPE_DEFAULT) {
+	        // Initialize OpenCL 
+	        initCL(platform, deviceType);
+    	}
 
     	// Flush all pending tasks
         flush();
@@ -488,20 +498,13 @@ public class MultiCortex implements Runnable {
 //				for (int i = 0; i < z_1st.number_of_inhibitory_links; i++) {
 //				}
 	        	
-	        	pos = 
-	        			(z_1st.package_size * z_1st.width * y) + 
-	        			(z_1st.package_size * x) + 
-	        			(0);
-	        	
-        	} while (z_1st.freePackageCols[pos] > 0);
+        	} while (z_1st.freePackageCols(x, y, 0) > 0);
         	
         	System.out.print("-");
         	
-        	z_1st.freePackageCols[pos] = 1;
+        	z_1st.freePackageCols(1, x, y, 0);
 
-        	int offset = 
-        			(2 * m.ns_links * z_1st.width * y) + 
-        			(2 * m.ns_links * x);
+        	int offset = ((z_1st.width * y) + x) * 2 * m.ns_links;
         	
         	int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
         	int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
@@ -520,10 +523,7 @@ public class MultiCortex implements Runnable {
             int centerX = minX + (maxX - minX) / 2;
 //            int centerY = minY + (maxY - minY) / 2;
             
-            int wOffset = 
-            		(m.ns_links * z_1st.package_size * z_1st.width * y) + 
-    	            (m.ns_links * z_1st.package_size * x) + 
-    	            (m.ns_links * 0);
+            int wOffset = (((((z_1st.width * y) + x) * z_1st.package_size) + 0) * m.ns_links);
             
             float sumW = 0;
             int count = 0;
@@ -620,7 +620,7 @@ public class MultiCortex implements Runnable {
         		app.count.setText(String.valueOf(count));
         		app.refresh();
     		
-    		} else if (MODE == RUN && count % 100 == 0) {
+    		} else if (MODE == RUN && count % 10 == 0) {
         		app.count.setText(String.valueOf(count));
     			app.refresh();
 

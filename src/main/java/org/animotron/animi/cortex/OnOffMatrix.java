@@ -109,10 +109,14 @@ public class OnOffMatrix {
         	System.out.println();
         }
         
-        cl_matrix = clCreateBuffer(
-    		context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
-    		matrix.length * Sizeof.cl_int, Pointer.to(matrix), null
-		);
+        if (context == null) {
+        	cl_matrix = null;
+        } else {
+	        cl_matrix = clCreateBuffer(
+	    		context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
+	    		matrix.length * Sizeof.cl_int, Pointer.to(matrix), null
+			);
+        }
 	}
     
     public int regionSize() {

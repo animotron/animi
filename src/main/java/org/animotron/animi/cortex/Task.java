@@ -138,4 +138,21 @@ public abstract class Task {
 //    protected void processColors(float array[]) {
 //    	cz.refreshImage();
 //    }
+	
+	public void execute() {
+		do {
+//			System.out.println("Execute "+getClass());
+			for (int x = 0; x < sz.width; x++) {
+				for (int y = 0; y < sz.height; y++) {
+					gpuMethod(x, y);
+				}
+			}
+		} while (!isDone());
+	}
+	
+	public abstract void gpuMethod(int x, int y);
+	
+	public boolean isDone() {
+		return true;
+	}
 }

@@ -22,6 +22,8 @@ package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
 
+import java.util.Arrays;
+
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 import org.jocl.Pointer;
@@ -46,10 +48,10 @@ public class Memorization extends Task {
 	int count = 0;
 
 	@RuntimeParam(name = "порог активации колонки в цикле тремора для блокирования записей в окружении")
-	public float K_POROG_ACTIVATION_FINAL = 0.4f;
+	public float K_POROG_ACTIVATION_FINAL = 0.2f;
 	
 	@RuntimeParam(name = "порог активности пакета при дозапоминании")
-	public float K_POROG_ACT_PAKETA = 0.4f;
+	public float K_POROG_ACT_PAKETA = 0.2f;
 
 	public Memorization(CortexZoneComplex cz) {
 		super(cz);
@@ -139,4 +141,202 @@ public class Memorization extends Task {
 		clReleaseMemObject(cl_freePackageCols);
 		cl_freePackageCols = null;
     }
+	
+	float rememberCols[];
+	
+	private float rememberCols(int xi, int yi) {
+		return rememberCols[(yi * cz.width) + xi];
+	}
+
+	private void rememberCols(float value, int xi, int yi) {
+		rememberCols[(yi * cz.width) + xi] = value;
+	}
+	
+	public void inhibitoryByActivity(int x, int y) {
+		//set 0 in inhibitory zone of the active column
+		if (cz.cols(x, y) > K_POROG_ACTIVATION_FINAL) {
+	    
+		    for(int l = 0; l < cz.number_of_inhibitory_links; l++) {
+		    	int xi = cz.inhibitoryLinksSenapse(x, y, l, 0);
+		    	int yi = cz.inhibitoryLinksSenapse(x, y, l, 1);
+		        
+		        if (xi != x && yi != y) {
+	        		rememberCols(0, xi, yi);
+	    		}
+		    }
+	    } else {
+    		rememberCols(0, x, y);
+	    }
+	}
+	
+	//all packages should be active
+	public void checkThatAllActive(int x, int y) {
+		int pN = 0;
+		int pP = 0;
+
+		if (rememberCols(x, y) > 0.0f) {
+		    for (int p = 0; p < cz.package_size; p++) {
+
+			    if (cz.freePackageCols(x, y, p) > 0) {
+			    	pN++;
+			    	if (cz.packageCols(x, y, p) > K_POROG_ACT_PAKETA) {
+			    		pP++;
+			    	}
+			    }
+		    }
+		    
+		    if (pN != 0) {
+			    if (pN == pP) {
+				    //запоминаем если все сработали
+				    for (int p = 0; p < cz.package_size; p++) {
+					    if (cz.freePackageCols(x, y, p) == 0 && cz.packageCols(x, y, p) > 0.0f) {
+					    	cz.freePackageCols(count, x, y, p);
+					    }
+				    }
+			    }
+			   	rememberCols(0, x, y);
+		   	}
+	    }
+	}
+	
+	//calculate active neighbor
+	public int neighbor(int x, int y) {
+		
+		int neighbor = 0;
+
+		//поиск незначительной активности по соседям
+		//matrix 3x3
+	    for (int dx = -1; dx <= 1; dx++) {
+	    	if (dx == 0) continue;
+	    	
+		    for (int dy = -1; dy <= 1; dy++) {
+		    	if (dy == 0) continue;
+		    	
+		    	int xi = x + dx;
+		    	int yi = y + dy;
+
+				if (xi < 0 || xi >= cz.width || yi < 0 || yi >= cz.height)
+					continue;
+			    
+		    	for (int p = 0; p < cz.package_size; p++) {
+				    if (cz.freePackageCols(xi, yi, p) > 0) {
+				    	neighbor++;
+				    	break;
+		    		}
+				}
+		    }
+	    }
+	    return neighbor;
+	}
+	
+	//neighborhood...
+	public void inhibitoryByNeighborhood(int x, int y) {
+		if (rememberCols(x, y) > 0.0f) {
+
+			//ищим максимум
+			float maximum = 0.0f;
+	    	
+		    for(int l = 0; l < cz.number_of_inhibitory_links; l++) {
+		    	int xi = cz.inhibitoryLinksSenapse(x, y, l, 0);
+		    	int yi = cz.inhibitoryLinksSenapse(x, y, l, 1);
+		        
+		        if (xi != x && yi != y) {
+				    for (int p = 0; p < cz.package_size; p++) {
+
+					    if (cz.freePackageCols(xi, yi, p) == 0) {
+		        			maximum = Math.max(maximum, cz.packageCols(xi, yi, p));
+		        		}
+	        		}
+	    		}
+		    }
+		    
+	    	float own = 0.0f;
+		    for (int p = 0; p < cz.package_size; p++) {
+			    
+				if (cz.freePackageCols(x, y, p) == 0) {
+					own = Math.max(own, cz.packageCols(x, y, p));
+				}
+			}
+		    
+		    if (neighbor(x, y) == 0.0f || maximum > own) {
+		    	rememberCols(0, x, y);
+		    }
+	    }
+	}
+	
+	public void remember(int x, int y) {
+		if (rememberCols(x, y) > 0.0f) {
+		    
+			for (int p = 0; p < cz.package_size; p++) {
+			    
+			    if (cz.freePackageCols(x, y, p) == 0) {
+				    
+			    	if (cz.packageCols(x, y, p) > 0) {
+			    		cz.packageCols(count, x, y, p);
+					}
+			    }
+		    }
+	    }
+	}
+	
+	public void cleanup(int x, int y) {
+		//free up
+		Mapping m = cz.in_zones[0];
+		
+	    for (int p = 0; p < cz.package_size; p++) {
+		    if (cz.freePackageCols(x, y, p) == 0) {
+			    for (int l = 0; l < m.ns_links; l++) {
+			        m.linksWeight(0, x, y, p, l);
+			    }
+		    }
+	    }
+	}
+	
+	public void execute() {
+		count++;
+		super.execute();
+	}
+	
+	int phaze = 0;
+	
+	public void gpuMethod(int x, int y) {
+
+		switch (phaze) {
+		case 0:
+			rememberCols = new float[sz.cols.length];
+			Arrays.fill(rememberCols, 1);
+			inhibitoryByActivity(x, y);
+			break;
+
+		case 1:
+			checkThatAllActive(x, y);
+			break;
+
+		case 2:
+			inhibitoryByNeighborhood(x, y);
+			break;
+
+		case 3:
+			remember(x, y);
+			break;
+
+		case 4:
+			sz.cols = rememberCols;
+//			cleanup(x, y);
+			break;
+
+		default:
+			break;
+		}
+	}
+	
+	public boolean isDone() {
+		if (phaze == 4) {
+			phaze = 0;
+			return true;
+		}
+		
+		phaze++;
+		return false;
+	}
 }

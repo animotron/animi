@@ -124,15 +124,12 @@ public class PFActual implements Imageable, InternalFrameListener {
 			
 			cY += textY;
 			
-        	int pos = 
-        			(zone.package_size * zone.width * point.y) + 
-        			(zone.package_size * point.x) + 
-        			(pN);
-			
-			g.drawString(String.valueOf(zone.freePackageCols[pos]), x, cY);		
+			g.drawString(String.valueOf(zone.freePackageCols(point.x, point.y, pN)), x, cY);		
 
 			cY += textY;
-			g.drawString("act "+Math.round(zone.packageCols[pos]*100)/(double)100, x, cY);		
+			g.drawString("act "+Math.round(zone.packageCols(point.x, point.y, pN)*1000)/(double)1000, x, cY);		
+			
+			System.out.println(zone.packageCols(point.x, point.y, pN));
 			
 			x += (2+(img.getWidth()*zoom)) + 2;
         }

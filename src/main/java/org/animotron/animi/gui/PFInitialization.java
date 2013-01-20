@@ -85,6 +85,7 @@ public class PFInitialization extends JInternalFrame {
         gbc.gridx = 0;
 
         Vector<String> types = new Vector<String>();
+        types.add("JAVA");
         types.add("CPU");
         types.add("GPU");
         type = addCombo(gbc, "Device type: ", types);
@@ -101,6 +102,9 @@ public class PFInitialization extends JInternalFrame {
 					long _type_ = CL_DEVICE_TYPE_CPU;
 					if ("GPU".equals( type.getSelectedItem() )) {
 						_type_ = CL_DEVICE_TYPE_GPU;
+					} else if ("JAVA".equals( type.getSelectedItem() )) {
+						_type_ = CL_DEVICE_TYPE_DEFAULT;
+												
 					}
 					app.initialize(mc.platforms.get(platform.getSelectedItem()), _type_);
 					app.closeFrame(PFInitialization.this);
@@ -284,9 +288,10 @@ public class PFInitialization extends JInternalFrame {
 
         final JComboBox<String> combo = new JComboBox<String>(items);
         
-        //hack to select "Intel" by default
+        //hack to select "JAVA" by default
+        String prefered = "JAVA"; //"Intel";
         for (int i = 0; i < items.size(); i++) {
-        	if (items.get(i).contains("Intel")) {
+        	if (items.get(i).contains(prefered)) {
                 combo.setSelectedIndex(i);
                 break;
         	}

@@ -177,7 +177,7 @@ public class Retina {
 			);
 
     	try {
-            NL.mc.taskQueue.put(retinaTask);
+            NL.mc.addTask(retinaTask);
         
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -204,6 +204,11 @@ public class Retina {
     	
     	int input[];
     	int inputSizeX, inputSizeY;
+    	
+    	public int input(int x, int y) {
+    		return input[(y * inputSizeX) + x];
+    	}
+    	
     	protected cl_mem inputMem;
 
 		protected RetinaTask(CortexZoneSimple sz, 
@@ -251,6 +256,33 @@ public class Retina {
 	    @Override
 		protected void release() {
 	    	clReleaseMemObject(inputMem);
+		}
+	    
+	    private void output(float value, int x, int y) {
+	    	sz.cols(value, x, y);
+	    }
+
+		@Override
+		public void gpuMethod(int x, int y) {
+		    int rgb = input(
+		    		(int)((x + safeZone) * XScale),
+		    		(int)((y + safeZone) * YScale)
+	    		);
+
+		    int R = (rgb >> 16) & 0xFF;
+			int G = (rgb >> 8 ) & 0xFF;
+			int B = (rgb      ) & 0xFF;
+
+		    //calculate gray
+			float gray = (R + G + B) / (float)3;
+
+			if (gray > 0.0f) {
+				output(1, x, y);
+			
+			} else {
+				output(0, x, y);
+			
+			}
 		}
     }
 }

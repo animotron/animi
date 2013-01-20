@@ -22,6 +22,37 @@
  /*
   * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
   */
+void memorize(int offset, int linksNumber, int shiftX, int shiftY, int inputSizeX, float* linksSenapse, float* input)
+
+	double sumA2 = 0;
+	double activity = 0;
+
+    for(int l = 0; l < linksNumber; l++)
+    {
+    	int xi = linksSenapse[offset + (l * 2) +0] + shiftX;
+    	int yi = linksSenapse[offset + (l * 2) +1] + shiftY;
+			     
+		float synapse = input[(yi * inputSizeX) + xi];
+		   
+		activity += synapse;
+
+		sumA2 += synapse * synapse;
+	}
+
+	if ((activity / linksNumber) < mRecLevel)
+		return;
+
+    for(int l = 0; l < linksNumber; l++)
+    {
+    	int xi = linksSenapse[offset + (l * 2) +0] + shiftX;
+    	int yi = linksSenapse[offset + (l * 2) +1] + shiftY;
+			     
+		linksWeight[wOffset + l] = input[(yi * inputSizeX) + xi] / sumA2;
+
+// 		cn.occupy = true;
+  	}
+// 	Restructorization.normalization(cn, sn);
+}
 
 __kernel void computeActivation(
     __global float* output,

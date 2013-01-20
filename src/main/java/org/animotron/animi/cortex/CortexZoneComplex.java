@@ -58,6 +58,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
     
     public cl_mem cl_tremor;
 	public int[] tremor = new int[] {0, 0};
+	
+	public int tremor(int step, int pos) {
+		return tremor[step * 2 + pos];
+	}
 
 //    @Params
     Restructurization restructorization = new Restructurization(this);
@@ -76,6 +80,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 	public int inhibitoryLinksSenapse[];
 	
+	public int inhibitoryLinksSenapse(int x, int y, int l, int xy) {
+		return inhibitoryLinksSenapse[(((((y * width) + x) * number_of_inhibitory_links) + l) * 2) + xy];
+	}
+
 	/** Number of synaptic connections of the all simple neurons **/
 	public int ns_links;
 	/** Number of axonal connections of the all simple neurons **/
@@ -94,14 +102,29 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public cl_mem cl_packageCols;
     public float packageCols[];
     
+    public float packageCols(int x, int y, int p) {
+    	return packageCols[(((y * width) + x) * package_size) + p];
+    }
+
+    public void packageCols(float value, int x, int y, int p) {
+    	packageCols[(((y * width) + x) * package_size) + p] = value;
+    }
+
     /**
      * The OpenCL memory object which store the .... package of neuron.
      */
     public cl_mem cl_freePackageCols;
     public int freePackageCols[];
 
+    public int freePackageCols(int x, int y, int pack) {
+    	return freePackageCols[(((y * width) + x) * package_size) + pack];
+    }
     
-	@InitParam(name="package_size")
+    public void freePackageCols(int value, int x, int y, int pack) {
+    	freePackageCols[(((y * width) + x) * package_size) + pack] = value;
+    }
+
+    @InitParam(name="package_size")
 	public int package_size = 7;
 
     CortexZoneComplex() {
@@ -217,9 +240,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						// Создаем синаптическую связь
 //						new Link(getCol(lx, ly), getCol(x, y), w, LinkType.INHIBITORY);
 						
-						offset = 
-								(2 * number_of_inhibitory_links * width * y)+
-								(2 * number_of_inhibitory_links * x);
+						offset = ((width * y) + x) * 2 * number_of_inhibitory_links;
 						
 						inhibitoryLinksSenapse[offset + i*2 +0] = lx;
 						inhibitoryLinksSenapse[offset + i*2 +1] = ly;
@@ -228,32 +249,46 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //				System.out.println();
 			}
 		}
-		cl_senapseOfinhibitoryLinks = 
-				clCreateBuffer(
-					mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-					inhibitoryLinksSenapse.length * Sizeof.cl_int, Pointer.to(inhibitoryLinksSenapse), null);
-
+		if (mc.context == null) {
+			cl_senapseOfinhibitoryLinks = null;
+			
+		} else {
+			cl_senapseOfinhibitoryLinks = 
+					clCreateBuffer(
+						mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+						inhibitoryLinksSenapse.length * Sizeof.cl_int, Pointer.to(inhibitoryLinksSenapse), null);
+		}
+			
     	packageCols = new float[width * height * package_size];
     	Arrays.fill(packageCols, 0);
     	
-        cl_packageCols = clCreateBuffer(
-    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-    		packageCols.length * Sizeof.cl_float, Pointer.to(packageCols), null
-		);
-
+		if (mc.context == null) {
+			cl_packageCols = null;
+		} else {
+	        cl_packageCols = clCreateBuffer(
+	    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
+	    		packageCols.length * Sizeof.cl_float, Pointer.to(packageCols), null
+			);
+		}
+		
     	freePackageCols = new int[width * height * package_size];
     	Arrays.fill(freePackageCols, 0);
     	
-        cl_freePackageCols = clCreateBuffer(
-    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-    		freePackageCols.length * Sizeof.cl_int, Pointer.to(freePackageCols), null
-		);
-
-        cl_tremor = clCreateBuffer(
-    		mc.context, CL_MEM_READ_ONLY| CL_MEM_USE_HOST_PTR, 
-    		tremor.length * Sizeof.cl_int, Pointer.to(tremor), null
-		);
-
+		if (mc.context == null) {
+			cl_freePackageCols = null;
+			cl_tremor = null;
+		} else {
+	        cl_freePackageCols = clCreateBuffer(
+	    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
+	    		freePackageCols.length * Sizeof.cl_int, Pointer.to(freePackageCols), null
+			);
+	
+	        cl_tremor = clCreateBuffer(
+	    		mc.context, CL_MEM_READ_ONLY| CL_MEM_USE_HOST_PTR, 
+	    		tremor.length * Sizeof.cl_int, Pointer.to(tremor), null
+			);
+		}
+		
         if (CRF != null) {
         	CRF.init();
         }
@@ -462,7 +497,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     
     private void performTask(Task task) {
         try {
-            mc.taskQueue.put(task);
+            mc.addTask(task);
         
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
