@@ -20,13 +20,13 @@
  */
 package org.animotron.animi.cortex;
 
-import static org.jocl.CL.*;
+//import static org.jocl.CL.*;
 
 import org.animotron.animi.simulator.Stimulator;
-import org.jocl.Pointer;
-import org.jocl.Sizeof;
-import org.jocl.cl_kernel;
-import org.jocl.cl_mem;
+//import org.jocl.Pointer;
+//import org.jocl.Sizeof;
+//import org.jocl.cl_kernel;
+//import org.jocl.cl_mem;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -49,7 +49,7 @@ public class Retina {
 	/* y */
 	private int height;
 	
-	private OnOffMatrix onOff = null;
+	RetinaZone retinaTask = null;
 	
 	public Retina() {
 		this(WIDTH, HEIGHT);
@@ -72,6 +72,8 @@ public class Retina {
 	
     // создание связей сенсорных полей
 	private void initialize() {
+        retinaTask = new RetinaZone((CortexZoneSimple)NL);
+		
 //		sensorField = new OnOffReceptiveField[NL.width()][NL.height()];
 //
 //        double XScale = (width - onOff.regionSize()) / (double)NL.width();
@@ -150,14 +152,17 @@ public class Retina {
 
 	public void process(Stimulator stimulator) {
 		
-		if (onOff == null)
-			onOff = new OnOffMatrix(NL.mc.context);
+//		if (onOff == null)
+//			onOff = new OnOffMatrix(NL.mc.context);
 		
 		image = stimulator.getNextImage();
 
-		XScale = (image.getWidth()  - (safeZone*2)) / (float)NL.width;
-		YScale = (image.getHeight() - (safeZone*2)) / (float)NL.height;
+//		XScale = (image.getWidth()  - (safeZone*2)) / (float)NL.width;
+//		YScale = (image.getHeight() - (safeZone*2)) / (float)NL.height;
 			
+		XScale = image.getWidth()  / (float)NL.width;
+		YScale = image.getHeight() / (float)NL.height;
+
 //		Graphics g = image.getGraphics();
 //		g.drawRect(10, 10, image.getWidth() - 20, image.getHeight() - 20);
 
@@ -168,13 +173,11 @@ public class Retina {
         
 //        System.out.println("image: "+Arrays.toString(data));
 
-        RetinaTask retinaTask = 
-			new RetinaTask(
-    			(CortexZoneSimple)NL,
+        retinaTask.setInput(
     			XScale, YScale,
     			data,
     			image.getWidth(), image.getHeight()
-			);
+		);
 
     	try {
             NL.mc.addTask(retinaTask);
@@ -198,91 +201,91 @@ public class Retina {
         return image;
     }
     
-    public class RetinaTask extends Task {
-    	
-    	float XScale, YScale;
-    	
-    	int input[];
-    	int inputSizeX, inputSizeY;
-    	
-    	public int input(int x, int y) {
-    		return input[(y * inputSizeX) + x];
-    	}
-    	
-    	protected cl_mem inputMem;
-
-		protected RetinaTask(CortexZoneSimple sz, 
-				float XScale, float YScale, 
-				int input[], 
-				int inputSizeX, int inputSizeY) {
-			
-			super(sz);
-			
-	    	this.XScale = XScale;
-	    	this.YScale = YScale;
-	    	
-	    	this.input = input;
-	    	this.inputSizeX = inputSizeX;
-	    	this.inputSizeY = inputSizeY;
-		}
-
-	    protected void setupArguments(cl_kernel kernel) {
-	    	super.setupArguments(kernel);
-
-	        clSetKernelArg(kernel,  2, Sizeof.cl_int, Pointer.to(new int[] {safeZone}));
-	        clSetKernelArg(kernel,  3, Sizeof.cl_float, Pointer.to(new float[] {XScale}));
-	        clSetKernelArg(kernel,  4, Sizeof.cl_float, Pointer.to(new float[] {YScale}));
-
-	        clSetKernelArg(kernel,  5, Sizeof.cl_int, Pointer.to(new int[] {onOff.radius}));
-	        clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {onOff.regionSize}));
-	        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(onOff.cl_matrix));
-	        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {1}));
-	        
-	        clSetKernelArg(kernel,  9, Sizeof.cl_float, Pointer.to(new float[] {KContr1}));
-	        clSetKernelArg(kernel,  10, Sizeof.cl_float, Pointer.to(new float[] {KContr2}));
-	        clSetKernelArg(kernel,  11, Sizeof.cl_float, Pointer.to(new float[] {KContr3}));
-	        clSetKernelArg(kernel,  12, Sizeof.cl_int, Pointer.to(new int[] {Level_Bright}));
-	        clSetKernelArg(kernel,  13, Sizeof.cl_int, Pointer.to(new int[] {Lelel_min}));
-
-	        inputMem = clCreateBuffer(
-	    		sz.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
-	    		input.length * Sizeof.cl_int, Pointer.to(input), null
-			);
-	        clSetKernelArg(kernel,  14, Sizeof.cl_mem, Pointer.to(inputMem));
-	        clSetKernelArg(kernel,  15, Sizeof.cl_int, Pointer.to(new int[] {inputSizeX}));
-	        clSetKernelArg(kernel,  16, Sizeof.cl_int, Pointer.to(new int[] {inputSizeY}));
-	    }
-
-	    @Override
-		protected void release() {
-	    	clReleaseMemObject(inputMem);
-		}
-	    
-	    private void output(float value, int x, int y) {
-	    	sz.cols(value, x, y);
-	    }
-
-		@Override
-		public void gpuMethod(int x, int y) {
-		    int rgb = input(
-		    		(int)((x + safeZone) * XScale),
-		    		(int)((y + safeZone) * YScale)
-	    		);
-
-		    int R = (rgb >> 16) & 0xFF;
-			int G = (rgb >> 8 ) & 0xFF;
-			int B = (rgb      ) & 0xFF;
-
-		    //calculate gray
-			float gray = (R + G + B) / (float)3;
-
-			if (gray > 0.0f) {
-				output(1, x, y);
-			
-			} else {
-				output(0, x, y);
-			
-			}
-		}
-    }
+//    public class RetinaTask extends Task {
+//    	
+//    	float XScale, YScale;
+//    	
+//    	int input[];
+//    	int inputSizeX, inputSizeY;
+//    	
+//    	private int input(int x, int y) {
+//    		return input[(y * inputSizeX) + x];
+//    	}
+//    	
+//    	protected cl_mem inputMem;
+//
+//		protected RetinaTask(CortexZoneSimple sz, 
+//				float XScale, float YScale, 
+//				int input[], 
+//				int inputSizeX, int inputSizeY) {
+//			
+//			super(sz);
+//			
+//	    	this.XScale = XScale;
+//	    	this.YScale = YScale;
+//	    	
+//	    	this.input = input;
+//	    	this.inputSizeX = inputSizeX;
+//	    	this.inputSizeY = inputSizeY;
+//		}
+//
+//	    protected void setupArguments(cl_kernel kernel) {
+//	    	super.setupArguments(kernel);
+//
+//	        clSetKernelArg(kernel,  2, Sizeof.cl_int, Pointer.to(new int[] {safeZone}));
+//	        clSetKernelArg(kernel,  3, Sizeof.cl_float, Pointer.to(new float[] {XScale}));
+//	        clSetKernelArg(kernel,  4, Sizeof.cl_float, Pointer.to(new float[] {YScale}));
+//
+//	        clSetKernelArg(kernel,  5, Sizeof.cl_int, Pointer.to(new int[] {onOff.radius}));
+//	        clSetKernelArg(kernel,  6, Sizeof.cl_int, Pointer.to(new int[] {onOff.regionSize}));
+//	        clSetKernelArg(kernel,  7, Sizeof.cl_mem, Pointer.to(onOff.cl_matrix));
+//	        clSetKernelArg(kernel,  8, Sizeof.cl_int, Pointer.to(new int[] {1}));
+//	        
+//	        clSetKernelArg(kernel,  9, Sizeof.cl_float, Pointer.to(new float[] {KContr1}));
+//	        clSetKernelArg(kernel,  10, Sizeof.cl_float, Pointer.to(new float[] {KContr2}));
+//	        clSetKernelArg(kernel,  11, Sizeof.cl_float, Pointer.to(new float[] {KContr3}));
+//	        clSetKernelArg(kernel,  12, Sizeof.cl_int, Pointer.to(new int[] {Level_Bright}));
+//	        clSetKernelArg(kernel,  13, Sizeof.cl_int, Pointer.to(new int[] {Lelel_min}));
+//
+//	        inputMem = clCreateBuffer(
+//	    		sz.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
+//	    		input.length * Sizeof.cl_int, Pointer.to(input), null
+//			);
+//	        clSetKernelArg(kernel,  14, Sizeof.cl_mem, Pointer.to(inputMem));
+//	        clSetKernelArg(kernel,  15, Sizeof.cl_int, Pointer.to(new int[] {inputSizeX}));
+//	        clSetKernelArg(kernel,  16, Sizeof.cl_int, Pointer.to(new int[] {inputSizeY}));
+//	    }
+//
+//	    @Override
+//		protected void release() {
+//	    	clReleaseMemObject(inputMem);
+//		}
+//	    
+//	    private void output(float value, int x, int y) {
+//	    	sz.cols(value, x, y);
+//	    }
+//
+//		@Override
+//		public void gpuMethod(int x, int y) {
+//		    int rgb = input(
+//		    		(int)((x + safeZone) * XScale),
+//		    		(int)((y + safeZone) * YScale)
+//	    		);
+//
+//		    int R = (rgb >> 16) & 0xFF;
+//			int G = (rgb >> 8 ) & 0xFF;
+//			int B = (rgb      ) & 0xFF;
+//
+//		    //calculate gray
+//			float gray = (R + G + B) / 3.0f;
+//
+//			if (gray > 0.0f) {
+//				output(1, x, y);
+//			
+//			} else {
+//				output(0, x, y);
+//			
+//			}
+//		}
+//    }
 }

@@ -316,7 +316,7 @@ public class MultiCortex implements Runnable {
         for (int i=0; i < numDevices; i++) {
             commandQueues[i] = clCreateCommandQueue(context, devices[i], properties, null);
             kernels[i] = new FastMap<Class<? extends Task>, cl_kernel>();
-            kernels[i].put(Retina.RetinaTask.class, clCreateKernel(program, "computeRetina", null));
+//            kernels[i].put(Retina.RetinaTask.class, clCreateKernel(program, "computeRetina", null));
             kernels[i].put(CNActivation.class, clCreateKernel(program, "computeActivation", null));
             kernels[i].put(Inhibitory.class, clCreateKernel(program, "computeInhibitory", null));
             kernels[i].put(WinnerGetsAll.class, clCreateKernel(program, "computeWinnerGetsAll", null));
