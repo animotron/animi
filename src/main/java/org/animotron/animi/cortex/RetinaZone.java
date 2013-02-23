@@ -142,14 +142,6 @@ public class RetinaZone extends Task {
 		return 0;
 	}
 	
-	private int X(int x) {
-		return (int)(x * XScale);
-	}
-
-	private int Y(int y) {
-		return (int)(y * YScale);
-	}
-
 	@Override
 	public void gpuMethod(int x, int y) {
     	
@@ -168,13 +160,13 @@ public class RetinaZone extends Task {
         		//if nothing than do nothing
 			    if (t == 0) continue;
 
-		        xi = safeZone + (x - matrix.regionSize() + mX);
-		        yi = safeZone + (y - matrix.regionSize() + mY);
+		        xi = safeZone + (int)(x * XScale) - matrix.regionSize() + mX;
+		        yi = safeZone + (int)(y * YScale) - matrix.regionSize() + mY;
 
 		        //periphery
 		        if (t == 1) {
 		        	try {
-				        SP += gray(X(xi), Y(yi));
+				        SP += gray(xi, yi);
 			        	numInPeref++;
 		        	} catch (ArrayIndexOutOfBoundsException e) {
 		        		//ignore if gets out
@@ -184,7 +176,7 @@ public class RetinaZone extends Task {
 		        else if (t == 2) {
 		        	try {
 			        	numInCenter++;
-				        SC += gray(X(xi), Y(yi));
+				        SC += gray(xi, yi);
 		        	} catch (ArrayIndexOutOfBoundsException e) {
 		        		//ignore if gets out
 		        	}
