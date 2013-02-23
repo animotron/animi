@@ -20,16 +20,9 @@
  */
 package org.animotron.animi.cortex;
 
-//import static org.jocl.CL.*;
-
 import org.animotron.animi.simulator.Stimulator;
-//import org.jocl.Pointer;
-//import org.jocl.Sizeof;
-//import org.jocl.cl_kernel;
-//import org.jocl.cl_mem;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -41,8 +34,10 @@ public class Retina {
 	//Сетчатка
 //    public static final int WIDTH = 192;
 //	public static final int HEIGHT = 144;
-	public static final int WIDTH = 160;
-	public static final int HEIGHT = 120;
+//	public static final int WIDTH = 160;
+//	public static final int HEIGHT = 120;
+	public static final int WIDTH = 100;
+	public static final int HEIGHT = 100;
 	
 	/* x */
 	private int width;
@@ -132,52 +127,11 @@ public class Retina {
 //        }
     }
 	
-	//constants
-    //минимальное соотношение средней контрасности переферии и центра сенсорного поля, необходимое для активации
-    //контрастность для темных элементов (0)
-    public static float KContr1 = 1.45f;
-    //контрастность для светлых элементов (Level_Bright)
-    public static float KContr2 = 1.15f;
-	//минимальная контрастность
-    public static float KContr3 = 1.15f;
-	//(0..255)
-    public static int Level_Bright = 100;
-    public static int Lelel_min = 10;// * N_Col;
-
     BufferedImage image = null;
-	float XScale = 0;
-	float YScale = 0;
 	
-	public final int safeZone = 20;
-
 	public void process(Stimulator stimulator) {
 		
-//		if (onOff == null)
-//			onOff = new OnOffMatrix(NL.mc.context);
-		
-		image = stimulator.getNextImage();
-
-//		XScale = (image.getWidth()  - (safeZone*2)) / (float)NL.width;
-//		YScale = (image.getHeight() - (safeZone*2)) / (float)NL.height;
-			
-		XScale = image.getWidth()  / (float)NL.width;
-		YScale = image.getHeight() / (float)NL.height;
-
-//		Graphics g = image.getGraphics();
-//		g.drawRect(10, 10, image.getWidth() - 20, image.getHeight() - 20);
-
-        DataBufferInt dataBuffer = (DataBufferInt)image.getRaster().getDataBuffer();
-        int[] _data_ = dataBuffer.getData();
-        int[] data = new int[_data_.length];
-        System.arraycopy(_data_, 0, data, 0, _data_.length);
-        
-//        System.out.println("image: "+Arrays.toString(data));
-
-        retinaTask.setInput(
-    			XScale, YScale,
-    			data,
-    			image.getWidth(), image.getHeight()
-		);
+        retinaTask.setInput(image = stimulator.getNextImage());
 
     	try {
             NL.mc.addTask(retinaTask);
@@ -189,6 +143,18 @@ public class Retina {
         NL.refreshImage();
     }
     
+	public int worldStep() {
+		return (OnOffMatrix.centeRadius * 2) - 1;
+	}
+
+	public int worldWidth() {
+		return (width  * worldStep()) + (RetinaZone.safeZone * 2);
+	}
+	
+	public int worldHeight() {
+		return (height * worldStep()) + (RetinaZone.safeZone * 2);
+	}
+
 	public int width() {
 		return width;
 	}

@@ -69,7 +69,7 @@ public class StimulatorStatic extends AbstractStimulator {
 	public BufferedImage getNextImage() {
 		final Retina retina = app.cortexs.retina;
 
-		img = new BufferedImage(retina.width() + retina.safeZone*2, retina.height() + retina.safeZone*2, BufferedImage.TYPE_INT_RGB);
+		img = new BufferedImage(retina.worldWidth(), retina.worldHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();
 
         for (Figure i : figures) {

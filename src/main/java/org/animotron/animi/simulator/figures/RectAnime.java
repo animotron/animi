@@ -66,18 +66,39 @@ public class RectAnime extends AbstractAnime {
         };
     }
 
-	public RectAnime(int a, double dt, int[][] anime) {
+	public RectAnime(int a, double dt, int[][] anime, boolean filled) {
         super(dt, anime);
+        this.filled = filled;
         this.p = new Point2D[] {
-                new Point(anime[0][0], anime[0][1]),
-                new Point(anime[0][0] - a / 2, anime[0][1] - a / 2),
-                new Point(anime[0][0] + a / 2, anime[0][1] - a / 2),
-                new Point(anime[0][0] + a / 2, anime[0][1] + a / 2),
-                new Point(anime[0][0] - a / 2, anime[0][1] + a / 2)
+            new Point(anime[0][0], anime[0][1]),
+            new Point(anime[0][0] - a / 2, anime[0][1] - a / 2),
+            new Point(anime[0][0] + a / 2, anime[0][1] - a / 2),
+            new Point(anime[0][0] + a / 2, anime[0][1] + a / 2),
+            new Point(anime[0][0] - a / 2, anime[0][1] + a / 2)
         };
 
     }
 	
+	public RectAnime(int bX, int bY, int eX, int eY, boolean filled, int[][] anime) {
+		this(bX, bY, eX, eY, filled, anime, false);
+	}
+	
+	public RectAnime(int bX, int bY, int eX, int eY, boolean filled, int[][] anime, boolean oneStep) {
+        super(0, anime);
+        this.filled = filled;
+        this.p = new Point2D[] {
+            new Point(bX, bY),
+            new Point(eX, bY),
+            new Point(eX, eY),
+            new Point(bX, eY),
+            new Point(bX, bY)
+        };
+
+        if (oneStep) {
+        	l = -1;
+        }
+    }
+
 	public void drawImage(Graphics g) {
         g.setColor(Color.WHITE);
         Polygon polygon = new Polygon();

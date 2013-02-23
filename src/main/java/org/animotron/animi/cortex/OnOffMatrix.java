@@ -38,9 +38,9 @@ public class OnOffMatrix {
 	//Параметры преобразования сетчатки в сигналы полей с он-центом и офф-центром
 
 	//Радиус сенсорного поля
-    int radius = 8;//2;//8
+    public static int radius = 8;//2;//8
     //Радиус центра сенсорного поля
-    int centeRadius = 4;//1;//4
+    public static int centeRadius = 2;//1;//4
 
     //Кол-во элементов в центре и переферии сенсорного поля
     int numCenter = 0;

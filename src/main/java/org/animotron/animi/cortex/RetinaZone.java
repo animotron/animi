@@ -20,6 +20,8 @@
  */
 package org.animotron.animi.cortex;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.util.Arrays;
 
 /**
@@ -27,6 +29,18 @@ import java.util.Arrays;
  *
  */
 public class RetinaZone extends Task {
+
+	//constants
+    //минимальное соотношение средней контрасности переферии и центра сенсорного поля, необходимое для активации
+    //контрастность для темных элементов (0)
+    public static float KContr1 = 1.45f;
+    //контрастность для светлых элементов (Level_Bright)
+    public static float KContr2 = 1.15f;
+	//минимальная контрастность
+    public static float KContr3 = 1.15f;
+	//(0..255)
+    public static int Level_Bright = 100;
+    public static int Lelel_min = 10;// * N_Col;
 
 	float XScale, YScale;
 	
@@ -37,29 +51,36 @@ public class RetinaZone extends Task {
 	
 	OnOffMatrix matrix;
 
+	public static int safeZone = 20;
+
 	protected RetinaZone(CortexZoneSimple sz) {
 		super(sz);
 		
     	matrix = new OnOffMatrix(null);
 	}
 	
-	public void setInput(
-			final float XScale, final float YScale, 
-			final int input[], 
-			final int inputSizeX, int inputSizeY) {
+	public void setInput(final BufferedImage image) {
 		
 		if (history == null || history.length != sz.cols.length) {
 			history = new int[sz.cols.length];
 			Arrays.fill(history, 0);
 		}
 		
-    	this.XScale = XScale;
-    	this.YScale = YScale;
+		XScale = (image.getWidth()  - (safeZone * 2)) / (float)sz.width;
+		YScale = (image.getHeight() - (safeZone * 2)) / (float)sz.height;
+
+//		Graphics g = image.getGraphics();
+//		g.drawRect(10, 10, image.getWidth() - 20, image.getHeight() - 20);
+
+        DataBufferInt dataBuffer = (DataBufferInt)image.getRaster().getDataBuffer();
+        int[] _data_ = dataBuffer.getData();
+        int[] data = new int[_data_.length];
+        System.arraycopy(_data_, 0, data, 0, _data_.length);
+
+    	this.input = data;
     	
-    	this.input = input;
-    	this.inputSizeX = inputSizeX;
-    	this.inputSizeY = inputSizeY;
-    	
+    	inputSizeX = image.getWidth();
+    	inputSizeY = image.getHeight();
 	}
 
 	@Override
@@ -99,7 +120,7 @@ public class RetinaZone extends Task {
 			final int type,
 			final float SA, final float SC, final float SP,
 			float K_cont) {
-		if (SA > Retina.Lelel_min) {
+		if (SA > Lelel_min) {
 			if (type == 1) {
 				//On-centre
 				if (SC / SP > K_cont) {
@@ -147,8 +168,8 @@ public class RetinaZone extends Task {
         		//if nothing than do nothing
 			    if (t == 0) continue;
 
-		        xi = x - matrix.regionSize() + mX;
-		        yi = y - matrix.regionSize() + mY;
+		        xi = safeZone + (x - matrix.regionSize() + mX);
+		        yi = safeZone + (y - matrix.regionSize() + mY);
 
 		        //periphery
 		        if (t == 1) {
@@ -178,9 +199,9 @@ public class RetinaZone extends Task {
     	
 		float SA = ((SP + SC) / (float)(numInCenter + numInPeref));
 		
-		float K_cont = Retina.KContr1 + SA * (Retina.KContr2 - Retina.KContr1) / (float)Retina.Level_Bright;
+		float K_cont = KContr1 + SA * (KContr2 - KContr1) / (float)Level_Bright;
 	
-		if (K_cont < Retina.KContr3) K_cont = Retina.KContr3;
+		if (K_cont < KContr3) K_cont = KContr3;
 	
 		SC = SC / numInCenter;
 		SP = SP / numInPeref;
@@ -194,8 +215,12 @@ public class RetinaZone extends Task {
 		//if no stimuli, check if opposite was 
 		if (value == 0) {
 			if (history(x, y) == 1 && oppositeStimuli == 0) {
-				value = 0.5f;
+				value = 0.3f;
 			}
+		} else {
+			//for debug
+			if (type == 1)
+				value = 0.7f;
 		}
 		
 		output(value, x, y);

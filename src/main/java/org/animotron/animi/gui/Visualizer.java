@@ -113,6 +113,8 @@ public class Visualizer extends JInternalFrame {
 				if (zoom <= 0) zoom = 1;
 				
 				bufImage = null;
+				
+				refresh();
 			}
 		});
 	}

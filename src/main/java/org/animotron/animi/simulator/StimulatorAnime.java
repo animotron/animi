@@ -27,7 +27,6 @@ import org.animotron.animi.Params;
 import org.animotron.animi.cortex.Retina;
 import org.animotron.animi.gui.Application;
 import org.animotron.animi.simulator.figures.Figure;
-import org.animotron.animi.simulator.figures.OvalAnime;
 import org.animotron.animi.simulator.figures.RectAnime;
 
 /**
@@ -48,12 +47,12 @@ public class StimulatorAnime extends AbstractStimulator {
 		Retina retina = app.cortexs.retina;
 		
         img = new BufferedImage(
-        		retina.width()  + (retina.safeZone * 2), 
-        		retina.height() + (retina.safeZone * 2),
+        		retina.worldWidth(), 
+        		retina.worldHeight(),
         		BufferedImage.TYPE_INT_RGB);
 		
-		int b1 = 40;
-		int b2 = 30;
+//		int b1 = 40;
+//		int b2 = 30;
         figures = new Figure[] {
 //    		new LineAnime(
 //        		15, 0,
@@ -105,45 +104,58 @@ public class StimulatorAnime extends AbstractStimulator {
 //        	            {b1, mc.retina.height() - b1}
 //        	    }
 //        	),
-        	new OvalAnime(30,
-        	    new int[][] {
-        	            {b1, b1},
-        	            {retina.width() - b1, retina.height() - b1},
-        	            {retina.width() - b1, b1},
-        	            {b1, retina.height() - b1},
-        	            {b1, b1}
-        	    }
-        	),
+//        	new OvalAnime(30,
+//        	    new int[][] {
+//        	            {b1, b1},
+//        	            {retina.width() - b1, retina.height() - b1},
+//        	            {retina.width() - b1, b1},
+//        	            {b1, retina.height() - b1},
+//        	            {b1, b1}
+//        	    }
+//        	),
+//        	new RectAnime(
+//        	    30, 0.05,
+//        	    new int[][] {
+//        	            {b2, b2},
+//        	            {b2, retina.height() - b2},
+//        	            {retina.width() - b2, retina.height() - b2},
+//        	            {retina.width() - b2, b2},
+//        	            {b2, b2}
+//        	    }
+//        	),
+//        	new RectAnime(
+//        	    40, 0.05,
+//        	    new int[][] {
+//        	            {b2, retina.height() - b2},
+//        	            {retina.width() - b2, retina.height() - b2},
+//        	            {retina.width() - b2, b2},
+//        	            {b2, b2},
+//        	            {b2, retina.height() - b2}
+//        	    }
+//        	),
+//        	new RectAnime(
+//        	    30, 0,
+//        	    new int[][] {
+//        	            {retina.width() - b2, retina.height() - b2},
+//        	            {retina.width() - b2, b2},
+//        	            {b2, b2},
+//        	            {b2, retina.height() - b2},
+//        	            {retina.width() - b2, retina.height() - b2}
+//        	    }
+//        	)
         	new RectAnime(
-        	    30, 0.05,
-        	    new int[][] {
-        	            {b2, b2},
-        	            {b2, retina.height() - b2},
-        	            {retina.width() - b2, retina.height() - b2},
-        	            {retina.width() - b2, b2},
-        	            {b2, b2}
-        	    }
-        	),
-        	new RectAnime(
-        	    40, 0.05,
-        	    new int[][] {
-        	            {b2, retina.height() - b2},
-        	            {retina.width() - b2, retina.height() - b2},
-        	            {retina.width() - b2, b2},
-        	            {b2, b2},
-        	            {b2, retina.height() - b2}
-        	    }
-        	),
-        	new RectAnime(
-        	    30, 0,
-        	    new int[][] {
-        	            {retina.width() - b2, retina.height() - b2},
-        	            {retina.width() - b2, b2},
-        	            {b2, b2},
-        	            {b2, retina.height() - b2},
-        	            {retina.width() - b2, retina.height() - b2}
-        	    }
-        	)
+    			(int)(img.getWidth() * 0.2), (int)(img.getHeight() * 0.2),
+    			(int)(img.getWidth() * 0.8), (int)(img.getHeight() * 0.8),
+	    	    true,
+	    	    new int[][] {
+    					{0,0},
+    					{0, retina.worldStep()}, 
+    					{retina.worldStep(), retina.worldStep()}, 
+    					{retina.worldStep(), 0},
+    					{0,0}
+    			},
+    			true
+	    	)
         };
 	}
 
