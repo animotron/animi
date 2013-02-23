@@ -406,6 +406,7 @@ public class Application extends JFrame {
 					chB.setSelected(zone.isActive());
 				}
 	        });
+			chB.setSelected(zone.isActive());
 	        bar.add(chB);
 
 	        final JCheckBox chL = new JCheckBox("Learning");
@@ -417,6 +418,7 @@ public class Application extends JFrame {
 					chL.setSelected(zone.isLearning());
 				}
 	        });
+			chL.setSelected(zone.isLearning());
 	        bar.add(chL);
 	        bar.addSeparator();
         }
@@ -518,7 +520,7 @@ public class Application extends JFrame {
     }
     
     public void refresh() {
-    	System.out.println("refresh");
+    	//System.out.println("refresh");
         int count = desktop.getComponentCount();
         for (int i = 0; i < count; i++) {
             Component comp = desktop.getComponent(i);

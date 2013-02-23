@@ -32,12 +32,12 @@ import java.awt.image.BufferedImage;
 public class Retina {
 
 	//Сетчатка
-//    public static final int WIDTH = 192;
+//  public static final int WIDTH = 192;
 //	public static final int HEIGHT = 144;
 //	public static final int WIDTH = 160;
 //	public static final int HEIGHT = 120;
-	public static final int WIDTH = 100;
-	public static final int HEIGHT = 100;
+	public static final int WIDTH = 30;
+	public static final int HEIGHT = 30;
 	
 	/* x */
 	private int width;
@@ -67,7 +67,7 @@ public class Retina {
 	
     // создание связей сенсорных полей
 	private void initialize() {
-        retinaTask = new RetinaZone((CortexZoneSimple)NL);
+        retinaTask = new RetinaZone(this, (CortexZoneSimple)NL);
 		
 //		sensorField = new OnOffReceptiveField[NL.width()][NL.height()];
 //
@@ -143,16 +143,20 @@ public class Retina {
         NL.refreshImage();
     }
     
+	public int worldSafeZone() {
+		return worldStep() * OnOffMatrix.radius;
+	}
+
 	public int worldStep() {
 		return (OnOffMatrix.centeRadius * 2) - 1;
 	}
 
 	public int worldWidth() {
-		return (width  * worldStep()) + (RetinaZone.safeZone * 2);
+		return (width  * worldStep()) + (worldSafeZone() * 2);
 	}
 	
 	public int worldHeight() {
-		return (height * worldStep()) + (RetinaZone.safeZone * 2);
+		return (height * worldStep()) + (worldSafeZone() * 2);
 	}
 
 	public int width() {

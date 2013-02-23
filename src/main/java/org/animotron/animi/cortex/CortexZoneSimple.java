@@ -55,9 +55,9 @@ public class CortexZoneSimple implements Layer {
 //    public NeuronComplex[][] col;
     
 	@InitParam(name="width")
-	public int width = 160;
+	public int width = 30;//160;
 	@InitParam(name="height")
-	public int height = 120;
+	public int height = 30;//120;
 	
     /**
      * The OpenCL memory object which store the activity for each neuron.
@@ -200,12 +200,12 @@ public class CortexZoneSimple implements Layer {
 		return null;//col[x][y];
 	}
 	
-	public boolean learning = false;
+	public boolean learning = true;
 	public boolean isLearning() {
 		return learning;
 	}
 	
-    public boolean active = false;
+    public boolean active = true;
 	public boolean isActive() {
 		return active;
 	}

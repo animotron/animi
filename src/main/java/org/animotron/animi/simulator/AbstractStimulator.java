@@ -48,7 +48,7 @@ public abstract class AbstractStimulator implements Stimulator {
 	}
 	@Override
 	public String getImageName() {
-		return this.getClass().getSimpleName();
+		return "Сетчатка "+this.getClass().getSimpleName();
 	}
 
 	public BufferedImage getImage() {

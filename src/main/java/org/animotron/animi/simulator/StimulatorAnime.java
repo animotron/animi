@@ -144,8 +144,8 @@ public class StimulatorAnime extends AbstractStimulator {
 //        	    }
 //        	)
         	new RectAnime(
-    			(int)(img.getWidth() * 0.2), (int)(img.getHeight() * 0.2),
-    			(int)(img.getWidth() * 0.8), (int)(img.getHeight() * 0.8),
+    			(int)(img.getWidth() * 0.3), (int)(img.getHeight() * 0.3),
+    			(int)(img.getWidth() * 0.7), (int)(img.getHeight() * 0.7),
 	    	    true,
 	    	    new int[][] {
     					{0,0},

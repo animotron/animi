@@ -124,22 +124,22 @@ public class MultiCortex implements Runnable {
     	
     	preInitCL();
     	
-        z_in = new CortexZoneSimple("Input", this);
+        z_in = new CortexZoneSimple("Зрительный нерв", this);
         
-        z_1st = new CortexZoneComplex("1st", this, 160, 120,
+        z_1st = new CortexZoneComplex("1й", this, 120, 120, //160, 120,
             new Mapping[]{
-                new Mapping(z_in, 50, 1, false) //7x7 (50)
+                new Mapping(z_in, 100, 1, false) //7x7 (50)
             }
         );
-        z_1st.tremor = new int[] {
-			0, 0,
-			1, 1,
-			1,-1,
-			2, 0,
-			3, 1,
-			3,-1,
-			4, 0,
-		};
+//        z_1st.tremor = new int[] {
+//			0, 0,
+//			1, 1,
+//			1,-1,
+//			2, 0,
+//			3, 1,
+//			3,-1,
+//			4, 0,
+//		};
 
 
 

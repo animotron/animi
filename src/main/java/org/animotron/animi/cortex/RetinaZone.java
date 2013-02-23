@@ -42,7 +42,9 @@ public class RetinaZone extends Task {
     public static int Level_Bright = 100;
     public static int Lelel_min = 10;// * N_Col;
 
-	float XScale, YScale;
+    Retina retina;
+    
+    float XScale, YScale;
 	
 	int history[] = null;
 	
@@ -51,10 +53,12 @@ public class RetinaZone extends Task {
 	
 	OnOffMatrix matrix;
 
-	public static int safeZone = 20;
+	public static int safeZone = (int)(0.1 * ((Retina.WIDTH + Retina.HEIGHT) / 2));
 
-	protected RetinaZone(CortexZoneSimple sz) {
+	protected RetinaZone(Retina retina, CortexZoneSimple sz) {
 		super(sz);
+		
+		this.retina = retina;
 		
     	matrix = new OnOffMatrix(null);
 	}
@@ -66,8 +70,8 @@ public class RetinaZone extends Task {
 			Arrays.fill(history, 0);
 		}
 		
-		XScale = (image.getWidth()  - (safeZone * 2)) / (float)sz.width;
-		YScale = (image.getHeight() - (safeZone * 2)) / (float)sz.height;
+		XScale = (image.getWidth()  - (retina.worldSafeZone() * 2)) / (float)sz.width;
+		YScale = (image.getHeight() - (retina.worldSafeZone() * 2)) / (float)sz.height;
 
 //		Graphics g = image.getGraphics();
 //		g.drawRect(10, 10, image.getWidth() - 20, image.getHeight() - 20);
@@ -160,8 +164,8 @@ public class RetinaZone extends Task {
         		//if nothing than do nothing
 			    if (t == 0) continue;
 
-		        xi = safeZone + (int)(x * XScale) - matrix.regionSize() + mX;
-		        yi = safeZone + (int)(y * YScale) - matrix.regionSize() + mY;
+		        xi = retina.worldSafeZone() + (int)(x * XScale) + mX - matrix.radius();
+		        yi = retina.worldSafeZone() + (int)(y * YScale) + mY - matrix.radius();
 
 		        //periphery
 		        if (t == 1) {
