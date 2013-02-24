@@ -60,7 +60,7 @@ public class WinnerGetsAll extends Task {
     	float max = 0;
         int cPos = -1;
 
-        final int linksNumber = cz.number_of_inhibitory_links;
+        final int linksNumber = cz.inhibitory_number_of_links;
     	
     	float[] rememberCols = new float[sz.cols.length];
     	System.arraycopy(sz.cols, 0, rememberCols, 0, sz.cols.length);
@@ -147,5 +147,52 @@ public class WinnerGetsAll extends Task {
 
 	@Override
 	public void gpuMethod(int x, int y) {
+		if (x != 0 && y != 0) {
+			return;
+		}
+		
+    	float[] cols = new float[sz.cols.length];
+    	System.arraycopy(sz.cols, 0, cols, 0, sz.cols.length);
+    	
+    	System.arraycopy(sz.cols, 0, sz.rememberCols, 0, sz.cols.length);
+//    	Arrays.fill(sz.rememberCols, 1);
+
+    	//max is winner & winner gets all
+    	int maxPos = -1;
+    	float max = 0;
+        int cPos = -1;
+
+        final int linksNumber = cz.inhibitory_number_of_links;
+    	
+    	while (true) {
+	    	maxPos = -1;
+	    	max = 0;
+	    	for (int pos = 0; pos < cols.length; pos++) {
+	    		if (cols[pos] > max) {
+	    			max = cols[pos];
+	    			maxPos = pos;
+	    		}
+	    	}
+	    	
+//	    	System.out.println(maxPos);
+	    	
+	        if (maxPos == -1) {
+	        	break;
+	        }
+	        
+        	int maxY = (int)Math.floor(maxPos / cz.width);
+        	int maxX = maxPos - (maxY * cz.width);
+        	
+    		for (int l = 0; l < linksNumber; l++) {
+    	    	final int xi = cz.inhibitoryLinksSenapse(maxX, maxY, l, 0);
+    	    	final int yi = cz.inhibitoryLinksSenapse(maxX, maxY, l, 1);
+    	        
+    	    	cPos = (yi * cz.width) + xi;
+    	    	cols[cPos] = 0;
+            	if (cPos != maxPos)
+            		sz.rememberCols[cPos] = 0;
+    		}
+    		cols[maxPos] = 0;
+    	}
 	}
 }

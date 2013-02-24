@@ -23,7 +23,7 @@ package org.animotron.animi;
 import javolution.xml.stream.XMLInputFactory;
 import javolution.xml.stream.XMLStreamException;
 import javolution.xml.stream.XMLStreamReader;
-import org.animotron.animi.cortex.CortexZoneComplex;
+import org.animotron.animi.cortex.CortexZoneSimple;
 import org.animotron.animi.cortex.Mapping;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -42,9 +42,9 @@ import static org.jocl.CL.*;
  */
 public class Utils {
 
-    private final static double LUM_RED = 0.299;
-    private final static double LUM_GREEN = 0.587;
-    private final static double LUM_BLUE = 0.114;
+//    private final static double LUM_RED = 0.299;
+//    private final static double LUM_GREEN = 0.587;
+//    private final static double LUM_BLUE = 0.114;
 
     public static int calcGrey(final BufferedImage img, final int x, final int y) {
         int value = img.getRGB(x, y);
@@ -88,16 +88,10 @@ public class Utils {
 			final int pN,
 			final Mapping m) {
 
-		final CortexZoneComplex cz = m.toZone;
-
-		final int offset = ((cnY * cz.width) + cnX) * 2 * m.ns_links;
-	    
-		final int lOffset = ((((cnY * cz.width) + cnX) * cz.package_size) + pN) * m.ns_links;        
-        
 		int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	int xi = m.linksSenapse[offset + 2*l +0];
-        	int yi = m.linksSenapse[offset + 2*l +1];
+        	final int xi = m.linksSenapse(cnX, cnY, l, 0);
+        	final int yi = m.linksSenapse(cnX, cnY, l, 1);
         	
         	pX = (boxSize / 2) + (xi - (int)(cnX * m.fX));
 			pY = (boxSize / 2) + (yi - (int)(cnY * m.fY));
@@ -113,32 +107,8 @@ public class Utils {
 		        int B = Utils.get_blue(value);
 		        int R = Utils.get_red(value);
 
-//		        switch (link.delay) {
-//				case 0:
-//					g += 255 * link.q;;
-//					if (g > 255) g = 255;
-//
-//					break;
-//				case 1:
-//					b += 255 * link.q;
-//					if (b > 255) b = 255;
-//
-//					break;
-//				default:
-//					r += 255 * link.q;
-//					if (r > 255) r = 255;
-//
-//					break;
-//				}
-//				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
 
-//				int c = calcGrey(image, offsetX + pX, offsetY + pY);
-//				c += 255 * m.linksWeight[lOffset + l];
-//				if (c > 255) c = 255;
-//				else if (c < 0) c = 0;
-//				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, c, c, c));
-
-		        final float w = m.linksWeight[lOffset + l];
+		        final float w = m.linksWeight(cnX, cnY, 0, l);
 				if (Float.isNaN(w) || Float.isInfinite(w)) {
 					R = 255;
 				
@@ -165,20 +135,12 @@ public class Utils {
 			final int cnX, final int cnY, 
 			final Mapping m) {
 		
-		final CortexZoneComplex cz = m.toZone;
+		final CortexZoneSimple sz = m.frZone;
 		
-		final int pos = cnY * cz.width + cnX;
-
-		final int offset = 
-				(2 * m.ns_links * cz.width * cnY) + 
-				(2 * m.ns_links * cnX);
-
-		final int offsetWeight = (cnY * cz.width * m.ns_links * m.toZone.package_size) + (m.ns_links * m.toZone.package_size * cnX);
-        
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	int xi = m.linksSenapse[offset + 2*l +0];
-        	int yi = m.linksSenapse[offset + 2*l +1];
+        	final int xi = m.linksSenapse(cnX, cnY, l, 0);
+        	final int yi = m.linksSenapse(cnX, cnY, l, 1);
         	
         	pX = xi;
 			pY = yi;
@@ -188,33 +150,8 @@ public class Utils {
         			&& pY > 0 
         			&& pY < image.getHeight()) {
 
-//		        int value = image.getRGB(pX, pY);
-//
-//		        int g = Utils.get_green(value);
-//		        int b = Utils.get_blue(value);
-//		        int r = Utils.get_red(value);
-//
-//		        switch (link.delay) {
-//				case 0:
-//					g += 255 * link.q;;
-//					if (g > 255) g = 255;
-//
-//					break;
-//				case 1:
-//					b += 255 * link.q;
-//					if (b > 255) b = 255;
-//
-//					break;
-//				default:
-//					r += 255 * link.q;
-//					if (r > 255) r = 255;
-//
-//					break;
-//				}
-//				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
-				
 				int c = calcGrey(image, pX, pY);
-				c += 255 * cz.cols[pos] * m.linksWeight[offsetWeight + (0 * m.ns_links) + l];
+				c += 255 * sz.cols(cnX, cnY) * m.linksWeight(cnX, cnY, 0, l);
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, create_rgb(255, c, c, c));
         	}

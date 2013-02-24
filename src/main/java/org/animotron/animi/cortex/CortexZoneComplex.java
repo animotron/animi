@@ -51,7 +51,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public Mapping[] in_zones;
 
 	@Params
-	public CNActivation cnActivation = new CNActivation(this);
+	public DeltaRuleActivation cnActivation = new DeltaRuleActivation(this);
+//	public CNActivation cnActivation = new CNActivation(this);
+
+	public DeltaRuleLearning cnLearning = new DeltaRuleLearning(this);
+	
 //	@Params
 //    Inhibitory inhibitory = new Inhibitory(this);
     WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
@@ -73,15 +77,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public double disper = 1.5;
 
 	@InitParam(name="inhibitory_links")
-	public int number_of_inhibitory_links = 30;
+	public int inhibitory_number_of_links = 30;
 	
 	@InitParam(name="inhibitory_w")
-	public float inhibitory_w = (float)Math.sqrt(1 / (double)number_of_inhibitory_links);
+	public float inhibitory_w = (float)Math.sqrt(1 / (double)inhibitory_number_of_links);
 	
 	public int inhibitoryLinksSenapse[];
 	
 	public int inhibitoryLinksSenapse(int x, int y, int l, int xy) {
-		return inhibitoryLinksSenapse[(((((y * width) + x) * number_of_inhibitory_links) + l) * 2) + xy];
+		return inhibitoryLinksSenapse[(((((y * width) + x) * inhibitory_number_of_links) + l) * 2) + xy];
 	}
 
 	/** Number of synaptic connections of the all simple neurons **/
@@ -125,7 +129,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     }
 
     @InitParam(name="package_size")
-	public int package_size = 7;
+	public int package_size = 1;
 
     CortexZoneComplex() {
 		super();
@@ -166,7 +170,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		int offset = 0;
 
 		//разброс торозных связей
-		inhibitoryLinksSenapse = new int[width * height * number_of_inhibitory_links * 2];
+		inhibitoryLinksSenapse = new int[width * height * inhibitory_number_of_links * 2];
 		Arrays.fill(inhibitoryLinksSenapse, 0);
 
 		double sigma, _sigma = disper;
@@ -198,11 +202,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 				// нормально распределенной величины
 				// DispLink - дисперсия связей
 				int count = 0;
-				for (int i = 0; i < number_of_inhibitory_links; i++) {
+				for (int i = 0; i < inhibitory_number_of_links; i++) {
                     int lx, ly;
                     do {
 //                        do {
-                            if (count > number_of_inhibitory_links * 5) {
+                            if (count > inhibitory_number_of_links * 5) {
                             	if (Double.isInfinite(sigma)) {
                             		System.out.println("initialization failed @ x = "+x+" y = "+y);
                             		System.exit(1);
@@ -240,7 +244,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 						// Создаем синаптическую связь
 //						new Link(getCol(lx, ly), getCol(x, y), w, LinkType.INHIBITORY);
 						
-						offset = ((width * y) + x) * 2 * number_of_inhibitory_links;
+						offset = ((width * y) + x) * 2 * inhibitory_number_of_links;
 						
 						inhibitoryLinksSenapse[offset + i*2 +0] = lx;
 						inhibitoryLinksSenapse[offset + i*2 +1] = ly;
@@ -310,7 +314,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	class ColumnRF_Image implements Imageable {
 		
 	    private int currentPackage = 0;
-		private int boxSize = 5;
+		private int boxSize;
 	    private BufferedImage image;
 	    
 	    private List<Point> watching = new ArrayList<Point>();
@@ -322,7 +326,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		public void init() {
 
-	        boxSize = 6;
+	        boxSize = 10;
 
 			int maxX = width() * boxSize;
 	        int maxY = height() * boxSize;
@@ -480,19 +484,21 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	}
 
     public void process() {
-    	if (!isActive())
+    	if (!isActive()) {
     		return;
+    	}
     	
         //Такт 1. Активация колонок (узнавание)
     	performTask(cnActivation);
 
+    	performTask(winnerGetsAll);
+
     	if (isLearning()) {
-    	    //Такт 2. Запоминание  и переоценка параметров стабильности нейрона
-        	performTask(memorization);
+    	    //Такт 2. Запоминание и переоценка параметров стабильности нейрона
+        	performTask(cnLearning);
     	
     		count++;
     	}
-		performTask(winnerGetsAll);
     }
     
     private void performTask(Task task) {
@@ -517,7 +523,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		write(out, "count", count);
 
 		write(out, "inhibitory-links-", disper);
-		write(out, "number-of-inhibitory-links", number_of_inhibitory_links);
+		write(out, "number-of-inhibitory-links", inhibitory_number_of_links);
 
 		out.write(">");
 		

@@ -37,6 +37,9 @@ import org.jocl.cl_mem;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class Mapping {
+	
+	private static final boolean debug = false;
+	
 	public CortexZoneSimple frZone;
 	public CortexZoneComplex toZone;
 	
@@ -60,6 +63,12 @@ public class Mapping {
 	}
 	
 	public void linksWeight(float value, int x, int y, int p, int l) {
+		if (Float.isInfinite(value))
+			System.out.println("!");
+
+		if (Float.isNaN(value))
+			System.out.println("?");
+		
 		linksWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l] = value;
 	}
 
@@ -100,9 +109,12 @@ public class Mapping {
 		toZone = zone;
 	    
 		System.out.println(toZone);
+		
+//		float norm = (float) Math.sqrt(sumQ2);
+		float w = (1 / (float)ns_links);// / norm;
 
 	    linksWeight = new float[toZone.width() * toZone.height() * ns_links * toZone.package_size];
-		Arrays.fill(linksWeight, 0);
+		Arrays.fill(linksWeight, w);
 		
 		linksSenapse = new int[toZone.width() * toZone.height() * ns_links * 2];
 		Arrays.fill(linksSenapse, 0);
@@ -114,8 +126,8 @@ public class Mapping {
 //			}
 //        }
 
-		fX = zone.width() / (double) toZone.width();
-		fY = zone.height() / (double) toZone.height();
+		fX = frZone.width() / (double) toZone.width();
+		fY = frZone.height() / (double) toZone.height();
 
         double X, Y, S;
 		double x_in_nerv, y_in_nerv;
@@ -124,9 +136,6 @@ public class Mapping {
         boolean[][] nerv_links = new boolean[frZone.width()][frZone.height()];
         
 //		float sumQ2 = (1 / (float)ns_links * 1 / (float)ns_links) * ns_links;
-//		float norm = (float) Math.sqrt(sumQ2);
-		float w = (1 / (float)ns_links);// / norm;
-
         for (int x = 0; x < toZone.width(); x++) {
 			for (int y = 0; y < toZone.height(); y++) {
 //				System.out.println("x = "+x+" y = "+y);
@@ -185,7 +194,7 @@ public class Mapping {
 					} while ( lx < 1 || ly < 1 || lx > frZone.width() - 1 || ly > frZone.height() - 1 || nerv_links[lx][ly] );
 
                     if (lx >= 1 && ly >= 1 && lx < frZone.width() - 1 && ly < frZone.height() - 1) {
-                        System.out.print(".");
+                        if (debug) System.out.print(".");
 
                         nerv_links[lx][ly] = true;
 	
@@ -203,10 +212,10 @@ public class Mapping {
 //                        linksSenapse[offset + i*2 +1] = ly;
 //						new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY, toZone.speed);
                     } else {
-                    	System.out.print("!");
+                    	if (debug) System.out.print("!");
                     }
 				}
-				System.out.println();
+				if (debug) System.out.println();
 			}
 		}
         

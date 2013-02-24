@@ -483,84 +483,84 @@ public class MultiCortex implements Runnable {
 		}
 		
         //первоначальные центры кристализации
-		Random rd = new Random();
-    	int x, y, pos, lx, ly;
-
-    	Mapping m = z_1st.in_zones[0];
-
-    	long n = Math.round(z_1st.cols.length * 0.005); // 0.5%
-        for (int i = 0; i < n; i++) {
-        	do {
-	        	x = rd.nextInt(z_1st.width);
-	        	y = rd.nextInt(z_1st.height);
-        	
-	        	//XXX: should be nothing at inhibitory area?
-//				for (int i = 0; i < z_1st.number_of_inhibitory_links; i++) {
-//				}
-	        	
-        	} while (z_1st.freePackageCols(x, y, 0) > 0);
-        	
-        	System.out.print("-");
-        	
-        	z_1st.freePackageCols(1, x, y, 0);
-
-        	int offset = ((z_1st.width * y) + x) * 2 * m.ns_links;
-        	
-        	int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
-        	int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
-        	
-            for (int l = 0; l < m.ns_links; l++) {
-            	lx = m.linksSenapse[offset + l*2 +0];
-            	ly = m.linksSenapse[offset + l*2 +1];
-            	
-            	minX = Math.min(minX, lx);
-            	minY = Math.min(minY, ly);
-
-            	maxX = Math.max(maxX, lx);
-            	maxY = Math.max(maxY, ly);
-            }
-            
-            int centerX = minX + (maxX - minX) / 2;
-//            int centerY = minY + (maxY - minY) / 2;
-            
-            int wOffset = (((((z_1st.width * y) + x) * z_1st.package_size) + 0) * m.ns_links);
-            
-            float sumW = 0;
-            int count = 0;
-
-        	for (int l = 0; l < m.ns_links; l++) {
-            	lx = m.linksSenapse[offset + l*2 +0];
+//		Random rd = new Random();
+//    	int x, y, pos, lx, ly;
+//
+//    	Mapping m = z_1st.in_zones[0];
+//
+//    	long n = Math.round(z_1st.cols.length * 0.005); // 0.5%
+//        for (int i = 0; i < n; i++) {
+//        	do {
+//	        	x = rd.nextInt(z_1st.width);
+//	        	y = rd.nextInt(z_1st.height);
+//        	
+//	        	//XXX: should be nothing at inhibitory area?
+////				for (int i = 0; i < z_1st.number_of_inhibitory_links; i++) {
+////				}
+//	        	
+//        	} while (z_1st.freePackageCols(x, y, 0) > 0);
+//        	
+//        	System.out.print("-");
+//        	
+//        	z_1st.freePackageCols(1, x, y, 0);
+//
+//        	int offset = ((z_1st.width * y) + x) * 2 * m.ns_links;
+//        	
+//        	int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+//        	int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+//        	
+//            for (int l = 0; l < m.ns_links; l++) {
+//            	lx = m.linksSenapse[offset + l*2 +0];
 //            	ly = m.linksSenapse[offset + l*2 +1];
-            	
-            	int w = 0;
-            	
-            	//make vertical line
-            	if (lx >= centerX &&  lx <= centerX) { // && ly >= centerY - 1 &&  ly <= centerY + 1) {
-            		w = 1;
-            	}
-                m.linksWeight[wOffset + l] = w;
-
-				sumW += w;
-
-				if (w > 0.0f)
-				{
-					count++;
-				}
-        	}
-
-        	//normalization
-    	    for(int l = 0; l < m.ns_links; l++)
-    	    {
-    	    	if (m.linksWeight[wOffset + l] == 0.0f)
-    	    	{
-    	    		m.linksWeight[wOffset + l] = -1 / (float)(count * 0.5);
-        		}
-        		else
-        		{
-        			m.linksWeight[wOffset + l] = m.linksWeight[wOffset + l] / sumW;
-    			}
-    		}
-        }
+//            	
+//            	minX = Math.min(minX, lx);
+//            	minY = Math.min(minY, ly);
+//
+//            	maxX = Math.max(maxX, lx);
+//            	maxY = Math.max(maxY, ly);
+//            }
+//            
+//            int centerX = minX + (maxX - minX) / 2;
+////            int centerY = minY + (maxY - minY) / 2;
+//            
+//            int wOffset = (((((z_1st.width * y) + x) * z_1st.package_size) + 0) * m.ns_links);
+//            
+//            float sumW = 0;
+//            int count = 0;
+//
+//        	for (int l = 0; l < m.ns_links; l++) {
+//            	lx = m.linksSenapse[offset + l*2 +0];
+////            	ly = m.linksSenapse[offset + l*2 +1];
+//            	
+//            	int w = 0;
+//            	
+//            	//make vertical line
+//            	if (lx >= centerX &&  lx <= centerX) { // && ly >= centerY - 1 &&  ly <= centerY + 1) {
+//            		w = 1;
+//            	}
+//                m.linksWeight[wOffset + l] = w;
+//
+//				sumW += w;
+//
+//				if (w > 0.0f)
+//				{
+//					count++;
+//				}
+//        	}
+//
+//        	//normalization
+//    	    for(int l = 0; l < m.ns_links; l++)
+//    	    {
+//    	    	if (m.linksWeight[wOffset + l] == 0.0f)
+//    	    	{
+//    	    		m.linksWeight[wOffset + l] = -1 / (float)(count * 0.5);
+//        		}
+//        		else
+//        		{
+//        			m.linksWeight[wOffset + l] = m.linksWeight[wOffset + l] / sumW;
+//    			}
+//    		}
+//        }
 
     }
 	

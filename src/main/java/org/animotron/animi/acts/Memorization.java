@@ -81,7 +81,7 @@ public class Memorization extends Task {
         clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(cz.cl_rememberCols));
         
         clSetKernelArg(kernel,  6, Sizeof.cl_mem, Pointer.to(cz.cl_senapseOfinhibitoryLinks));
-        clSetKernelArg(kernel,  7, Sizeof.cl_int, Pointer.to(new int[] {cz.number_of_inhibitory_links}));
+        clSetKernelArg(kernel,  7, Sizeof.cl_int, Pointer.to(new int[] {cz.inhibitory_number_of_links}));
 
         Mapping m = cz.in_zones[0];
     	
@@ -156,7 +156,7 @@ public class Memorization extends Task {
 		//set 0 in inhibitory zone of the active column
 		if (cz.cols(x, y) > K_POROG_ACTIVATION_FINAL) {
 	    
-		    for(int l = 0; l < cz.number_of_inhibitory_links; l++) {
+		    for(int l = 0; l < cz.inhibitory_number_of_links; l++) {
 		    	int xi = cz.inhibitoryLinksSenapse(x, y, l, 0);
 		    	int yi = cz.inhibitoryLinksSenapse(x, y, l, 1);
 		        
@@ -236,7 +236,7 @@ public class Memorization extends Task {
 			//ищим максимум
 			float maximum = 0.0f;
 	    	
-		    for(int l = 0; l < cz.number_of_inhibitory_links; l++) {
+		    for(int l = 0; l < cz.inhibitory_number_of_links; l++) {
 		    	int xi = cz.inhibitoryLinksSenapse(x, y, l, 0);
 		    	int yi = cz.inhibitoryLinksSenapse(x, y, l, 1);
 		        

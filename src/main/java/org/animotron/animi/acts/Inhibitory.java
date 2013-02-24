@@ -45,7 +45,9 @@ public class Inhibitory extends Task {
 	
 	cl_mem _cols;
 	
-	public Inhibitory(CortexZoneComplex cz) {
+	private int p;
+	
+	public Inhibitory(CortexZoneComplex cz, int p) {
 		super(cz);
 	}
 
@@ -59,7 +61,7 @@ public class Inhibitory extends Task {
     	super.setupArguments(kernel);
 
         clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_senapseOfinhibitoryLinks));
-        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.number_of_inhibitory_links}));
+        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.inhibitory_number_of_links}));
         
     	clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(cz.cl_packageCols));
     	clSetKernelArg(kernel,  5, Sizeof.cl_mem, Pointer.to(cz.cl_freePackageCols));
@@ -124,5 +126,23 @@ public class Inhibitory extends Task {
 
 	@Override
 	public void gpuMethod(int x, int y) {
+		
+		float delta = 0;
+		for (int l = 0; l < cz.inhibitory_number_of_links; l++) {
+			final int xi = cz.inhibitoryLinksSenapse(x, y, l, 0);
+			final int yi = cz.inhibitoryLinksSenapse(x, y, l, 1);
+			
+			if (xi != x && yi != y) {
+				delta += cz.inhibitory_w * cz.packageCols(xi, yi, p);
+			}
+		}
+		
+		float activity = cz.packageCols(x, y, p);
+		activity -= delta;
+		if (activity < 0) {
+			activity = 0;
+		}
+		
+		cz.packageCols(activity, x, y, p);
 	}
 }
