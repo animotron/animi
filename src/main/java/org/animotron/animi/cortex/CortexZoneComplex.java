@@ -59,7 +59,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public DeltaRuleLearning cnLearning = new DeltaRuleLearning(this);
 	
 //	@Params
-//    Inhibitory inhibitory = new Inhibitory(this);
+    Inhibitory inhibitory = new Inhibitory(this);
     WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
     
     public cl_mem cl_tremor;
@@ -520,8 +520,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
         //Такт 1. Активация колонок (узнавание)
     	performTask(cnActivation);
 
-    	performTask(winnerGetsAll);
+//    	performTask(winnerGetsAll);
 
+    	for (int i = 0; i < 3; i++) {
+    		performTask(inhibitory);
+    	}
     	if (isLearning()) {
     	    //Такт 2. Запоминание и переоценка параметров стабильности нейрона
         	performTask(cnLearning);

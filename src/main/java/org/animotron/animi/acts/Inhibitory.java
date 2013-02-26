@@ -45,9 +45,7 @@ public class Inhibitory extends Task {
 	
 	cl_mem _cols;
 	
-	private int p;
-	
-	public Inhibitory(CortexZoneComplex cz, int p) {
+	public Inhibitory(CortexZoneComplex cz) {
 		super(cz);
 	}
 
@@ -128,21 +126,32 @@ public class Inhibitory extends Task {
 	public void gpuMethod(int x, int y) {
 		
 		float delta = 0;
-		for (int l = 0; l < cz.inhibitory_number_of_links; l++) {
-			final int xi = cz.inhibitoryLinksSenapse(x, y, l, 0);
-			final int yi = cz.inhibitoryLinksSenapse(x, y, l, 1);
-			
-			if (xi != x && yi != y) {
-				delta += cz.inhibitory_w * cz.packageCols(xi, yi, p);
+		if (cz.isSingleReceptionField()) {
+			for (int xi = 0; xi < cz.width; xi++) {
+				for (int yi = 0; yi < cz.height; yi++) {
+					
+					if (xi != x && yi != y) {
+						delta += cz.inhibitory_w * cz.cols(xi, yi);
+					}
+				}
+			}
+		} else {
+			for (int l = 0; l < cz.inhibitory_number_of_links; l++) {
+				final int xi = cz.inhibitoryLinksSenapse(x, y, l, 0);
+				final int yi = cz.inhibitoryLinksSenapse(x, y, l, 1);
+				
+				if (xi != x && yi != y) {
+					delta += cz.inhibitory_w * cz.cols(xi, yi);
+				}
 			}
 		}
 		
-		float activity = cz.packageCols(x, y, p);
+		float activity = cz.cols(x, y);
 		activity -= delta;
 		if (activity < 0) {
 			activity = 0;
 		}
 		
-		cz.packageCols(activity, x, y, p);
+		cz.cols(activity, x, y);
 	}
 }

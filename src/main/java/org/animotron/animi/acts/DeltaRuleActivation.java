@@ -77,6 +77,6 @@ public class DeltaRuleActivation extends Task {
 		}
 //		
 //		if (activity != 0)
-//			System.out.println(""+x+" - "+y+" = "+activity);
+			System.out.println(""+x+" - "+y+" = "+activity);
 	}
 }

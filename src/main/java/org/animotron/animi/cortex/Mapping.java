@@ -23,6 +23,7 @@ package org.animotron.animi.cortex;
 import static org.jocl.CL.*;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import org.animotron.animi.InitParam;
 import org.jocl.Pointer;
@@ -39,6 +40,8 @@ import org.jocl.cl_mem;
 public class Mapping {
 	
 	private static final boolean debug = false;
+	
+	private static final Random rnd = new Random();
 	
 	public CortexZoneSimple frZone;
 	public CortexZoneComplex toZone;
@@ -122,7 +125,9 @@ public class Mapping {
 		float w = (1 / (float)ns_links);// / norm;
 
 	    linksWeight = new float[toZone.width() * toZone.height() * ns_links * toZone.package_size];
-		Arrays.fill(linksWeight, w);
+	    for (int i = 0; i < linksWeight.length; i++) {
+	    	linksWeight[i] = w * rnd.nextFloat();
+	    }
 		
 		if (toZone.singleReceptionField) {
 			linksSenapse = new int[ns_links * 2];

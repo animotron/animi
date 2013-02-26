@@ -99,7 +99,7 @@ public class DeltaRuleLearning extends Task {
 
 	public void gpuMethod(int x, int y) {
 		
-		if (cz.rememberCols[(y * cz.width) + x] <= 0) {
+		if (cz.cols(x, y) <= 0) {
 			return;
 		}
 		
