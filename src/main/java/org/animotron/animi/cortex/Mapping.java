@@ -59,9 +59,6 @@ public class Mapping {
 	public float[] linksWeight;
 	
 	public float linksWeight(int x, int y, int p, int l) {
-		if (toZone.singleReceptionField) {
-			return linksWeight[(toZone.package_size + p) * ns_links + l];
-		}
 		return linksWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l];
 	}
 	
