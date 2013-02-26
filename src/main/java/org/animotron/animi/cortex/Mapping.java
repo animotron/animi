@@ -59,6 +59,9 @@ public class Mapping {
 	public float[] linksWeight;
 	
 	public float linksWeight(int x, int y, int p, int l) {
+		if (toZone.singleReceptionField) {
+			return linksWeight[(toZone.package_size + p) * ns_links + l];
+		}
 		return linksWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l];
 	}
 	
@@ -75,11 +78,19 @@ public class Mapping {
 	public int[] linksSenapse;
 	
 	public int linksSenapse(int x, int y, int l, int xy) {
+		if (toZone.singleReceptionField) {
+			return linksSenapse[(l * 2) + xy];
+		}
 		return linksSenapse[(((((y * toZone.width) + x) * ns_links) + l) * 2) + xy];
 	}
 	
 	public void linksSenapse(int Sx, int Sy, int x, int y, int l) {
-		final int pos = (((((y * toZone.width) + x) * ns_links) + l) * 2);
+		final int pos;
+		if (toZone.singleReceptionField) {
+			pos = l * 2;
+		} else {
+			pos = ((((y * toZone.width) + x) * ns_links) + l) * 2;
+		}
 		linksSenapse[pos + 0] = Sx;
 		linksSenapse[pos + 1] = Sy;
 	}
@@ -116,7 +127,11 @@ public class Mapping {
 	    linksWeight = new float[toZone.width() * toZone.height() * ns_links * toZone.package_size];
 		Arrays.fill(linksWeight, w);
 		
-		linksSenapse = new int[toZone.width() * toZone.height() * ns_links * 2];
+		if (toZone.singleReceptionField) {
+			linksSenapse = new int[ns_links * 2];
+		} else {
+			linksSenapse = new int[toZone.width() * toZone.height() * ns_links * 2];
+		}
 		Arrays.fill(linksSenapse, 0);
 		
 //        for (int x = 0; x < zone.width(); x++) {
@@ -129,93 +144,25 @@ public class Mapping {
 		fX = frZone.width() / (double) toZone.width();
 		fY = frZone.height() / (double) toZone.height();
 
-        double X, Y, S;
-		double x_in_nerv, y_in_nerv;
-        double _sigma, sigma;
-
-        boolean[][] nerv_links = new boolean[frZone.width()][frZone.height()];
+		final boolean[][] nerv_links = new boolean[frZone.width()][frZone.height()];
         
-//		float sumQ2 = (1 / (float)ns_links * 1 / (float)ns_links) * ns_links;
-        for (int x = 0; x < toZone.width(); x++) {
-			for (int y = 0; y < toZone.height(); y++) {
-//				System.out.println("x = "+x+" y = "+y);
+		if (toZone.singleReceptionField) {
+//			fX = 0;
+//			fY = 0;
 
-				// Определение координат текущего нейрона в масштабе
-				// проецируемой зоны
-				x_in_nerv = x * frZone.width() / (double) toZone.width();
-				y_in_nerv = y * frZone.height() / (double) toZone.height();
-//				System.out.println("x_in_nerv = "+x_in_nerv+" y_in_nerv = "+y_in_nerv);
-
-                _sigma = disp;// * ((m.zone.width() + m.zone.height()) / 2);
-                sigma = _sigma;
-
-				// Обнуление массива занятости связей
-				for (int n1 = 0; n1 < frZone.width(); n1++) {
-					for (int n2 = 0; n2 < frZone.height(); n2++) {
-						nerv_links[n1][n2] = false;
-					}
-				}
-
-				// преобразование Бокса — Мюллера для получения
-				// нормально распределенной величины
-				// DispLink - дисперсия связей
-				int count = 0;
-				for (int i = 0; i < ns_links; i++) {
-                    int lx, ly;
-                    do {
-//                        do {
-                            if (count > ns_links * 3) {
-                            	if (Double.isInfinite(sigma)) {
-                            		System.out.println("initialization failed @ x = "+x+" y = "+y);
-                            		System.exit(1);
-                            	}
-                            	sigma *= 1.05;//_sigma * 0.1;
-//    							System.out.println("\n"+i+" of "+ns_links+" ("+sigma+")");
-                            	count = 0;
-                            }
-                            count++;
-                            	
-                            do {
-                                X = 2.0 * Math.random() - 1;
-                                Y = 2.0 * Math.random() - 1;
-                                S = X * X + Y * Y;
-                            } while (S > 1 || S == 0);
-                            S = Math.sqrt(-2 * Math.log(S) / S);
-                            double dX = X * S * sigma;
-                            double dY = Y * S * sigma;
-                            lx = (int) Math.round(x_in_nerv + dX);
-                            ly = (int) Math.round(y_in_nerv + dY);
-
-                            //определяем, что не вышли за границы поля колонок
-                            //колонки по периметру не задействованы
-//                        } while (!(soft || (lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1)));
-
-                    // Проверка на повтор связи
-					} while ( lx < 1 || ly < 1 || lx > frZone.width() - 1 || ly > frZone.height() - 1 || nerv_links[lx][ly] );
-
-                    if (lx >= 1 && ly >= 1 && lx < frZone.width() - 1 && ly < frZone.height() - 1) {
-                        if (debug) System.out.print(".");
-
-                        nerv_links[lx][ly] = true;
+			initReceptionFields(
+				(int)(toZone.width() / 2.0), 
+				(int)(toZone.height() / 2.0), 
+				nerv_links);
+			
+		} else {
+//			float sumQ2 = (1 / (float)ns_links * 1 / (float)ns_links) * ns_links;
+	        for (int x = 0; x < toZone.width(); x++) {
+				for (int y = 0; y < toZone.height(); y++) {
+//					System.out.println("x = "+x+" y = "+y);
 	
-						// Создаем синаптическую связь
-//                        for (int pN = 0; pN < toZone.package_size; pN++) {
-//                        	linksWeight[
-//                	            (y * toZone.width * toZone.package_size * ns_links) + 
-//                	            (x * toZone.package_size * ns_links) + (pN * ns_links) + i] = w;
-//                        }
-                        
-                        linksSenapse(lx, ly, x, y, i);
-//                		final int offset = ((toZone.width * y) + x) * 2 * ns_links;
-//                        
-//                        linksSenapse[offset + i*2 +0] = lx;
-//                        linksSenapse[offset + i*2 +1] = ly;
-//						new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY, toZone.speed);
-                    } else {
-                    	if (debug) System.out.print("!");
-                    }
+					initReceptionFields(x, y, nerv_links);
 				}
-				if (debug) System.out.println();
 			}
 		}
         
@@ -234,5 +181,96 @@ public class Mapping {
 					frZone.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
 					linksSenapse.length * Sizeof.cl_int, Pointer.to(linksSenapse), null);
         }
+	}
+	
+    private void initReceptionFields(final int x, final int y, final boolean[][] nerv_links) {
+        double X, Y, S;
+		double x_in_nerv, y_in_nerv;
+        double _sigma, sigma;
+
+		// Определение координат текущего нейрона в масштабе
+		// проецируемой зоны
+		x_in_nerv = x * frZone.width() / (double) toZone.width();
+		y_in_nerv = y * frZone.height() / (double) toZone.height();
+//		System.out.println("x_in_nerv = "+x_in_nerv+" y_in_nerv = "+y_in_nerv);
+
+        _sigma = disp;// * ((m.zone.width() + m.zone.height()) / 2);
+        sigma = _sigma;
+
+		// Обнуление массива занятости связей
+		for (int n1 = 0; n1 < frZone.width(); n1++) {
+			for (int n2 = 0; n2 < frZone.height(); n2++) {
+				nerv_links[n1][n2] = false;
+			}
+		}
+
+		// преобразование Бокса — Мюллера для получения
+		// нормально распределенной величины
+		// DispLink - дисперсия связей
+		int count = 0;
+		for (int i = 0; i < ns_links; i++) {
+            int lx, ly;
+            do {
+//                do {
+                    if (count > ns_links * 3) {
+                    	if (Double.isInfinite(sigma)) {
+                    		System.out.println("initialization failed @ x = "+x+" y = "+y);
+                    		System.exit(1);
+                    	}
+                    	sigma *= 1.05;//_sigma * 0.1;
+//						System.out.println("\n"+i+" of "+ns_links+" ("+sigma+")");
+                    	count = 0;
+                    }
+                    count++;
+                    	
+                    do {
+                        X = 2.0 * Math.random() - 1;
+                        Y = 2.0 * Math.random() - 1;
+                        S = X * X + Y * Y;
+                    } while (S > 1 || S == 0);
+                    S = Math.sqrt(-2 * Math.log(S) / S);
+                    double dX = X * S * sigma;
+                    double dY = Y * S * sigma;
+                    lx = (int) Math.round(x_in_nerv + dX);
+                    ly = (int) Math.round(y_in_nerv + dY);
+
+                    //определяем, что не вышли за границы поля колонок
+                    //колонки по периметру не задействованы
+//                } while (!(soft || (lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1)));
+
+            // Проверка на повтор связи
+			} while ( lx < 1 || ly < 1 || lx > frZone.width() - 1 || ly > frZone.height() - 1 || nerv_links[lx][ly] );
+
+            if (lx >= 1 && ly >= 1 && lx < frZone.width() - 1 && ly < frZone.height() - 1) {
+                if (debug) System.out.print(".");
+
+                nerv_links[lx][ly] = true;
+
+				// Создаем синаптическую связь
+//                for (int pN = 0; pN < toZone.package_size; pN++) {
+//                	linksWeight[
+//        	            (y * toZone.width * toZone.package_size * ns_links) + 
+//        	            (x * toZone.package_size * ns_links) + (pN * ns_links) + i] = w;
+//                }
+                
+                linksSenapse(lx, ly, x, y, i);
+//        		final int offset = ((toZone.width * y) + x) * 2 * ns_links;
+//                
+//                linksSenapse[offset + i*2 +0] = lx;
+//                linksSenapse[offset + i*2 +1] = ly;
+//				new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY, toZone.speed);
+            } else {
+            	if (debug) System.out.print("!");
+            }
+		}
+		if (debug) System.out.println();
+    }
+    
+    public int toZoneCenterX() {
+    	return (int)(toZone.width()  / 2.0);
+	}
+
+    public int toZoneCenterY() {
+    	return (int)(toZone.height() / 2.0);
 	}
 }

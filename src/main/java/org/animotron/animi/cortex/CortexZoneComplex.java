@@ -47,6 +47,8 @@ import java.util.List;
  */
 public class CortexZoneComplex extends CortexZoneSimple {
 	
+	protected boolean singleReceptionField = true;
+	
 	@Params
 	public Mapping[] in_zones;
 
@@ -77,7 +79,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public double disper = 1.5;
 
 	@InitParam(name="inhibitory_links")
-	public int inhibitory_number_of_links = 30;
+	public int inhibitory_number_of_links = 20;
 	
 	@InitParam(name="inhibitory_w")
 	public float inhibitory_w = (float)Math.sqrt(1 / (double)inhibitory_number_of_links);
@@ -85,7 +87,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public int inhibitoryLinksSenapse[];
 	
 	public int inhibitoryLinksSenapse(int x, int y, int l, int xy) {
-		return inhibitoryLinksSenapse[(((((y * width) + x) * inhibitory_number_of_links) + l) * 2) + xy];
+		if (singleReceptionField) {
+			return inhibitoryLinksSenapse[(l * 2) + xy];
+		} else {
+			return inhibitoryLinksSenapse[(((((y * width) + x) * inhibitory_number_of_links) + l) * 2) + xy];
+		}
 	}
 
 	/** Number of synaptic connections of the all simple neurons **/
@@ -165,15 +171,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 //		inhibitoryLinks = clCreateBuffer(mc.context, CL_MEM_WRITE_ONLY, inhibitory_links * Sizeof.cl_uint, null, null);
 
-		double X, Y, S;
-		double x_in_nerv, y_in_nerv;
-		int offset = 0;
-
 		//разброс торозных связей
-		inhibitoryLinksSenapse = new int[width * height * inhibitory_number_of_links * 2];
+		if (singleReceptionField) {
+			inhibitoryLinksSenapse = new int[inhibitory_number_of_links * 2];
+		} else {
+			inhibitoryLinksSenapse = new int[width * height * inhibitory_number_of_links * 2];
+		}
 		Arrays.fill(inhibitoryLinksSenapse, 0);
 
-		double sigma, _sigma = disper;
+		double _sigma = disper;
         boolean[][] nerv_links = new boolean[width()][height()];
         
         int _sigma_ = 1;//(int) _sigma;
@@ -181,78 +187,26 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		//UNDERSTAND: is it ok to have sum ^2 ~ 1
 //		double w = Math.sqrt(1 / (double)inhibitory_links);
 
-		for (int x = _sigma_; x < width() - _sigma_; x++) {
-			for (int y = _sigma_; y < height() - _sigma_; y++) {
-//				System.out.println("x = "+x+" y = "+y);
-
-				x_in_nerv = x;
-				y_in_nerv = y;
-		        sigma = _sigma;
-
-				// Обнуление массива занятости связей
-				for (int n1 = 0; n1 < width(); n1++) {
-					for (int n2 = 0; n2 < height(); n2++) {
-						nerv_links[n1][n2] = false;
-					}
-				}
-				
-				nerv_links[x][y] = true;
-
-				// преобразование Бокса — Мюллера для получения
-				// нормально распределенной величины
-				// DispLink - дисперсия связей
-				int count = 0;
-				for (int i = 0; i < inhibitory_number_of_links; i++) {
-                    int lx, ly;
-                    do {
-//                        do {
-                            if (count > inhibitory_number_of_links * 5) {
-                            	if (Double.isInfinite(sigma)) {
-                            		System.out.println("initialization failed @ x = "+x+" y = "+y);
-                            		System.exit(1);
-                            	}
-                            	sigma += _sigma * .1;
-//    							System.out.println("\n"+i+" of ("+sigma+")");
-                            	count = 0;
-                            }
-                            count++;
-                            	
-                            do {
-                                X = 2.0 * Math.random() - 1;
-                                Y = 2.0 * Math.random() - 1;
-                                S = X * X + Y * Y;
-                            } while (S > 1 || S == 0);
-                            S = Math.sqrt(-2 * Math.log(S) / S);
-                            double dX = X * S * sigma;
-                            double dY = Y * S * sigma;
-                            lx = (int) Math.round(x_in_nerv + dX);
-                            ly = (int) Math.round(y_in_nerv + dY);
-
-                            //определяем, что не вышли за границы поля колонок
-                            //колонки по периметру не задействованы
-//                        } while (!(lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1));
-
-//                        System.out.print("!");
-
-                    // Проверка на повтор связи
-					} while ((lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1) && nerv_links[lx][ly]);
-//                    System.out.print(".");
-
-                    if ((lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1)) {
-						nerv_links[lx][ly] = true;
+		if (singleReceptionField) {
+			initReceptionFields(
+				(int)(width() / 2.0), 
+				(int)(height() / 2.0), 
+				_sigma, nerv_links);
+			
+		} else {
+			for (int x = _sigma_; x < width() - _sigma_; x++) {
+				for (int y = _sigma_; y < height() - _sigma_; y++) {
+	//				System.out.println("x = "+x+" y = "+y);
 	
-						// Создаем синаптическую связь
-//						new Link(getCol(lx, ly), getCol(x, y), w, LinkType.INHIBITORY);
-						
-						offset = ((width * y) + x) * 2 * inhibitory_number_of_links;
-						
-						inhibitoryLinksSenapse[offset + i*2 +0] = lx;
-						inhibitoryLinksSenapse[offset + i*2 +1] = ly;
-                    }
+//					x_in_nerv = x;
+//					y_in_nerv = y;
+	
+					initReceptionFields(x, y, _sigma, nerv_links);
+	//				System.out.println();
 				}
-//				System.out.println();
 			}
 		}
+		
 		if (mc.context == null) {
 			cl_senapseOfinhibitoryLinks = null;
 			
@@ -302,6 +256,81 @@ public class CortexZoneComplex extends CortexZoneSimple {
         }
 	}
     
+    private void initReceptionFields(final int x, final int y, final double _sigma, final boolean[][] nerv_links) {
+		double X, Y, S;
+		int offset = 0;
+
+		final double x_in_nerv = x, y_in_nerv = y;
+	
+    	double sigma = _sigma;
+    	
+    	// Обнуление массива занятости связей
+		for (int n1 = 0; n1 < width(); n1++) {
+			for (int n2 = 0; n2 < height(); n2++) {
+				nerv_links[n1][n2] = false;
+			}
+		}
+		
+		nerv_links[x][y] = true;
+
+		// преобразование Бокса — Мюллера для получения
+		// нормально распределенной величины
+		// DispLink - дисперсия связей
+		int count = 0;
+		for (int i = 0; i < inhibitory_number_of_links; i++) {
+            int lx, ly;
+            do {
+//                do {
+                    if (count > inhibitory_number_of_links * 5) {
+                    	if (Double.isInfinite(sigma)) {
+                    		System.out.println("initialization failed @ x = "+x+" y = "+y);
+                    		System.exit(1);
+                    	}
+                    	sigma += _sigma * .1;
+//						System.out.println("\n"+i+" of ("+sigma+")");
+                    	count = 0;
+                    }
+                    count++;
+                    	
+                    do {
+                        X = 2.0 * Math.random() - 1;
+                        Y = 2.0 * Math.random() - 1;
+                        S = X * X + Y * Y;
+                    } while (S > 1 || S == 0);
+                    S = Math.sqrt(-2 * Math.log(S) / S);
+                    double dX = X * S * sigma;
+                    double dY = Y * S * sigma;
+                    lx = (int) Math.round(x_in_nerv + dX);
+                    ly = (int) Math.round(y_in_nerv + dY);
+
+                    //определяем, что не вышли за границы поля колонок
+                    //колонки по периметру не задействованы
+//                } while (!(lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1));
+
+//                System.out.print("!");
+
+            // Проверка на повтор связи
+			} while ((lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1) && nerv_links[lx][ly]);
+//            System.out.print(".");
+
+            if ((lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1)) {
+				nerv_links[lx][ly] = true;
+
+				// Создаем синаптическую связь
+//				new Link(getCol(lx, ly), getCol(x, y), w, LinkType.INHIBITORY);
+				
+				if (singleReceptionField) {
+					offset = 0;
+				} else {
+					offset = ((width * y) + x) * 2 * inhibitory_number_of_links;
+	            }
+				
+				inhibitoryLinksSenapse[offset + i*2 +0] = lx;
+				inhibitoryLinksSenapse[offset + i*2 +1] = ly;
+            }
+		}
+    }
+    
 	ColumnRF_Image CRF = null;
 	
 	public Imageable getCRF() {
@@ -326,7 +355,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		public void init() {
 
-	        boxSize = 10;
+	        boxSize = 15;
 
 			int maxX = width() * boxSize;
 	        int maxY = height() * boxSize;
@@ -381,11 +410,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		public Object whatAt(Point point) {
 			try {
 				Point pos = new Point(
-					Math.round(point.x / boxSize), 
-					Math.round(point.y / boxSize)
+					(int)Math.round(point.x / (double)boxSize), 
+					(int)Math.round(point.y / (double)boxSize)
 				);
 				
-				if (pos.x > 1 && pos.x < width && pos.y > 1 && pos.y < height) {
+				if (pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height) {
 					
 					watching.add(pos);
 					
@@ -563,5 +592,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //			}
 //		}
 		out.write("</zone>");
+	}
+
+	public boolean isSingleReceptionField() {
+		return singleReceptionField;
 	}
 }

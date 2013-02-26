@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -126,7 +125,7 @@ public class MultiCortex implements Runnable {
     	
         z_in = new CortexZoneSimple("Зрительный нерв", this);
         
-        z_1st = new CortexZoneComplex("1й", this, 120, 120, //160, 120,
+        z_1st = new CortexZoneComplex("1й", this, 5, 5, //120, 120, //160, 120,
             new Mapping[]{
                 new Mapping(z_in, 100, 1, false) //7x7 (50)
             }

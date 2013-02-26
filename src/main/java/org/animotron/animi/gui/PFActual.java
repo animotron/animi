@@ -49,7 +49,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 	static List<Field> cnFds = new ArrayList<Field>();
 	static List<Field> snFds = new ArrayList<Field>();
 	
-	int zoom = 5;
+	int zoom = 3;
 
 	static {
 		Field[] fields = NeuronComplex.class.getFields();
@@ -168,7 +168,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 //        	maxX = Math.max(maxX, link.synapse.x);
 //        	maxY = Math.max(maxY, link.synapse.y);
 //        }
-        boxSize = 10;//Math.max(maxX - minX, maxY - minY) + 2;
+        boxSize = 15;//Math.max(maxX - minX, maxY - minY) + 2;
 	}
 
 	private BufferedImage drawRF(int packageNumber) {
@@ -192,17 +192,18 @@ public class PFActual implements Imageable, InternalFrameListener {
 
         Mapping m = zone.in_zones[0];
         
-		final int offset = 
-				(2 * m.ns_links * zone.width * cnY) + 
-				(2 * m.ns_links * cnX);
-
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	int xi = m.linksSenapse[offset + 2*l +0];
-        	int yi = m.linksSenapse[offset + 2*l +1];
+        	int xi = m.linksSenapse(cnX, cnY, l, 0);
+        	int yi = m.linksSenapse(cnX, cnY, l, 1);
 
-        	pX = (boxSize / 2) + (xi - (int)(cnX * m.fX));
-			pY = (boxSize / 2) + (yi - (int)(cnY * m.fY));
+        	if (m.toZone.isSingleReceptionField()) {
+	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX));
+				pY = (boxSize / 2) + (yi - (int)(m.toZoneCenterY() * m.fY));
+        	} else {
+	        	pX = (boxSize / 2) + (xi - (int)(cnX * m.fX));
+				pY = (boxSize / 2) + (yi - (int)(cnY * m.fY));
+        	}
         	if (pX >= 0 && pX < boxSize 
         			&& pY >= 0 && pY < boxSize) {
             	

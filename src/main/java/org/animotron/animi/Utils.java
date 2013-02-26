@@ -93,8 +93,13 @@ public class Utils {
         	final int xi = m.linksSenapse(cnX, cnY, l, 0);
         	final int yi = m.linksSenapse(cnX, cnY, l, 1);
         	
-        	pX = (boxSize / 2) + (xi - (int)(cnX * m.fX));
-			pY = (boxSize / 2) + (yi - (int)(cnY * m.fY));
+        	if (m.toZone.isSingleReceptionField()) {
+	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX));
+				pY = (boxSize / 2) + (yi - (int)(m.toZoneCenterY() * m.fY));
+        	} else {
+        		pX = (boxSize / 2) + (xi - (int)(cnX * m.fX));
+        		pY = (boxSize / 2) + (yi - (int)(cnY * m.fY));
+        	}
                     	
 			if (       pX > 0 
         			&& pX < boxSize 

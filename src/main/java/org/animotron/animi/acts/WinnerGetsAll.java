@@ -22,6 +22,8 @@ package org.animotron.animi.acts;
 
 import static org.jocl.CL.*;
 
+import java.util.Arrays;
+
 import org.animotron.animi.cortex.*;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -178,6 +180,15 @@ public class WinnerGetsAll extends Task {
 	    	
 	        if (maxPos == -1) {
 	        	break;
+	        }
+	        
+	        if (cz.isSingleReceptionField()) {
+	        	Arrays.fill(sz.cols, 0);
+	        	Arrays.fill(sz.rememberCols, 0);
+
+	        	sz.cols[maxPos] = max;
+        		sz.rememberCols[maxPos] = max;
+        		return;
 	        }
 	        
         	int maxY = (int)Math.floor(maxPos / cz.width);

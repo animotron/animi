@@ -37,7 +37,7 @@ public class DeltaRuleLearning extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.1f / 5.0f;
+	public float ny = 1; //0.1f / 5.0f;
 	
 	private float factor;
 	

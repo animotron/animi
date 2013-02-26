@@ -143,9 +143,23 @@ public class StimulatorAnime extends AbstractStimulator {
 //        	            {retina.width() - b2, retina.height() - b2}
 //        	    }
 //        	)
+//RectAnime at centre
+//        	new RectAnime(
+//    			(int)(img.getWidth() * 0.3), (int)(img.getHeight() * 0.3),
+//    			(int)(img.getWidth() * 0.7), (int)(img.getHeight() * 0.7),
+//	    	    true,
+//	    	    new int[][] {
+//    					{0,0},
+//    					{0, retina.worldStep()}, 
+//    					{retina.worldStep(), retina.worldStep()}, 
+//    					{retina.worldStep(), 0},
+//    					{0,0}
+//    			},
+//    			true
+//	    	)
         	new RectAnime(
-    			(int)(img.getWidth() * 0.3), (int)(img.getHeight() * 0.3),
-    			(int)(img.getWidth() * 0.7), (int)(img.getHeight() * 0.7),
+    			(int)(img.getWidth() * 0.5), (int)(img.getHeight() * -0.1),
+    			(int)(img.getWidth() * 1.1), (int)(img.getHeight() *  1.1),
 	    	    true,
 	    	    new int[][] {
     					{0,0},

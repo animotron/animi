@@ -198,6 +198,8 @@ public class Application extends JFrame {
 			}
 		});
         menu.add(menuItem);
+        
+    	createFrame(imageable);
     }
     
     JToolBar bar;
@@ -471,7 +473,7 @@ public class Application extends JFrame {
 			
 			stimulator = constructor.newInstance(this);
 			
-	    	createFrame(stimulator);
+//	    	createFrame(stimulator);
     	} catch (Exception e) {
 		}
     }
@@ -486,7 +488,7 @@ public class Application extends JFrame {
     	createWindowsMenuBar(menuBar);
     	addToBar();
 
-    	createFrame(stimulator);
+//    	createFrame(stimulator);
     }
     
     private synchronized void run() {
