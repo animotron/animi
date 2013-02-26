@@ -73,7 +73,7 @@ public class DeltaRuleLearning extends Task {
 	    		
 	    		sum += m.frZone.cols(xi, yi);
 	    		
-	    		final float q = m.frZone.cols(xi, yi) * m.linksWeight(x, y, p, l) * factor;
+	    		final float q = m.linksWeight(x, y, p, l) + m.frZone.cols(xi, yi) * m.toZone.cols(x, y) * factor;
 	    		
 	    		m.linksWeight(q, x, y, p, l);
 	    		
