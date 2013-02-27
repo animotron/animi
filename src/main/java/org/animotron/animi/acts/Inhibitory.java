@@ -41,7 +41,7 @@ import org.jocl.cl_mem;
 public class Inhibitory extends Task {
 
 	@RuntimeParam(name = "k")
-	public float k = 0.1f;
+	public float k = 0.3f;
 	
 	@RuntimeParam(name = "minDelta")
 	public float minDelta = 0.01f;
@@ -126,6 +126,7 @@ public class Inhibitory extends Task {
 	}
 	
 	private float maxDelta = 0;
+	private float preDelta = 0;
 	private float[] cols = null;
 	
 	@Override
@@ -142,9 +143,9 @@ public class Inhibitory extends Task {
 			for (int xi = 0; xi < cz.width; xi++) {
 				for (int yi = 0; yi < cz.height; yi++) {
 					
-//					if (xi != x && yi != y) {
+					if (xi != x && yi != y) {
 						delta += cz.inhibitory_w * cols[(yi * cz.width) + xi];
-//					}
+					}
 				}
 			}
 		} else {
@@ -173,6 +174,13 @@ public class Inhibitory extends Task {
 	
 	@Override
 	public boolean isDone() {
+		if (preDelta == 0) {
+			preDelta = maxDelta + 1;
+		}
+		if (preDelta <= maxDelta) {
+			System.out.println("maxDelta increased or equal");
+			return true;
+		}
 		return maxDelta > minDelta;
 	}
 }

@@ -523,9 +523,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 //    	performTask(winnerGetsAll);
 
-		debug("inhibitory");
+//		debug("inhibitory");
 		performTask(inhibitory);
-		debug("after inhibitory");
+//		debug("after inhibitory");
 
 		if (isLearning()) {
     	    //Такт 2. Запоминание и переоценка параметров стабильности нейрона
