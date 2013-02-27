@@ -56,9 +56,14 @@ public abstract class AbstractAnime implements Figure {
 		
         if (l < 0) {
             int j = Math.min(i + 1, anime.length - 1);
-            dx = anime[j][0] - anime[i][0];
-            dy = anime[j][1] - anime[i][1];
+            dx = anime[j][0];
+            dy = anime[j][1];
             i = j == anime.length - 1 ? 0 : j;
+//        } else if (l < 0) {
+//                int j = Math.min(i + 1, anime.length - 1);
+//                dx = anime[j][0] - anime[i][0];
+//                dy = anime[j][1] - anime[i][1];
+//                i = j == anime.length - 1 ? 0 : j;
         } else if (l == 0) {
             int j = Math.min(i + 1, anime.length - 1);
             dx = anime[j][0] - anime[i][0];

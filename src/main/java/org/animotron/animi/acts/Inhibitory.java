@@ -130,9 +130,9 @@ public class Inhibitory extends Task {
 			for (int xi = 0; xi < cz.width; xi++) {
 				for (int yi = 0; yi < cz.height; yi++) {
 					
-					if (xi != x && yi != y) {
+//					if (xi != x && yi != y) {
 						delta += cz.inhibitory_w * cz.cols(xi, yi);
-					}
+//					}
 				}
 			}
 		} else {
