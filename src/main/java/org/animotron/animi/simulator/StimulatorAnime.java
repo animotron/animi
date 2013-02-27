@@ -53,6 +53,18 @@ public class StimulatorAnime extends AbstractStimulator {
 		
 //		int b1 = 40;
 //		int b2 = 30;
+        
+        int step = 10;
+        int[][] steps = new int[step*2 + 1][];
+        int j = 0;
+        for (int i = 0; i < step; i++) {
+        	steps[j++] = new int[] {retina.worldStep(), 0};
+        }
+        for (int i = 0; i < step; i++) {
+        	steps[j++] = new int[] {-retina.worldStep(), 0};
+        }
+    	steps[j] = new int[] {retina.worldStep(), 0};
+        
         figures = new Figure[] {
 //    		new LineAnime(
 //        		15, 0,
@@ -161,48 +173,7 @@ public class StimulatorAnime extends AbstractStimulator {
     			(int)(img.getWidth() * 0.5) - retina.worldStep() * 7, (int)(img.getHeight() * -0.1),
     			(int)(img.getWidth() * 1.1), (int)(img.getHeight() *  1.1),
 	    	    true,
-	    	    new int[][] {
-//    					{0,0},
-//    					{0, retina.worldStep()}, 
-//    					{retina.worldStep(), retina.worldStep()}, 
-//    					{retina.worldStep(), 0},
-//    					{0,0}
-
-//    					{0,0},
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-//    					{0,0},
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-    					{retina.worldStep(), 0}, 
-//    					{0,0},
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-//    					{0,0},
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-    					{-retina.worldStep(), 0}, 
-//    					{0,0},
-    					{retina.worldStep(), 0}, 
-    			},
+	    	    steps,
     			true
 	    	)
         };
