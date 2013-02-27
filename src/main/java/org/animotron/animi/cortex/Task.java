@@ -140,6 +140,7 @@ public abstract class Task {
 //    }
 	
 	public void execute() {
+		prepare();
 		do {
 //			System.out.println("Execute "+getClass());
 			for (int x = 0; x < sz.width; x++) {
@@ -150,6 +151,9 @@ public abstract class Task {
 		} while (!isDone());
 	}
 	
+	public void prepare() {
+	}
+
 	public abstract void gpuMethod(int x, int y);
 	
 	public boolean isDone() {

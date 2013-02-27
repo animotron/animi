@@ -34,6 +34,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -522,10 +523,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 //    	performTask(winnerGetsAll);
 
-    	for (int i = 0; i < 1; i++) {
-    		performTask(inhibitory);
-    	}
-    	if (isLearning()) {
+		debug("inhibitory");
+		performTask(inhibitory);
+		debug("after inhibitory");
+
+		if (isLearning()) {
     	    //Такт 2. Запоминание и переоценка параметров стабильности нейрона
         	performTask(cnLearning);
     	
@@ -599,5 +601,18 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 	public boolean isSingleReceptionField() {
 		return singleReceptionField;
+	}
+	
+	private void debug(String comment) {
+		System.out.println(comment);
+		
+		DecimalFormat df = new DecimalFormat("0.00000");
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				System.out.print(df.format(cols(x, y)));
+				System.out.print(" ");
+			}
+			System.out.println();
+		}
 	}
 }

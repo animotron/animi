@@ -41,7 +41,10 @@ import org.jocl.cl_mem;
 public class Inhibitory extends Task {
 
 	@RuntimeParam(name = "k")
-	public float k = 0.3f;
+	public float k = 0.1f;
+	
+	@RuntimeParam(name = "minDelta")
+	public float minDelta = 0.01f;
 	
 	cl_mem _cols;
 	
@@ -121,6 +124,15 @@ public class Inhibitory extends Task {
 	protected void release() {
 		clReleaseMemObject(_cols);
 	}
+	
+	private float maxDelta = 0;
+	private float[] cols = null;
+	
+	@Override
+	public void prepare() {
+		cols = new float[cz.cols.length];
+		System.arraycopy(cz.cols, 0, cols, 0, cols.length);
+	}
 
 	@Override
 	public void gpuMethod(int x, int y) {
@@ -131,7 +143,7 @@ public class Inhibitory extends Task {
 				for (int yi = 0; yi < cz.height; yi++) {
 					
 //					if (xi != x && yi != y) {
-						delta += cz.inhibitory_w * cz.cols(xi, yi);
+						delta += cz.inhibitory_w * cols[(yi * cz.width) + xi];
 //					}
 				}
 			}
@@ -141,17 +153,26 @@ public class Inhibitory extends Task {
 				final int yi = cz.inhibitoryLinksSenapse(x, y, l, 1);
 				
 				if (xi != x && yi != y) {
-					delta += cz.inhibitory_w * cz.cols(xi, yi);
+					delta += cz.inhibitory_w * cols[(yi * cz.width) + xi];
 				}
 			}
 		}
 		
 		float activity = cz.cols(x, y);
-		activity -= delta;
+		activity -= delta * k;
 		if (activity < 0) {
 			activity = 0;
 		}
 		
 		cz.cols(activity, x, y);
+		
+		synchronized (this) {
+			maxDelta = Math.max(maxDelta, delta);
+		}
+	}
+	
+	@Override
+	public boolean isDone() {
+		return maxDelta > minDelta;
 	}
 }
