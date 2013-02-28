@@ -55,10 +55,12 @@ public abstract class AbstractAnime implements Figure {
 			return;
 		
         if (l < 0) {
-            int j = Math.min(i + 1, anime.length - 1);
-            dx = anime[j][0];
-            dy = anime[j][1];
-            i = j == anime.length - 1 ? 0 : j;
+            dx = anime[i][0];
+            dy = anime[i][1];
+            i++;
+            if (i >= anime.length)
+            	i = 0;
+
 //        } else if (l < 0) {
 //                int j = Math.min(i + 1, anime.length - 1);
 //                dx = anime[j][0] - anime[i][0];
@@ -76,11 +78,11 @@ public abstract class AbstractAnime implements Figure {
             if (l < 0) l = 0;
         }
         at = new AffineTransform();
-        at.rotate(dt, p[0].getX(), p[0].getY());
+//        at.rotate(dt, p[0].getX(), p[0].getY());
         at.translate(dx, dy);
-        for (int i = 0; i < p.length; i++) {
-            Point2D q = at.transform(p[i], null);
-            p[i] = q;
+        for (int z = 0; z < p.length; z++) {
+            final Point2D q = at.transform(p[z], null);
+            p[z] = q;
         }
     }
 	

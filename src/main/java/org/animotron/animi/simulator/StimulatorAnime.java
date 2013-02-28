@@ -54,132 +54,59 @@ public class StimulatorAnime extends AbstractStimulator {
 //		int b1 = 40;
 //		int b2 = 30;
         
-        int step = 32;
-        int[][] steps = new int[step*2 + 1][];
+        figures = new Figure[2];
+
+		int step = 42;
+        int[][] steps = new int[step*4 + 2][];
+
         int j = 0;
-        for (int i = 0; i < (step / 2); i++) {
-        	steps[j++] = new int[] {retina.worldStep(), 0};
-        }
-        for (int i = 0; i < step; i++) {
+        for (int i = 0; i < (step); i++) {
         	steps[j++] = new int[] {-retina.worldStep(), 0};
         }
-        for (int i = 0; i < (step / 2); i++) {
-        	steps[j++] = new int[] {retina.worldStep(), 0};
+        for (int i = 0; i < step; i++) {
+        	steps[j++] = new int[] {+retina.worldStep(), 0};
         }
-    	steps[j] = new int[] {retina.worldStep(), 0};
         
-        figures = new Figure[] {
-//    		new LineAnime(
-//        		15, 0,
-//        		new int[][] {
-//        				{b1, b1},
-//        				{mc.retina.width() - b1, b1},
-//        				{mc.retina.width() - b1, mc.retina.height() - b1},
-//        				{b1, mc.retina.height() - b1},
-//        				{b1, b1}
-//        		}
-//        	),
-//        	new LineAnime(
-//        	    15, -0.03,
-//        	    new int[][] {
-//        	            {b1, b1},
-//        	            {mc.retina.width() - b1, b1},
-//        	            {mc.retina.width() - b1, mc.retina.height() - b1},
-//        	            {b1, mc.retina.height() - b1},
-//        	            {b1, b1}
-//        	    }
-//        	),
-//        	new LineAnime(
-//        	    15, 0.03,
-//        	    new int[][] {
-//        	            {mc.retina.width() - b1, b1},
-//        	            {mc.retina.width() - b1, mc.retina.height() - b1},
-//        	            {b1, mc.retina.height() - b1},
-//        	            {b1, b1},
-//        	            {mc.retina.width() - b1, b1},
-//        	    }
-//        	),
-//        	new LineAnime(
-//        	    15, -0.07,
-//        	    new int[][] {
-//        	            {mc.retina.width() - b1, mc.retina.height() - b1},
-//        	            {b1, mc.retina.height() - b1},
-//        	            {b1, b1},
-//        	            {mc.retina.width() - b1, b1},
-//        	            {mc.retina.width() - b1, mc.retina.height() - b1}
-//        	    }
-//        	),
-//        	new LineAnime(
-//        	    15, 0.07,
-//        	    new int[][] {
-//        	            {b1, mc.retina.height() - b1},
-//        	            {b1, b1},
-//        	            {mc.retina.width() - b1, b1},
-//        	            {mc.retina.width() - b1, mc.retina.height() - b1},
-//        	            {b1, mc.retina.height() - b1}
-//        	    }
-//        	),
-//        	new OvalAnime(30,
-//        	    new int[][] {
-//        	            {b1, b1},
-//        	            {retina.width() - b1, retina.height() - b1},
-//        	            {retina.width() - b1, b1},
-//        	            {b1, retina.height() - b1},
-//        	            {b1, b1}
-//        	    }
-//        	),
-//        	new RectAnime(
-//        	    30, 0.05,
-//        	    new int[][] {
-//        	            {b2, b2},
-//        	            {b2, retina.height() - b2},
-//        	            {retina.width() - b2, retina.height() - b2},
-//        	            {retina.width() - b2, b2},
-//        	            {b2, b2}
-//        	    }
-//        	),
-//        	new RectAnime(
-//        	    40, 0.05,
-//        	    new int[][] {
-//        	            {b2, retina.height() - b2},
-//        	            {retina.width() - b2, retina.height() - b2},
-//        	            {retina.width() - b2, b2},
-//        	            {b2, b2},
-//        	            {b2, retina.height() - b2}
-//        	    }
-//        	),
-//        	new RectAnime(
-//        	    30, 0,
-//        	    new int[][] {
-//        	            {retina.width() - b2, retina.height() - b2},
-//        	            {retina.width() - b2, b2},
-//        	            {b2, b2},
-//        	            {b2, retina.height() - b2},
-//        	            {retina.width() - b2, retina.height() - b2}
-//        	    }
-//        	)
-//RectAnime at centre
-//        	new RectAnime(
-//    			(int)(img.getWidth() * 0.3), (int)(img.getHeight() * 0.3),
-//    			(int)(img.getWidth() * 0.7), (int)(img.getHeight() * 0.7),
-//	    	    true,
-//	    	    new int[][] {
-//    					{0,0},
-//    					{0, retina.worldStep()}, 
-//    					{retina.worldStep(), retina.worldStep()}, 
-//    					{retina.worldStep(), 0},
-//    					{0,0}
-//    			},
-//    			true
-//	    	)
-        	new RectAnime(
-    			(int)(img.getWidth() * 0.5) - retina.worldStep() * 7, (int)(img.getHeight() * -0.1),
-    			(int)(img.getWidth() * 1.2), (int)(img.getHeight() *  1.2),
+        //move out and wait...
+    	steps[j++] = new int[] {-retina.worldStep()*100, 0};
+        for (int i = 0; i < (step*2); i++) {
+        	steps[j++] = new int[] {0, 0};
+        }
+    	steps[j++] = new int[] {retina.worldStep()*100, 0};
+
+    	figures[0] = new RectAnime(
+    			(int)(img.getWidth() * 0.5) + retina.worldStep() * step / 2, (int)(img.getHeight() * -0.2),
+    			(int)(img.getWidth() * 2), (int)(img.getHeight() *  2),
 	    	    true,
 	    	    steps,
     			true
-	    	)
-        };
+	    	);
+
+        steps = new int[step*4 + 2][];
+        j = 0;
+        
+        //move out and wait...
+    	steps[j++] = new int[] {0, -retina.worldStep()*100};
+        for (int i = 0; i < (step*2); i++) {
+        	steps[j++] = new int[] {0, 0};
+        }
+    	steps[j++] = new int[] {0, retina.worldStep()*100};
+
+    	
+    	for (int i = 0; i < (step); i++) {
+        	steps[j++] = new int[] {0, -retina.worldStep()};
+        }
+        for (int i = 0; i < step; i++) {
+        	steps[j++] = new int[] {0, +retina.worldStep()};
+        }
+
+        figures[1] = new RectAnime(
+    			(int)(img.getWidth() * -0.5), (int)(img.getHeight() * 0.5) + retina.worldStep() * step / 2,
+    			(int)(img.getWidth() *  2), (int)(img.getHeight() * 2),
+	    	    true,
+	    	    steps,
+    			true
+	    	);
 	}
 
 	public void step() {
