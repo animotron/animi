@@ -88,6 +88,20 @@ public class Utils {
 			final int pN,
 			final Mapping m) {
 
+		BufferedImage img = drawRF(true, image, boxSize, offsetX, offsetY, cnX, cnY, pN, m);
+		img = drawRF(false, image, boxSize, offsetX, offsetY, cnX, cnY, pN, m);
+		
+		return img;
+	}
+
+    public static BufferedImage drawRF(
+			final boolean isPos,
+			final BufferedImage image, final int boxSize,
+			final int offsetX, final int offsetY,
+			final int cnX, final int cnY,
+			final int pN,
+			final Mapping m) {
+
 		int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
         	final int xi = m.linksSenapse(cnX, cnY, l, 0);
@@ -113,21 +127,37 @@ public class Utils {
 		        int R = Utils.get_red(value);
 
 
-		        final float w = m.linksWeight(cnX, cnY, 0, l);
+		        final float w;
+		        if (isPos) {
+		        	w = m.linksWeight(cnX, cnY, 0, l);
+		        } else {
+		        	w = m.inhibitoryWeight(cnX, cnY, 0, l);
+		        }
 				if (Float.isNaN(w) || Float.isInfinite(w)) {
 					R = 255;
 				
 				} else if (w == 0.0f) {
-					B = G = R = 0;
+					if (isPos) {
+						G = 0;
+					} else {
+						B = 0;
+					}
+					//B = G = R = 0;
 
 				} else if (w > 0.0f) {
 					int v = (int) (255 * w * 5);
 					if (v > 255) v = 255;
-					B = v; G = v; R = v;
+					//B = v; G = v; R = v;
+					if (isPos) {
+						G = v;
+					} else {
+						B = v;
+					}
 				} else {
-					B = 255;
+					R = 125;
+					//B = 255;
 					//B += 255 * m.linksWeight[lOffset + l] * 5;
-					if (B > 255) G = 255;
+					//if (B > 255) B = 255;
 				};
 				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, R, G, B));
         	}

@@ -24,6 +24,8 @@ import static org.jocl.CL.*;
 
 import org.animotron.animi.*;
 import org.animotron.animi.acts.*;
+import org.animotron.animi.acts.old.Memorization;
+import org.animotron.animi.acts.old.Restructurization;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_mem;
@@ -54,10 +56,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public Mapping[] in_zones;
 
 	@Params
-	public DeltaRuleActivation cnActivation = new DeltaRuleActivation(this);
+	public Activation cnActivation = new Activation(this);
 //	public CNActivation cnActivation = new CNActivation(this);
 
-	public DeltaRuleLearning cnLearning = new DeltaRuleLearning(this);
+	@Params
+	public Learning cnLearning = new Learning(this);
 	
 //	@Params
     Inhibitory inhibitory = new Inhibitory(this);
@@ -411,8 +414,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		public Object whatAt(Point point) {
 			try {
 				Point pos = new Point(
-					(int)Math.round(point.x / (double)boxSize), 
-					(int)Math.round(point.y / (double)boxSize)
+					(int)Math.ceil(point.x / (double)boxSize), 
+					(int)Math.ceil(point.y / (double)boxSize)
 				);
 				
 				if (pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height) {
@@ -521,11 +524,12 @@ public class CortexZoneComplex extends CortexZoneSimple {
         //Такт 1. Активация колонок (узнавание)
     	performTask(cnActivation);
 
-//    	performTask(winnerGetsAll);
+		debug("before inhibitory");
 
-//		debug("inhibitory");
-		performTask(inhibitory);
-//		debug("after inhibitory");
+		performTask(winnerGetsAll);
+
+//		performTask(inhibitory);
+		debug("after inhibitory");
 
 		if (isLearning()) {
     	    //Такт 2. Запоминание и переоценка параметров стабильности нейрона

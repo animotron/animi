@@ -75,6 +75,22 @@ public class Mapping {
 		linksWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l] = value;
 	}
 
+	public float[] inhibitoryWeight;
+	
+	public float inhibitoryWeight(int x, int y, int p, int l) {
+		return inhibitoryWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l];
+	}
+	
+	public void inhibitoryWeight(float value, int x, int y, int p, int l) {
+		if (Float.isInfinite(value))
+			System.out.println("!");
+
+		if (Float.isNaN(value))
+			System.out.println("?");
+		
+		inhibitoryWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l] = value;
+	}
+
 	public int[] linksSenapse;
 	
 	public int linksSenapse(int x, int y, int l, int xy) {
@@ -126,10 +142,15 @@ public class Mapping {
 
 	    linksWeight = new float[toZone.width() * toZone.height() * ns_links * toZone.package_size];
 	    for (int i = 0; i < linksWeight.length; i++) {
-	    	linksWeight[i] = w * rnd.nextFloat();
+	    	linksWeight[i] = w * rnd.nextFloat() ;
 	    }
 		
-		if (toZone.singleReceptionField) {
+	    inhibitoryWeight = new float[toZone.width() * toZone.height() * ns_links * toZone.package_size];
+	    for (int i = 0; i < inhibitoryWeight.length; i++) {
+	    	inhibitoryWeight[i] = w * rnd.nextFloat() ;
+	    }
+
+	    if (toZone.singleReceptionField) {
 			linksSenapse = new int[ns_links * 2];
 		} else {
 			linksSenapse = new int[toZone.width() * toZone.height() * ns_links * 2];

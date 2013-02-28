@@ -114,12 +114,20 @@ public class PFActual implements Imageable, InternalFrameListener {
         	
         	int cY = y;
         	
-			img = drawRF(pN);
+			img = drawRF(true, pN);
 			g.drawRect(x, cY, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
 			g.drawImage(
 					img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
 					x+1, cY+1, null);
 			
+			int cX = x + (2+(img.getWidth()*zoom)) + 2;
+
+			img = drawRF(false, pN);
+			g.drawRect(cX, cY, 2+(img.getWidth()*zoom), 2+(img.getHeight()*zoom));
+			g.drawImage(
+					img.getScaledInstance(img.getWidth()*zoom, img.getHeight()*zoom, Image.SCALE_AREA_AVERAGING),
+					x+1, cY+1, null);
+
 			cY += 2+(img.getHeight()*zoom);
 			
 			cY += textY;
@@ -171,9 +179,10 @@ public class PFActual implements Imageable, InternalFrameListener {
         boxSize = 15;//Math.max(maxX - minX, maxY - minY) + 2;
 	}
 
-	private BufferedImage drawRF(int packageNumber) {
+	private BufferedImage drawRF(boolean isPos, int packageNumber) {
         return Utils.drawRF(
-    		new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB), 
+    		isPos,
+    		new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB),
     		boxSize, 0, 0, 
     		point.x, point.y,
     		packageNumber,

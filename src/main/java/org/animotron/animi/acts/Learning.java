@@ -20,22 +20,28 @@
  */
 package org.animotron.animi.acts;
 
+import org.animotron.animi.Params;
 import org.animotron.animi.cortex.*;
 import org.jocl.cl_command_queue;
 import org.jocl.cl_kernel;
 
 /**
- * Delta rule. http://en.wikipedia.org/wiki/Delta_rule
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class DeltaRuleActivation extends Task {
+public class Learning extends Task {
 	
-	private int p = 0;
+	@Params
+	private HebbianLearning positive;
+	@Params
+	private AntiHebbianLearning negative;
 	
-	public DeltaRuleActivation(CortexZoneComplex cz) {
+	public Learning(CortexZoneComplex cz) {
 		super(cz);
+		
+		positive = new HebbianLearning(cz);
+		negative = new AntiHebbianLearning(cz);
 	}
 
 	@Override
@@ -48,35 +54,12 @@ public class DeltaRuleActivation extends Task {
 
 	@Override
     protected void release() {
+		positive.release();
+		negative.release();
     }
 	
-	private float activity(Mapping m, int x, int y) {
-		float sum = 0.0f;
-	    for(int l = 0; l < m.ns_links; l++) {
-	    	final int xi = m.linksSenapse(x, y, l, 0);
-	    	final int yi = m.linksSenapse(x, y, l, 1);
-	        
-	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
-	    		sum += m.frZone.cols(xi, yi) * m.linksWeight(x, y, p, l);
-	        }
-	    }
-	    
-	    return sum;
-	}
-
 	public void gpuMethod(int x, int y) {
-		
-		Mapping m = cz.in_zones[0];
-		
-		final float activity = activity(m, x, y);
-
-		cz.cols(activity, x, y);
-		
-		if (Float.isNaN(activity)) {
-			activity(m, x, y);
-		}
-//		
-//		if (activity != 0)
-//			System.out.println(""+x+" - "+y+" = "+activity);
+		positive.gpuMethod(x, y);
+		negative.gpuMethod(x, y);
 	}
 }

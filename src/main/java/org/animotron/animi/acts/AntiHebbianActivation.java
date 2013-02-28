@@ -26,27 +26,19 @@ import org.jocl.cl_command_queue;
 import org.jocl.cl_kernel;
 
 /**
- * Delta rule. http://en.wikipedia.org/wiki/Delta_rule
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class DeltaRuleLearning extends Task {
+public class AntiHebbianActivation extends Task {
 	
-	@RuntimeParam(name = "count")
-	public int count = 10000;
+	@RuntimeParam(name = "k")
+	public float k = 0.05f;
 
-	@RuntimeParam(name = "ny")
-	public float ny = 0.1f / 5.0f;
-	
-	private float factor;
-	
 	private int p = 0;
 	
-	public DeltaRuleLearning(CortexZoneComplex cz) {
+	public AntiHebbianActivation(CortexZoneComplex cz) {
 		super(cz);
-		
-		factor = (float) (ny / Math.pow(2, cz.count / count));
 	}
 
 	@Override
@@ -61,56 +53,33 @@ public class DeltaRuleLearning extends Task {
     protected void release() {
     }
 	
-	private float adjust(final Mapping m, final int x, final int y) {
-		float sum = 0;
-		
-		float sumQ2 = 0.0f;
+	private float activity(Mapping m, int x, int y) {
+		float sum = 0.0f;
 	    for(int l = 0; l < m.ns_links; l++) {
-	    	int xi = m.linksSenapse(x, y, l, 0);
-	    	int yi = m.linksSenapse(x, y, l, 1);
+	    	final int xi = m.linksSenapse(x, y, l, 0);
+	    	final int yi = m.linksSenapse(x, y, l, 1);
 	        
 	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
-	    		
-	    		sum += m.frZone.cols(xi, yi);
-	    		
-	    		final float q = m.linksWeight(x, y, p, l) + m.frZone.cols(xi, yi) * m.toZone.cols(x, y) * factor;
-	    		
-	    		m.linksWeight(q, x, y, p, l);
-	    		
-	    		sumQ2 += q * q;
+	    		sum += m.frZone.cols(xi, yi) * m.inhibitoryWeight(x, y, p, l);
 	        }
 	    }
 	    
-	    if (sum == 0) {
-	    	System.out.println("?!");
-	    }
-	    return sumQ2;
-	}
-	
-	private void normalization(final Mapping m, final int x, final int y, final float sumQ2) {
-		float norm = (float) Math.sqrt(sumQ2);
-	    for(int l = 0; l < m.ns_links; l++) {
-	    	
-	    	final float q = m.linksWeight(x, y, p, l) / norm;
-	    	
-	    	m.linksWeight(q, x, y, p, l);
-	    }
+	    return sum * k;
 	}
 
 	public void gpuMethod(int x, int y) {
 		
-		if (cz.cols(x, y) <= 0) {
-			return;
-		}
-		
 		Mapping m = cz.in_zones[0];
 		
-		final float sumQ2 = adjust(m, x, y);
+		final float activity = cz.cols(x, y) - activity(m, x, y);
+
+		cz.cols(activity < 0 ? 0 : activity, x, y);
 		
-		if (sumQ2 == 0 || Float.isInfinite(sumQ2) || Float.isNaN(sumQ2)) {
-			adjust(m, x, y);
+		if (Float.isNaN(activity)) {
+			activity(m, x, y);
 		}
-		
-		normalization(m, x, y, sumQ2);
+//		
+//		if (activity != 0)
+//			System.out.println(""+x+" - "+y+" = "+activity);
 	}
 }
