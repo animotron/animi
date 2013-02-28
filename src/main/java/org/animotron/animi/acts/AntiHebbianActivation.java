@@ -33,7 +33,7 @@ import org.jocl.cl_kernel;
 public class AntiHebbianActivation extends Task {
 	
 	@RuntimeParam(name = "k")
-	public float k = 0.05f;
+	public float k = 1f;
 
 	private int p = 0;
 	

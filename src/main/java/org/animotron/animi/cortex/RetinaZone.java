@@ -211,12 +211,12 @@ public class RetinaZone extends Task {
 		//if no stimuli, check if opposite was 
 		if (value == 0) {
 			if (history(x, y) == 1 && oppositeStimuli == 0) {
-				value = 0.3f;
+				value = 1f; //0.3f;
 			}
 		} else {
 			//for debug
 			if (type == 1)
-				value = 0.7f;
+				value = 1f; //0.7f;
 		}
 		
 		output(value, x, y);
