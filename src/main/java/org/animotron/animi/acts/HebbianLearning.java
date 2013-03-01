@@ -97,10 +97,6 @@ public class HebbianLearning extends Task {
 
 	public void gpuMethod(int x, int y) {
 		
-		if (cz.cols(x, y) <= 0) {
-			return;
-		}
-		
 		final Mapping m = cz.in_zones[0];
 		
 		for (int p = 0; p < cz.package_size; p++) {

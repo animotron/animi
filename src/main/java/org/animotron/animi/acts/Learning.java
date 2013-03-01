@@ -20,6 +20,8 @@
  */
 package org.animotron.animi.acts;
 
+import java.util.Arrays;
+
 import org.animotron.animi.Params;
 import org.animotron.animi.cortex.*;
 import org.jocl.cl_command_queue;
@@ -62,9 +64,12 @@ public class Learning extends Task {
 	}
 
 	public void gpuMethod(int x, int y) {
-		if (cz.cols(x, y) <= 0) {
+		if (cz.cols(x, y) <= 0 && cz.neighborLearning(x, y) > 0) {
 			return;
 		}
+		
+		Arrays.fill(cz.neighborLearning, 1);
+		cz.neighborLearning(0, x, y);
 		
 		positive.gpuMethod(x, y);
 		negative.gpuMethod(x, y);

@@ -544,6 +544,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
     	
     		count++;
     	}
+		
+		history();
     }
     
     private void performTask(Task task) {
@@ -564,7 +566,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		write(out, "height", height);
 //		write(out, "speed", speed);
 		write(out, "active", active);
-		write(out, "learning", learning);
+		write(out, "learning", isLearning);
 		write(out, "count", count);
 
 		write(out, "inhibitory-links-", disper);

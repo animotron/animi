@@ -73,6 +73,46 @@ public class CortexZoneSimple implements Layer {
     	cols[(y * width) + x] = value;
     }
 
+    public float neighborLearning[];
+    
+    public float neighborLearning(int x, int y) {
+		return neighborLearning[(y * width) + x];
+    }
+    
+    public void neighborLearning(float value, int x, int y) {
+    	neighborLearning[(y * width) + x] = value;
+    }
+
+    int neighborLearningStage = 0;
+    public void history() {
+    	if (neighborLearningStage >= 2) {
+    		neighborLearningStage--;
+    		return;
+    	}
+    	switch (neighborLearningStage) {
+		case 1:
+    		neighborLearningStage--;
+    		Arrays.fill(neighborLearning, 0);
+			
+			break;
+		case 0:
+    		for (int i = 0; i < cols.length; i++) {
+    			if (cols[i] > 0) {
+    				neighborLearningStage = 1;
+    				break;
+    			}
+        	}
+    		if (neighborLearningStage == 1) {
+        		System.arraycopy(cols, 0, neighborLearning, 0, cols.length);
+        		neighborLearningStage = 3;
+    		}
+			
+			break;
+		default:
+			break;
+		}
+    }
+    
     /**
      * The OpenCL memory object which store the remember or not activity at RF of neuron.
      */
@@ -103,6 +143,9 @@ public class CortexZoneSimple implements Layer {
     	
     	cols = new float[width * height];
     	Arrays.fill(cols, 0);
+
+    	neighborLearning = new float[width * height];
+    	Arrays.fill(neighborLearning, 0);
     	
         if (mc.context == null) {
         	cl_cols = null;
@@ -200,9 +243,9 @@ public class CortexZoneSimple implements Layer {
 		return null;//col[x][y];
 	}
 	
-	public boolean learning = true;
+	public boolean isLearning = true;
 	public boolean isLearning() {
-		return learning;
+		return isLearning;
 	}
 	
     public boolean active = true;
@@ -225,7 +268,7 @@ public class CortexZoneSimple implements Layer {
 		write(out, "width", width);
 		write(out, "height", height);
 		write(out, "active", active);
-		write(out, "learning", learning);
+		write(out, "learning", isLearning);
 //		write(out, "speed", speed);
 		out.write("/>");
 	}

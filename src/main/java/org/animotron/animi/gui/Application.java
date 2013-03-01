@@ -416,7 +416,7 @@ public class Application extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					zone.learning = !zone.learning;
+					zone.isLearning = !zone.isLearning;
 					chL.setSelected(zone.isLearning());
 				}
 	        });
