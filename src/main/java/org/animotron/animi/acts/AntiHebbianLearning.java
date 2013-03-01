@@ -88,9 +88,15 @@ public class AntiHebbianLearning extends Task {
 		float norm = (float) Math.sqrt(sumQ2);
 	    for(int l = 0; l < m.ns_links; l++) {
 	    	
-	    	final float q = m.inhibitoryWeight(x, y, p, l) / norm;
-	    	
-	    	m.inhibitoryWeight(q, x, y, p, l);
+	    	final float pos = m.linksWeight(x, y, p, l);
+	    	final float neg = m.inhibitoryWeight(x, y, p, l) / norm;
+	    	if (pos >= neg) {
+	    		m.linksWeight(pos - neg, x, y, p, l);
+		    	m.inhibitoryWeight(0, x, y, p, l);
+	    	} else {
+	    		m.linksWeight(0, x, y, p, l);
+		    	m.inhibitoryWeight(neg - pos, x, y, p, l);
+	    	}
 	    }
 	}
 
