@@ -82,14 +82,31 @@ public class Utils {
     }
     
 	public static BufferedImage drawRF(
-			final BufferedImage image, final int boxSize,
+			final BufferedImage image, final int boxSize, final int boxMini,
 			final int offsetX, final int offsetY,
 			final int cnX, final int cnY,
-			final int pN,
 			final Mapping m) {
 
-		BufferedImage img = drawRF(true, image, boxSize, offsetX, offsetY, cnX, cnY, pN, m);
-		img = drawRF(false, image, boxSize, offsetX, offsetY, cnX, cnY, pN, m);
+		BufferedImage img = image;
+		
+		final int size = (int) (boxSize / (double)boxMini);
+		
+		for (int pX = 0; pX < size; pX++) {
+			for (int pY = 0; pY < size; pY++) {
+				final int p = (pY * size) + pX;
+				if (p < m.toZone.package_size) {
+					img = drawRF(true , image, boxMini, 
+							offsetX + boxMini * pX, 
+							offsetY + boxMini * pY,
+							cnX, cnY, p, m);
+					
+					img = drawRF(false, image, boxMini, 
+							offsetX + boxMini * pX, 
+							offsetY + boxMini * pY,
+							cnX, cnY, p, m);
+				}
+			}
+		}
 		
 		return img;
 	}
@@ -129,9 +146,9 @@ public class Utils {
 
 		        final float w;
 		        if (isPos) {
-		        	w = m.linksWeight(cnX, cnY, 0, l);
+		        	w = m.linksWeight(cnX, cnY, pN, l);
 		        } else {
-		        	w = m.inhibitoryWeight(cnX, cnY, 0, l);
+		        	w = m.inhibitoryWeight(cnX, cnY, pN, l);
 		        }
 				if (Float.isNaN(w) || Float.isInfinite(w)) {
 					R = 255;

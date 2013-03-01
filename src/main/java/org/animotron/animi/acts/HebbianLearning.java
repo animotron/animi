@@ -41,8 +41,6 @@ public class HebbianLearning extends Task {
 	
 	private float factor;
 	
-	private int p = 0;
-	
 	public HebbianLearning(CortexZoneComplex cz) {
 		super(cz);
 		
@@ -61,7 +59,7 @@ public class HebbianLearning extends Task {
     protected void release() {
     }
 	
-	private float adjust(final Mapping m, final int x, final int y) {
+	private float adjust(final Mapping m, final int x, final int y, final int p) {
 		float sum = 0;
 		
 		float sumQ2 = 0.0f;
@@ -87,7 +85,7 @@ public class HebbianLearning extends Task {
 	    return sumQ2;
 	}
 	
-	private void normalization(final Mapping m, final int x, final int y, final float sumQ2) {
+	private void normalization(final Mapping m, final int x, final int y, final int p, final float sumQ2) {
 		float norm = (float) Math.sqrt(sumQ2);
 	    for(int l = 0; l < m.ns_links; l++) {
 	    	
@@ -103,14 +101,21 @@ public class HebbianLearning extends Task {
 			return;
 		}
 		
-		Mapping m = cz.in_zones[0];
+		final Mapping m = cz.in_zones[0];
 		
-		final float sumQ2 = adjust(m, x, y);
+		for (int p = 0; p < cz.package_size; p++) {
 		
-		if (sumQ2 == 0 || Float.isInfinite(sumQ2) || Float.isNaN(sumQ2)) {
-			adjust(m, x, y);
+			if (cz.packageCols(x, y, p) <= 0) {
+				continue;
+			}
+
+			final float sumQ2 = adjust(m, x, y, p);
+			
+//			if (sumQ2 == 0 || Float.isInfinite(sumQ2) || Float.isNaN(sumQ2)) {
+//				adjust(m, x, y);
+//			}
+			
+			normalization(m, x, y, p, sumQ2);
 		}
-		
-		normalization(m, x, y, sumQ2);
 	}
 }

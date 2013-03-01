@@ -153,10 +153,15 @@ public class WinnerGetsAll extends Task {
 			return;
 		}
 		
-    	float[] cols = new float[sz.cols.length];
-    	System.arraycopy(sz.cols, 0, cols, 0, sz.cols.length);
+		_(cz, cz.width, cz.cols, !cz.isSingleReceptionField());
+	}
+	
+	public static void _(CortexZoneComplex cz, int width, float[] matrix, boolean inhibitory) {
+		
+    	float[] cols = new float[matrix.length];
+    	System.arraycopy(matrix, 0, cols, 0, matrix.length);
     	
-    	System.arraycopy(sz.cols, 0, sz.rememberCols, 0, sz.cols.length);
+//    	System.arraycopy(sz.cols, 0, sz.rememberCols, 0, sz.cols.length);
 //    	Arrays.fill(sz.rememberCols, 1);
 
     	//max is winner & winner gets all
@@ -164,7 +169,7 @@ public class WinnerGetsAll extends Task {
     	float max = 0;
         int cPos = -1;
 
-        final int linksNumber = cz.inhibitory_number_of_links;
+        final int linksNumber = cz.inhibitoryLinksSenapse.length;
     	
     	while (true) {
 	    	maxPos = -1;
@@ -182,17 +187,17 @@ public class WinnerGetsAll extends Task {
 	        	break;
 	        }
 	        
-	        if (cz.isSingleReceptionField()) {
-	        	Arrays.fill(sz.cols, 0);
-	        	Arrays.fill(sz.rememberCols, 0);
+	        if (!inhibitory) {
+	        	Arrays.fill(matrix, 0);
+//	        	Arrays.fill(sz.rememberCols, 0);
 
-	        	sz.cols[maxPos] = max;
-        		sz.rememberCols[maxPos] = max;
+	        	matrix[maxPos] = max;
+//        		sz.rememberCols[maxPos] = max;
         		return;
 	        }
 	        
-        	int maxY = (int)Math.floor(maxPos / cz.width);
-        	int maxX = maxPos - (maxY * cz.width);
+        	int maxY = (int)Math.floor(maxPos / width);
+        	int maxX = maxPos - (maxY * width);
         	
     		for (int l = 0; l < linksNumber; l++) {
     	    	final int xi = cz.inhibitoryLinksSenapse(maxX, maxY, l, 0);
@@ -201,7 +206,7 @@ public class WinnerGetsAll extends Task {
     	    	cPos = (yi * cz.width) + xi;
     	    	cols[cPos] = 0;
             	if (cPos != maxPos)
-            		sz.rememberCols[cPos] = 0;
+            		cz.rememberCols[cPos] = 0;
     		}
     		cols[maxPos] = 0;
     	}

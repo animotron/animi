@@ -154,7 +154,7 @@ public abstract class Task {
 	public void prepare() {
 	}
 
-	public abstract void gpuMethod(int x, int y);
+	public abstract void gpuMethod(final int x, final int y);
 	
 	public boolean isDone() {
 		return true;

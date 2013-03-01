@@ -32,8 +32,6 @@ import org.jocl.cl_kernel;
  */
 public class HebbianActivation extends Task {
 	
-	private int p = 0;
-	
 	public HebbianActivation(CortexZoneComplex cz) {
 		super(cz);
 	}
@@ -50,7 +48,7 @@ public class HebbianActivation extends Task {
     protected void release() {
     }
 	
-	private float activity(Mapping m, int x, int y) {
+	private float activity(final Mapping m, final int x, final int y, final int p) {
 		float sum = 0.0f;
 	    for(int l = 0; l < m.ns_links; l++) {
 	    	final int xi = m.linksSenapse(x, y, l, 0);
@@ -64,17 +62,19 @@ public class HebbianActivation extends Task {
 	    return sum;
 	}
 
-	public void gpuMethod(int x, int y) {
+	public void gpuMethod(final int x, final int y) {
 		
 		Mapping m = cz.in_zones[0];
 		
-		final float activity = activity(m, x, y);
-
-		cz.cols(activity, x, y);
-		
-		if (Float.isNaN(activity)) {
-			activity(m, x, y);
+		for (int p = 0; p < cz.package_size; p++) {
+			final float activity = activity(m, x, y, p);
+	
+			cz.packageCols(activity, x, y, p);
 		}
+		
+//		if (Float.isNaN(activity)) {
+//			activity(m, x, y);
+//		}
 //		
 //		if (activity != 0)
 //			System.out.println(""+x+" - "+y+" = "+activity);

@@ -35,8 +35,6 @@ public class AntiHebbianActivation extends Task {
 	@RuntimeParam(name = "k")
 	public float k = 1f;
 
-	private int p = 0;
-	
 	public AntiHebbianActivation(CortexZoneComplex cz) {
 		super(cz);
 	}
@@ -53,7 +51,7 @@ public class AntiHebbianActivation extends Task {
     protected void release() {
     }
 	
-	private float activity(Mapping m, int x, int y) {
+	private float activity(final Mapping m, final int x, final int y, final int p) {
 		float sum = 0.0f;
 	    for(int l = 0; l < m.ns_links; l++) {
 	    	final int xi = m.linksSenapse(x, y, l, 0);
@@ -67,17 +65,20 @@ public class AntiHebbianActivation extends Task {
 	    return sum * k;
 	}
 
-	public void gpuMethod(int x, int y) {
+	public void gpuMethod(final int x, final int y) {
 		
-		Mapping m = cz.in_zones[0];
+		final Mapping m = cz.in_zones[0];
 		
-		final float activity = cz.cols(x, y) - activity(m, x, y);
-
-		cz.cols(activity < 0 ? 0 : activity, x, y);
-		
-		if (Float.isNaN(activity)) {
-			activity(m, x, y);
+		for (int p = 0; p < cz.package_size; p++) {
+			
+			final float activity = cz.packageCols(x, y, p) - activity(m, x, y, p);
+	
+			cz.packageCols(activity < 0 ? 0 : activity, x, y, p);
 		}
+		
+//		if (Float.isNaN(activity)) {
+//			activity(m, x, y);
+//		}
 //		
 //		if (activity != 0)
 //			System.out.println(""+x+" - "+y+" = "+activity);

@@ -61,5 +61,21 @@ public class Activation extends Task {
 	public void gpuMethod(int x, int y) {
 		positive.gpuMethod(x, y);
 		negative.gpuMethod(x, y);
+		
+		int srcPos = ((y * cz.width) + x) * cz.package_size;
+		
+		float[] pack = new float[cz.package_size];
+		System.arraycopy(cz.packageCols, srcPos, pack, 0, cz.package_size);
+		
+		WinnerGetsAll._(cz, 0, pack, false);
+
+		System.arraycopy(pack, 0, cz.packageCols, srcPos, cz.package_size);
+		
+		for (int i = 0; i < pack.length; i++) {
+			if (pack[i] > 0) {
+				cz.cols(pack[i], x, y);
+				break;
+			}
+		}
 	}
 }

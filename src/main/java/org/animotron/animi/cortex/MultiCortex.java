@@ -128,7 +128,7 @@ public class MultiCortex implements Runnable {
     	
         z_in = new CortexZoneSimple("Зрительный нерв", this);
         
-        z_1st = new CortexZoneComplex("1й", this, 5, 5, //120, 120, //160, 120,
+        z_1st = new CortexZoneComplex("1й", this, 2, 2, //120, 120, //160, 120,
             new Mapping[]{
                 new Mapping(z_in, 100, 1, false) //7x7 (50)
             }

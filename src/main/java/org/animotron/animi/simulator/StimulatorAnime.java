@@ -56,7 +56,7 @@ public class StimulatorAnime extends AbstractStimulator {
         
         figures = new Figure[2];
 
-		int step = 42;
+		int step = 38;
         int[][] steps = new int[step*4 + 2][];
 
         int j = 0;

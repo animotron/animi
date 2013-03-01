@@ -18,6 +18,10 @@
 			<name>Evgeny Gazdovsky</name>
             <email>gazdovsky@gmail.com</email>
 		</developer>
+		<developer>
+			<name>Alexey Redozubov</name>
+            <email>aldrd@yahoo.com</email>
+		</developer>
 	</developers>
 	
 	<properties>

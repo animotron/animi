@@ -54,11 +54,18 @@ public class Learning extends Task {
 
 	@Override
     protected void release() {
-		positive.release();
-		negative.release();
     }
 	
+	public void prepare() {
+		positive.prepare();
+		negative.prepare();
+	}
+
 	public void gpuMethod(int x, int y) {
+		if (cz.cols(x, y) <= 0) {
+			return;
+		}
+		
 		positive.gpuMethod(x, y);
 		negative.gpuMethod(x, y);
 	}

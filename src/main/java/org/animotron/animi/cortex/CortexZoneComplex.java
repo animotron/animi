@@ -110,6 +110,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
      */
     public cl_mem cl_senapseOfinhibitoryLinks;
 
+
+    @InitParam(name="package_size")
+	public int package_size = 9;
+
     /**
      * The OpenCL memory object which store the activity for each package.
      */
@@ -137,9 +141,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public void freePackageCols(int value, int x, int y, int pack) {
     	freePackageCols[(((y * width) + x) * package_size) + pack] = value;
     }
-
-    @InitParam(name="package_size")
-	public int package_size = 1;
 
     CortexZoneComplex() {
 		super();
@@ -346,8 +347,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 	class ColumnRF_Image implements Imageable {
 		
-	    private int currentPackage = 0;
+		private int boxMini;
 		private int boxSize;
+		private int boxN;
 	    private BufferedImage image;
 	    
 	    private List<Point> watching = new ArrayList<Point>();
@@ -359,7 +361,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		public void init() {
 
-	        boxSize = 15;
+	        boxMini = 16;
+	        boxN = (int) Math.round( Math.sqrt(package_size) );
+	        boxSize = boxMini * boxN;
 
 			int maxX = width() * boxSize;
 	        int maxY = height() * boxSize;
@@ -388,12 +392,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 			for (int x = 0; x < width(); x++) {
 				for (int y = 0; y < height(); y++) {
-			        Utils.drawRF(
+					g.setColor(Color.DARK_GRAY);
+					g.draw3DRect(x*boxSize, y*boxSize, boxSize, boxSize, true);
+			        
+					Utils.drawRF(
 		        		image, 
 		        		boxSize,
+		        		boxMini,
 		        		x*boxSize, y*boxSize,
 		        		x, y,
-		        		currentPackage,
 		        		in_zones[0]
 		    		);
 				}
@@ -401,7 +408,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			
 			int textY = g.getFontMetrics(g.getFont()).getHeight();
 			int x = 0, y = textY;
-			g.drawString("count: "+count+"; package: "+currentPackage, x, y);
+			g.drawString("count: "+count, x, y);
 			
 //			currentPackage++;
 //			if (!(currentPackage < package_size))
