@@ -24,8 +24,6 @@ import static org.jocl.CL.*;
 
 import org.animotron.animi.*;
 import org.animotron.animi.acts.*;
-import org.animotron.animi.acts.old.Memorization;
-import org.animotron.animi.acts.old.Restructurization;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_mem;
@@ -66,18 +64,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
     Inhibitory inhibitory = new Inhibitory(this);
     WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
     
-    public cl_mem cl_tremor;
-	public int[] tremor = new int[] {0, 0};
-	
-	public int tremor(int step, int pos) {
-		return tremor[step * 2 + pos];
-	}
+//    @Params
+//    Restructurization restructorization = new Restructurization(this);
 
 //    @Params
-    Restructurization restructorization = new Restructurization(this);
-
-    @Params
-    public Memorization memorization = new Memorization(this);
+//    public Memorization memorization = new Memorization(this);
 
 	@InitParam(name="disper")
 	public double disper = 1.5;
@@ -239,16 +230,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
     	
 		if (mc.context == null) {
 			cl_freePackageCols = null;
-			cl_tremor = null;
 		} else {
 	        cl_freePackageCols = clCreateBuffer(
 	    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
 	    		freePackageCols.length * Sizeof.cl_int, Pointer.to(freePackageCols), null
-			);
-	
-	        cl_tremor = clCreateBuffer(
-	    		mc.context, CL_MEM_READ_ONLY| CL_MEM_USE_HOST_PTR, 
-	    		tremor.length * Sizeof.cl_int, Pointer.to(tremor), null
 			);
 		}
 		

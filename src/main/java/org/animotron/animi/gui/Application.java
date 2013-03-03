@@ -492,7 +492,7 @@ public class Application extends JFrame {
     }
     
     private synchronized void run() {
-    	if (cortexs != null) {
+    	if (cortexs != null && MODE <= STEP) {
 			cortexs.start();
     	}
     }

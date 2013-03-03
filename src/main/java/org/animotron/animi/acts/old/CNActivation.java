@@ -65,8 +65,8 @@ public class CNActivation extends Task {
     	super.setupArguments(kernel);
     	Mapping m = cz.in_zones[0];
         
-    	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_tremor));
-        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.tremor.length / 2}));
+//    	clSetKernelArg(kernel,  2, Sizeof.cl_mem, Pointer.to(cz.cl_tremor));
+//        clSetKernelArg(kernel,  3, Sizeof.cl_int, Pointer.to(new int[] {cz.tremor.length / 2}));
 
     	clSetKernelArg(kernel,  4, Sizeof.cl_mem, Pointer.to(cz.cl_packageCols));
     	
@@ -207,9 +207,9 @@ public class CNActivation extends Task {
 	    float maximum = 0.0f;
 		
 		//
-		for (int step = 0; step < cz.tremor.length / 2; step++) {
-			int shiftX = cz.tremor(step, 0);
-			int shiftY = cz.tremor(step, 1);
+//		for (int step = 0; step < cz.tremor.length / 2; step++) {
+			int shiftX = 0;//cz.tremor(step, 0);
+			int shiftY = 0;//cz.tremor(step, 1);
 			
 			boolean toRemember = true;
 			
@@ -268,7 +268,7 @@ public class CNActivation extends Task {
 			    
 //		    	cz.packageCols(1, x, y, p);
 			}
-		}
+//		}
 		
 		//вычисляем активность тремора
 	    int _cycleCols = 0;
