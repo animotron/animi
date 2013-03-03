@@ -221,18 +221,7 @@ public class Mapping {
                 nerv_links[lx][ly] = true;
 
 				// Создаем синаптическую связь
-//                for (int pN = 0; pN < toZone.package_size; pN++) {
-//                	linksWeight[
-//        	            (y * toZone.width * toZone.package_size * ns_links) + 
-//        	            (x * toZone.package_size * ns_links) + (pN * ns_links) + i] = w;
-//                }
-                
                 linksSenapse(lx, ly, x, y, i);
-//        		final int offset = ((toZone.width * y) + x) * 2 * ns_links;
-//                
-//                linksSenapse[offset + i*2 +0] = lx;
-//                linksSenapse[offset + i*2 +1] = ly;
-//				new LinkQ(zone.getCol(lx, ly), toZone.col[x][y], (1 / (double)ns_links) / norm, fX, fY, toZone.speed);
             } else {
             	if (debug) System.out.print("!");
             }

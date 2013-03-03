@@ -44,7 +44,7 @@ public class WinnerGetsAll extends Task {
 	
 	public static void _(CortexZoneComplex cz, Matrix source, boolean inhibitory) {
 		
-		Matrix cols = new Matrix(source);
+		Matrix cols = source.copy();
     	
     	//max is winner & winner gets all
     	int[] maxPos;

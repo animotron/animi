@@ -189,6 +189,10 @@ public class Utils {
 		
 		final CortexZoneSimple sz = m.frZone;
 		
+		if (sz.cols.get(cnX, cnY) > 0) {
+			return image;
+		}
+				
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
         	final int xi = m.linksSenapse(cnX, cnY, l, 0);
@@ -203,7 +207,7 @@ public class Utils {
         			&& pY < image.getHeight()) {
 
 				int c = calcGrey(image, pX, pY);
-				c += 255 * sz.cols.get(cnX, cnY) * m.linksWeight.get(cnX, cnY, 0, l);
+				c += 255 * sz.cols.get(cnX, cnY) * m.linksWeight.get(cnX, cnY, 0, l) * 1000;
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, create_rgb(255, c, c, c));
         	}

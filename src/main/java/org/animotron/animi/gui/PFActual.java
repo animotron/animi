@@ -455,7 +455,5 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 	@Override
 	public void refreshImage() {
-		// TODO Auto-generated method stub
-		
 	}
 }

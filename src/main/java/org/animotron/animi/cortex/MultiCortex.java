@@ -118,8 +118,6 @@ public class MultiCortex implements Runnable {
 		}
     }
     
-    private int numDevices;
-
     public void addTask(Task task) throws InterruptedException {
 		task.execute();
     }

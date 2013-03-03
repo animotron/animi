@@ -24,13 +24,8 @@ import static org.animotron.animi.cortex.MultiCortex.*;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.lang.reflect.Field;
-import java.util.Vector;
 
 import javax.swing.*;
 
@@ -284,29 +279,29 @@ public class PFInitialization extends JInternalFrame {
 		}
 	}
 
-	private JComboBox<String> addCombo(GridBagConstraints gbc, String name, Vector<String> items) {
-
-        final JComboBox<String> combo = new JComboBox<String>(items);
-        
-        //hack to select "JAVA" by default
-        String prefered = "JAVA"; //"Intel";
-        for (int i = 0; i < items.size(); i++) {
-        	if (items.get(i).contains(prefered)) {
-                combo.setSelectedIndex(i);
-                break;
-        	}
-        }
-		
-		JLabel label = new JLabel(name);
-
-        gbc.gridy++;
-        panel.add(label, gbc);
-
-        gbc.gridx++;
-        panel.add(combo, gbc);
-        
-        return combo;
-	}
+//	private JComboBox<String> addCombo(GridBagConstraints gbc, String name, Vector<String> items) {
+//
+//        final JComboBox<String> combo = new JComboBox<String>(items);
+//        
+//        //hack to select "JAVA" by default
+//        String prefered = "JAVA"; //"Intel";
+//        for (int i = 0; i < items.size(); i++) {
+//        	if (items.get(i).contains(prefered)) {
+//                combo.setSelectedIndex(i);
+//                break;
+//        	}
+//        }
+//		
+//		JLabel label = new JLabel(name);
+//
+//        gbc.gridy++;
+//        panel.add(label, gbc);
+//
+//        gbc.gridx++;
+//        panel.add(combo, gbc);
+//        
+//        return combo;
+//	}
 
 	private String getName(Field f) {
 		return f.getName();

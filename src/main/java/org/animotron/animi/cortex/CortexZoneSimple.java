@@ -59,32 +59,32 @@ public class CortexZoneSimple implements Layer {
     
     int neighborLearningStage = 0;
     public void history() {
-    	if (neighborLearningStage >= 2) {
-    		neighborLearningStage--;
-    		return;
-    	}
-    	switch (neighborLearningStage) {
-		case 1:
-    		neighborLearningStage--;
-    		neighborLearning.fill(0);
-			
-			break;
-		case 0:
+//    	if (neighborLearningStage >= 2) {
+//    		neighborLearningStage--;
+//    		return;
+//    	}
+//    	switch (neighborLearningStage) {
+//		case 1:
+//    		neighborLearningStage--;
+//    		neighborLearning.fill(0);
+//			
+//			break;
+//		case 0:
 //    		for (int i = 0; i < cols.length; i++) {
 //    			if (cols[i] > 0) {
 //    				neighborLearningStage = 1;
 //    				break;
 //    			}
 //        	}
-    		if (neighborLearningStage == 1) {
-        		neighborLearning.copy(cols);
-        		neighborLearningStage = 3;
-    		}
-			
-			break;
-		default:
-			break;
-		}
+//    		if (neighborLearningStage == 1) {
+//        		neighborLearning.copy(cols);
+//        		neighborLearningStage = 3;
+//    		}
+//			
+//			break;
+//		default:
+//			break;
+//		}
     }
     
     public Matrix rememberCols;

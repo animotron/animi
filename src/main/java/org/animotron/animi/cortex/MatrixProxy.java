@@ -30,7 +30,8 @@ public class MatrixProxy extends Matrix {
 	
 	Matrix matrix;
 	
-	int offset;
+	int[] fixeDimensions;
+	
 	int length;
 	
 	protected MatrixProxy(Matrix other, int ... dims) {
@@ -39,31 +40,35 @@ public class MatrixProxy extends Matrix {
 			throw new IllegalArgumentException();
 		}
 		
+		fixeDimensions = new int[dims.length];
+		System.arraycopy(dims, 0, fixeDimensions, 0, dims.length);
+		
 		length = 1;
-		
-		offset = 0;
-		for (int i = dims.length - 1; i >= 0; i--) {
-			offset = (offset + dims[i]) * other.dimensions[i];
-		}
-		
-		dimensions = new int[other.dimensions.length - dims.length];
-		for (int i = dims.length; i < other.dimensions.length; i++) {
+		for (int i = fixeDimensions.length; i < other.dimensions.length; i++) {
 			length *= other.dimensions[i];
-
-			dimensions[dims.length - i] = other.dimensions[i];
 		}
-
+		
 		matrix = other;
 	}
 	
 	public void init(Value value) {
-		for (int i = 0; i < length; i++) {
-			matrix.data[offset + i] = value.get();
-		}
+		throw new IllegalArgumentException();
+		
+//		for (int i = 0; i < length; i++) {
+//			matrix.data[offset + i] = value.get();
+//		}
 	}
 
 	protected int index(int ... dims) {
-		return offset + super.index(dims);
+		if (dims.length == matrix.dimensions.length) {
+			return matrix.index(dims);
+		}
+
+		int[] ds = new int[matrix.dimensions.length];
+		System.arraycopy(fixeDimensions, 0, ds, 0, fixeDimensions.length);
+		System.arraycopy(dims, 0, ds, fixeDimensions.length, dims.length);
+		
+		return matrix.index(ds);
 	}
 
 	public float get(int ... dims) {
@@ -74,79 +79,76 @@ public class MatrixProxy extends Matrix {
 		matrix.data[index(dims)] = value;
 	}
 	
-	public void fill(float value) {
-		for (int i = 0; i < length; i++) {
-			matrix.data[offset + i] = value;
-		}
+	public void fill(final float value) {
+		iterate(new Function() {
+			@Override
+			public void call(int[] pos) {
+				matrix.set(value, pos);
+			}
+		});
 	}
 	
 	public int[] max() {
-    	int maxPos = -1;
-    	float max = 0;
-    	for (int pos = 0; pos < length; pos++) {
-    		if (matrix.data[offset + pos] > max) {
-    			maxPos = pos;
-    			max = data[offset + pos];
-    		}
-    	}
-    	
-    	if (maxPos == -1) {
-    		return null;
-//    		throw new IllegalArgumentException("Maximum value can't be found.");
-    	}
-    	
-    	int[] dims = new int[dimensions.length];
-    	
-		System.out.print("Max "+maxPos+" ");
+		PossitionHolder function = new PossitionHolder() {
+	     	
+			int[] maxPos = new int[matrix.dimensions.length];
+	    	float max = 0;
+	    	
+	    	public void call(int[] pos) {
+	    		if (matrix.get(pos) > max) {
+	    			System.arraycopy(pos, 0, maxPos, 0, pos.length);
+	    			max = matrix.get(pos);
+	    		}
+	    	}
 
-    	int prev = 0, factor = 1;
-    	for (int i = dimensions.length - 1; i > 0; i--) {
-    		factor = 1;
-    		for (int z = 0; z < i; z++) {
-    			factor *= dimensions[z];
-    		}
-
-			dims[i] = prev = (int)Math.floor(maxPos / factor);
-			maxPos -= (prev * factor);
-    	}
-    	dims[0] = maxPos;
-    	//maxPos must be zero
+			@Override
+			public int[] getPossition() {
+				return maxPos;
+			}
+		};
     	
-    	System.out.println(Arrays.toString(dims));
-    	return dims;
+		iterate(function);
+    	
+    	return function.getPossition();
 	}
 	
-	public void copy(Matrix source) {
-		if (source.dimensions.length != dimensions.length) {
-			throw new IndexOutOfBoundsException("Matrix have "+dimensions.length+" dimensions, but get "+source.dimensions.length+".");
-		}
-		
-		for (int i = 0; i < dimensions.length; i++) {
-			if (source.dimensions[i] != dimensions[i]) {
-				throw new IndexOutOfBoundsException("Matrix's "+i+" dimension have "+dimensions[i]+" elements, but source dimension have "+source.dimensions[i]+" element.");
-			}
-		}
-
-		System.arraycopy(source.data, 0, matrix.data, offset, length);
-	}
-
-	public void copy(Matrix source, int ... dims) {
-		//XXX: checks?
-		
-		int _offset = 0;
-		for (int i = dims.length - 1; i >= 0; i--) {
-			_offset = (_offset + dims[i]) * dimensions[i];
-		}
-		
-		int length = 1;
-		for (int i = dims.length; i < dimensions.length; i++) {
-			length *= dimensions[i];
-		}
-
-		System.arraycopy(source.data, 0, data, offset + _offset, length);
+	public MatrixProxy copy() {
+		return new MatrixProxy(matrix.copy(), fixeDimensions);
 	}
 
 	public MatrixProxy sub(int ... dims) {
-		return new MatrixProxy(this, dims);
+		throw new IllegalArgumentException();
 	}
+	
+	private void iterate(Function function) {
+    	int[] pos = new int[matrix.dimensions.length];
+    	Arrays.fill(pos, 0);
+    	System.arraycopy(fixeDimensions, 0, pos, 0, fixeDimensions.length);
+
+    	function.call(pos);
+
+		float value = 0;
+    	for (int i = 1; i < length; i++) {
+    		for (int dim = matrix.dimensions.length - 1; dim >= fixeDimensions.length; dim--) {
+        		value = ++pos[dim];
+        		
+        		if (value >= matrix.dimensions[dim]) {
+        			pos[dim] = 0;
+        			continue;
+        		}
+        		break;
+    		}
+
+        	function.call(pos);
+    	}
+	}
+	
+	interface Function {
+		public void call(int[] pos);
+	}
+	
+	interface PossitionHolder extends Function {
+		public int [] getPossition();
+	}
+
 }

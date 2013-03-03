@@ -398,7 +398,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	
 			for (int x = 0; x < width(); x++) {
 				for (int y = 0; y < height(); y++) {
-
 					Utils.drawRF(
 		        		image, 
 		        		x, y, 
@@ -439,12 +438,12 @@ public class CortexZoneComplex extends CortexZoneSimple {
         //Такт 1. Активация колонок (узнавание)
     	performTask(cnActivation);
 
-		debug("before inhibitory");
+//		debug("before inhibitory");
 
 		performTask(winnerGetsAll);
 
 //		performTask(inhibitory);
-		debug("after inhibitory");
+//		debug("after inhibitory");
 
 		if (isLearning()) {
     	    //Такт 2. Запоминание и переоценка параметров стабильности нейрона
@@ -453,7 +452,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     		count++;
     	}
 		
-		history();
+//		history();
     }
     
     private void performTask(Task task) {
@@ -524,7 +523,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		return singleReceptionField;
 	}
 	
-	private void debug(String comment) {
+	public void debug(String comment) {
 		System.out.println(comment);
 		
 		DecimalFormat df = new DecimalFormat("0.00000");

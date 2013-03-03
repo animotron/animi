@@ -20,6 +20,7 @@
  */
 package org.animotron.animi.cortex;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 /**
@@ -109,7 +110,7 @@ public class Matrix {
     	
     	int[] dims = new int[dimensions.length];
     	
-		System.out.print("Max "+maxPos+" ");
+//		System.out.print("Max "+maxPos+" ");
 
     	int prev = 0, factor = 1;
     	for (int i = dimensions.length - 1; i > 0; i--) {
@@ -124,23 +125,28 @@ public class Matrix {
     	dims[0] = maxPos;
     	//maxPos must be zero
     	
-    	System.out.println(Arrays.toString(dims));;
+//    	System.out.println(Arrays.toString(dims));;
     	return dims;
 	}
 	
-	public void copy(Matrix source) {
-		if (source.dimensions.length != dimensions.length) {
-			throw new IndexOutOfBoundsException("Matrix have "+dimensions.length+" dimensions, but get "+source.dimensions.length+".");
-		}
-		
-		for (int i = 0; i < dimensions.length; i++) {
-			if (source.dimensions[i] != dimensions[i]) {
-				throw new IndexOutOfBoundsException("Matrix's "+i+" dimension have "+dimensions[i]+" elements, but source dimension have "+source.dimensions[i]+" element.");
-			}
-		}
-
-		System.arraycopy(source.data, 0, data, 0, data.length);
+	public Matrix copy() {
+		return new Matrix(this);
+//		System.arraycopy(source.data, 0, data, 0, data.length);
 	}
+
+//	public void copy(Matrix source) {
+//		if (source.dimensions.length != dimensions.length) {
+//			throw new IndexOutOfBoundsException("Matrix have "+dimensions.length+" dimensions, but get "+source.dimensions.length+".");
+//		}
+//		
+//		for (int i = 0; i < dimensions.length; i++) {
+//			if (source.dimensions[i] != dimensions[i]) {
+//				throw new IndexOutOfBoundsException("Matrix's "+i+" dimension have "+dimensions[i]+" elements, but source dimension have "+source.dimensions[i]+" element.");
+//			}
+//		}
+//
+//		System.arraycopy(source.data, 0, data, 0, data.length);
+//	}
 
 //	public void copy(Matrix source, int ... dims) {
 //		//XXX: checks?
@@ -160,5 +166,50 @@ public class Matrix {
 
 	public MatrixProxy sub(int ... dims) {
 		return new MatrixProxy(this, dims);
+	}
+
+	public void debug(String comment) {
+		System.out.println(comment);
+		
+		int[] pos = new int[dimensions.length];
+		Arrays.fill(pos, 0);
+		
+		int value;
+		
+		DecimalFormat df = new DecimalFormat("0.00000");
+		
+		System.out.print(Arrays.toString(pos));
+		System.out.print(" ");
+		System.out.print(df.format(get(pos)));
+		System.out.print(" ");
+		
+		boolean print = false;
+
+    	for (int i = 1; i < data.length; i++) {
+    		for (int dim = dimensions.length - 1; dim >= 0; dim--) {
+        		value = ++pos[dim];
+        		
+        		if (value >= dimensions[dim]) {
+        			pos[dim] = 0;
+        			
+        			if (dim == dimensions.length - 1) {
+        				print = true;
+        			}
+        			continue;
+        		}
+        		break;
+    		}
+    		
+    		if (print) {
+    			print = false;
+				System.out.println();
+				System.out.print(Arrays.toString(pos));
+				System.out.print(" ");
+    		}
+
+			System.out.print(df.format(get(pos)));
+			System.out.print(" ");
+		}
+    	System.out.println();
 	}
 }
