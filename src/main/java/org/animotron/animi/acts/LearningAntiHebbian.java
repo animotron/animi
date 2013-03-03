@@ -22,15 +22,13 @@ package org.animotron.animi.acts;
 
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
-import org.jocl.cl_command_queue;
-import org.jocl.cl_kernel;
 
 /**
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class AntiHebbianLearning extends Task {
+public class LearningAntiHebbian extends Task {
 	
 	@RuntimeParam(name = "count")
 	public int count = 10000;
@@ -40,24 +38,12 @@ public class AntiHebbianLearning extends Task {
 	
 	private float factor;
 	
-	public AntiHebbianLearning(CortexZoneComplex cz) {
+	public LearningAntiHebbian(CortexZoneComplex cz) {
 		super(cz);
 		
 		factor = (float) (ny / Math.pow(2, cz.count / count));
 	}
 
-	@Override
-    protected void setupArguments(cl_kernel kernel) {
-	}
-    
-	@Override
-    protected void enqueueReads(cl_command_queue commandQueue) {
-    }
-
-	@Override
-    protected void release() {
-    }
-	
 	private float adjust(final Mapping m, final int x, final int y, final int p) {
 		float sum = 0;
 		
@@ -68,11 +54,11 @@ public class AntiHebbianLearning extends Task {
 	        
 	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
 	    		
-	    		sum += m.frZone.cols(xi, yi);
+	    		sum += m.frZone.cols.get(xi, yi);
 	    		
-	    		final float q = m.inhibitoryWeight(x, y, p, l) + (1 - m.frZone.cols(xi, yi)) * m.toZone.cols(x, y) * factor;
+	    		final float q = m.inhibitoryWeight.get(x, y, p, l) + (1 - m.frZone.cols.get(xi, yi)) * m.toZone.cols.get(x, y) * factor;
 	    		
-	    		m.inhibitoryWeight(q, x, y, p, l);
+	    		m.inhibitoryWeight.set(q, x, y, p, l);
 	    		
 	    		sumQ2 += q * q;
 	        }
@@ -88,21 +74,21 @@ public class AntiHebbianLearning extends Task {
 		float norm = (float) Math.sqrt(sumQ2);
 	    for(int l = 0; l < m.ns_links; l++) {
 	    	
-	    	final float pos = m.linksWeight(x, y, p, l);
-	    	final float neg = m.inhibitoryWeight(x, y, p, l) / norm;
+	    	final float pos = m.linksWeight.get(x, y, p, l);
+	    	final float neg = m.inhibitoryWeight.get(x, y, p, l) / norm;
 	    	if (pos >= neg) {
-	    		m.linksWeight(pos - neg, x, y, p, l);
-		    	m.inhibitoryWeight(0, x, y, p, l);
+	    		m.linksWeight.set(pos - neg, x, y, p, l);
+		    	m.inhibitoryWeight.set(0, x, y, p, l);
 	    	} else {
-	    		m.linksWeight(0, x, y, p, l);
-		    	m.inhibitoryWeight(neg - pos, x, y, p, l);
+	    		m.linksWeight.set(0, x, y, p, l);
+		    	m.inhibitoryWeight.set(neg - pos, x, y, p, l);
 	    	}
 	    }
 	}
 
 	public void gpuMethod(final int x, final int y) {
 		
-		if (cz.cols(x, y) <= 0) {
+		if (cz.cols.get(x, y) <= 0) {
 			return;
 		}
 
@@ -110,7 +96,7 @@ public class AntiHebbianLearning extends Task {
 		
 		for (int p = 0; p < cz.package_size; p++) {
 		
-			if (cz.packageCols(x, y, p) <= 0) {
+			if (cz.packageCols.get(x, y, p) <= 0) {
 				continue;
 			}
 			
@@ -123,4 +109,8 @@ public class AntiHebbianLearning extends Task {
 			normalization(m, x, y, p, sumQ2);
 		}
 	}
+	
+	@Override
+    protected void release() {
+    }
 }

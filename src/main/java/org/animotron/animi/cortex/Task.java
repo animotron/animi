@@ -20,15 +20,6 @@
  */
 package org.animotron.animi.cortex;
 
-import static org.jocl.CL.*;
-
-import org.jocl.Pointer;
-import org.jocl.Sizeof;
-import org.jocl.cl_command_queue;
-import org.jocl.cl_event;
-import org.jocl.cl_kernel;
-import org.jocl.cl_mem;
-
 /**
  * Abstract base class for tasks that refer to a region of the Mandelbrot 
  * set. The processColors method of this class may be implemented to 
@@ -42,8 +33,6 @@ public abstract class Task {
 	protected CortexZoneSimple sz;
 	protected CortexZoneComplex cz = null;
 	
-    protected cl_mem outputMem;
-    
     /**
      * Creates a new Task that computes.
      * 
@@ -55,85 +44,6 @@ public abstract class Task {
     		this.cz = (CortexZoneComplex) sz;
 		}
     }
-    
-    /**
-     * Set up the OpenCL arguments for this task for the given kernel
-     * 
-     * @param kernel The OpenCL kernel for which the arguments will be set
-     */
-    protected void setupArguments(cl_kernel kernel) {
-        clSetKernelArg(kernel,  0, Sizeof.cl_mem, Pointer.to(sz.cl_cols));
-        clSetKernelArg(kernel,  1, Sizeof.cl_int, Pointer.to(new int[] {sz.width}));
-    }
-    
-    /**
-     * Will execute this task with the given kernel on the given 
-     * command queue
-     * 
-     * @param kernel The kernel
-     * @param commandQueue The command queue
-     */
-    public void execute(cl_kernel kernel, cl_command_queue commandQueue) {
-//        System.out.println(""+this.getClass().getName()+" "+sz.width+":"+sz.height);
-        
-        setupArguments(kernel);
-        
-        cl_event events[] = new cl_event[] { new cl_event() };
-        
-        long globalWorkSize[] = new long[2];
-        globalWorkSize[0] = sz.width;
-        globalWorkSize[1] = sz.height;
-
-        clEnqueueNDRangeKernel(
-            commandQueue, 
-            kernel, 2, null, 
-            globalWorkSize, null, 0, null, events[0]);
-        
-        clWaitForEvents(1, events);
-        
-//        Utils.printBenchmarkInfo("Event calc", events[0]);
-        
-        enqueueReads(commandQueue);
-
-//        clWaitForEvents(1, events);
-        
-//        Utils.printBenchmarkInfo("Reading", events[0]);
-
-//        cz.cols = result;
-        
-//        System.out.println(this.getClass().getName());
-//        System.out.println(Arrays.toString(cz.cols));
-
-//        convertIterationsToColors(result);
-//        processColors(sz.cols);
-        
-        release();
-        
-        clReleaseEvent(events[0]);
-    }
-    
-    protected void enqueueReads(cl_command_queue commandQueue) {
-        cl_event events[] = new cl_event[] { new cl_event() };
-
-    	enqueueReads(commandQueue, events);
-    	
-    	clWaitForEvents(1, events);
-    	
-        clReleaseEvent(events[0]);
-    }
-
-    protected void enqueueReads(cl_command_queue commandQueue, cl_event events[]) {
-        // Read the contents of the cols memory object
-    	Pointer target = Pointer.to(sz.cols);
-    	clEnqueueReadBuffer(
-			commandQueue, sz.cl_cols, 
-			CL_TRUE, 0, sz.cols.length * Sizeof.cl_float, 
-			target, 0, null, events[0]);
-
-//    	System.out.println("cols "+Utils.debug(sz.cols));
-	}
-
-	protected abstract void release();
     
 //    protected void processColors(float array[]) {
 //    	cz.refreshImage();
@@ -151,12 +61,13 @@ public abstract class Task {
 		} while (!isDone());
 	}
 	
-	public void prepare() {
-	}
+	public void prepare() {}
 
 	public abstract void gpuMethod(final int x, final int y);
 	
 	public boolean isDone() {
 		return true;
 	}
+
+	protected abstract void release();
 }

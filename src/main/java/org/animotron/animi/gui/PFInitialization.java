@@ -20,7 +20,6 @@
  */
 package org.animotron.animi.gui;
 
-import static org.jocl.CL.*;
 import static org.animotron.animi.cortex.MultiCortex.*;
 
 import java.awt.GridBagConstraints;
@@ -51,8 +50,8 @@ public class PFInitialization extends JInternalFrame {
 	
 	JPanel panel;
 	
-	JComboBox<String> platform;
-	JComboBox<String> type;
+//	JComboBox<String> platform;
+//	JComboBox<String> type;
 	
 	boolean readOnly;
 
@@ -79,16 +78,16 @@ public class PFInitialization extends JInternalFrame {
         gbc.gridy++;
         gbc.gridx = 0;
 
-        platform = addCombo(gbc, "Platform: ", new Vector<String>( mc.platforms.keySet() ));
-        
-        gbc.gridy++;
-        gbc.gridx = 0;
+//        platform = addCombo(gbc, "Platform: ", new Vector<String>( mc.platforms.keySet() ));
+//        
+//        gbc.gridy++;
+//        gbc.gridx = 0;
 
-        Vector<String> types = new Vector<String>();
-        types.add("JAVA");
-        types.add("CPU");
-        types.add("GPU");
-        type = addCombo(gbc, "Device type: ", types);
+//        Vector<String> types = new Vector<String>();
+//        types.add("JAVA");
+//        types.add("CPU");
+//        types.add("GPU");
+//        type = addCombo(gbc, "Device type: ", types);
         
         scan(gbc, null, mc);
 		
@@ -99,14 +98,15 @@ public class PFInitialization extends JInternalFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (MODE <= STEP) {
-					long _type_ = CL_DEVICE_TYPE_CPU;
-					if ("GPU".equals( type.getSelectedItem() )) {
-						_type_ = CL_DEVICE_TYPE_GPU;
-					} else if ("JAVA".equals( type.getSelectedItem() )) {
-						_type_ = CL_DEVICE_TYPE_DEFAULT;
-												
-					}
-					app.initialize(mc.platforms.get(platform.getSelectedItem()), _type_);
+//					long _type_ = CL_DEVICE_TYPE_CPU;
+//					if ("GPU".equals( type.getSelectedItem() )) {
+//						_type_ = CL_DEVICE_TYPE_GPU;
+//					} else if ("JAVA".equals( type.getSelectedItem() )) {
+//						_type_ = CL_DEVICE_TYPE_DEFAULT;
+//												
+//					}
+//					app.initialize(mc.platforms.get(platform.getSelectedItem()), _type_);
+					app.initialize();
 					app.closeFrame(PFInitialization.this);
 				}
 			}

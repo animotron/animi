@@ -20,13 +20,8 @@
  */
 package org.animotron.animi.cortex;
 
-import static org.jocl.CL.*;
-
 import org.animotron.animi.*;
 import org.animotron.animi.acts.*;
-import org.jocl.Pointer;
-import org.jocl.Sizeof;
-import org.jocl.cl_mem;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -55,7 +50,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 	@Params
 	public Activation cnActivation = new Activation(this);
-//	public CNActivation cnActivation = new CNActivation(this);
 
 	@Params
 	public Learning cnLearning = new Learning(this);
@@ -64,12 +58,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
     Inhibitory inhibitory = new Inhibitory(this);
     WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
     
-//    @Params
-//    Restructurization restructorization = new Restructurization(this);
-
-//    @Params
-//    public Memorization memorization = new Memorization(this);
-
 	@InitParam(name="disper")
 	public double disper = 1.5;
 
@@ -96,43 +84,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	/** Number of synaptic connections of the complex neuron **/
 	public int nsc_links;
 	
-    /**
-     * The OpenCL memory object which store the neuron links for each zone.
-     */
-    public cl_mem cl_senapseOfinhibitoryLinks;
-
-
     @InitParam(name="package_size")
 	public int package_size = 9;
 
-    /**
-     * The OpenCL memory object which store the activity for each package.
-     */
-    public cl_mem cl_packageCols;
-    public float packageCols[];
+    public Matrix packageCols;
     
-    public float packageCols(int x, int y, int p) {
-    	return packageCols[(((y * width) + x) * package_size) + p];
-    }
-
-    public void packageCols(float value, int x, int y, int p) {
-    	packageCols[(((y * width) + x) * package_size) + p] = value;
-    }
-
-    /**
-     * The OpenCL memory object which store the .... package of neuron.
-     */
-    public cl_mem cl_freePackageCols;
-    public int freePackageCols[];
-
-    public int freePackageCols(int x, int y, int pack) {
-    	return freePackageCols[(((y * width) + x) * package_size) + pack];
-    }
-    
-    public void freePackageCols(int value, int x, int y, int pack) {
-    	freePackageCols[(((y * width) + x) * package_size) + pack] = value;
-    }
-
     CortexZoneComplex() {
 		super();
     }
@@ -145,8 +101,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		
 		this.in_zones = in_zones;
     }
-	
-    public cl_mem inhibitoryLinks;
 	
     /**
      * Initializes the OpenCL memory object and the BufferedImage which will later receive the pixels
@@ -203,40 +157,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			}
 		}
 		
-		if (mc.context == null) {
-			cl_senapseOfinhibitoryLinks = null;
-			
-		} else {
-			cl_senapseOfinhibitoryLinks = 
-					clCreateBuffer(
-						mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-						inhibitoryLinksSenapse.length * Sizeof.cl_int, Pointer.to(inhibitoryLinksSenapse), null);
-		}
-			
-    	packageCols = new float[width * height * package_size];
-    	Arrays.fill(packageCols, 0);
+    	packageCols = new Matrix(width, height, package_size);
+    	packageCols.fill(0);
     	
-		if (mc.context == null) {
-			cl_packageCols = null;
-		} else {
-	        cl_packageCols = clCreateBuffer(
-	    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-	    		packageCols.length * Sizeof.cl_float, Pointer.to(packageCols), null
-			);
-		}
-		
-    	freePackageCols = new int[width * height * package_size];
-    	Arrays.fill(freePackageCols, 0);
-    	
-		if (mc.context == null) {
-			cl_freePackageCols = null;
-		} else {
-	        cl_freePackageCols = clCreateBuffer(
-	    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-	    		freePackageCols.length * Sizeof.cl_int, Pointer.to(freePackageCols), null
-			);
-		}
-		
         if (CRF != null) {
         	CRF.init();
         }
@@ -540,7 +463,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        mc.finish();
+//        mc.finish();
     }
     
 	public void save(Writer out) throws IOException {
@@ -607,7 +530,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		DecimalFormat df = new DecimalFormat("0.00000");
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				System.out.print(df.format(cols(x, y)));
+				System.out.print(df.format(cols.get(x, y)));
 				System.out.print(" ");
 			}
 			System.out.println();

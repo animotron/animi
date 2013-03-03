@@ -22,7 +22,6 @@ package org.animotron.animi.cortex;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.util.Arrays;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -46,9 +45,9 @@ public class RetinaZone extends Task {
     
     float XScale, YScale;
 	
-	int history[] = null;
+	Matrix history = null;
 	
-	int input[];
+	int[] input;
 	int inputSizeX, inputSizeY;
 	
 	OnOffMatrix matrix;
@@ -65,9 +64,9 @@ public class RetinaZone extends Task {
 	
 	public void setInput(final BufferedImage image) {
 		
-		if (history == null || history.length != sz.cols.length) {
-			history = new int[sz.cols.length];
-			Arrays.fill(history, 0);
+		if (history == null) {// || history.length != sz.cols.length) {
+			history = new Matrix(sz.cols);
+			history.fill(0);
 		}
 		
 		XScale = (image.getWidth()  - (retina.worldSafeZone() * 2)) / (float)sz.width;
@@ -95,16 +94,8 @@ public class RetinaZone extends Task {
 		return input[(y * inputSizeX) + x];
 	}
 
-	private int history(int x, int y) {
-		return history[(y * sz.width) + x];
-    }
-
-	private void history(int value, int x, int y) {
-		history[(y * sz.width) + x] = value;
-    }
-
 	private void output(float value, int x, int y) {
-    	sz.cols(value, x, y);
+    	sz.cols.set(value, x, y);
     }
 	
 	private float gray(final int x, final int y) {
@@ -188,7 +179,7 @@ public class RetinaZone extends Task {
         	}
     	}
     	if (numInCenter == 0 || numInPeref == 0) {
-			history(0, x, y);
+			history.set(0, x, y);
 			output(0, x, y);
 			return;
     	}
@@ -210,7 +201,7 @@ public class RetinaZone extends Task {
 
 		//if no stimuli, check if opposite was 
 		if (value == 0) {
-			if (history(x, y) == 1 && oppositeStimuli == 0) {
+			if (history.get(x, y) == 1 && oppositeStimuli == 0) {
 				value = 1f; //0.3f;
 			}
 		} else {
@@ -221,6 +212,6 @@ public class RetinaZone extends Task {
 		
 		output(value, x, y);
 
-		history(oppositeStimuli, x, y);
+		history.set(oppositeStimuli, x, y);
 	}
 }

@@ -20,12 +20,8 @@
  */
 package org.animotron.animi.acts;
 
-import java.util.Arrays;
-
 import org.animotron.animi.Params;
 import org.animotron.animi.cortex.*;
-import org.jocl.cl_command_queue;
-import org.jocl.cl_kernel;
 
 /**
  * 
@@ -35,43 +31,35 @@ import org.jocl.cl_kernel;
 public class Learning extends Task {
 	
 	@Params
-	private HebbianLearning positive;
+	private LearningHebbian positive;
 	@Params
-	private AntiHebbianLearning negative;
+	private LearningAntiHebbian negative;
 	
 	public Learning(CortexZoneComplex cz) {
 		super(cz);
 		
-		positive = new HebbianLearning(cz);
-		negative = new AntiHebbianLearning(cz);
+		positive = new LearningHebbian(cz);
+		negative = new LearningAntiHebbian(cz);
 	}
 
-	@Override
-    protected void setupArguments(cl_kernel kernel) {
-	}
-    
-	@Override
-    protected void enqueueReads(cl_command_queue commandQueue) {
-    }
-
-	@Override
-    protected void release() {
-    }
-	
 	public void prepare() {
 		positive.prepare();
 		negative.prepare();
 	}
 
 	public void gpuMethod(int x, int y) {
-		if (cz.cols(x, y) <= 0 && cz.neighborLearning(x, y) > 0) {
+		if (cz.cols.get(x, y) <= 0 && cz.neighborLearning.get(x, y) > 0) {
 			return;
 		}
 		
-		Arrays.fill(cz.neighborLearning, 1);
-		cz.neighborLearning(0, x, y);
+		cz.neighborLearning.fill(1);
+		cz.neighborLearning.set(0, x, y);
 		
 		positive.gpuMethod(x, y);
 		negative.gpuMethod(x, y);
 	}
+
+	@Override
+    protected void release() {
+    }
 }

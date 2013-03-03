@@ -146,9 +146,9 @@ public class Utils {
 
 		        final float w;
 		        if (isPos) {
-		        	w = m.linksWeight(cnX, cnY, pN, l);
+		        	w = m.linksWeight.get(cnX, cnY, pN, l);
 		        } else {
-		        	w = m.inhibitoryWeight(cnX, cnY, pN, l);
+		        	w = m.inhibitoryWeight.get(cnX, cnY, pN, l);
 		        }
 				if (Float.isNaN(w) || Float.isInfinite(w)) {
 					R = 255;
@@ -203,7 +203,7 @@ public class Utils {
         			&& pY < image.getHeight()) {
 
 				int c = calcGrey(image, pX, pY);
-				c += 255 * sz.cols(cnX, cnY) * m.linksWeight(cnX, cnY, 0, l);
+				c += 255 * sz.cols.get(cnX, cnY) * m.linksWeight.get(cnX, cnY, 0, l);
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, create_rgb(255, c, c, c));
         	}

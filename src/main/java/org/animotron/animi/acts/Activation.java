@@ -22,8 +22,6 @@ package org.animotron.animi.acts;
 
 import org.animotron.animi.Params;
 import org.animotron.animi.cortex.*;
-import org.jocl.cl_command_queue;
-import org.jocl.cl_kernel;
 
 /**
  * 
@@ -33,24 +31,16 @@ import org.jocl.cl_kernel;
 public class Activation extends Task {
 	
 //	@Params
-	private HebbianActivation positive;
+	private ActivationHebbian positive;
 	@Params
-	private AntiHebbianActivation negative;
+	private ActivationAntiHebbian negative;
 	
 	public Activation(CortexZoneComplex cz) {
 		super(cz);
 		
-		positive = new HebbianActivation(cz);
-		negative = new AntiHebbianActivation(cz);
+		positive = new ActivationHebbian(cz);
+		negative = new ActivationAntiHebbian(cz);
 	}
-
-	@Override
-    protected void setupArguments(cl_kernel kernel) {
-	}
-    
-	@Override
-    protected void enqueueReads(cl_command_queue commandQueue) {
-    }
 
 	@Override
     protected void release() {
@@ -62,18 +52,13 @@ public class Activation extends Task {
 		positive.gpuMethod(x, y);
 		negative.gpuMethod(x, y);
 		
-		int srcPos = ((y * cz.width) + x) * cz.package_size;
+		MatrixProxy pack = cz.packageCols.sub(x, y);
+		WinnerGetsAll._(cz, pack, false);
+//		cz.packageCols.copy(pack, x, y);
 		
-		float[] pack = new float[cz.package_size];
-		System.arraycopy(cz.packageCols, srcPos, pack, 0, cz.package_size);
-		
-		WinnerGetsAll._(cz, 0, pack, false);
-
-		System.arraycopy(pack, 0, cz.packageCols, srcPos, cz.package_size);
-		
-		for (int i = 0; i < pack.length; i++) {
-			if (pack[i] > 0) {
-				cz.cols(pack[i], x, y);
+		for (int i = 0; i < cz.package_size; i++) {
+			if (pack.get(i) > 0) {
+				cz.cols.set(pack.get(i), x, y);
 				break;
 			}
 		}

@@ -20,15 +20,10 @@
  */
 package org.animotron.animi.cortex;
 
-import static org.jocl.CL.*;
-
 import java.util.Arrays;
 import java.util.Random;
 
 import org.animotron.animi.InitParam;
-import org.jocl.Pointer;
-import org.jocl.Sizeof;
-import org.jocl.cl_mem;
 
 /**
  * Projection description of the one zone to another
@@ -59,38 +54,10 @@ public class Mapping {
 	public double fX = 1;
 	public double fY = 1;
 
-	public float[] linksWeight;
+	public Matrix linksWeight;
 	
-	public float linksWeight(int x, int y, int p, int l) {
-		return linksWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l];
-	}
+	public Matrix inhibitoryWeight;
 	
-	public void linksWeight(float value, int x, int y, int p, int l) {
-		if (Float.isInfinite(value))
-			System.out.println("!");
-
-		if (Float.isNaN(value))
-			System.out.println("?");
-		
-		linksWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l] = value;
-	}
-
-	public float[] inhibitoryWeight;
-	
-	public float inhibitoryWeight(int x, int y, int p, int l) {
-		return inhibitoryWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l];
-	}
-	
-	public void inhibitoryWeight(float value, int x, int y, int p, int l) {
-		if (Float.isInfinite(value))
-			System.out.println("!");
-
-		if (Float.isNaN(value))
-			System.out.println("?");
-		
-		inhibitoryWeight[((((y * toZone.width) + x) * toZone.package_size) + p) * ns_links + l] = value;
-	}
-
 	public int[] linksSenapse;
 	
 	public int linksSenapse(int x, int y, int l, int xy) {
@@ -110,12 +77,6 @@ public class Mapping {
 		linksSenapse[pos + 0] = Sx;
 		linksSenapse[pos + 1] = Sy;
 	}
-
-	/**
-     * The OpenCL memory object which store the neuron links for each zone.
-     */
-    public cl_mem cl_linksWeight;
-    public cl_mem cl_senapseOfLinks;
 
 	Mapping () {}
 	
@@ -138,17 +99,23 @@ public class Mapping {
 		System.out.println(toZone);
 		
 //		float norm = (float) Math.sqrt(sumQ2);
-		float w = (1 / (float)ns_links);// / norm;
+		final float w = (1 / (float)ns_links);// / norm;
 
-	    linksWeight = new float[toZone.width() * toZone.height() * ns_links * toZone.package_size];
-	    for (int i = 0; i < linksWeight.length; i++) {
-	    	linksWeight[i] = w * rnd.nextFloat() ;
-	    }
-		
-	    inhibitoryWeight = new float[toZone.width() * toZone.height() * ns_links * toZone.package_size];
-	    for (int i = 0; i < inhibitoryWeight.length; i++) {
-	    	inhibitoryWeight[i] = w * rnd.nextFloat() ;
-	    }
+	    linksWeight = new Matrix(toZone.width(), toZone.height(), toZone.package_size, ns_links);
+	    linksWeight.init(new Matrix.Value() {
+			@Override
+			public float get() {
+				return w * rnd.nextFloat();
+			}
+		});
+	    
+	    inhibitoryWeight = new Matrix(toZone.width(), toZone.height(), toZone.package_size, ns_links);
+	    inhibitoryWeight.init(new Matrix.Value() {
+			@Override
+			public float get() {
+				return w * rnd.nextFloat();
+			}
+		});
 
 	    if (toZone.singleReceptionField) {
 			linksSenapse = new int[ns_links * 2];
@@ -188,22 +155,6 @@ public class Mapping {
 				}
 			}
 		}
-        
-        if (frZone.mc.context == null) {
-        	cl_linksWeight = null;
-        	cl_senapseOfLinks = null;
-        } else {
-			cl_linksWeight = 
-				clCreateBuffer(
-					frZone.mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
-					linksWeight.length * Sizeof.cl_float, Pointer.to(linksWeight), null
-				);
-			
-			cl_senapseOfLinks = 
-				clCreateBuffer(
-					frZone.mc.context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-					linksSenapse.length * Sizeof.cl_int, Pointer.to(linksSenapse), null);
-        }
 	}
 	
     private void initReceptionFields(final int x, final int y, final boolean[][] nerv_links) {

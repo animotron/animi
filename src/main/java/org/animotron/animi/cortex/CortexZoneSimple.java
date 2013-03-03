@@ -20,13 +20,8 @@
  */
 package org.animotron.animi.cortex;
 
-import static org.jocl.CL.*;
-
 import org.animotron.animi.*;
 import org.animotron.animi.cortex.old.NeuronComplex;
-import org.jocl.Pointer;
-import org.jocl.Sizeof;
-import org.jocl.cl_mem;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -34,7 +29,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -59,30 +53,10 @@ public class CortexZoneSimple implements Layer {
 	@InitParam(name="height")
 	public int height = 30;//120;
 	
-    /**
-     * The OpenCL memory object which store the activity for each neuron.
-     */
-    public cl_mem cl_cols;
-    public float cols[];
+    public Matrix cols;
     
-    public float cols(int x, int y) {
-		return cols[(y * width) + x];
-    }
+    public Matrix neighborLearning;
     
-    public void cols(float value, int x, int y) {
-    	cols[(y * width) + x] = value;
-    }
-
-    public float neighborLearning[];
-    
-    public float neighborLearning(int x, int y) {
-		return neighborLearning[(y * width) + x];
-    }
-    
-    public void neighborLearning(float value, int x, int y) {
-    	neighborLearning[(y * width) + x] = value;
-    }
-
     int neighborLearningStage = 0;
     public void history() {
     	if (neighborLearningStage >= 2) {
@@ -92,18 +66,18 @@ public class CortexZoneSimple implements Layer {
     	switch (neighborLearningStage) {
 		case 1:
     		neighborLearningStage--;
-    		Arrays.fill(neighborLearning, 0);
+    		neighborLearning.fill(0);
 			
 			break;
 		case 0:
-    		for (int i = 0; i < cols.length; i++) {
-    			if (cols[i] > 0) {
-    				neighborLearningStage = 1;
-    				break;
-    			}
-        	}
+//    		for (int i = 0; i < cols.length; i++) {
+//    			if (cols[i] > 0) {
+//    				neighborLearningStage = 1;
+//    				break;
+//    			}
+//        	}
     		if (neighborLearningStage == 1) {
-        		System.arraycopy(cols, 0, neighborLearning, 0, cols.length);
+        		neighborLearning.copy(cols);
         		neighborLearningStage = 3;
     		}
 			
@@ -113,11 +87,7 @@ public class CortexZoneSimple implements Layer {
 		}
     }
     
-    /**
-     * The OpenCL memory object which store the remember or not activity at RF of neuron.
-     */
-    public cl_mem cl_rememberCols;
-    public float rememberCols[];
+    public Matrix rememberCols;
 
 	public BufferedImage image;
 
@@ -141,50 +111,28 @@ public class CortexZoneSimple implements Layer {
      */
     public void init() {
     	
-    	cols = new float[width * height];
-    	Arrays.fill(cols, 0);
+    	cols = new Matrix(width, height);
+    	cols.fill(0);
 
-    	neighborLearning = new float[width * height];
-    	Arrays.fill(neighborLearning, 0);
+    	neighborLearning = new Matrix(width, height);
+    	neighborLearning.fill(0);
     	
-        if (mc.context == null) {
-        	cl_cols = null;
-        } else {
-	    	cl_cols = clCreateBuffer(
-	    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-	    		cols.length * Sizeof.cl_float, Pointer.to(cols), null
-			);
-        }
-        
-        rememberCols = new float[width * height];
-    	Arrays.fill(rememberCols, 0);
+        rememberCols = new Matrix(width, height);
+    	rememberCols.fill(0);
     	
-        if (mc.context == null) {
-        	cl_rememberCols = null;
-        } else {
-	    	cl_rememberCols = clCreateBuffer(
-	    		mc.context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR, 
-	    		rememberCols.length * Sizeof.cl_float, Pointer.to(rememberCols), null
-			);
-        }
-
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 
     public void release() {
         // Release all existing memory objects
-        if (cl_cols != null) {
-            clReleaseMemObject(cl_cols);
-            cl_cols = null;
-        }
     }
     
     public void refreshImage() {
     	DataBufferInt dataBuffer = (DataBufferInt)image.getRaster().getDataBuffer();
     	int data[] = dataBuffer.getData();
       
-    	for (int i = 0; i < cols.length; i++) {
-    		final float value = cols[i];
+    	for (int i = 0; i < cols.data.length; i++) {
+    		final float value = cols.data[i];
       	
     		if (Float.isNaN(value))
     			data[i] = Color.RED.getRGB();

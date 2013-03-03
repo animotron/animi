@@ -22,8 +22,6 @@ package org.animotron.animi.acts;
 
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
-import org.jocl.cl_command_queue;
-import org.jocl.cl_kernel;
 
 /**
  * Delta rule. http://en.wikipedia.org/wiki/Delta_rule
@@ -31,7 +29,7 @@ import org.jocl.cl_kernel;
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class HebbianLearning extends Task {
+public class LearningHebbian extends Task {
 	
 	@RuntimeParam(name = "count")
 	public int count = 10000;
@@ -41,24 +39,12 @@ public class HebbianLearning extends Task {
 	
 	private float factor;
 	
-	public HebbianLearning(CortexZoneComplex cz) {
+	public LearningHebbian(CortexZoneComplex cz) {
 		super(cz);
 		
 		factor = (float) (ny / Math.pow(2, cz.count / count));
 	}
 
-	@Override
-    protected void setupArguments(cl_kernel kernel) {
-	}
-    
-	@Override
-    protected void enqueueReads(cl_command_queue commandQueue) {
-    }
-
-	@Override
-    protected void release() {
-    }
-	
 	private float adjust(final Mapping m, final int x, final int y, final int p) {
 		float sum = 0;
 		
@@ -69,11 +55,11 @@ public class HebbianLearning extends Task {
 	        
 	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
 	    		
-	    		sum += m.frZone.cols(xi, yi);
+	    		sum += m.frZone.cols.get(xi, yi);
 	    		
-	    		final float q = m.linksWeight(x, y, p, l) + m.frZone.cols(xi, yi) * m.toZone.cols(x, y) * factor;
+	    		final float q = m.linksWeight.get(x, y, p, l) + m.frZone.cols.get(xi, yi) * m.toZone.cols.get(x, y) * factor;
 	    		
-	    		m.linksWeight(q, x, y, p, l);
+	    		m.linksWeight.set(q, x, y, p, l);
 	    		
 	    		sumQ2 += q * q;
 	        }
@@ -89,9 +75,9 @@ public class HebbianLearning extends Task {
 		float norm = (float) Math.sqrt(sumQ2);
 	    for(int l = 0; l < m.ns_links; l++) {
 	    	
-	    	final float q = m.linksWeight(x, y, p, l) / norm;
+	    	final float q = m.linksWeight.get(x, y, p, l) / norm;
 	    	
-	    	m.linksWeight(q, x, y, p, l);
+	    	m.linksWeight.set(q, x, y, p, l);
 	    }
 	}
 
@@ -101,7 +87,7 @@ public class HebbianLearning extends Task {
 		
 		for (int p = 0; p < cz.package_size; p++) {
 		
-			if (cz.packageCols(x, y, p) <= 0) {
+			if (cz.packageCols.get(x, y, p) <= 0) {
 				continue;
 			}
 
@@ -114,4 +100,8 @@ public class HebbianLearning extends Task {
 			normalization(m, x, y, p, sumQ2);
 		}
 	}
+
+	@Override
+    protected void release() {
+    }
 }

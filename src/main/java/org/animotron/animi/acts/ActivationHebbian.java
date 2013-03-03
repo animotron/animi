@@ -20,37 +20,20 @@
  */
 package org.animotron.animi.acts;
 
-import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
-import org.jocl.cl_command_queue;
-import org.jocl.cl_kernel;
 
 /**
+ * Delta rule. http://en.wikipedia.org/wiki/Delta_rule
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class AntiHebbianActivation extends Task {
+public class ActivationHebbian extends Task {
 	
-	@RuntimeParam(name = "k")
-	public float k = 1f;
-
-	public AntiHebbianActivation(CortexZoneComplex cz) {
+	public ActivationHebbian(CortexZoneComplex cz) {
 		super(cz);
 	}
 
-	@Override
-    protected void setupArguments(cl_kernel kernel) {
-	}
-    
-	@Override
-    protected void enqueueReads(cl_command_queue commandQueue) {
-    }
-
-	@Override
-    protected void release() {
-    }
-	
 	private float activity(final Mapping m, final int x, final int y, final int p) {
 		float sum = 0.0f;
 	    for(int l = 0; l < m.ns_links; l++) {
@@ -58,22 +41,21 @@ public class AntiHebbianActivation extends Task {
 	    	final int yi = m.linksSenapse(x, y, l, 1);
 	        
 	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
-	    		sum += m.frZone.cols(xi, yi) * m.inhibitoryWeight(x, y, p, l);
+	    		sum += m.frZone.cols.get(xi, yi) * m.linksWeight.get(x, y, p, l);
 	        }
 	    }
 	    
-	    return sum * k;
+	    return sum;
 	}
 
 	public void gpuMethod(final int x, final int y) {
 		
-		final Mapping m = cz.in_zones[0];
+		Mapping m = cz.in_zones[0];
 		
 		for (int p = 0; p < cz.package_size; p++) {
-			
-			final float activity = cz.packageCols(x, y, p) - activity(m, x, y, p);
+			final float activity = activity(m, x, y, p);
 	
-			cz.packageCols(activity < 0 ? 0 : activity, x, y, p);
+			cz.packageCols.set(activity, x, y, p);
 		}
 		
 //		if (Float.isNaN(activity)) {
@@ -83,4 +65,8 @@ public class AntiHebbianActivation extends Task {
 //		if (activity != 0)
 //			System.out.println(""+x+" - "+y+" = "+activity);
 	}
+
+	@Override
+    protected void release() {
+    }
 }

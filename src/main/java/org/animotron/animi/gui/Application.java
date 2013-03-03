@@ -35,7 +35,6 @@ import javax.swing.border.BevelBorder;
 import org.animotron.animi.Imageable;
 import org.animotron.animi.cortex.*;
 import org.animotron.animi.simulator.*;
-import org.jocl.cl_platform_id;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -456,8 +455,11 @@ public class Application extends JFrame {
         } catch (java.beans.PropertyVetoException e1) {}
     }
     
-    protected void initialize(final cl_platform_id platform, final long deviceType) {
-    	cortexs.init(platform, deviceType);
+    protected void initialize() {
+//    protected void initialize(final cl_platform_id platform, final long deviceType) {
+//    	cortexs.init(platform, deviceType);
+    	
+    	cortexs.init();
     	
     	createViews();
     }
