@@ -300,6 +300,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 
 		public BufferedImage getImage() {
+			in_zones[0].toZone.colWeights.debug("colWeights");
+
 			Graphics g = image.getGraphics();
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, image.getWidth(), image.getHeight());
