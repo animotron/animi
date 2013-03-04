@@ -52,7 +52,7 @@ public class Learning extends Task {
 			return;
 		}
 
-		LearningHebbian.learn(cz.colNeurons.sub(x, y), cz.colWeights.sub(x, y), cz.coLearnFactor.get(x, y), 0.01f);
+		LearningHebbian.learn(cz.colPostNeurons.sub(x, y), cz.colWeights.sub(x, y), cz.coLearnFactor.get(x, y), 0.01f);
 
 		cz.neighborLearning.fill(1f);
 		cz.neighborLearning.set(0f, x, y);

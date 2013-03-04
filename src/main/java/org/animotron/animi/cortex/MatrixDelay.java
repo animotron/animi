@@ -93,7 +93,7 @@ public class MatrixDelay extends MatrixFloat {
 	}
 
 	public MatrixProxy<Float> sub(int ... dims) {
-		throw new IllegalArgumentException();
+		return new MatrixProxy<Float>(this, dims);
 	}
 
 	public void debug(String comment) {

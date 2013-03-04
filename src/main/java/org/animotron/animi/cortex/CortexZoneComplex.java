@@ -330,11 +330,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 				}
 			}
 
-			g.setColor(Color.WHITE);
-			
-			int textY = g.getFontMetrics(g.getFont()).getHeight();
-			int x = 0, y = textY;
-			g.drawString("count: "+count, x, y);
+//			g.setColor(Color.WHITE);
+//			
+//			int textY = g.getFontMetrics(g.getFont()).getHeight();
+//			int x = 0, y = textY;
+//			g.drawString("count: "+count, x, y);
 			
 //			currentPackage++;
 //			if (!(currentPackage < package_size))

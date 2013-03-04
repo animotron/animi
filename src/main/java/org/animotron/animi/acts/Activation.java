@@ -55,15 +55,22 @@ public class Activation extends Task {
 //		cz.colNeurons.debug("colNeurons");
 		MatrixProxy<Float> pack = cz.colNeurons.sub(x, y);
 		
-		cz.coLearnFactor.set(
-			ActivationHebbian.activity(pack, cz.colWeights.sub(x, y)),
-			x, y
-		);
-		
 		WinnerGetsAll._(cz, pack, false);
 //		cz.packageCols.copy(pack, x, y);
 //		cz.packageCols.debug("after 'winner gets all' ");
 		
+
+		MatrixProxy<Float> postPack = cz.colPostNeurons.sub(x, y);
+		for (int index = 0; index < pack.length(); index++) {
+			if (pack.getByIndex(index) > 0) {
+				postPack.setByIndex(pack.getByIndex(index), index);
+			}
+		}
+		cz.coLearnFactor.set(
+				ActivationHebbian.activity(postPack, cz.colWeights.sub(x, y)),
+				x, y
+			);
+			
 		//zero just in case...
 		cz.cols.set(0f, x, y);
 		
