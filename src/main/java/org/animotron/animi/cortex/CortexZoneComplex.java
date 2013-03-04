@@ -58,7 +58,10 @@ public class CortexZoneComplex extends CortexZoneSimple {
     Inhibitory inhibitory = new Inhibitory(this);
     WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
     
-	@InitParam(name="disper")
+    @InitParam(name="delay")
+	public int delay = 6;
+    
+    @InitParam(name="disper")
 	public double disper = 1.5;
 
 	@InitParam(name="inhibitory_links")
@@ -87,8 +90,13 @@ public class CortexZoneComplex extends CortexZoneSimple {
     @InitParam(name="package_size")
 	public int package_size = 9;
 
-    public Matrix packageCols;
+    public MatrixFloat colNeurons;
+    public MatrixDelay colPostNeurons;
+
+    public MatrixFloat colWeights;
     
+    public MatrixFloat coLearnFactor;
+
     CortexZoneComplex() {
 		super();
     }
@@ -107,6 +115,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
      */
     public void init() {
     	super.init();
+    	
+    	coLearnFactor = cols.copy();
     	
 		//count number of links
 //    	ns_links = 0;
@@ -157,10 +167,16 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			}
 		}
 		
-    	packageCols = new Matrix(width, height, package_size);
-    	packageCols.fill(0);
+    	colNeurons = new MatrixFloat(width, height, package_size);
+    	colNeurons.fill(0f);
     	
-        if (CRF != null) {
+    	colPostNeurons = new MatrixDelay(delay, width, height, package_size);
+    	colPostNeurons.fill(0f);
+
+    	colWeights = new MatrixFloat(width, height, package_size);
+    	colWeights.fill(1 / (float)package_size);
+
+    	if (CRF != null) {
         	CRF.init();
         }
         
@@ -304,7 +320,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					g.draw3DRect(x*boxSize, y*boxSize, boxSize, boxSize, true);
 			        
 					Utils.drawRF(
-		        		image, 
+		        		image, g,
 		        		boxSize,
 		        		boxMini,
 		        		x*boxSize, y*boxSize,
@@ -313,6 +329,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		    		);
 				}
 			}
+
+			g.setColor(Color.WHITE);
 			
 			int textY = g.getFontMetrics(g.getFont()).getHeight();
 			int x = 0, y = textY;
@@ -365,7 +383,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	}
 
 	RRF_Image RRF = null;
-	
+
 	public Imageable getRRF() {
 		if (RRF == null)
 			RRF = new RRF_Image();
@@ -451,6 +469,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
     	
     		count++;
     	}
+		
+		colPostNeurons.step(colNeurons);
 		
 //		history();
     }

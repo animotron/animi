@@ -53,9 +53,9 @@ public class CortexZoneSimple implements Layer {
 	@InitParam(name="height")
 	public int height = 30;//120;
 	
-    public Matrix cols;
+    public MatrixFloat cols;
     
-    public Matrix neighborLearning;
+    public MatrixFloat neighborLearning;
     
     int neighborLearningStage = 0;
     public void history() {
@@ -87,7 +87,7 @@ public class CortexZoneSimple implements Layer {
 //		}
     }
     
-    public Matrix rememberCols;
+    public MatrixFloat rememberCols;
 
 	public BufferedImage image;
 
@@ -111,14 +111,14 @@ public class CortexZoneSimple implements Layer {
      */
     public void init() {
     	
-    	cols = new Matrix(width, height);
-    	cols.fill(0);
+    	cols = new MatrixFloat(width, height);
+    	cols.fill(0f);
 
-    	neighborLearning = new Matrix(width, height);
-    	neighborLearning.fill(0);
+    	neighborLearning = new MatrixFloat(width, height);
+    	neighborLearning.fill(0f);
     	
-        rememberCols = new Matrix(width, height);
-    	rememberCols.fill(0);
+        rememberCols = new MatrixFloat(width, height);
+    	rememberCols.fill(0f);
     	
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }

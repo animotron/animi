@@ -20,7 +20,6 @@
  */
 package org.animotron.animi.cortex;
 
-import java.util.Arrays;
 import java.util.Random;
 
 import org.animotron.animi.InitParam;
@@ -54,28 +53,24 @@ public class Mapping {
 	public double fX = 1;
 	public double fY = 1;
 
-	public Matrix linksWeight;
+	public Matrix<Float> linksWeight;
 	
-	public Matrix inhibitoryWeight;
+	public Matrix<Float> inhibitoryWeight;
 	
-	public int[] linksSenapse;
+	public Matrix<Integer> linksSenapse;
 	
-	public int linksSenapse(int x, int y, int l, int xy) {
+	private void linksSenapse(int Sx, int Sy, int x, int y, int l) {
 		if (toZone.singleReceptionField) {
-			return linksSenapse[(l * 2) + xy];
-		}
-		return linksSenapse[(((((y * toZone.width) + x) * ns_links) + l) * 2) + xy];
-	}
-	
-	public void linksSenapse(int Sx, int Sy, int x, int y, int l) {
-		final int pos;
-		if (toZone.singleReceptionField) {
-			pos = l * 2;
+			for (int xi = 0; xi < toZone.width(); xi++) {
+				for (int yi = 0; yi < toZone.height(); yi++) {
+					linksSenapse.set(Sx, xi, yi, l, 0);
+					linksSenapse.set(Sy, xi, yi, l, 1);
+				}
+			}
 		} else {
-			pos = ((((y * toZone.width) + x) * ns_links) + l) * 2;
+			linksSenapse.set(Sx, x, y, l, 0);
+			linksSenapse.set(Sy, x, y, l, 1);
 		}
-		linksSenapse[pos + 0] = Sx;
-		linksSenapse[pos + 1] = Sy;
 	}
 
 	Mapping () {}
@@ -101,28 +96,24 @@ public class Mapping {
 //		float norm = (float) Math.sqrt(sumQ2);
 		final float w = (1 / (float)ns_links);// / norm;
 
-	    linksWeight = new Matrix(toZone.width(), toZone.height(), toZone.package_size, ns_links);
-	    linksWeight.init(new Matrix.Value() {
+	    linksWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
+	    linksWeight.init(new Matrix.Value<Float>() {
 			@Override
-			public float get() {
+			public Float get() {
 				return w * rnd.nextFloat();
 			}
 		});
 	    
-	    inhibitoryWeight = new Matrix(toZone.width(), toZone.height(), toZone.package_size, ns_links);
-	    inhibitoryWeight.init(new Matrix.Value() {
+	    inhibitoryWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
+	    inhibitoryWeight.init(new Matrix.Value<Float>() {
 			@Override
-			public float get() {
+			public Float get() {
 				return w * rnd.nextFloat();
 			}
 		});
 
-	    if (toZone.singleReceptionField) {
-			linksSenapse = new int[ns_links * 2];
-		} else {
-			linksSenapse = new int[toZone.width() * toZone.height() * ns_links * 2];
-		}
-		Arrays.fill(linksSenapse, 0);
+		linksSenapse = new MatrixInteger(toZone.width(), toZone.height(), ns_links, 2);
+		linksSenapse.fill(0);
 		
 //        for (int x = 0; x < zone.width(); x++) {
 //			for (int y = 0; y < zone.height(); y++) {

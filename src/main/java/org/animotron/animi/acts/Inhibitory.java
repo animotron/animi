@@ -44,11 +44,11 @@ public class Inhibitory extends Task {
 
 	private float maxDelta = 0;
 	private float preDelta = 0;
-	private Matrix cols = null;
+	private MatrixFloat cols = null;
 	
 	@Override
 	public void prepare() {
-		cols = new Matrix(cz.cols);
+		cols = new MatrixFloat(cz.cols);
 	}
 
 	@Override

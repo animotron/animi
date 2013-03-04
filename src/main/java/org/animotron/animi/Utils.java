@@ -29,6 +29,8 @@ import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_event;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
@@ -82,12 +84,14 @@ public class Utils {
     }
     
 	public static BufferedImage drawRF(
-			final BufferedImage image, final int boxSize, final int boxMini,
+			final BufferedImage image, final Graphics g, final int boxSize, final int boxMini,
 			final int offsetX, final int offsetY,
 			final int cnX, final int cnY,
 			final Mapping m) {
 
 		BufferedImage img = image;
+		
+		int gray = 0;
 		
 		final int size = (int) (boxSize / (double)boxMini);
 		
@@ -95,6 +99,17 @@ public class Utils {
 			for (int pY = 0; pY < size; pY++) {
 				final int p = (pY * size) + pX;
 				if (p < m.toZone.package_size) {
+					
+					gray = (int) (255 * m.toZone.colWeights.get(cnX, cnY, p));
+					if (gray > 255) gray = 255;
+					
+					g.setColor(new Color(gray, gray, gray));
+					g.draw3DRect(
+							offsetX + boxMini * pX + 1, 
+							offsetY + boxMini * pY + 1, 
+							boxMini - 2, boxMini - 2, true);
+					
+					
 					img = drawRF(true , image, boxMini, 
 							offsetX + boxMini * pX, 
 							offsetY + boxMini * pY,
@@ -107,7 +122,6 @@ public class Utils {
 				}
 			}
 		}
-		
 		return img;
 	}
 
@@ -121,8 +135,8 @@ public class Utils {
 
 		int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	final int xi = m.linksSenapse(cnX, cnY, l, 0);
-        	final int yi = m.linksSenapse(cnX, cnY, l, 1);
+        	final int xi = m.linksSenapse.get(cnX, cnY, l, 0);
+        	final int yi = m.linksSenapse.get(cnX, cnY, l, 1);
         	
         	if (m.toZone.isSingleReceptionField()) {
 	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX));
@@ -195,8 +209,8 @@ public class Utils {
 				
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	final int xi = m.linksSenapse(cnX, cnY, l, 0);
-        	final int yi = m.linksSenapse(cnX, cnY, l, 1);
+        	final int xi = m.linksSenapse.get(cnX, cnY, l, 0);
+        	final int yi = m.linksSenapse.get(cnX, cnY, l, 1);
         	
         	pX = xi;
 			pY = yi;

@@ -42,9 +42,9 @@ public class WinnerGetsAll extends Task {
 		}
 	}
 	
-	public static void _(CortexZoneComplex cz, Matrix source, boolean inhibitory) {
+	public static void _(CortexZoneComplex cz, Matrix<Float> source, boolean inhibitory) {
 		
-		Matrix cols = source.copy();
+		Matrix<Float> cols = source.copy();
     	
     	//max is winner & winner gets all
     	int[] maxPos;
@@ -63,7 +63,7 @@ public class WinnerGetsAll extends Task {
 //	    	System.out.println(maxPos);
 	    	
 	        if (!inhibitory) {
-	        	source.fill(0);
+	        	source.fill(0f);
 
 	        	source.set(max, maxPos);
 //        		sz.rememberCols[maxPos] = max;
@@ -74,9 +74,9 @@ public class WinnerGetsAll extends Task {
     	    	final int xi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 0);
     	    	final int yi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 1);
     	        
-    	    	cols.set(0, xi, yi);
+    	    	cols.set(0f, xi, yi);
     		}
-    		cols.set(0, maxPos);
+    		cols.set(0f, maxPos);
     	}
 	}
 	

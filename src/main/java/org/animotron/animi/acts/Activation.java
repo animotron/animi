@@ -52,14 +52,20 @@ public class Activation extends Task {
 		positive.gpuMethod(x, y);
 		negative.gpuMethod(x, y);
 		
-//		cz.packageCols.debug("before 'winner gets all' ");
-		MatrixProxy pack = cz.packageCols.sub(x, y);
-		WinnerGetsAll._(cz, pack, false);;
+//		cz.colNeurons.debug("colNeurons");
+		MatrixProxy<Float> pack = cz.colNeurons.sub(x, y);
+		
+		cz.coLearnFactor.set(
+			ActivationHebbian.activity(pack, cz.colWeights.sub(x, y)),
+			x, y
+		);
+		
+		WinnerGetsAll._(cz, pack, false);
 //		cz.packageCols.copy(pack, x, y);
 //		cz.packageCols.debug("after 'winner gets all' ");
 		
 		//zero just in case...
-		cz.cols.set(0, x, y);
+		cz.cols.set(0f, x, y);
 		
 		//
 		for (int i = 0; i < cz.package_size; i++) {

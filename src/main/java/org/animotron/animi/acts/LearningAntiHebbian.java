@@ -49,8 +49,8 @@ public class LearningAntiHebbian extends Task {
 		
 		float sumQ2 = 0.0f;
 	    for(int l = 0; l < m.ns_links; l++) {
-	    	int xi = m.linksSenapse(x, y, l, 0);
-	    	int yi = m.linksSenapse(x, y, l, 1);
+	    	int xi = m.linksSenapse.get(x, y, l, 0);
+	    	int yi = m.linksSenapse.get(x, y, l, 1);
 	        
 	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
 	    		
@@ -99,7 +99,7 @@ public class LearningAntiHebbian extends Task {
 		
 		for (int p = 0; p < cz.package_size; p++) {
 		
-			if (cz.packageCols.get(x, y, p) <= 0) {
+			if (cz.colNeurons.get(x, y, p) <= 0) {
 				continue;
 			}
 			

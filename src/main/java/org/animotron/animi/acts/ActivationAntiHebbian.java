@@ -40,8 +40,8 @@ public class ActivationAntiHebbian extends Task {
 	private float activity(final Mapping m, final int x, final int y, final int p) {
 		float sum = 0.0f;
 	    for(int l = 0; l < m.ns_links; l++) {
-	    	final int xi = m.linksSenapse(x, y, l, 0);
-	    	final int yi = m.linksSenapse(x, y, l, 1);
+	    	final int xi = m.linksSenapse.get(x, y, l, 0);
+	    	final int yi = m.linksSenapse.get(x, y, l, 1);
 	        
 	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
 	    		sum += m.frZone.cols.get(xi, yi) * m.inhibitoryWeight.get(x, y, p, l);
@@ -57,9 +57,9 @@ public class ActivationAntiHebbian extends Task {
 		
 		for (int p = 0; p < cz.package_size; p++) {
 			
-			final float activity = cz.packageCols.get(x, y, p) - activity(m, x, y, p);
+			final float activity = cz.colNeurons.get(x, y, p) - activity(m, x, y, p);
 	
-			cz.packageCols.set(activity < 0 ? 0 : activity, x, y, p);
+			cz.colNeurons.set(activity < 0 ? 0 : activity, x, y, p);
 		}
 		
 //		if (Float.isNaN(activity)) {

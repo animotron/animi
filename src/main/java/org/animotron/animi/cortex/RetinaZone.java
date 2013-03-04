@@ -45,7 +45,7 @@ public class RetinaZone extends Task {
     
     float XScale, YScale;
 	
-	Matrix history = null;
+	MatrixFloat history = null;
 	
 	int[] input;
 	int inputSizeX, inputSizeY;
@@ -65,8 +65,8 @@ public class RetinaZone extends Task {
 	public void setInput(final BufferedImage image) {
 		
 		if (history == null) {// || history.length != sz.cols.length) {
-			history = new Matrix(sz.cols);
-			history.fill(0);
+			history = new MatrixFloat(sz.cols);
+			history.fill(0f);
 		}
 		
 		XScale = (image.getWidth()  - (retina.worldSafeZone() * 2)) / (float)sz.width;
@@ -179,7 +179,7 @@ public class RetinaZone extends Task {
         	}
     	}
     	if (numInCenter == 0 || numInPeref == 0) {
-			history.set(0, x, y);
+			history.set(0f, x, y);
 			output(0, x, y);
 			return;
     	}
@@ -201,7 +201,7 @@ public class RetinaZone extends Task {
 
 		//if no stimuli, check if opposite was 
 		if (value == 0) {
-			if (history.get(x, y) == 1 && oppositeStimuli == 0) {
+			if (history.get(x, y) == 1f && oppositeStimuli == 0) {
 				value = 1f; //0.3f;
 			}
 		} else {
@@ -212,6 +212,6 @@ public class RetinaZone extends Task {
 		
 		output(value, x, y);
 
-		history.set(oppositeStimuli, x, y);
+		history.set((float)oppositeStimuli, x, y);
 	}
 }

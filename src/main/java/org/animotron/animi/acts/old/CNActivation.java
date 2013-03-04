@@ -47,8 +47,8 @@ public class CNActivation extends Task {
 	private float activity(Mapping m, int x, int y, int p, int empty, int shiftX, int shiftY) {
 		float sum = 0.0f;
 	    for(int l = 0; l < m.ns_links; l++) {
-	    	int xi = m.linksSenapse(x, y, l, 0) + shiftX;
-	    	int yi = m.linksSenapse(x, y, l, 1) + shiftY;
+	    	int xi = m.linksSenapse.get(x, y, l, 0) + shiftX;
+	    	int yi = m.linksSenapse.get(x, y, l, 1) + shiftY;
 	        
 	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
 		    	if (empty == 0) {
@@ -70,8 +70,8 @@ public class CNActivation extends Task {
 
 		float sumQ2 = 0.0f;
 	    for(int l = 0; l < m.ns_links; l++) {
-	    	int xi = m.linksSenapse(x, y, l, 0) + shiftX;
-	    	int yi = m.linksSenapse(x, y, l, 1) + shiftY;
+	    	int xi = m.linksSenapse.get(x, y, l, 0) + shiftX;
+	    	int yi = m.linksSenapse.get(x, y, l, 1) + shiftY;
 	        
 			if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
 		    	float synapse = m.frZone.cols.get(xi, yi);

@@ -45,41 +45,83 @@ public class LearningHebbian extends Task {
 		factor = (float) (ny / Math.pow(2, cz.count / count));
 	}
 
-	private float adjust(final Mapping m, final int x, final int y, final int p) {
-		float sum = 0;
-		
+	private static float adjust(final Matrix<Float> in, final Matrix<Float> weights, final float activity, final float factor) {
 		float sumQ2 = 0.0f;
-	    for(int l = 0; l < m.ns_links; l++) {
-	    	int xi = m.linksSenapse(x, y, l, 0);
-	    	int yi = m.linksSenapse(x, y, l, 1);
-	        
-	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
-	    		
-	    		sum += m.frZone.cols.get(xi, yi);
-	    		
-	    		final float q = m.linksWeight.get(x, y, p, l) + m.frZone.cols.get(xi, yi) * m.toZone.cols.get(x, y) * factor;
-	    		
-	    		m.linksWeight.set(q, x, y, p, l);
-	    		
-	    		sumQ2 += q * q;
-	        }
-	    }
+		for (int index = 0; index < weights.length(); index++) {
+    		final float q = weights.getByIndex(index) + in.getByIndex(index) * activity * factor;
+    		
+    		weights.setByIndex(q, index);
+    		
+    		sumQ2 += q * q;
+		}
 	    
-	    if (sum == 0) {
-	    	System.out.println("?!");
-	    }
 	    return sumQ2;
 	}
-	
-	private void normalization(final Mapping m, final int x, final int y, final int p, final float sumQ2) {
+
+	private static void normalization(final Matrix<Float> weights, final float sumQ2) {
 		float norm = (float) Math.sqrt(sumQ2);
-	    for(int l = 0; l < m.ns_links; l++) {
+		for (int index = 0; index < weights.length(); index++) {
 	    	
-	    	final float q = m.linksWeight.get(x, y, p, l) / norm;
+	    	final float q = weights.getByIndex(index) / norm;
 	    	
-	    	m.linksWeight.set(q, x, y, p, l);
+	    	weights.setByIndex(q, index);
 	    }
 	}
+
+	public static void learn(final Matrix<Float> in, final Matrix<Float> weights, final float activity, final float factor) {
+		if (activity > 0) {
+			final float sumQ2 = adjust(in, weights, activity, factor);
+			
+			normalization(weights, sumQ2);
+		}
+	}
+
+//	private float adjust(final Mapping m, final int x, final int y, final int p) {
+//		final float toCheck = 
+//			adjust(
+//				new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
+//				m.linksWeight.sub(x, y, p), 
+//				m.toZone.cols.get(x, y), 
+//				factor
+//			);
+//
+//		float sum = 0;
+//		
+//		float sumQ2 = 0.0f;
+//	    for(int l = 0; l < m.ns_links; l++) {
+//	    	int xi = m.linksSenapse.get(x, y, l, 0);
+//	    	int yi = m.linksSenapse.get(x, y, l, 1);
+//	        
+//	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
+//	    		
+//	    		sum += m.frZone.cols.get(xi, yi);
+//	    		
+//	    		final float q = m.linksWeight.get(x, y, p, l) + m.frZone.cols.get(xi, yi) * m.toZone.cols.get(x, y) * factor;
+//	    		
+//	    		m.linksWeight.set(q, x, y, p, l);
+//	    		
+//	    		sumQ2 += q * q;
+//	        }
+//	    }
+//	    
+//	    if (sum == 0) {
+//	    	System.out.println("?!");
+//	    }
+//	    if (toCheck != sumQ2) {
+//	    	System.out.println("WRONG sumQ2!!!");
+//	    }
+//	    return sumQ2;
+//	}
+//	
+//	private void normalization(final Mapping m, final int x, final int y, final int p, final float sumQ2) {
+//		float norm = (float) Math.sqrt(sumQ2);
+//	    for(int l = 0; l < m.ns_links; l++) {
+//	    	
+//	    	final float q = m.linksWeight.get(x, y, p, l) / norm;
+//	    	
+//	    	m.linksWeight.set(q, x, y, p, l);
+//	    }
+//	}
 
 	public void gpuMethod(int x, int y) {
 		
@@ -87,17 +129,24 @@ public class LearningHebbian extends Task {
 		
 		for (int p = 0; p < cz.package_size; p++) {
 		
-			if (cz.packageCols.get(x, y, p) <= 0) {
+			if (cz.colNeurons.get(x, y, p) <= 0) {
 				continue;
 			}
+			
+			learn(
+				new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
+				m.linksWeight.sub(x, y, p), 
+				m.toZone.cols.get(x, y),
+				factor
+			);
 
-			final float sumQ2 = adjust(m, x, y, p);
-			
-//			if (sumQ2 == 0 || Float.isInfinite(sumQ2) || Float.isNaN(sumQ2)) {
-//				adjust(m, x, y);
-//			}
-			
-			normalization(m, x, y, p, sumQ2);
+//			final float sumQ2 = adjust(m, x, y, p);
+//			
+////			if (sumQ2 == 0 || Float.isInfinite(sumQ2) || Float.isNaN(sumQ2)) {
+////				adjust(m, x, y);
+////			}
+//			
+//			normalization(m, x, y, p, sumQ2);
 		}
 	}
 

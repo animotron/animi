@@ -44,7 +44,7 @@ public class Memorization extends Task {
 		super(cz);
 	}
 
-	Matrix rememberCols;
+	MatrixFloat rememberCols;
 	
 	public void inhibitoryByActivity(int x, int y) {
 		//set 0 in inhibitory zone of the active column
@@ -55,11 +55,11 @@ public class Memorization extends Task {
 		    	int yi = cz.inhibitoryLinksSenapse(x, y, l, 1);
 		        
 		        if (xi != x && yi != y) {
-	        		rememberCols.set(0, xi, yi);
+	        		rememberCols.set(0f, xi, yi);
 	    		}
 		    }
 	    } else {
-    		rememberCols.set(0, x, y);
+    		rememberCols.set(0f, x, y);
 	    }
 	}
 	
@@ -197,8 +197,8 @@ public class Memorization extends Task {
 
 		switch (phaze) {
 		case 0:
-			rememberCols = new Matrix(sz.cols);
-			rememberCols.fill(1);
+			rememberCols = new MatrixFloat(sz.cols);
+			rememberCols.fill(1f);
 			inhibitoryByActivity(x, y);
 			break;
 
