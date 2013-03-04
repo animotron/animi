@@ -470,7 +470,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     		count++;
     	}
 		
-		colPostNeurons.step(colNeurons);
+		colPostNeurons.step();
 		
 //		history();
     }

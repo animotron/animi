@@ -100,7 +100,7 @@ public class MatrixDelay extends MatrixFloat {
 		throw new IllegalArgumentException();
 	}
 	
-	public void step(MatrixFloat matrix) {
+	public void step() {
 		
 //		super.debug("before step");
 		
@@ -115,11 +115,11 @@ public class MatrixDelay extends MatrixFloat {
 		
 //		super.debug("middle step");
 
-		for (int i = 0; i < matrix.length(); i++) {
-			if (matrix.getByIndex(i) > 0) {
-				setByIndex(matrix.getByIndex(i), i);
-			}
-		}
+//		for (int i = 0; i < matrix.length(); i++) {
+//			if (matrix.getByIndex(i) > 0) {
+//				setByIndex(matrix.getByIndex(i), i);
+//			}
+//		}
 
 //		super.debug("after step");
 	}
