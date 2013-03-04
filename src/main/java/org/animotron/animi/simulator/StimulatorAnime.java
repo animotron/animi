@@ -60,11 +60,13 @@ public class StimulatorAnime extends AbstractStimulator {
         int[][] steps = new int[step*4 + 2][];
 
         int j = 0;
-        for (int i = 0; i < (step); i++) {
-        	steps[j++] = new int[] {-retina.worldStep(), 0};
-        }
-        for (int i = 0; i < step; i++) {
-        	steps[j++] = new int[] {+retina.worldStep(), 0};
+        for (int k = 0; k < 2; k++) {
+	        for (int i = 0; i < step/2; i++) {
+	        	steps[j++] = new int[] {-retina.worldStep(), 0};
+	        }
+	        for (int i = 0; i < step/2; i++) {
+	        	steps[j++] = new int[] {+retina.worldStep(), 0};
+	        }
         }
         
         //move out and wait...
@@ -75,7 +77,7 @@ public class StimulatorAnime extends AbstractStimulator {
     	steps[j++] = new int[] {retina.worldStep()*100, 0};
 
     	figures[0] = new RectAnime(
-    			(int)(img.getWidth() * 0.5) + retina.worldStep() * step / 2, (int)(img.getHeight() * -0.2),
+    			(int)(img.getWidth() * 0.5) + retina.worldStep() * step / 4, (int)(img.getHeight() * -0.2),
     			(int)(img.getWidth() * 2), (int)(img.getHeight() *  2),
 	    	    true,
 	    	    steps,
@@ -92,16 +94,17 @@ public class StimulatorAnime extends AbstractStimulator {
         }
     	steps[j++] = new int[] {0, retina.worldStep()*100};
 
-    	
-    	for (int i = 0; i < (step); i++) {
-        	steps[j++] = new int[] {0, -retina.worldStep()};
-        }
-        for (int i = 0; i < step; i++) {
-        	steps[j++] = new int[] {0, +retina.worldStep()};
-        }
+    	for (int k = 0; k < 2; k++) {
+	    	for (int i = 0; i < step/2; i++) {
+	        	steps[j++] = new int[] {0, -retina.worldStep()};
+	        }
+	        for (int i = 0; i < step/2; i++) {
+	        	steps[j++] = new int[] {0, +retina.worldStep()};
+	        }
+    	}
 
         figures[1] = new RectAnime(
-    			(int)(img.getWidth() * -0.5), (int)(img.getHeight() * 0.5) + retina.worldStep() * step / 2,
+    			(int)(img.getWidth() * -0.5), (int)(img.getHeight() * 0.5) + retina.worldStep() * step / 4,
     			(int)(img.getWidth() *  2), (int)(img.getHeight() * 2),
 	    	    true,
 	    	    steps,
