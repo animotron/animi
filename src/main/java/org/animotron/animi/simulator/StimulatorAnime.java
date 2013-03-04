@@ -56,77 +56,77 @@ public class StimulatorAnime extends AbstractStimulator {
         
         figures = new Figure[2];
 
-		int step = 38;
-        int[][] steps = new int[step*4 + 2][];
+		int step = 36;
+        int[][] steps = new int[step][];
 
         int j = 0;
         for (int k = 0; k < 2; k++) {
-	        for (int i = 0; i < step/2; i++) {
+	        for (int i = 0; i < step/4; i++) {
 	        	steps[j++] = new int[] {-retina.worldStep(), 0};
 	        }
-	        for (int i = 0; i < step/2; i++) {
+	        for (int i = 0; i < step/4; i++) {
 	        	steps[j++] = new int[] {+retina.worldStep(), 0};
 	        }
         }
-        
-        //move out and wait...
-    	steps[j++] = new int[] {-retina.worldStep()*100, 0};
-        for (int i = 0; i < (step*2); i++) {
-        	steps[j++] = new int[] {0, 0};
-        }
-    	steps[j++] = new int[] {retina.worldStep()*100, 0};
 
     	figures[0] = new RectAnime(
-    			(int)(img.getWidth() * 0.5) + retina.worldStep() * step / 4, (int)(img.getHeight() * -0.2),
+    			(int)(img.getWidth() * 0.5) + retina.worldStep() * step / 8, (int)(img.getHeight() * -0.2),
     			(int)(img.getWidth() * 2), (int)(img.getHeight() *  2),
 	    	    true,
 	    	    steps,
     			true
 	    	);
 
-        steps = new int[step*4 + 2][];
+        steps = new int[step][];
         j = 0;
         
-        //move out and wait...
-    	steps[j++] = new int[] {0, -retina.worldStep()*100};
-        for (int i = 0; i < (step*2); i++) {
-        	steps[j++] = new int[] {0, 0};
-        }
-    	steps[j++] = new int[] {0, retina.worldStep()*100};
-
     	for (int k = 0; k < 2; k++) {
-	    	for (int i = 0; i < step/2; i++) {
+	    	for (int i = 0; i < step/4; i++) {
 	        	steps[j++] = new int[] {0, -retina.worldStep()};
 	        }
-	        for (int i = 0; i < step/2; i++) {
+	        for (int i = 0; i < step/4; i++) {
 	        	steps[j++] = new int[] {0, +retina.worldStep()};
 	        }
     	}
 
         figures[1] = new RectAnime(
-    			(int)(img.getWidth() * -0.5), (int)(img.getHeight() * 0.5) + retina.worldStep() * step / 4,
+    			(int)(img.getWidth() * -0.5), (int)(img.getHeight() * 0.5) + retina.worldStep() * step / 8,
     			(int)(img.getWidth() *  2), (int)(img.getHeight() * 2),
 	    	    true,
 	    	    steps,
     			true
 	    	);
 	}
+	
+	int delay = -1;
+	int activeIndex = 0;
+	Figure active = null;
 
 	public void step() {
+		
+		if (active == null || active.step()) {
+			
+			delay = 6;
+			
+			do {
+				active = figures[activeIndex];
 
-        for (Figure i : figures) {
-        	if (i.isActive()) {
-        		i.step();
-        	}
-        }
-        
+				activeIndex++;
+				if (activeIndex >= figures.length) {
+					activeIndex = 0;
+				}
+			} while (!active.isActive());
+		}
+
         Graphics g = img.getGraphics();
         g.clearRect(0, 0, img.getWidth(), img.getHeight());
+        
+        if (delay > 0) {
+        	delay--;
+        
+        } else {
+    		active.drawImage(g);
 
-        for (Figure i : figures) {
-        	if (i.isActive()) {
-        		i.drawImage(g);
-        	}
         }
 	}
 

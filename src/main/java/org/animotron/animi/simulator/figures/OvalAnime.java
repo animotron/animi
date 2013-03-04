@@ -65,7 +65,7 @@ public class OvalAnime extends AbstractAnime {
         g.drawOval(X - D / 2, Y - D / 2, D, D);
 	}
 
-	public void step() {
+	public boolean step() {
         if (l <= 0) {
             x = X = anime[i][0];
             y = Y = anime[i][1];
@@ -81,6 +81,7 @@ public class OvalAnime extends AbstractAnime {
             Y = (int) Math.round(y);
             l--;
         }
+        return false;
     }
 
 	@Override

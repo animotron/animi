@@ -50,16 +50,20 @@ public abstract class AbstractAnime implements Figure {
         this.anime = anime;
     }
 	
-	public void step() {
+	public boolean step() {
 		if (anime == null)
-			return;
+			return true;
+		
+		boolean done = false;
 		
         if (l < 0) {
             dx = anime[i][0];
             dy = anime[i][1];
             i++;
-            if (i >= anime.length)
+            if (i >= anime.length) {
             	i = 0;
+            	done = true;
+            }
 
 //        } else if (l < 0) {
 //                int j = Math.min(i + 1, anime.length - 1);
@@ -84,6 +88,8 @@ public abstract class AbstractAnime implements Figure {
             final Point2D q = at.transform(p[z], null);
             p[z] = q;
         }
+        
+        return done;
     }
 	
 	@Override

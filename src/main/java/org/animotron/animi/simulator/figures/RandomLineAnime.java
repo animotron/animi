@@ -69,10 +69,11 @@ public class RandomLineAnime implements Figure {
 	}
 
     @Override
-    public void step() {
+    public boolean step() {
         for (int[] i : p) {
             step(i);
         }
+        return false;
     }
 
     private void step(int[] p) {
