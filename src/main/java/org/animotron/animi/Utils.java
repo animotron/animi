@@ -100,6 +100,16 @@ public class Utils {
 				final int p = (pY * size) + pX;
 				if (p < m.toZone.package_size) {
 					
+					img = drawRF(true , image, boxMini, 
+							offsetX + boxMini * pX, 
+							offsetY + boxMini * pY,
+							cnX, cnY, p, m);
+					
+					img = drawRF(false, image, boxMini, 
+							offsetX + boxMini * pX, 
+							offsetY + boxMini * pY,
+							cnX, cnY, p, m);
+
 					gray = (int) (255 * m.toZone.colPostNeurons.get(cnX, cnY, p));
 					if (gray > 255) gray = 255;
 					image.setRGB(
@@ -115,17 +125,6 @@ public class Utils {
 							offsetX + boxMini * pX + 1, 
 							offsetY + boxMini * pY + 1, 
 							boxMini - 2, boxMini - 2, true);
-					
-					
-					img = drawRF(true , image, boxMini, 
-							offsetX + boxMini * pX, 
-							offsetY + boxMini * pY,
-							cnX, cnY, p, m);
-					
-					img = drawRF(false, image, boxMini, 
-							offsetX + boxMini * pX, 
-							offsetY + boxMini * pY,
-							cnX, cnY, p, m);
 				}
 			}
 		}

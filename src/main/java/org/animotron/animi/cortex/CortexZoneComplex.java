@@ -316,8 +316,6 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
 			}
 			
-			int gray = 0;
-	
 			for (int x = 0; x < width(); x++) {
 				for (int y = 0; y < height(); y++) {
 					g.setColor(Color.DARK_GRAY);
