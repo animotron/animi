@@ -60,7 +60,7 @@ public class MatrixDelay extends MatrixFloat {
 		}
 	}
 
-	public void set(float value, int ... dims) {
+	public void set(Float value, int ... dims) {
 		final int index = index(dims);
 		super.setByIndex(1f, index);
 		if (value == 0) {
@@ -79,7 +79,7 @@ public class MatrixDelay extends MatrixFloat {
 		}
 	}
 
-	public void fill(float value) {
+	public void fill(Float value) {
 		super.fill(value);
 		Arrays.fill(delays, 0);
 	}
@@ -103,24 +103,20 @@ public class MatrixDelay extends MatrixFloat {
 	public void step() {
 		
 //		super.debug("before step");
+//		System.out.println("before delays");
+//		debug(new Integers(delays), true);
 		
 		for (int i = 0; i < delays.length; i++) {
 			if (delays[i] > 1) {
 				delays[i]--;
 			} else if (delays[i] == 1) {
 				delays[i]--;
-				data[i] = 0;
+				super.setByIndex(0f, i);
 			}
 		}
-		
-//		super.debug("middle step");
-
-//		for (int i = 0; i < matrix.length(); i++) {
-//			if (matrix.getByIndex(i) > 0) {
-//				setByIndex(matrix.getByIndex(i), i);
-//			}
-//		}
 
 //		super.debug("after step");
+//		System.out.println("after delays");
+//		debug(new Integers(delays), true);
 	}
 }

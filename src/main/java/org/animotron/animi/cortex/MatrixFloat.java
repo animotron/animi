@@ -21,7 +21,9 @@
 package org.animotron.animi.cortex;
 
 import java.text.DecimalFormat;
+import java.util.AbstractList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -239,21 +241,30 @@ public class MatrixFloat implements Matrix<Float> {
 	public void debug(String comment) {
 		System.out.println(comment);
 		
+		debug(new Floats(data), false);
+	}
+	
+	protected void debug(List<?> array, boolean direct) {
 		int[] pos = new int[dimensions.length];
 		Arrays.fill(pos, 0);
 		
 		int value;
 		
-		DecimalFormat df = new DecimalFormat("0.00000");
+		DecimalFormat df;
+		if (array instanceof Integers) {
+			df = new DecimalFormat("0");
+		} else {
+			df = new DecimalFormat("0.00000");
+		}
 		
 		System.out.print(Arrays.toString(pos));
 		System.out.print(" ");
-		System.out.print(df.format(get(pos)));
+		System.out.print(df.format(direct ? array.get(0) : get(pos)));
 		System.out.print(" ");
 		
 		boolean print = false;
 
-    	for (int i = 1; i < data.length; i++) {
+    	for (int index = 1; index < array.size(); index++) {
     		for (int dim = dimensions.length - 1; dim >= 0; dim--) {
         		value = ++pos[dim];
         		
@@ -275,9 +286,71 @@ public class MatrixFloat implements Matrix<Float> {
 				System.out.print(" ");
     		}
 
-			System.out.print(df.format(get(pos)));
+			System.out.print(df.format(direct ? array.get(index) : get(pos)));
 			System.out.print(" ");
 		}
     	System.out.println();
+	}
+	
+    protected class Floats extends AList<Float>  {
+
+	    private final float[] a;
+	
+	    Floats(float[] data) {
+	        if (data==null)
+	            throw new NullPointerException();
+	        a = data;
+	    }
+	
+	    public int size() {
+	        return a.length;
+	    }
+	
+	    public Float get(int index) {
+	        return Float.valueOf(a[index]);
+	    }
+	}
+
+    protected class Integers extends AList<Integer>  {
+
+	    private final int[] a;
+	
+	    Integers(int[] data) {
+	        if (data==null)
+	            throw new NullPointerException();
+	        a = data;
+	    }
+	
+	    public int size() {
+	        return a.length;
+	    }
+	
+	    public Integer get(int index) {
+	        return Integer.valueOf(a[index]);
+	    }
+	}
+
+    private abstract class AList<T> extends AbstractList<T>  {
+
+	    public Object[] toArray() {
+	    	throw new IllegalArgumentException();
+	    }
+	
+	    @SuppressWarnings("hiding")
+		public <T> T[] toArray(T[] a) {
+	    	throw new IllegalArgumentException();
+	    }
+	
+	    public T set(int index, T element) {
+	    	throw new IllegalArgumentException();
+	    }
+	
+	    public int indexOf(Object o) {
+	    	throw new IllegalArgumentException();
+	    }
+	
+	    public boolean contains(Object o) {
+	    	throw new IllegalArgumentException();
+	    }
 	}
 }

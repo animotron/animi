@@ -62,7 +62,7 @@ public class Activation extends Task {
 
 		MatrixProxy<Float> postPack = cz.colPostNeurons.sub(x, y);
 		for (int index = 0; index < pack.length(); index++) {
-			if (pack.getByIndex(index) > 0) {
+			if (pack.getByIndex(index) > 0.1) {
 				postPack.setByIndex(pack.getByIndex(index), index);
 			}
 		}

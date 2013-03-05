@@ -59,7 +59,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
     
     @InitParam(name="delay")
-	public int delay = 10;
+	public int delay = 12;
     
     @InitParam(name="disper")
 	public double disper = 1.5;
@@ -300,7 +300,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 
 		public BufferedImage getImage() {
-			in_zones[0].toZone.colWeights.debug("colWeights");
+//			in_zones[0].toZone.colWeights.debug("colWeights");
 
 			Graphics g = image.getGraphics();
 			g.setColor(Color.BLACK);
