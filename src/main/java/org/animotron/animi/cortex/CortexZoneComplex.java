@@ -59,7 +59,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
     
     @InitParam(name="delay")
-	public int delay = 6;
+	public int delay = 10;
     
     @InitParam(name="disper")
 	public double disper = 1.5;
