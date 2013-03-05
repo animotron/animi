@@ -99,6 +99,16 @@ public class RectAnime extends AbstractAnime {
         }
     }
 
+	public RectAnime(Point2D[] p, boolean filled, int[][] anime, boolean oneStep) {
+        super(0, anime);
+        this.filled = filled;
+        this.p = p;
+
+        if (oneStep) {
+        	l = -1;
+        }
+    }
+
 	public void drawImage(Graphics g) {
         g.setColor(Color.WHITE);
         Polygon polygon = new Polygon();

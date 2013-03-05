@@ -21,7 +21,10 @@
 package org.animotron.animi.simulator;
 
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 import org.animotron.animi.Params;
 import org.animotron.animi.cortex.Retina;
@@ -39,6 +42,8 @@ public class StimulatorAnime extends AbstractStimulator {
     @Params
     public Figure[] figures;
     
+    Random rnd = new Random();
+    
     public StimulatorAnime(Application application) {
     	super(application);
 	}
@@ -46,20 +51,72 @@ public class StimulatorAnime extends AbstractStimulator {
 	public void init() {
 		Retina retina = app.cortexs.retina;
 		
+		int width = retina.worldWidth();
+		int height = retina.worldHeight();
+		
         img = new BufferedImage(
-        		retina.worldWidth(), 
-        		retina.worldHeight(),
+        		width, 
+        		height,
         		BufferedImage.TYPE_INT_RGB);
 		
-//		int b1 = 40;
-//		int b2 = 30;
+        figures = new Figure[4];
         
-        figures = new Figure[2];
+        int f = 0;
 
-		int step = 36;
-        int[][] steps = new int[step][];
+		int step = 48;
+        int offset = retina.worldStep() * step / 8;
 
         int j = 0;
+        int[][] steps = new int[step][];
+
+        for (int k = 0; k < 2; k++) {
+	        for (int i = 0; i < step/4; i++) {
+	        	steps[j++] = new int[] {-retina.worldStep(), 0};
+	        }
+	        for (int i = 0; i < step/4; i++) {
+	        	steps[j++] = new int[] {+retina.worldStep(), 0};
+	        }
+        }
+        
+        Point first  = new Point((int)(width * 0 - offset), (int)(height * 0 - offset * 2));
+        Point second = new Point((int)(width * 1 + offset), (int)(height * 1 + offset * 0));
+        Point third  = new Point(second.x + width * 2, second.y);
+        Point fourth = new Point(first.x, first.y + height * 2);
+        		
+    	figures[f++] = new RectAnime(
+	        new Point2D[] {first, second, third, fourth, first},
+    	    true,
+    	    steps,
+			true
+    	);
+
+    	j = 0;
+        steps = new int[step][];
+
+        for (int k = 0; k < 2; k++) {
+	        for (int i = 0; i < step/4; i++) {
+	        	steps[j++] = new int[] {-retina.worldStep(), 0};
+	        }
+	        for (int i = 0; i < step/4; i++) {
+	        	steps[j++] = new int[] {+retina.worldStep(), 0};
+	        }
+        }
+        
+        first  = new Point((int)(width * 0 - offset), (int)(height * 1 + offset * 2));
+        second = new Point((int)(width * 1 + offset), (int)(height * 0 - offset * 0));
+        third  = new Point(second.x + width * 2, second.y);
+        fourth = new Point(first.x, first.y + height * 2);
+        		
+    	figures[f++] = new RectAnime(
+	        new Point2D[] {first, second, third, fourth, first},
+    	    true,
+    	    steps,
+			true
+    	);
+
+    	j = 0;
+    	steps = new int[step][];
+
         for (int k = 0; k < 2; k++) {
 	        for (int i = 0; i < step/4; i++) {
 	        	steps[j++] = new int[] {-retina.worldStep(), 0};
@@ -69,7 +126,7 @@ public class StimulatorAnime extends AbstractStimulator {
 	        }
         }
 
-    	figures[0] = new RectAnime(
+    	figures[f++] = new RectAnime(
     			(int)(img.getWidth() * 0.5) + retina.worldStep() * step / 8, (int)(img.getHeight() * -0.2),
     			(int)(img.getWidth() * 2), (int)(img.getHeight() *  2),
 	    	    true,
@@ -77,8 +134,8 @@ public class StimulatorAnime extends AbstractStimulator {
     			true
 	    	);
 
+      j = 0;
         steps = new int[step][];
-        j = 0;
         
     	for (int k = 0; k < 2; k++) {
 	    	for (int i = 0; i < step/4; i++) {
@@ -89,7 +146,7 @@ public class StimulatorAnime extends AbstractStimulator {
 	        }
     	}
 
-        figures[1] = new RectAnime(
+        figures[f++] = new RectAnime(
     			(int)(img.getWidth() * -0.5), (int)(img.getHeight() * 0.5) + retina.worldStep() * step / 8,
     			(int)(img.getWidth() *  2), (int)(img.getHeight() * 2),
 	    	    true,
@@ -99,7 +156,6 @@ public class StimulatorAnime extends AbstractStimulator {
 	}
 	
 	int delay = -1;
-	int activeIndex = 0;
 	Figure active = null;
 
 	public void step() {
@@ -109,12 +165,8 @@ public class StimulatorAnime extends AbstractStimulator {
 			delay = 6;
 			
 			do {
-				active = figures[activeIndex];
-
-				activeIndex++;
-				if (activeIndex >= figures.length) {
-					activeIndex = 0;
-				}
+				active = figures[rnd.nextInt(figures.length)];
+				//XXX: protection?
 			} while (!active.isActive());
 		}
 
