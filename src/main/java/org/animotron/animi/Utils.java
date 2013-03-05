@@ -86,7 +86,8 @@ public class Utils {
 	public static BufferedImage drawRF(
 			final BufferedImage image, final Graphics g, final int boxSize, final int boxMini,
 			final int offsetX, final int offsetY,
-			final int cnX, final int cnY,
+			final int cnX, final int cnY, 
+			final int Xl, final int Yl,
 			final Mapping m) {
 
 		BufferedImage img = image;
@@ -110,6 +111,7 @@ public class Utils {
 							offsetY + boxMini * pY,
 							cnX, cnY, p, m);
 
+					//point of post neuron activity in top left corner
 					gray = (int) (255 * m.toZone.colPostNeurons.get(cnX, cnY, p));
 					if (gray > 255) gray = 255;
 					image.setRGB(
@@ -117,7 +119,8 @@ public class Utils {
 							offsetY + boxMini * pY + 2,
 							Utils.create_rgb(255, gray, gray, gray));
 			        
-					gray = (int) (255 * m.toZone.colWeights.get(cnX, cnY, p));
+					//weight box
+					gray = (int) (255 * m.toZone.colWeights.get(Xl, Yl, cnX, cnY, p));
 					if (gray > 255) gray = 255;
 					
 					g.setColor(new Color(gray, gray, gray));

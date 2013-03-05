@@ -180,7 +180,9 @@ public class Application extends JFrame {
     	        CortexZoneComplex z = (CortexZoneComplex) zone;
 
     	        addMenu(menu, z);
-    	        addMenu(menu, z.getCRF());
+    	        for (Imageable imgable : z.getCRF()) {
+    	        	addMenu(menu, imgable);
+    	        }
     	        addMenu(menu, z.getRRF());
 			} else {
 				addMenu(windowsMenu, zone);

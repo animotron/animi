@@ -63,7 +63,7 @@ public class StimulatorAnime extends AbstractStimulator {
         
         int f = 0;
 
-		int step = 48;
+		int step = 56;
         int offset = retina.worldStep() * step / 8;
 
         int j = 0;

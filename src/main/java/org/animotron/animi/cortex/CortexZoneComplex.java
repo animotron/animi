@@ -91,10 +91,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public int package_size = 9;
 
     public MatrixFloat colNeurons;
-    public MatrixDelay colPostNeurons;
-
-    public MatrixFloat colWeights;
     
+    public MatrixDelay colPostNeurons;
+    public MatrixFloat colWeights;
     public MatrixFloat coLearnFactor;
 
     CortexZoneComplex() {
@@ -173,11 +172,13 @@ public class CortexZoneComplex extends CortexZoneSimple {
     	colPostNeurons = new MatrixDelay(delay, width, height, package_size);
     	colPostNeurons.fill(0f);
 
-    	colWeights = new MatrixFloat(width, height, package_size);
-    	colWeights.fill(1 / (float)package_size);
+    	colWeights = new MatrixFloat(width, height, width, height, package_size);
+    	colWeights.fill(1 / (float)(width * height * package_size));
 
-    	if (CRF != null) {
-        	CRF.init();
+    	if (CRFs != null) {
+    		for (ColumnRF_Image CRF : CRFs) {
+    			CRF.init();
+    		}
         }
         
         if (RRF != null) {
@@ -260,16 +261,25 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
     }
     
-	ColumnRF_Image CRF = null;
+	ColumnRF_Image CRFs[] = null;
 	
-	public Imageable getCRF() {
-		if (CRF == null)
-			CRF = new ColumnRF_Image();
+	public Imageable[] getCRF() {
+		if (CRFs == null) {
+			CRFs = new ColumnRF_Image[width * height];
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					CRFs[(y * width) + x] = new ColumnRF_Image(x, y);
+				}
+			}
+		}
 		
-		return CRF;
+		return CRFs;
 	}
 
 	class ColumnRF_Image implements Imageable {
+		
+		private int Xl;
+		private int Yl;
 		
 		private int boxMini;
 		private int boxSize;
@@ -279,8 +289,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	    private List<Point> watching = new ArrayList<Point>();
 	    private Point atFocus = null;
 
-		ColumnRF_Image() {
+		ColumnRF_Image(int Xl, int Yl) {
 			init();
+			
+			this.Xl = Xl;
+			this.Yl = Yl;
 		}
 
 		public void init() {
@@ -296,7 +309,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 	
 		public String getImageName() {
-			return "cols map "+CortexZoneComplex.this.name;
+			return "cols map "+CortexZoneComplex.this.name+" ["+Xl+","+Yl+"]";
 		}
 
 		public BufferedImage getImage() {
@@ -327,6 +340,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		        		boxMini,
 		        		x*boxSize, y*boxSize,
 		        		x, y,
+		        		Xl, Yl,
 		        		in_zones[0]
 		    		);
 				}

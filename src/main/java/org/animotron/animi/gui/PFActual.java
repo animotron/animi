@@ -422,17 +422,17 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 	@Override
 	public void internalFrameOpened(InternalFrameEvent e) {
-		zone.getCRF().focusGained(point);
+//		zone.getCRF().focusGained(point);
 	}
 
 	@Override
 	public void internalFrameClosing(InternalFrameEvent e) {
-		zone.getCRF().focusLost(point);
+//		zone.getCRF().focusLost(point);
 	}
 
 	@Override
 	public void internalFrameClosed(InternalFrameEvent e) {
-		zone.getCRF().closed(point);
+//		zone.getCRF().closed(point);
 	}
 
 	@Override
@@ -445,12 +445,12 @@ public class PFActual implements Imageable, InternalFrameListener {
 
 	@Override
 	public void internalFrameActivated(InternalFrameEvent e) {
-		zone.getCRF().focusGained(point);
+//		zone.getCRF().focusGained(point);
 	}
 
 	@Override
 	public void internalFrameDeactivated(InternalFrameEvent e) {
-		zone.getCRF().focusLost(point);
+//		zone.getCRF().focusLost(point);
 	}
 
 	@Override

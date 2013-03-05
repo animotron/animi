@@ -41,45 +41,72 @@ public class Activation extends Task {
 		positive = new ActivationHebbian(cz);
 		negative = new ActivationAntiHebbian(cz);
 	}
+	
+	private int stage = 0;
+	
+	@Override
+	public void prepare() {
+		positive.prepare();
+		negative.prepare();
+		
+		stage = 0;
+	}
+
+	public void gpuMethod(int x, int y) {
+		switch (stage) {
+		case 0:
+			
+			positive.gpuMethod(x, y);
+			negative.gpuMethod(x, y);
+			
+			MatrixProxy<Float> pack = cz.colNeurons.sub(x, y);
+			
+			WinnerGetsAll._(cz, pack, false);
+
+			MatrixProxy<Float> postPack = cz.colPostNeurons.sub(x, y);
+			for (int index = 0; index < pack.length(); index++) {
+				if (pack.getByIndex(index) > 0.1) {
+					postPack.setByIndex(pack.getByIndex(index), index);
+				}
+			}
+
+			//zero just in case...
+			cz.cols.set(0f, x, y);
+			
+			//set activity equal to winner activity 
+			for (int i = 0; i < cz.package_size; i++) {
+				if (pack.get(i) > 0) {
+					cz.cols.set(pack.get(i), x, y);
+					break;
+				}
+			}
+
+			break;
+
+		case 1:
+			cz.coLearnFactor.set(
+				ActivationHebbian.activity(cz.colNeurons, cz.colWeights.sub(x, y)),
+				x, y
+			);
+			
+			break;
+
+		default:
+			break;
+		}
+	}
+	
+	public boolean isDone() {
+		if (stage == 1) {
+			WinnerGetsAll._(cz, cz.coLearnFactor, false);
+		}
+		stage++;
+		return stage >= 2;
+	}
 
 	@Override
     protected void release() {
 		positive.release();
 		negative.release();
     }
-	
-	public void gpuMethod(int x, int y) {
-		positive.gpuMethod(x, y);
-		negative.gpuMethod(x, y);
-		
-//		cz.colNeurons.debug("colNeurons");
-		MatrixProxy<Float> pack = cz.colNeurons.sub(x, y);
-		
-		WinnerGetsAll._(cz, pack, false);
-//		cz.packageCols.copy(pack, x, y);
-//		cz.packageCols.debug("after 'winner gets all' ");
-		
-
-		MatrixProxy<Float> postPack = cz.colPostNeurons.sub(x, y);
-		for (int index = 0; index < pack.length(); index++) {
-			if (pack.getByIndex(index) > 0.1) {
-				postPack.setByIndex(pack.getByIndex(index), index);
-			}
-		}
-		cz.coLearnFactor.set(
-				ActivationHebbian.activity(postPack, cz.colWeights.sub(x, y)),
-				x, y
-			);
-			
-		//zero just in case...
-		cz.cols.set(0f, x, y);
-		
-		//
-		for (int i = 0; i < cz.package_size; i++) {
-			if (pack.get(i) > 0) {
-				cz.cols.set(pack.get(i), x, y);
-				break;
-			}
-		}
-	}
 }

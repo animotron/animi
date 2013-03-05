@@ -48,11 +48,11 @@ public class Learning extends Task {
 	}
 
 	public void gpuMethod(int x, int y) {
+		LearningHebbian.learn(cz.colPostNeurons, cz.colWeights.sub(x, y), cz.coLearnFactor.get(x, y), 0.01f);
+
 		if (cz.cols.get(x, y) <= 0 && cz.neighborLearning.get(x, y) > 0) {
 			return;
 		}
-
-		LearningHebbian.learn(cz.colPostNeurons.sub(x, y), cz.colWeights.sub(x, y), cz.coLearnFactor.get(x, y), 0.01f);
 
 		cz.neighborLearning.fill(1f);
 		cz.neighborLearning.set(0f, x, y);
