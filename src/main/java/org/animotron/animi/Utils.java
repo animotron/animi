@@ -111,11 +111,19 @@ public class Utils {
 							offsetY + boxMini * pY,
 							cnX, cnY, p, m);
 
-					//point of post neuron activity in top left corner
-					gray = (int) (255 * m.toZone.colPostNeurons.get(cnX, cnY, p));
+					//point of neuron activity in top left corner
+					gray = (int) (255 * m.toZone.colNeurons.get(cnX, cnY, p));
 					if (gray > 255) gray = 255;
 					image.setRGB(
 							offsetX + boxMini * pX + 2, 
+							offsetY + boxMini * pY + 2,
+							Utils.create_rgb(255, gray, gray, gray));
+
+					//point of post neuron activity in top left plus one pixel left corner
+					gray = (int) (255 * m.toZone.colPostNeurons.get(cnX, cnY, p));
+					if (gray > 255) gray = 255;
+					image.setRGB(
+							offsetX + boxMini * pX + 3, 
 							offsetY + boxMini * pY + 2,
 							Utils.create_rgb(255, gray, gray, gray));
 			        
