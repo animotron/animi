@@ -162,7 +162,7 @@ public class StimulatorAnime extends AbstractStimulator {
 		
 		if (active == null || active.step()) {
 			
-			delay = 6;
+			delay = 18;
 			
 			do {
 				active = figures[rnd.nextInt(figures.length)];
