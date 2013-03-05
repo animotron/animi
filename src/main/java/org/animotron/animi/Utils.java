@@ -100,6 +100,13 @@ public class Utils {
 				final int p = (pY * size) + pX;
 				if (p < m.toZone.package_size) {
 					
+					gray = (int) (255 * m.toZone.colPostNeurons.get(cnX, cnY, p));
+					if (gray > 255) gray = 255;
+					image.setRGB(
+							offsetX + boxMini * pX + 2, 
+							offsetY + boxMini * pY + 2,
+							Utils.create_rgb(255, gray, gray, gray));
+			        
 					gray = (int) (255 * m.toZone.colWeights.get(cnX, cnY, p));
 					if (gray > 255) gray = 255;
 					
