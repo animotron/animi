@@ -62,7 +62,7 @@ public class MatrixDelay extends MatrixFloat {
 
 	public void set(float value, int ... dims) {
 		final int index = index(dims);
-		data[index] = value;
+		super.setByIndex(1f, index);
 		if (value == 0) {
 			delays[index] = 0;
 		} else {
@@ -71,7 +71,7 @@ public class MatrixDelay extends MatrixFloat {
 	}
 	
 	public void setByIndex(Float value, int index) {
-		super.setByIndex(value, index);
+		super.setByIndex(1f, index);
 		if (value == 0f) {
 			delays[index] = 0;
 		} else {
