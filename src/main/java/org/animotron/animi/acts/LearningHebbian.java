@@ -38,7 +38,7 @@ public class LearningHebbian extends Task {
 	public float ny = 0.1f; // / 5.0f;
 	
 	@RuntimeParam(name = "noise")
-	public float noise = 0.0001f;
+	public float noise = 0.001f;
 
 	@RuntimeParam(name = "minWeight")
 	public float minWeight = 10^-7;
@@ -99,7 +99,7 @@ public class LearningHebbian extends Task {
 			learn(
 				new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
 				m.linksWeight.sub(x, y, p), 
-				m.toZone.coLearnFactor.get(x, y) + noise,
+				m.toZone.colNeurons.get(x, y, p) + noise,
 				factor * (1 - cz.colWeights.get(x, y, x, y, p)),
 				minWeight
 			);
