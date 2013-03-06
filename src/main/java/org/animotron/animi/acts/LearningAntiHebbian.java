@@ -34,10 +34,10 @@ public class LearningAntiHebbian extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.1f / 5.0f;
+	public float ny = 0.1f; // / 5.0f;
 	
 	@RuntimeParam(name = "noise")
-	public float noise = 0.00001f;
+	public float noise = 0.0001f;
 
 	@RuntimeParam(name = "minWeight")
 	public float minWeight = 10^-7;
@@ -62,7 +62,7 @@ public class LearningAntiHebbian extends Task {
 	    		
 	    		sum += m.frZone.cols.get(xi, yi);
 	    		
-	    		final float q = m.inhibitoryWeight.get(x, y, p, l) + (1 - m.frZone.cols.get(xi, yi) + noise) * m.toZone.cols.get(x, y) * factor * (1 - cz.colWeights.get(x, y, x, y, p));
+	    		final float q = m.inhibitoryWeight.get(x, y, p, l) + (1 - m.frZone.cols.get(xi, yi) + noise) * m.toZone.coLearnFactor.get(x, y) * factor * (1 - cz.colWeights.get(x, y, x, y, p));
 	    		
 	    		m.inhibitoryWeight.set(q, x, y, p, l);
 	    		
@@ -110,9 +110,9 @@ public class LearningAntiHebbian extends Task {
 		
 		for (int p = 0; p < cz.package_size; p++) {
 		
-			if (cz.colNeurons.get(x, y, p) <= 0) {
-				continue;
-			}
+//			if (cz.colNeurons.get(x, y, p) <= 0) {
+//				continue;
+//			}
 			
 			final float sumQ2 = adjust(m, x, y, p);
 			
