@@ -215,7 +215,9 @@ public class MultiCortex implements Runnable {
 
 		run = false;
 		try {
-			th.join();
+			if (th != null) {
+				th.join();
+			}
 		} catch (InterruptedException e) {
 			th.interrupt();
 		}

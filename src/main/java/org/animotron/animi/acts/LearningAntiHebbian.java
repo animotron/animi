@@ -90,11 +90,16 @@ public class LearningAntiHebbian extends Task {
 		final Mapping m = cz.in_zones[0];
 		
 		for (int p = 0; p < cz.package_size; p++) {
+			
+			if (cz.colNeurons.get(x, y, p) <= 0) {
+				continue;
+			}
+
 			learn(
 					new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
 					m.inhibitoryWeight.sub(x, y, p), 
-					m.toZone.colNeurons.get(x, y, p) + noise,
-					factor * (1 - cz.colWeights.get(x, y, x, y, p)),
+					m.toZone.colNeurons.get(x, y, p), // + noise,
+					factor, // * (1 - cz.colWeights.get(x, y, x, y, p)),
 					minWeight
 				);
 		}

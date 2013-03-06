@@ -44,46 +44,20 @@ public class ActivationHebbian extends Task {
 	    return sum;
 	}
 
-	protected float activity(final Mapping m, final int x, final int y, final int p) {
-		float toCheck = 
-			activity(
-				new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
-				m.linksWeight.sub(x, y, p)
-			);
-		
-		float sum = 0.0f;
-	    for(int l = 0; l < m.ns_links; l++) {
-	    	final int xi = m.linksSenapse.get(x, y, l, 0);
-	    	final int yi = m.linksSenapse.get(x, y, l, 1);
-	        
-	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
-	    		sum += m.frZone.cols.get(xi, yi) * m.linksWeight.get(x, y, p, l);
-	        }
-	    }
-	    
-	    if (toCheck != sum) {
-	    	System.out.println("WRONG activity!!!");
-	    }
-	    
-	    return sum;
-	}
-
 	public void gpuMethod(final int x, final int y) {
 		
 		Mapping m = cz.in_zones[0];
 		
 		for (int p = 0; p < cz.package_size; p++) {
-			final float activity = activity(m, x, y, p);
+
+			final float activity = 
+					activity(
+						new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
+						m.linksWeight.sub(x, y, p)
+					);
 	
 			cz.colNeurons.set(activity, x, y, p);
 		}
-		
-//		if (Float.isNaN(activity)) {
-//			activity(m, x, y);
-//		}
-//		
-//		if (activity != 0)
-//			System.out.println(""+x+" - "+y+" = "+activity);
 	}
 
 	@Override

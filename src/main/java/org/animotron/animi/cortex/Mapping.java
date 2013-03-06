@@ -53,6 +53,8 @@ public class Mapping {
 	public double fX = 1;
 	public double fY = 1;
 
+	public float w;
+	
 	public Matrix<Float> linksWeight;
 	
 	public Matrix<Float> inhibitoryWeight;
@@ -94,13 +96,13 @@ public class Mapping {
 		System.out.println(toZone);
 		
 //		float norm = (float) Math.sqrt(sumQ2);
-		final float w = (1 / (float)ns_links);// / norm;
+		w = (1 / (float)ns_links);// / norm;
 
 	    linksWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
 	    linksWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get() {
-				return w * rnd.nextFloat();
+				return getInitWeight();
 			}
 		});
 	    
@@ -108,7 +110,7 @@ public class Mapping {
 	    inhibitoryWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get() {
-				return w * rnd.nextFloat();
+				return getInitWeight();
 			}
 		});
 
@@ -226,5 +228,9 @@ public class Mapping {
 
     public int toZoneCenterY() {
     	return (int)(toZone.height() / 2.0);
+	}
+
+	public Float getInitWeight() {
+		return w * rnd.nextFloat();
 	}
 }

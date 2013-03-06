@@ -92,15 +92,15 @@ public class LearningHebbian extends Task {
 		
 		for (int p = 0; p < cz.package_size; p++) {
 		
-//			if (cz.colNeurons.get(x, y, p) <= 0) {
-//				continue;
-//			}
+			if (cz.colNeurons.get(x, y, p) <= 0) {
+				continue;
+			}
 			
 			learn(
 				new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
 				m.linksWeight.sub(x, y, p), 
-				m.toZone.colNeurons.get(x, y, p) + noise,
-				factor * (1 - cz.colWeights.get(x, y, x, y, p)),
+				m.toZone.colNeurons.get(x, y, p), // + noise,
+				factor, // * (1 - cz.colWeights.get(x, y, x, y, p)),
 				minWeight
 			);
 		}

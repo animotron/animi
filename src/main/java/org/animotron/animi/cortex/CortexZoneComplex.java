@@ -173,7 +173,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
     	colPostNeurons.fill(0f);
 
     	colWeights = new MatrixFloat(width, height, width, height, package_size);
-    	colWeights.fill(1 / (float)(width * height * package_size));
+    	colWeights.fill(getWeight());
 
     	if (CRFs != null) {
     		for (ColumnRF_Image CRF : CRFs) {
@@ -186,7 +186,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
         }
 	}
     
-    private void initReceptionFields(final int x, final int y, final double _sigma, final boolean[][] nerv_links) {
+    public Float getWeight() {
+		return 1 / (float)(width * height * package_size);
+	}
+
+	private void initReceptionFields(final int x, final int y, final double _sigma, final boolean[][] nerv_links) {
 		double X, Y, S;
 		int offset = 0;
 
