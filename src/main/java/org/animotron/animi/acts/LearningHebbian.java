@@ -35,8 +35,14 @@ public class LearningHebbian extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.1f; // / 5.0f;
+	public float ny = 0.1f / 5.0f;
 	
+	@RuntimeParam(name = "noise")
+	public float noise = 0.00001f;
+
+	@RuntimeParam(name = "minWeight")
+	public float minWeight = 10^-7;
+
 	private float factor;
 	
 	public LearningHebbian(CortexZoneComplex cz) {
@@ -58,21 +64,25 @@ public class LearningHebbian extends Task {
 	    return sumQ2;
 	}
 
-	private static void normalization(final Matrix<Float> weights, final float sumQ2) {
+	private static void normalization(final Matrix<Float> weights, final float sumQ2, final float minWeight) {
 		float norm = (float) Math.sqrt(sumQ2);
 		for (int index = 0; index < weights.length(); index++) {
 	    	
 	    	final float q = weights.getByIndex(index) / norm;
 	    	
-	    	weights.setByIndex(q, index);
+	    	if (q >= minWeight) {
+	    		weights.setByIndex(q, index);
+	    	} else {
+	    		weights.setByIndex(minWeight, index);
+	    	}
 	    }
 	}
 
-	public static void learn(final Matrix<Float> in, final Matrix<Float> weights, final float activity, final float factor) {
+	public static void learn(final Matrix<Float> in, final Matrix<Float> weights, final float activity, final float factor, final float minWeight) {
 		if (activity > 0) {
 			final float sumQ2 = adjust(in, weights, activity, factor);
 			
-			normalization(weights, sumQ2);
+			normalization(weights, sumQ2, minWeight);
 		}
 	}
 
@@ -82,15 +92,16 @@ public class LearningHebbian extends Task {
 		
 		for (int p = 0; p < cz.package_size; p++) {
 		
-			if (cz.colNeurons.get(x, y, p) <= 0) {
-				continue;
-			}
+//			if (cz.colNeurons.get(x, y, p) <= 0) {
+//				continue;
+//			}
 			
 			learn(
 				new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
 				m.linksWeight.sub(x, y, p), 
-				m.toZone.cols.get(x, y),
-				factor * (1 - cz.colWeights.get(x, y, x, y, p))
+				m.toZone.cols.get(x, y) + noise,
+				factor * (1 - cz.colWeights.get(x, y, x, y, p)),
+				minWeight
 			);
 		}
 	}

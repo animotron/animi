@@ -34,8 +34,14 @@ public class LearningAntiHebbian extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.1f;// / 5.0f;
+	public float ny = 0.1f / 5.0f;
 	
+	@RuntimeParam(name = "noise")
+	public float noise = 0.00001f;
+
+	@RuntimeParam(name = "minWeight")
+	public float minWeight = 10^-7;
+
 	private float factor;
 	
 	public LearningAntiHebbian(CortexZoneComplex cz) {
@@ -56,7 +62,7 @@ public class LearningAntiHebbian extends Task {
 	    		
 	    		sum += m.frZone.cols.get(xi, yi);
 	    		
-	    		final float q = m.inhibitoryWeight.get(x, y, p, l) + (1 - m.frZone.cols.get(xi, yi)) * m.toZone.cols.get(x, y) * factor * (1 - cz.colWeights.get(x, y, x, y, p));
+	    		final float q = m.inhibitoryWeight.get(x, y, p, l) + (1 - m.frZone.cols.get(xi, yi) + noise) * m.toZone.cols.get(x, y) * factor * (1 - cz.colWeights.get(x, y, x, y, p));
 	    		
 	    		m.inhibitoryWeight.set(q, x, y, p, l);
 	    		
@@ -75,7 +81,12 @@ public class LearningAntiHebbian extends Task {
 	    for(int l = 0; l < m.ns_links; l++) {
 	    	
 	    	final float neg = m.inhibitoryWeight.get(x, y, p, l) / norm;
-	    	m.inhibitoryWeight.set(neg, x, y, p, l);
+	    	
+	    	if (neg >= minWeight) {
+	    		m.inhibitoryWeight.set(neg, x, y, p, l);
+	    	} else {
+	    		m.inhibitoryWeight.set(minWeight, x, y, p, l);
+	    	}
 
 //	    	final float pos = m.linksWeight.get(x, y, p, l);
 //	    	final float neg = m.inhibitoryWeight.get(x, y, p, l) / norm;
@@ -91,9 +102,9 @@ public class LearningAntiHebbian extends Task {
 
 	public void gpuMethod(final int x, final int y) {
 		
-		if (cz.cols.get(x, y) <= 0) {
-			return;
-		}
+//		if (cz.cols.get(x, y) <= 0) {
+//			return;
+//		}
 
 		final Mapping m = cz.in_zones[0];
 		
