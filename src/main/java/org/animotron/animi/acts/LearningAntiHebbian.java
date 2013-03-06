@@ -50,77 +50,53 @@ public class LearningAntiHebbian extends Task {
 		factor = (float) (ny / Math.pow(2, cz.count / count));
 	}
 
-	private float adjust(final Mapping m, final int x, final int y, final int p) {
-		float sum = 0;
-		
+	private static float adjust(final Matrix<Float> in, final Matrix<Float> weights, final float activity, final float factor) {
 		float sumQ2 = 0.0f;
-	    for(int l = 0; l < m.ns_links; l++) {
-	    	int xi = m.linksSenapse.get(x, y, l, 0);
-	    	int yi = m.linksSenapse.get(x, y, l, 1);
-	        
-	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
-	    		
-	    		sum += m.frZone.cols.get(xi, yi);
-	    		
-	    		final float q = m.inhibitoryWeight.get(x, y, p, l) + (1 - m.frZone.cols.get(xi, yi) + noise) * m.toZone.coLearnFactor.get(x, y) * factor * (1 - cz.colWeights.get(x, y, x, y, p));
-	    		
-	    		m.inhibitoryWeight.set(q, x, y, p, l);
-	    		
-	    		sumQ2 += q * q;
-	        }
-	    }
+		for (int index = 0; index < weights.length(); index++) {
+    		final float q = weights.getByIndex(index) + (1 - in.getByIndex(index)) * activity * factor;
+    		
+    		weights.setByIndex(q, index);
+    		
+    		sumQ2 += q * q;
+		}
 	    
-	    if (sum == 0) {
-	    	System.out.println("?!");
-	    }
 	    return sumQ2;
 	}
 	
-	private void normalization(final Mapping m, final int x, final int y, final int p, final float sumQ2) {
+	private static void normalization(final Matrix<Float> weights, final float sumQ2, final float minWeight) {
 		float norm = (float) Math.sqrt(sumQ2);
-	    for(int l = 0; l < m.ns_links; l++) {
+		for (int index = 0; index < weights.length(); index++) {
 	    	
-	    	final float neg = m.inhibitoryWeight.get(x, y, p, l) / norm;
+	    	final float q = weights.getByIndex(index) / norm;
 	    	
-	    	if (neg >= minWeight) {
-	    		m.inhibitoryWeight.set(neg, x, y, p, l);
+	    	if (q >= minWeight) {
+	    		weights.setByIndex(q, index);
 	    	} else {
-	    		m.inhibitoryWeight.set(minWeight, x, y, p, l);
+	    		weights.setByIndex(minWeight, index);
 	    	}
-
-//	    	final float pos = m.linksWeight.get(x, y, p, l);
-//	    	final float neg = m.inhibitoryWeight.get(x, y, p, l) / norm;
-//	    	if (pos >= neg) {
-//	    		m.linksWeight.set(pos - neg, x, y, p, l);
-//		    	m.inhibitoryWeight.set(0, x, y, p, l);
-//	    	} else {
-//	    		m.linksWeight.set(0, x, y, p, l);
-//		    	m.inhibitoryWeight.set(neg - pos, x, y, p, l);
-//	    	}
 	    }
+	}
+
+	public static void learn(final Matrix<Float> in, final Matrix<Float> weights, final float activity, final float factor, final float minWeight) {
+		if (activity > 0) {
+			final float sumQ2 = adjust(in, weights, activity, factor);
+			
+			normalization(weights, sumQ2, minWeight);
+		}
 	}
 
 	public void gpuMethod(final int x, final int y) {
 		
-//		if (cz.cols.get(x, y) <= 0) {
-//			return;
-//		}
-
 		final Mapping m = cz.in_zones[0];
 		
 		for (int p = 0; p < cz.package_size; p++) {
-		
-//			if (cz.colNeurons.get(x, y, p) <= 0) {
-//				continue;
-//			}
-			
-			final float sumQ2 = adjust(m, x, y, p);
-			
-//			if (sumQ2 == 0 || Float.isInfinite(sumQ2) || Float.isNaN(sumQ2)) {
-//				adjust(m, x, y);
-//			}
-			
-			normalization(m, x, y, p, sumQ2);
+			learn(
+					new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
+					m.inhibitoryWeight.sub(x, y, p), 
+					m.toZone.coLearnFactor.get(x, y) + noise,
+					factor * (1 - cz.colWeights.get(x, y, x, y, p)),
+					minWeight
+				);
 		}
 	}
 	
