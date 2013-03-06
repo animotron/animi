@@ -34,7 +34,7 @@ public class LearningAntiHebbian extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.1f / 5.0f;
+	public float ny = 0.1f;// / 5.0f;
 	
 	private float factor;
 	
@@ -56,7 +56,7 @@ public class LearningAntiHebbian extends Task {
 	    		
 	    		sum += m.frZone.cols.get(xi, yi);
 	    		
-	    		final float q = m.inhibitoryWeight.get(x, y, p, l) + (1 - m.frZone.cols.get(xi, yi)) * m.toZone.cols.get(x, y) * factor;
+	    		final float q = m.inhibitoryWeight.get(x, y, p, l) + (1 - m.frZone.cols.get(xi, yi)) * m.toZone.cols.get(x, y) * factor * (1 - cz.colWeights.get(x, y, x, y, p));
 	    		
 	    		m.inhibitoryWeight.set(q, x, y, p, l);
 	    		
