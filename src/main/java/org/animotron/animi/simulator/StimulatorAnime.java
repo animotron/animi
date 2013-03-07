@@ -155,14 +155,14 @@ public class StimulatorAnime extends AbstractStimulator {
 	    	);
 	}
 	
-	int delay = -1;
+//	int delay = -1;
 	Figure active = null;
 
 	public void step() {
 		
 		if (active == null || active.step()) {
 			
-			delay = 18;
+//			delay = 18;
 			
 			do {
 				active = figures[rnd.nextInt(figures.length)];
@@ -173,13 +173,13 @@ public class StimulatorAnime extends AbstractStimulator {
         Graphics g = img.getGraphics();
         g.clearRect(0, 0, img.getWidth(), img.getHeight());
         
-        if (delay > 0) {
-        	delay--;
-        
-        } else {
+//        if (delay > 0) {
+//        	delay--;
+//        
+//        } else {
     		active.drawImage(g);
-
-        }
+//
+//        }
 	}
 
 	public BufferedImage getNextImage() {
