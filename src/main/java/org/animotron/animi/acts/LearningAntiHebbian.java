@@ -34,26 +34,30 @@ public class LearningAntiHebbian extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.1f / 5.0f;
+	public float ny = 0.01f;
 	
-	@RuntimeParam(name = "noise")
-	public float noise = 0.001f;
-
 	@RuntimeParam(name = "minWeight")
-	public float minWeight = 10^-11;
+	public float minWeight = 0;//10^-11;
 
 	private float factor;
 	
 	public LearningAntiHebbian(CortexZoneComplex cz) {
 		super(cz);
 		
-		factor = (float) (ny / Math.pow(2, cz.count / count));
+		factor = ny;
+//		factor = (float) (ny / Math.pow(2, cz.count / count));
 	}
 
-	private static float adjust(final Matrix<Float> in, final Matrix<Float> weights, final float activity, final float factor) {
+	private static float adjust(
+			final Matrix<Float> in, 
+			final Matrix<Float> weights, 
+			final float activity, 
+			final float factor) {
+		
 		float sumQ2 = 0.0f;
 		for (int index = 0; index < weights.length(); index++) {
-    		final float q = weights.getByIndex(index) + (1 - in.getByIndex(index)) * activity * factor;
+			final float inActivity = (1 - in.getByIndex(index));
+    		final float q = weights.getByIndex(index) + inActivity * activity * factor;
     		
     		weights.setByIndex(q, index);
     		
@@ -63,25 +67,44 @@ public class LearningAntiHebbian extends Task {
 	    return sumQ2;
 	}
 	
-	private static void normalization(final Matrix<Float> weights, final float sumQ2, final float minWeight) {
+	private static void normalization(
+			final Matrix<Float> posWeights, 
+			final Matrix<Float> weights, 
+			final float sumQ2, 
+			final float minWeight) {
+		
 		float norm = (float) Math.sqrt(sumQ2);
 		for (int index = 0; index < weights.length(); index++) {
 	    	
 	    	final float q = weights.getByIndex(index) / norm;
 	    	
-	    	if (q >= minWeight) {
-	    		weights.setByIndex(q, index);
-	    	} else {
-	    		weights.setByIndex(minWeight, index);
-	    	}
+//	    	if (q >= minWeight) {
+//		    	final float pos = posWeights.getByIndex(index);
+//	    		if (pos > q) {
+//	    			weights.setByIndex(minWeight, index);
+//	    			
+//	    		} else {
+//	    			posWeights.setByIndex(minWeight, index);
+	    			weights.setByIndex(q, index);
+//	    		}
+//	    	} else {
+//	    		weights.setByIndex(minWeight, index);
+//	    	}
 	    }
 	}
 
-	public static void learn(final Matrix<Float> in, final Matrix<Float> weights, final float activity, final float factor, final float minWeight) {
+	public static void learn(
+			final Matrix<Float> in, 
+			final Matrix<Float> posWeights, 
+			final Matrix<Float> weights, 
+			final float activity, 
+			final float factor, 
+			final float minWeight) {
+		
 		if (activity > 0) {
 			final float sumQ2 = adjust(in, weights, activity, factor);
 			
-			normalization(weights, sumQ2, minWeight);
+			normalization(posWeights, weights, sumQ2, minWeight);
 		}
 	}
 
@@ -97,9 +120,10 @@ public class LearningAntiHebbian extends Task {
 
 			learn(
 					new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
+					m.linksWeight.sub(x, y, p), 
 					m.inhibitoryWeight.sub(x, y, p), 
-					m.toZone.colNeurons.get(x, y, p), // + noise,
-					factor, // * (1 - cz.colWeights.get(x, y, x, y, p)),
+					m.toZone.colNeurons.get(x, y, p),
+					factor,
 					minWeight
 				);
 		}

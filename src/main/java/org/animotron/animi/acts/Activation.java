@@ -56,6 +56,8 @@ public class Activation extends Task {
 		switch (stage) {
 		case 0:
 			
+			float prev10 = cz.prev.get(x, y) * 0.2f;
+			
 			positive.gpuMethod(x, y);
 			negative.gpuMethod(x, y);
 			
@@ -65,8 +67,10 @@ public class Activation extends Task {
 
 			MatrixProxy<Float> postPack = cz.colPostNeurons.sub(x, y);
 			for (int index = 0; index < pack.length(); index++) {
-				if (pack.getByIndex(index) > 0) {
-					postPack.setByIndex(pack.getByIndex(index), index);
+				final float value = pack.getByIndex(index);
+				if (value > 0) {
+					pack.setByIndex(value + prev10, index);
+					postPack.setByIndex(value, index);
 				}
 			}
 
@@ -84,7 +88,7 @@ public class Activation extends Task {
 			break;
 
 		case 1:
-			cz.coLearnFactor.set(
+			cz.colCorrelation.set(
 				ActivationHebbian.activity(cz.colNeurons, cz.colWeights.sub(x, y)),
 				x, y
 			);
@@ -98,7 +102,7 @@ public class Activation extends Task {
 	
 	public boolean isDone() {
 		if (stage == 1) {
-			WinnerGetsAll._(cz, cz.coLearnFactor, false);
+			WinnerGetsAll._(cz, cz.colCorrelation, false);
 		}
 		stage++;
 		return stage >= 2;

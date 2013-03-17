@@ -68,19 +68,7 @@ public class MultiCortex implements Runnable {
     public Retina retina;
 
     public CortexZoneSimple z_in;
-    
-    public CortexZoneComplex z_attention;
-    public CortexZoneComplex z_motoric;
-    
     public CortexZoneComplex z_1st;
-    public CortexZoneComplex z_goriz1;
-    public CortexZoneComplex z_2nd;
-    public CortexZoneComplex z_goriz2;
-    public CortexZoneComplex z_3rd;
-//  @Params
-//  public CortexZoneSimple z_good;
-//  @Params
-//  public CortexZoneSimple z_bad;
     
     @Params
     public CortexZoneSimple [] zones;
@@ -103,6 +91,8 @@ public class MultiCortex implements Runnable {
                 new Mapping(z_in, 100, 1, false) //7x7 (50)
             }
         );
+//        z_1st.addMappring(z_1st);
+        
         zones = new CortexZoneSimple[]{z_in, z_1st};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);

@@ -35,11 +35,8 @@ public class LearningHebbian extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.1f / 5.0f;
+	public float ny = 0.01f;
 	
-	@RuntimeParam(name = "noise")
-	public float noise = 0.001f;
-
 	@RuntimeParam(name = "minWeight")
 	public float minWeight = 10^-11;
 
@@ -48,13 +45,19 @@ public class LearningHebbian extends Task {
 	public LearningHebbian(CortexZoneComplex cz) {
 		super(cz);
 		
-		factor = (float) (ny / Math.pow(2, cz.count / count));
+		factor = ny;
+//		factor = (float) (ny / Math.pow(2, cz.count / count));
 	}
 
-	private static float adjust(final Matrix<Float> in, final Matrix<Float> weights, final float activity, final float factor) {
+	private static float adjust(
+			final Matrix<Float> in, 
+			final Matrix<Float> weights, 
+			final float activity, 
+			final float factor) {
 		float sumQ2 = 0.0f;
 		for (int index = 0; index < weights.length(); index++) {
-    		final float q = weights.getByIndex(index) + in.getByIndex(index) * activity * factor;
+    		
+			final float q = weights.getByIndex(index) + in.getByIndex(index) * activity * factor;
     		
     		weights.setByIndex(q, index);
     		
@@ -99,8 +102,8 @@ public class LearningHebbian extends Task {
 			learn(
 				new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
 				m.linksWeight.sub(x, y, p), 
-				m.toZone.colNeurons.get(x, y, p), // + noise,
-				factor, // * (1 - cz.colWeights.get(x, y, x, y, p)),
+				m.toZone.colNeurons.get(x, y, p),
+				factor,
 				minWeight
 			);
 		}

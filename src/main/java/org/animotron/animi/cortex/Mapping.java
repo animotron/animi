@@ -78,7 +78,7 @@ public class Mapping {
 	Mapping () {}
 	
     public Mapping(CortexZoneSimple zone, int ns_links, double disp, boolean soft) {
-        this.frZone = zone;
+        frZone = zone;
         this.disp = disp;
         this.ns_links = ns_links;
         this.soft = soft;

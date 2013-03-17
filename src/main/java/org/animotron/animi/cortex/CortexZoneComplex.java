@@ -93,8 +93,9 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public MatrixFloat colNeurons;
     
     public MatrixDelay colPostNeurons;
+    
     public MatrixFloat colWeights;
-    public MatrixFloat coLearnFactor;
+    public MatrixFloat colCorrelation;
 
     CortexZoneComplex() {
 		super();
@@ -115,7 +116,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public void init() {
     	super.init();
     	
-    	coLearnFactor = cols.copy();
+		prev = cols.copy();
+    	colCorrelation = cols.copy();
     	
 		//count number of links
 //    	ns_links = 0;
@@ -491,6 +493,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
     	}
 		
 		colPostNeurons.step();
+		
+		prev = cols.copy();
 		
 //		history();
     }

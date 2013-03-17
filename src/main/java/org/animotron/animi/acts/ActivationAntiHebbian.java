@@ -37,18 +37,14 @@ public class ActivationAntiHebbian extends Task {
 		super(cz);
 	}
 
-	private float activity(final Mapping m, final int x, final int y, final int p) {
+	public static float activity(final Matrix<Float> in, final Matrix<Float> weights) {
 		float sum = 0.0f;
-	    for(int l = 0; l < m.ns_links; l++) {
-	    	final int xi = m.linksSenapse.get(x, y, l, 0);
-	    	final int yi = m.linksSenapse.get(x, y, l, 1);
-	        
-	    	if (xi >= 0 && xi < m.frZone.width && yi >= 0 && yi < m.frZone.height) {
-	    		sum += m.frZone.cols.get(xi, yi) * m.inhibitoryWeight.get(x, y, p, l);
-	        }
+
+		for (int i = 0; i < weights.length(); i++) {
+    		sum += in.getByIndex(i) * weights.getByIndex(i);
 	    }
 	    
-	    return sum * k;
+	    return sum;
 	}
 
 	public void gpuMethod(final int x, final int y) {
@@ -56,22 +52,19 @@ public class ActivationAntiHebbian extends Task {
 		final Mapping m = cz.in_zones[0];
 		
 		for (int p = 0; p < cz.package_size; p++) {
-			
-			final float activity = cz.colNeurons.get(x, y, p) - activity(m, x, y, p);
+
+			final float activity = 
+					cz.colNeurons.get(x, y, p) - 
+					activity(
+						new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
+						m.inhibitoryWeight.sub(x, y, p)
+					);
 	
 			cz.colNeurons.set(activity < 0 ? 0 : activity, x, y, p);
 		}
-		
-//		if (Float.isNaN(activity)) {
-//			activity(m, x, y);
-//		}
-//		
-//		if (activity != 0)
-//			System.out.println(""+x+" - "+y+" = "+activity);
 	}
 
 	@Override
     protected void release() {
     }
-	
 }

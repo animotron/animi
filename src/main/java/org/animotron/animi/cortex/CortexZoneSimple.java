@@ -54,6 +54,7 @@ public class CortexZoneSimple implements Layer {
 	public int height = 30;//120;
 	
     public MatrixFloat cols;
+    public MatrixFloat prev;
     
     public MatrixFloat neighborLearning;
     
