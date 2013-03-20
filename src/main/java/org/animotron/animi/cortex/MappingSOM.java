@@ -113,7 +113,7 @@ public class MappingSOM implements Mapping {
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)ns_links);// / norm;
 
-	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
+	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
 	    senapseWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
@@ -144,12 +144,18 @@ public class MappingSOM implements Mapping {
 				(int)(toZone.height() / 2.0), 
 				nerv_links);
 			
+			initLateral(
+					(int)(toZone.width() / 2.0), 
+					(int)(toZone.height() / 2.0), 
+					nerv_links);
 		} else {
 
 	        for (int x = 0; x < toZone.width(); x++) {
 				for (int y = 0; y < toZone.height(); y++) {
 	
 					initReceptionFields(x, y, nerv_links);
+
+					initLateral(x, y, nerv_links);
 				}
 			}
 		}
@@ -327,17 +333,22 @@ public class MappingSOM implements Mapping {
 	}
 
 	@Override
-	public Matrix<Integer> vertSenapse() {
+	public Matrix<Integer> senapses() {
 		return senapses;
 	}
 
 	@Override
-	public Matrix<Float> vertWeight() {
+	public Matrix<Float> senapseWeight() {
 		return senapseWeight;
 	}
 
 	@Override
-	public Matrix<Float> horzWeight() {
+	public Matrix<Integer> lateralSenapse() {
+		return lateralSenapse;
+	}
+
+	@Override
+	public Matrix<Float> lateralWeight() {
 		return lateralWeight;
 	}
 

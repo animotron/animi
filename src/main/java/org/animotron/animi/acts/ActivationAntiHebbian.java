@@ -51,13 +51,13 @@ public class ActivationAntiHebbian extends Task {
 		
 		final Mapping m = cz.in_zones[0];
 		
-		for (int p = 0; p < cz.package_size; p++) {
+		for (int p = 0; p < cz.depth; p++) {
 
 			final float activity = 
 					cz.colNeurons.get(x, y, p) - 
 					activity(
-						new MatrixMapped<Float>(m.frZone().cols, m.vertSenapse().sub(x, y)), 
-						m.horzWeight().sub(x, y, p)
+						new MatrixMapped<Float>(m.frZone().cols, m.senapses().sub(x, y)), 
+						m.lateralWeight().sub(x, y, p)
 					);
 	
 			cz.colNeurons.set(activity < 0 ? 0 : activity, x, y, p);

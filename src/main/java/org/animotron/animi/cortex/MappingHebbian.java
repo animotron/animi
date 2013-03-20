@@ -98,7 +98,7 @@ public class MappingHebbian implements Mapping {
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)ns_links);// / norm;
 
-	    vertWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
+	    vertWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
 	    vertWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
@@ -106,7 +106,7 @@ public class MappingHebbian implements Mapping {
 			}
 		});
 	    
-	    horzWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
+	    horzWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
 	    horzWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
@@ -245,17 +245,17 @@ public class MappingHebbian implements Mapping {
 	}
 
 	@Override
-	public Matrix<Integer> vertSenapse() {
+	public Matrix<Integer> senapses() {
 		return vertSenapse;
 	}
 
 	@Override
-	public Matrix<Float> vertWeight() {
+	public Matrix<Float> senapseWeight() {
 		return vertWeight;
 	}
 
 	@Override
-	public Matrix<Float> horzWeight() {
+	public Matrix<Float> lateralWeight() {
 		return horzWeight;
 	}
 

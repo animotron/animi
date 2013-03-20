@@ -112,16 +112,16 @@ public class LearningAntiHebbian extends Task {
 		
 		final Mapping m = cz.in_zones[0];
 		
-		for (int p = 0; p < cz.package_size; p++) {
+		for (int p = 0; p < cz.depth; p++) {
 			
 			if (cz.colNeurons.get(x, y, p) <= 0) {
 				continue;
 			}
 
 			learn(
-					new MatrixMapped<Float>(m.frZone().cols, m.vertSenapse().sub(x, y)), 
-					m.vertWeight().sub(x, y, p), 
-					m.horzWeight().sub(x, y, p), 
+					new MatrixMapped<Float>(m.frZone().cols, m.senapses().sub(x, y)), 
+					m.senapseWeight().sub(x, y, p), 
+					m.lateralWeight().sub(x, y, p), 
 					m.toZone().colNeurons.get(x, y, p),
 					factor,
 					minWeight

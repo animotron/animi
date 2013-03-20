@@ -110,7 +110,7 @@ public class PFActual implements Imageable, InternalFrameListener {
         g.drawString("RF", x, y);
         
         BufferedImage img = null;
-        for (int pN = 0; pN < zone.package_size; pN++) {
+        for (int pN = 0; pN < zone.depth; pN++) {
         	
         	int cY = y;
         	
@@ -202,8 +202,8 @@ public class PFActual implements Imageable, InternalFrameListener {
         
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links(); l++) {
-        	int xi = m.vertSenapse().get(cnX, cnY, l, 0);
-        	int yi = m.vertSenapse().get(cnX, cnY, l, 1);
+        	int xi = m.senapses().get(cnX, cnY, l, 0);
+        	int yi = m.senapses().get(cnX, cnY, l, 1);
 
         	if (m.toZone().isSingleReceptionField()) {
 	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX()));

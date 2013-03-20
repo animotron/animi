@@ -78,7 +78,7 @@ public class Activation extends Task {
 			cz.cols.set(0f, x, y);
 			
 			//set activity equal to winner activity 
-			for (int i = 0; i < cz.package_size; i++) {
+			for (int i = 0; i < cz.depth; i++) {
 				if (pack.get(i) > 0) {
 					cz.cols.set(pack.get(i), x, y);
 					break;

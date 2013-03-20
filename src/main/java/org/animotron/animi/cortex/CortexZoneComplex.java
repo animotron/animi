@@ -87,8 +87,8 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	/** Number of synaptic connections of the complex neuron **/
 	public int nsc_links;
 	
-    @InitParam(name="package_size")
-	public int package_size = 9;
+    @InitParam(name="depth")
+	public int depth = 9;
 
     public MatrixFloat colNeurons;
     
@@ -101,13 +101,15 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		super();
     }
 
-	CortexZoneComplex(String name, MultiCortex mc, int width, int height, Mapping[] in_zones) {
+	CortexZoneComplex(String name, MultiCortex mc, int width, int height, int depth, Mapping[] in_zones) {
 		super(name, mc);
 		
 		this.width = width;;
 		this.height = height;
+		this.depth = depth;
 		
 		this.in_zones = in_zones;
+		
     }
 	
     /**
@@ -168,13 +170,13 @@ public class CortexZoneComplex extends CortexZoneSimple {
 			}
 		}
 		
-    	colNeurons = new MatrixFloat(width, height, package_size);
+    	colNeurons = new MatrixFloat(width, height, depth);
     	colNeurons.fill(0f);
     	
-    	colPostNeurons = new MatrixDelay(delay, width, height, package_size);
+    	colPostNeurons = new MatrixDelay(delay, width, height, depth);
     	colPostNeurons.fill(0f);
 
-    	colWeights = new MatrixFloat(width, height, width, height, package_size);
+    	colWeights = new MatrixFloat(width, height, width, height, depth);
     	colWeights.fill(getWeight());
 
     	if (CRFs != null) {
@@ -189,7 +191,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	}
     
     public Float getWeight() {
-		return 1 / (float)(width * height * package_size);
+		return 1 / (float)(width * height * depth);
 	}
 
 	private void initReceptionFields(final int x, final int y, final double _sigma, final boolean[][] nerv_links) {
@@ -305,7 +307,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		public void init() {
 
 	        boxMini = 16;
-	        boxN = (int) Math.round( Math.sqrt(package_size) );
+	        boxN = (int) Math.round( Math.sqrt(depth) );
 	        boxSize = boxMini * boxN;
 
 			int maxX = width() * boxSize;

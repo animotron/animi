@@ -88,13 +88,13 @@ public class MultiCortex implements Runnable {
         z_in = new CortexZoneSimple("Зрительный нерв", this);
         
         //1st zone
-        layer_1 = new CortexZoneComplex("1й", this, 10, 10, //120, 120, //160, 120,
+        layer_1 = new CortexZoneComplex("1й", this, 10, 10, 9, //120, 120, //160, 120,
             new Mapping[]{
                 new MappingHebbian(z_in, 100, 1, false) //7x7 (50)
             }
         );
         
-        layer_2 = new CortexZoneComplex("2й", this, 10, 10, //120, 120, //160, 120,
+        layer_2 = new CortexZoneComplex("2й", this, 10, 10, 1, //120, 120, //160, 120,
             new Mapping[]{
                 new MappingSOM(layer_1, 100, 1, 100) //7x7 (50)
             }

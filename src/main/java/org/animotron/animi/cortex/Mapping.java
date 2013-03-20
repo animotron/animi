@@ -30,11 +30,13 @@ public interface Mapping {
 	
 	public CortexZoneComplex toZone();
 
-	public Matrix<Integer> vertSenapse();
+	public Matrix<Integer> senapses();
 
-	public Matrix<Float> vertWeight();
+	public Matrix<Float> senapseWeight();
 
-	public Matrix<Float> horzWeight();
+	public Matrix<Float> lateralWeight();
+	
+	public Matrix<Integer> lateralSenapse();
 
 	public void map(CortexZoneComplex cortexZoneComplex);
 
@@ -51,5 +53,4 @@ public interface Mapping {
 	public double disp();
 
 	public boolean soft();
-
 }

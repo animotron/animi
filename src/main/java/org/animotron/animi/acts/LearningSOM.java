@@ -37,9 +37,6 @@ public class LearningSOM extends Task {
 	@RuntimeParam(name = "ny")
 	public float ny = 0.01f;
 	
-	@RuntimeParam(name = "minWeight")
-	public float minWeight = 10^-11;
-
 	private float factor;
 	
 	public LearningSOM(CortexZoneComplex cz) {
@@ -67,44 +64,57 @@ public class LearningSOM extends Task {
 	    return sumQ2;
 	}
 
-	private static void normalization(final Matrix<Float> weights, final float sumQ2, final float minWeight) {
+	private static void normalization(final Matrix<Float> weights, final float sumQ2) {
 		float norm = (float) Math.sqrt(sumQ2);
 		for (int index = 0; index < weights.length(); index++) {
 	    	
 	    	final float q = weights.getByIndex(index) / norm;
 	    	
-	    	if (q >= minWeight) {
-	    		weights.setByIndex(q, index);
-	    	} else {
-	    		weights.setByIndex(minWeight, index);
-	    	}
+    		weights.setByIndex(q, index);
 	    }
 	}
 
-	public static void learn(final Matrix<Float> in, final Matrix<Float> weights, final float activity, final float factor, final float minWeight) {
-		if (activity > 0) {
-			final float sumQ2 = adjust(in, weights, activity, factor);
+	public static void learn(
+			final MappingSOM m,
+			final Matrix<Integer> lateralSenapse, 
+			final Matrix<Float> lateralWeight, 
+			final float factor,
+			final int p) {
+		
+		for (int index = 0; index < lateralWeight.length(); index++) {
 			
-			normalization(weights, sumQ2, minWeight);
+			final int xi = lateralSenapse.getByIndex(index*2 + 0);
+			final int yi = lateralSenapse.getByIndex(index*2 + 0);
+		
+			final Matrix<Float> weights = m.senapseWeight().sub(xi, yi, p);
+			
+			final float sumQ2 = adjust(
+					new MatrixMapped<Float>(m.frZone().cols, m.senapses().sub(xi, yi)), 
+					m.senapseWeight().sub(xi, yi, p), 
+					m.toZone().colNeurons.get(xi, yi, p),
+					factor
+			);
+			
+			normalization(weights, sumQ2);
 		}
 	}
 
 	public void gpuMethod(int x, int y) {
 		
-		final Mapping m = cz.in_zones[0];
+		final MappingSOM m = (MappingSOM) cz.in_zones[0];
 		
-		for (int p = 0; p < cz.package_size; p++) {
+		for (int p = 0; p < cz.depth; p++) {
 		
 			if (cz.colNeurons.get(x, y, p) <= 0) {
 				continue;
 			}
 			
 			learn(
-				new MatrixMapped<Float>(m.frZone().cols, m.vertSenapse().sub(x, y)), 
-				m.vertWeight().sub(x, y, p), 
-				m.toZone().colNeurons.get(x, y, p),
+				m,
+				m.lateralSenapse().sub(x, y),
+				m.lateralWeight().sub(x, y),
 				factor,
-				minWeight
+				p
 			);
 		}
 	}
