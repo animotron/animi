@@ -152,8 +152,8 @@ public class Utils {
 
 		int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	final int xi = m.linksSenapse.get(cnX, cnY, l, 0);
-        	final int yi = m.linksSenapse.get(cnX, cnY, l, 1);
+        	final int xi = m.vertSenapse.get(cnX, cnY, l, 0);
+        	final int yi = m.vertSenapse.get(cnX, cnY, l, 1);
         	
         	if (m.toZone.isSingleReceptionField()) {
 	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX));
@@ -177,9 +177,9 @@ public class Utils {
 
 		        final float w;
 		        if (isPos) {
-		        	w = m.linksWeight.get(cnX, cnY, pN, l);
+		        	w = m.vertWeight.get(cnX, cnY, pN, l);
 		        } else {
-		        	w = m.inhibitoryWeight.get(cnX, cnY, pN, l);
+		        	w = m.horzWeight.get(cnX, cnY, pN, l);
 		        }
 				if (Float.isNaN(w) || Float.isInfinite(w)) {
 					R = 255;
@@ -226,8 +226,8 @@ public class Utils {
 				
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	final int xi = m.linksSenapse.get(cnX, cnY, l, 0);
-        	final int yi = m.linksSenapse.get(cnX, cnY, l, 1);
+        	final int xi = m.vertSenapse.get(cnX, cnY, l, 0);
+        	final int yi = m.vertSenapse.get(cnX, cnY, l, 1);
         	
         	pX = xi;
 			pY = yi;
@@ -238,7 +238,7 @@ public class Utils {
         			&& pY < image.getHeight()) {
 
 				int c = calcGrey(image, pX, pY);
-				c += 255 * sz.cols.get(cnX, cnY) * m.linksWeight.get(cnX, cnY, 0, l) * 1000;
+				c += 255 * sz.cols.get(cnX, cnY) * m.vertWeight.get(cnX, cnY, 0, l) * 1000;
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, create_rgb(255, c, c, c));
         	}

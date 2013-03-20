@@ -100,8 +100,8 @@ public class LearningHebbian extends Task {
 			}
 			
 			learn(
-				new MatrixMapped<Float>(m.frZone.cols, m.linksSenapse.sub(x, y)), 
-				m.linksWeight.sub(x, y, p), 
+				new MatrixMapped<Float>(m.frZone.cols, m.vertSenapse.sub(x, y)), 
+				m.vertWeight.sub(x, y, p), 
 				m.toZone.colNeurons.get(x, y, p),
 				factor,
 				minWeight

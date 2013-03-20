@@ -3,7 +3,7 @@ package org.animotron.animi.cortex;
 public interface Matrix<T extends Number> {
 
 	public interface Value<K> {
-		public K get();
+		public K get(int... dims);
 	}
 
 	public void init(Value<T> value);

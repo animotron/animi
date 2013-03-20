@@ -55,23 +55,23 @@ public class Mapping {
 
 	public float w;
 	
-	public Matrix<Float> linksWeight;
+	public Matrix<Float> vertWeight;
+	public Matrix<Integer> vertSenapse;
 	
-	public Matrix<Float> inhibitoryWeight;
-	
-	public Matrix<Integer> linksSenapse;
+	public Matrix<Float> horzWeight;
+	public Matrix<Integer> horzSenapse;
 	
 	private void linksSenapse(int Sx, int Sy, int x, int y, int l) {
 		if (toZone.singleReceptionField) {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
-					linksSenapse.set(Sx, xi, yi, l, 0);
-					linksSenapse.set(Sy, xi, yi, l, 1);
+					vertSenapse.set(Sx, xi, yi, l, 0);
+					vertSenapse.set(Sy, xi, yi, l, 1);
 				}
 			}
 		} else {
-			linksSenapse.set(Sx, x, y, l, 0);
-			linksSenapse.set(Sy, x, y, l, 1);
+			vertSenapse.set(Sx, x, y, l, 0);
+			vertSenapse.set(Sy, x, y, l, 1);
 		}
 	}
 
@@ -98,24 +98,24 @@ public class Mapping {
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)ns_links);// / norm;
 
-	    linksWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
-	    linksWeight.init(new Matrix.Value<Float>() {
+	    vertWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
+	    vertWeight.init(new Matrix.Value<Float>() {
 			@Override
-			public Float get() {
+			public Float get(int... dims) {
 				return getInitWeight();
 			}
 		});
 	    
-	    inhibitoryWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
-	    inhibitoryWeight.init(new Matrix.Value<Float>() {
+	    horzWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
+	    horzWeight.init(new Matrix.Value<Float>() {
 			@Override
-			public Float get() {
+			public Float get(int... dims) {
 				return getInitWeight();
 			}
 		});
 
-		linksSenapse = new MatrixInteger(toZone.width(), toZone.height(), ns_links, 2);
-		linksSenapse.fill(0);
+		vertSenapse = new MatrixInteger(toZone.width(), toZone.height(), ns_links, 2);
+		vertSenapse.fill(0);
 		
 //        for (int x = 0; x < zone.width(); x++) {
 //			for (int y = 0; y < zone.height(); y++) {
