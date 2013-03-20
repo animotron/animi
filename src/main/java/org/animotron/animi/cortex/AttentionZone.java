@@ -28,7 +28,7 @@ import java.util.Random;
  */
 public class AttentionZone extends CortexZoneComplex {
 	
-	public AttentionZone(String name, MultiCortex mc, int width, int height, Mapping[] in_zones) {
+	public AttentionZone(String name, MultiCortex mc, int width, int height, MappingHebbian[] in_zones) {
 		super(name, mc, width, height, in_zones);
 	}
 	
@@ -66,8 +66,8 @@ public class AttentionZone extends CortexZoneComplex {
 //            }
 //        }
 
-        X = (int)(X * in_zones[0].frZone.width / (double) width());
-		Y = (int)(Y * in_zones[0].frZone.height / (double) height());
+        X = (int)(X * in_zones[0].frZone().width / (double) width());
+		Y = (int)(Y * in_zones[0].frZone().height / (double) height());
 		
 //		mc.retina.shift(X + nextRandom(), Y + nextRandom());
     }

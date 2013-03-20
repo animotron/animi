@@ -24,7 +24,7 @@ import javolution.xml.stream.XMLInputFactory;
 import javolution.xml.stream.XMLStreamException;
 import javolution.xml.stream.XMLStreamReader;
 import org.animotron.animi.cortex.CortexZoneSimple;
-import org.animotron.animi.cortex.Mapping;
+import org.animotron.animi.cortex.MappingHebbian;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_event;
@@ -88,7 +88,7 @@ public class Utils {
 			final int offsetX, final int offsetY,
 			final int cnX, final int cnY, 
 			final int Xl, final int Yl,
-			final Mapping m) {
+			final MappingHebbian m) {
 
 		BufferedImage img = image;
 		
@@ -99,7 +99,7 @@ public class Utils {
 		for (int pX = 0; pX < size; pX++) {
 			for (int pY = 0; pY < size; pY++) {
 				final int p = (pY * size) + pX;
-				if (p < m.toZone.package_size) {
+				if (p < m.toZone().package_size) {
 					
 					img = drawRF(true , image, boxMini, 
 							offsetX + boxMini * pX, 
@@ -112,7 +112,7 @@ public class Utils {
 							cnX, cnY, p, m);
 
 					//point of neuron activity in top left corner
-					gray = (int) (255 * m.toZone.colNeurons.get(cnX, cnY, p));
+					gray = (int) (255 * m.toZone().colNeurons.get(cnX, cnY, p));
 					if (gray > 255) gray = 255;
 					image.setRGB(
 							offsetX + boxMini * pX + 2, 
@@ -120,7 +120,7 @@ public class Utils {
 							Utils.create_rgb(255, gray, gray, gray));
 
 					//point of post neuron activity in top left plus one pixel left corner
-					gray = (int) (255 * m.toZone.colPostNeurons.get(cnX, cnY, p));
+					gray = (int) (255 * m.toZone().colPostNeurons.get(cnX, cnY, p));
 					if (gray > 255) gray = 255;
 					image.setRGB(
 							offsetX + boxMini * pX + 3, 
@@ -128,7 +128,7 @@ public class Utils {
 							Utils.create_rgb(255, gray, gray, gray));
 			        
 					//weight box
-					gray = (int) (255 * m.toZone.colWeights.get(Xl, Yl, cnX, cnY, p));
+					gray = (int) (255 * m.toZone().colWeights.get(Xl, Yl, cnX, cnY, p));
 					if (gray > 255) gray = 255;
 					
 					g.setColor(new Color(gray, gray, gray));
@@ -148,14 +148,14 @@ public class Utils {
 			final int offsetX, final int offsetY,
 			final int cnX, final int cnY,
 			final int pN,
-			final Mapping m) {
+			final MappingHebbian m) {
 
 		int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	final int xi = m.vertSenapse.get(cnX, cnY, l, 0);
-        	final int yi = m.vertSenapse.get(cnX, cnY, l, 1);
+        	final int xi = m.vertSenapse().get(cnX, cnY, l, 0);
+        	final int yi = m.vertSenapse().get(cnX, cnY, l, 1);
         	
-        	if (m.toZone.isSingleReceptionField()) {
+        	if (m.toZone().isSingleReceptionField()) {
 	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX));
 				pY = (boxSize / 2) + (yi - (int)(m.toZoneCenterY() * m.fY));
         	} else {
@@ -177,9 +177,9 @@ public class Utils {
 
 		        final float w;
 		        if (isPos) {
-		        	w = m.vertWeight.get(cnX, cnY, pN, l);
+		        	w = m.vertWeight().get(cnX, cnY, pN, l);
 		        } else {
-		        	w = m.horzWeight.get(cnX, cnY, pN, l);
+		        	w = m.horzWeight().get(cnX, cnY, pN, l);
 		        }
 				if (Float.isNaN(w) || Float.isInfinite(w)) {
 					R = 255;
@@ -216,9 +216,9 @@ public class Utils {
 	public static BufferedImage drawRF(
 			final BufferedImage image,
 			final int cnX, final int cnY, 
-			final Mapping m) {
+			final MappingHebbian m) {
 		
-		final CortexZoneSimple sz = m.frZone;
+		final CortexZoneSimple sz = m.frZone();
 		
 		if (sz.cols.get(cnX, cnY) > 0) {
 			return image;
@@ -226,8 +226,8 @@ public class Utils {
 				
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links; l++) {
-        	final int xi = m.vertSenapse.get(cnX, cnY, l, 0);
-        	final int yi = m.vertSenapse.get(cnX, cnY, l, 1);
+        	final int xi = m.vertSenapse().get(cnX, cnY, l, 0);
+        	final int yi = m.vertSenapse().get(cnX, cnY, l, 1);
         	
         	pX = xi;
 			pY = yi;
@@ -238,7 +238,7 @@ public class Utils {
         			&& pY < image.getHeight()) {
 
 				int c = calcGrey(image, pX, pY);
-				c += 255 * sz.cols.get(cnX, cnY) * m.vertWeight.get(cnX, cnY, 0, l) * 1000;
+				c += 255 * sz.cols.get(cnX, cnY) * m.vertWeight().get(cnX, cnY, 0, l) * 1000;
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, create_rgb(255, c, c, c));
         	}

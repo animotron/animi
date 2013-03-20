@@ -87,8 +87,8 @@ public class MultiCortex implements Runnable {
         z_in = new CortexZoneSimple("Зрительный нерв", this);
         
         z_1st = new CortexZoneComplex("1й", this, 2, 2, //120, 120, //160, 120,
-            new Mapping[]{
-                new Mapping(z_in, 100, 1, false) //7x7 (50)
+            new MappingHebbian[]{
+                new MappingHebbian(z_in, 100, 1, false) //7x7 (50)
             }
         );
 //        z_1st.addMappring(z_1st);
@@ -261,7 +261,7 @@ public class MultiCortex implements Runnable {
 		
 		NeuronComplex cn = null;
 		
-		List<Mapping> mappings = new ArrayList<Mapping>();
+		List<MappingHebbian> mappings = new ArrayList<MappingHebbian>();
 		
 		public SAXPars(Application app) {
 			this.app = app;
@@ -304,7 +304,7 @@ public class MultiCortex implements Runnable {
 			
 			} else if ("mapping".equals(qName)) {
 				mappings.add(
-					new Mapping(
+					new MappingHebbian(
 						prevZone,
 						Integer.valueOf(attrs.getValue("number-of-synaptic-links")),
 						Double.valueOf(attrs.getValue("synaptic-links-dispersion")),
@@ -346,7 +346,7 @@ public class MultiCortex implements Runnable {
 				
 				if (zone instanceof CortexZoneComplex) {
 					((CortexZoneComplex) zone).in_zones = 
-						mappings.toArray(new Mapping[mappings.size()]);
+						mappings.toArray(new MappingHebbian[mappings.size()]);
 				}
 				mappings.clear();
 				

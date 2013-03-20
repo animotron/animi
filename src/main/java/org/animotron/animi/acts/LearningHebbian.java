@@ -91,7 +91,7 @@ public class LearningHebbian extends Task {
 
 	public void gpuMethod(int x, int y) {
 		
-		final Mapping m = cz.in_zones[0];
+		final MappingHebbian m = cz.in_zones[0];
 		
 		for (int p = 0; p < cz.package_size; p++) {
 		
@@ -100,9 +100,9 @@ public class LearningHebbian extends Task {
 			}
 			
 			learn(
-				new MatrixMapped<Float>(m.frZone.cols, m.vertSenapse.sub(x, y)), 
-				m.vertWeight.sub(x, y, p), 
-				m.toZone.colNeurons.get(x, y, p),
+				new MatrixMapped<Float>(m.frZone().cols, m.vertSenapse().sub(x, y)), 
+				m.vertWeight().sub(x, y, p), 
+				m.toZone().colNeurons.get(x, y, p),
 				factor,
 				minWeight
 			);
