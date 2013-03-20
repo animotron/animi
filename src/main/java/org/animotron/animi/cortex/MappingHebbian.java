@@ -283,4 +283,9 @@ public class MappingHebbian implements Mapping {
 	public boolean soft() {
 		return soft;
 	}
+
+	@Override
+	public Matrix<Integer> lateralSenapse() {
+		return null;
+	}
 }
