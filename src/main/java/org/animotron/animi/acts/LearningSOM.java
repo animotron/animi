@@ -24,12 +24,12 @@ import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 
 /**
- * Delta rule. http://en.wikipedia.org/wiki/Delta_rule
+ * Self-organizing feature map.
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class LearningHebbian extends Task {
+public class LearningSOM extends Task {
 	
 	@RuntimeParam(name = "count")
 	public int count = 10000;
@@ -42,7 +42,7 @@ public class LearningHebbian extends Task {
 
 	private float factor;
 	
-	public LearningHebbian(CortexZoneComplex cz) {
+	public LearningSOM(CortexZoneComplex cz) {
 		super(cz);
 		
 		factor = ny;

@@ -31,7 +31,7 @@ import org.animotron.animi.InitParam;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class MappingHebbian implements Mapping {
+public class MappingSOM implements Mapping {
 	
 	private static final boolean debug = false;
 	
@@ -40,6 +40,11 @@ public class MappingHebbian implements Mapping {
 	private CortexZoneSimple frZone;
 	private CortexZoneComplex toZone;
 	
+	public double fX = 1;
+	public double fY = 1;
+
+	public float w;
+	
 	@InitParam(name="ns_links")
     public int ns_links;           // Number of synaptic connections for the zone
     
@@ -47,41 +52,51 @@ public class MappingHebbian implements Mapping {
 	@InitParam(name="disp")
 	public double disp;      // Describe a size of sensor field
 
-	@InitParam(name="soft")
-	public boolean soft = true;
+	private Matrix<Float> senapseWeight;
+	private Matrix<Integer> senapses;
 	
-	public double fX = 1;
-	public double fY = 1;
-
-	public float w;
+	private Matrix<Float> lateralWeight;
+	private Matrix<Integer> lateralSenapse;
 	
-	private Matrix<Float> vertWeight;
-	private Matrix<Integer> vertSenapse;
-	
-	private Matrix<Float> horzWeight;
-	private Matrix<Integer> horzSenapse;
+	private int lateralSize;
 	
 	private void linksSenapse(int Sx, int Sy, int x, int y, int l) {
 		if (toZone.singleReceptionField) {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
-					vertSenapse.set(Sx, xi, yi, l, 0);
-					vertSenapse.set(Sy, xi, yi, l, 1);
+					senapses.set(Sx, xi, yi, l, 0);
+					senapses.set(Sy, xi, yi, l, 1);
 				}
 			}
 		} else {
-			vertSenapse.set(Sx, x, y, l, 0);
-			vertSenapse.set(Sy, x, y, l, 1);
+			senapses.set(Sx, x, y, l, 0);
+			senapses.set(Sy, x, y, l, 1);
 		}
 	}
 
-	MappingHebbian () {}
+	private void lateralSenapse(int Sx, int Sy, int x, int y, int l) {
+		if (toZone.singleReceptionField) {
+			for (int xi = 0; xi < toZone.width(); xi++) {
+				for (int yi = 0; yi < toZone.height(); yi++) {
+					lateralSenapse.set(Sx, xi, yi, l, 0);
+					lateralSenapse.set(Sy, xi, yi, l, 1);
+				}
+			}
+		} else {
+			lateralSenapse.set(Sx, x, y, l, 0);
+			lateralSenapse.set(Sy, x, y, l, 1);
+		}
+	}
+
+	MappingSOM () {}
 	
-    public MappingHebbian(CortexZoneSimple zone, int ns_links, double disp, boolean soft) {
+    public MappingSOM(CortexZoneSimple zone, int ns_links, double disp, int lateralSize) {
         frZone = zone;
+        
         this.disp = disp;
         this.ns_links = ns_links;
-        this.soft = soft;
+        
+        this.lateralSize = lateralSize;
     }
 
     public String toString() {
@@ -98,40 +113,31 @@ public class MappingHebbian implements Mapping {
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)ns_links);// / norm;
 
-	    vertWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
-	    vertWeight.init(new Matrix.Value<Float>() {
+	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
+	    senapseWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
 				return getInitWeight();
 			}
 		});
 	    
-	    horzWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.package_size, ns_links);
-	    horzWeight.init(new Matrix.Value<Float>() {
+	    lateralWeight = new MatrixFloat(toZone.width(), toZone.height(), lateralSize);
+	    lateralWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
 				return getInitWeight();
 			}
 		});
 
-		vertSenapse = new MatrixInteger(toZone.width(), toZone.height(), ns_links, 2);
-		vertSenapse.fill(0);
+		senapses = new MatrixInteger(toZone.width(), toZone.height(), ns_links, 2);
+		senapses.fill(0);
 		
-//        for (int x = 0; x < zone.width(); x++) {
-//			for (int y = 0; y < zone.height(); y++) {
-//				zone.col[x][y].a_links.clear();
-//				zone.col[x][y].a_Qs.clear();
-//			}
-//        }
-
 		fX = frZone.width() / (double) toZone.width();
 		fY = frZone.height() / (double) toZone.height();
 
 		final boolean[][] nerv_links = new boolean[frZone.width()][frZone.height()];
         
 		if (toZone.singleReceptionField) {
-//			fX = 0;
-//			fY = 0;
 
 			initReceptionFields(
 				(int)(toZone.width() / 2.0), 
@@ -139,10 +145,9 @@ public class MappingHebbian implements Mapping {
 				nerv_links);
 			
 		} else {
-//			float sumQ2 = (1 / (float)ns_links * 1 / (float)ns_links) * ns_links;
+
 	        for (int x = 0; x < toZone.width(); x++) {
 				for (int y = 0; y < toZone.height(); y++) {
-//					System.out.println("x = "+x+" y = "+y);
 	
 					initReceptionFields(x, y, nerv_links);
 				}
@@ -222,6 +227,83 @@ public class MappingHebbian implements Mapping {
 		if (debug) System.out.println();
     }
     
+    private void initLateral(final int x, final int y, final boolean[][] nerv_links) {
+        double X, Y, S;
+		double x_in_nerv, y_in_nerv;
+        double _sigma, sigma;
+        
+        double sigma2 = Math.sqrt(lateralSize / Math.PI);
+
+		// Определение координат текущего нейрона в масштабе
+		// проецируемой зоны
+		x_in_nerv = x;
+		y_in_nerv = y;
+//		System.out.println("x_in_nerv = "+x_in_nerv+" y_in_nerv = "+y_in_nerv);
+
+        _sigma = disp;// * ((m.zone.width() + m.zone.height()) / 2);
+        sigma = _sigma;
+
+		// Обнуление массива занятости связей
+		for (int n1 = 0; n1 < frZone.width(); n1++) {
+			for (int n2 = 0; n2 < frZone.height(); n2++) {
+				nerv_links[n1][n2] = false;
+			}
+		}
+
+		// преобразование Бокса — Мюллера для получения
+		// нормально распределенной величины
+		// DispLink - дисперсия связей
+		int count = 0;
+		for (int i = 0; i < ns_links; i++) {
+            int lx, ly;
+            do {
+//                do {
+                    if (count > ns_links * 3) {
+                    	if (Double.isInfinite(sigma)) {
+                    		System.out.println("initialization failed @ x = "+x+" y = "+y);
+                    		System.exit(1);
+                    	}
+                    	sigma *= 1.05;//_sigma * 0.1;
+//						System.out.println("\n"+i+" of "+ns_links+" ("+sigma+")");
+                    	count = 0;
+                    }
+                    count++;
+                    	
+                    do {
+                        X = 2.0 * Math.random() - 1;
+                        Y = 2.0 * Math.random() - 1;
+                        S = X * X + Y * Y;
+                    } while (S > 1 || S == 0);
+                    S = Math.sqrt(-2 * Math.log(S) / S);
+                    double dX = X * S * sigma;
+                    double dY = Y * S * sigma;
+                    lx = (int) Math.round(x_in_nerv + dX);
+                    ly = (int) Math.round(y_in_nerv + dY);
+
+                    //определяем, что не вышли за границы поля колонок
+                    //колонки по периметру не задействованы
+//                } while (!(soft || (lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1)));
+
+            // Проверка на повтор связи
+			} while ( lx < 1 || ly < 1 || lx > frZone.width() - 1 || ly > frZone.height() - 1 || nerv_links[lx][ly] );
+
+            if (lx >= 1 && ly >= 1 && lx < frZone.width() - 1 && ly < frZone.height() - 1) {
+                if (debug) System.out.print(".");
+
+                nerv_links[lx][ly] = true;
+
+				// Создаем синаптическую связь
+                lateralSenapse(lx, ly, x, y, i);
+                
+                final float value = (float) Math.exp( -( (lx - x)^2 + (ly - y)^2 ) / (2 * sigma2));
+                lateralWeight.set(value, x, y, i);
+            } else {
+            	if (debug) System.out.print("!");
+            }
+		}
+		if (debug) System.out.println();
+    }
+
     public int toZoneCenterX() {
     	return (int)(toZone.width()  / 2.0);
 	}
@@ -246,17 +328,17 @@ public class MappingHebbian implements Mapping {
 
 	@Override
 	public Matrix<Integer> vertSenapse() {
-		return vertSenapse;
+		return senapses;
 	}
 
 	@Override
 	public Matrix<Float> vertWeight() {
-		return vertWeight;
+		return senapseWeight;
 	}
 
 	@Override
 	public Matrix<Float> horzWeight() {
-		return horzWeight;
+		return lateralWeight;
 	}
 
 	@Override
@@ -281,6 +363,6 @@ public class MappingHebbian implements Mapping {
 
 	@Override
 	public boolean soft() {
-		return soft;
+		return false;
 	}
 }

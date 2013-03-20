@@ -24,7 +24,7 @@ import javolution.xml.stream.XMLInputFactory;
 import javolution.xml.stream.XMLStreamException;
 import javolution.xml.stream.XMLStreamReader;
 import org.animotron.animi.cortex.CortexZoneSimple;
-import org.animotron.animi.cortex.MappingHebbian;
+import org.animotron.animi.cortex.Mapping;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_event;
@@ -88,7 +88,7 @@ public class Utils {
 			final int offsetX, final int offsetY,
 			final int cnX, final int cnY, 
 			final int Xl, final int Yl,
-			final MappingHebbian m) {
+			final Mapping m) {
 
 		BufferedImage img = image;
 		
@@ -148,19 +148,19 @@ public class Utils {
 			final int offsetX, final int offsetY,
 			final int cnX, final int cnY,
 			final int pN,
-			final MappingHebbian m) {
+			final Mapping m) {
 
 		int pX = 0, pY = 0;
-        for (int l = 0; l < m.ns_links; l++) {
+        for (int l = 0; l < m.ns_links(); l++) {
         	final int xi = m.vertSenapse().get(cnX, cnY, l, 0);
         	final int yi = m.vertSenapse().get(cnX, cnY, l, 1);
         	
         	if (m.toZone().isSingleReceptionField()) {
-	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX));
-				pY = (boxSize / 2) + (yi - (int)(m.toZoneCenterY() * m.fY));
+	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX()));
+				pY = (boxSize / 2) + (yi - (int)(m.toZoneCenterY() * m.fY()));
         	} else {
-        		pX = (boxSize / 2) + (xi - (int)(cnX * m.fX));
-        		pY = (boxSize / 2) + (yi - (int)(cnY * m.fY));
+        		pX = (boxSize / 2) + (xi - (int)(cnX * m.fX()));
+        		pY = (boxSize / 2) + (yi - (int)(cnY * m.fY()));
         	}
                     	
 			if (       pX > 0 
@@ -216,7 +216,7 @@ public class Utils {
 	public static BufferedImage drawRF(
 			final BufferedImage image,
 			final int cnX, final int cnY, 
-			final MappingHebbian m) {
+			final Mapping m) {
 		
 		final CortexZoneSimple sz = m.frZone();
 		
@@ -225,7 +225,7 @@ public class Utils {
 		}
 				
         int pX = 0, pY = 0;
-        for (int l = 0; l < m.ns_links; l++) {
+        for (int l = 0; l < m.ns_links(); l++) {
         	final int xi = m.vertSenapse().get(cnX, cnY, l, 0);
         	final int yi = m.vertSenapse().get(cnX, cnY, l, 1);
         	

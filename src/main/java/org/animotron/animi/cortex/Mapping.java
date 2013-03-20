@@ -36,4 +36,20 @@ public interface Mapping {
 
 	public Matrix<Float> horzWeight();
 
+	public void map(CortexZoneComplex cortexZoneComplex);
+
+	public int toZoneCenterX();
+
+	public int toZoneCenterY();
+
+	public double fX();
+
+	public double fY();
+
+	public int ns_links();
+
+	public double disp();
+
+	public boolean soft();
+
 }

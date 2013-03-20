@@ -46,7 +46,7 @@ public class ActivationHebbian extends Task {
 
 	public void gpuMethod(final int x, final int y) {
 		
-		MappingHebbian m = cz.in_zones[0];
+		Mapping m = cz.in_zones[0];
 		
 		for (int p = 0; p < cz.package_size; p++) {
 

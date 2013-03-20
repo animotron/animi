@@ -46,7 +46,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	protected boolean singleReceptionField = true;
 	
 	@Params
-	public MappingHebbian[] in_zones;
+	public Mapping[] in_zones;
 
 	@Params
 	public Activation cnActivation = new Activation(this);
@@ -101,7 +101,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		super();
     }
 
-	CortexZoneComplex(String name, MultiCortex mc, int width, int height, MappingHebbian[] in_zones) {
+	CortexZoneComplex(String name, MultiCortex mc, int width, int height, Mapping[] in_zones) {
 		super(name, mc);
 		
 		this.width = width;;
@@ -126,7 +126,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 //		}
 
         //mapping
-		for (MappingHebbian m : in_zones) {
+		for (Mapping m : in_zones) {
 			m.map(this);
 		}
 
@@ -525,12 +525,12 @@ public class CortexZoneComplex extends CortexZoneSimple {
 
 		out.write(">");
 		
-		for (MappingHebbian mapping : in_zones) {
+		for (Mapping mapping : in_zones) {
 			out.write("<mapping");
-			write(out, "synaptic-links-dispersion", mapping.disp);
-			write(out, "number-of-synaptic-links", mapping.ns_links);
+			write(out, "synaptic-links-dispersion", mapping.disp());
+			write(out, "number-of-synaptic-links", mapping.ns_links());
 			write(out, "with-zone", mapping.frZone().id);
-			write(out, "soft", mapping.soft);
+			write(out, "soft", mapping.soft());
 			out.write("/>");
 			
 		}

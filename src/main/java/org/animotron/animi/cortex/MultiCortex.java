@@ -68,7 +68,8 @@ public class MultiCortex implements Runnable {
     public Retina retina;
 
     public CortexZoneSimple z_in;
-    public CortexZoneComplex z_1st;
+    public CortexZoneComplex layer_1;
+    public CortexZoneComplex layer_2;
     
     @Params
     public CortexZoneSimple [] zones;
@@ -86,14 +87,22 @@ public class MultiCortex implements Runnable {
     	
         z_in = new CortexZoneSimple("Зрительный нерв", this);
         
-        z_1st = new CortexZoneComplex("1й", this, 2, 2, //120, 120, //160, 120,
-            new MappingHebbian[]{
+        //1st zone
+        layer_1 = new CortexZoneComplex("1й", this, 10, 10, //120, 120, //160, 120,
+            new Mapping[]{
                 new MappingHebbian(z_in, 100, 1, false) //7x7 (50)
             }
         );
+        
+        layer_2 = new CortexZoneComplex("2й", this, 10, 10, //120, 120, //160, 120,
+            new Mapping[]{
+                new MappingSOM(layer_1, 100, 1, 100) //7x7 (50)
+            }
+        );
+
 //        z_1st.addMappring(z_1st);
         
-        zones = new CortexZoneSimple[]{z_in, z_1st};
+        zones = new CortexZoneSimple[]{z_in, layer_1};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);

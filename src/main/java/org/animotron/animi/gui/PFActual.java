@@ -198,19 +198,19 @@ public class PFActual implements Imageable, InternalFrameListener {
         final int cnX = point.x;
         final int cnY = point.y;
 
-        MappingHebbian m = zone.in_zones[0];
+        Mapping m = zone.in_zones[0];
         
         int pX = 0, pY = 0;
-        for (int l = 0; l < m.ns_links; l++) {
+        for (int l = 0; l < m.ns_links(); l++) {
         	int xi = m.vertSenapse().get(cnX, cnY, l, 0);
         	int yi = m.vertSenapse().get(cnX, cnY, l, 1);
 
         	if (m.toZone().isSingleReceptionField()) {
-	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX));
-				pY = (boxSize / 2) + (yi - (int)(m.toZoneCenterY() * m.fY));
+	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX()));
+				pY = (boxSize / 2) + (yi - (int)(m.toZoneCenterY() * m.fY()));
         	} else {
-	        	pX = (boxSize / 2) + (xi - (int)(cnX * m.fX));
-				pY = (boxSize / 2) + (yi - (int)(cnY * m.fY));
+	        	pX = (boxSize / 2) + (xi - (int)(cnX * m.fX()));
+				pY = (boxSize / 2) + (yi - (int)(cnY * m.fY()));
         	}
         	if (pX >= 0 && pX < boxSize 
         			&& pY >= 0 && pY < boxSize) {
