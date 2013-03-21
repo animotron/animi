@@ -26,19 +26,13 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 import org.animotron.animi.*;
 import org.animotron.animi.cortex.*;
-import org.animotron.animi.cortex.old.LinkQ;
-import org.animotron.animi.cortex.old.NeuronComplex;
-import org.animotron.animi.cortex.old.NeuronSimple;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -46,35 +40,14 @@ import org.animotron.animi.cortex.old.NeuronSimple;
  */
 public class PFActual implements Imageable, InternalFrameListener {
 
-	static List<Field> cnFds = new ArrayList<Field>();
-	static List<Field> snFds = new ArrayList<Field>();
-	
 	int zoom = 3;
 
-	static {
-		Field[] fields = NeuronComplex.class.getFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field field = fields[i];
-			if (field.isAnnotationPresent(RuntimeParam.class))
-				cnFds.add(field);
-		}
-
-		fields = NeuronSimple.class.getFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field field = fields[i];
-			if (field.isAnnotationPresent(RuntimeParam.class))
-				snFds.add(field);
-		}
-	}
-	
 	LayerWLearning zone;
 	Point point;
-	NeuronComplex cn;
 	
 	public PFActual(Object[] objs) {
 		zone = (LayerWLearning) objs[0];
 		point = (Point) objs[1];
-		cn = null;//zone.col[point.x][point.y];
 	}
 
 	@Override
@@ -266,124 +239,124 @@ public class PFActual implements Imageable, InternalFrameListener {
 //        return image;
 //	}
 	
-	private void drawStepUp(NeuronComplex cn, double q, int delay, BufferedImage image) {
-		for (LinkQ link : cn.Qs.values()) {
-			
-			if (link.synapse.Qs.size() == 0) {
-	        	int pX = link.synapse.x;
-	        	int pY = link.synapse.y;
-	        	
-				if (       pX > 0 
-	        			&& pX < image.getWidth() 
-	        			&& pY > 0 
-	        			&& pY < image.getHeight()) {
-		                    	
-			        int value = image.getRGB(pX, pY);
-
-			        int G = Utils.get_green(value);
-			        int B = Utils.get_blue(value);
-			        int R = Utils.get_red(value);
-
-			        switch (delay) {
-					case 0:
-						G += 255 * link.q * q;
-						if (G > 255) G = 255;
-						
-						break;
-
-					case 1:
-						B += 255 * link.q * q;
-						if (B > 255) B = 255;
-						
-						break;
-					
-					default:
-						R += 255 * link.q * q;
-						if (R > 255) R = 255;
-
-						break;
-					}
-
-					image.setRGB(pX, pY, Utils.create_rgb(255, R, G, B));
-	        	}
-			} else {
-				drawStepUp(link.synapse, q * link.q, delay, image);
-			}
-		}
-	}
-
-	private BufferedImage draw2upRF() {
-		int _boxSize = boxSize*zoom*2;
-        BufferedImage image = new BufferedImage(_boxSize, _boxSize, BufferedImage.TYPE_INT_ARGB);
-        
-        NeuronComplex _cn = null;
-        Collection<LinkQ> links = cn.Qs.values();
-        while (!links.isEmpty()) {
-        	_cn = links.iterator().next().synapse;
-        	links = _cn.Qs.values();
-        }
-        if (_cn != null) {
-        	final int x = _cn.zone.height() + 1;
-        	final int y = _cn.zone.width() + 1;
-            
-        	Graphics g = image.getGraphics();
-            g.drawLine(0, y, x, y);
-            g.drawLine(x, y, x, 0);
-        }
-
-		for (LinkQ link : cn.Qs.values()) {
-			drawStepUp(link.synapse, link.q, link.delay, image);
-        }
-        return image;
-	}
-
-	private BufferedImage drawIn() {
-        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
-
-		int pX, pY = 0;
-        for (LinkQ link : cn.Qs.values()) {
-
-        	pX = (boxSize / 2) + (link.synapse.x - (int)(cn.x * link.fX));
-			pY = (boxSize / 2) + (link.synapse.y - (int)(cn.y * link.fY));
-        	
-			if (       pX >= 0 
-        			&& pX < boxSize 
-        			&& pY >= 0 
-        			&& pY < boxSize) {
-            	
-		        int value = image.getRGB(pX, pY);
-
-		        int g = Utils.get_green(value);
-		        int b = Utils.get_blue(value);
-		        int r = Utils.get_red(value);
-
-		        switch (link.delay) {
-				case 0:
-					g += 255 * link.synapse.activity[link.delay];
-					if (g > 255) g = 255;
-					
-					break;
-
-				case 1:
-					g += 255 * link.synapse.activity[link.delay];
-					if (g > 255) g = 255;
-					
-					break;
-
-				default:
-					r += 255 * link.synapse.activity[2];
-					if (r > 255) r = 255;
-
-					break;
-				}
-
-				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
-			} else {
-//				System.out.println("WRONG "+pX+" "+pY);
-            }
-        }
-        return image;
-	}
+//	private void drawStepUp(NeuronComplex cn, double q, int delay, BufferedImage image) {
+//		for (LinkQ link : cn.Qs.values()) {
+//			
+//			if (link.synapse.Qs.size() == 0) {
+//	        	int pX = link.synapse.x;
+//	        	int pY = link.synapse.y;
+//	        	
+//				if (       pX > 0 
+//	        			&& pX < image.getWidth() 
+//	        			&& pY > 0 
+//	        			&& pY < image.getHeight()) {
+//		                    	
+//			        int value = image.getRGB(pX, pY);
+//
+//			        int G = Utils.get_green(value);
+//			        int B = Utils.get_blue(value);
+//			        int R = Utils.get_red(value);
+//
+//			        switch (delay) {
+//					case 0:
+//						G += 255 * link.q * q;
+//						if (G > 255) G = 255;
+//						
+//						break;
+//
+//					case 1:
+//						B += 255 * link.q * q;
+//						if (B > 255) B = 255;
+//						
+//						break;
+//					
+//					default:
+//						R += 255 * link.q * q;
+//						if (R > 255) R = 255;
+//
+//						break;
+//					}
+//
+//					image.setRGB(pX, pY, Utils.create_rgb(255, R, G, B));
+//	        	}
+//			} else {
+//				drawStepUp(link.synapse, q * link.q, delay, image);
+//			}
+//		}
+//	}
+//
+//	private BufferedImage draw2upRF() {
+//		int _boxSize = boxSize*zoom*2;
+//        BufferedImage image = new BufferedImage(_boxSize, _boxSize, BufferedImage.TYPE_INT_ARGB);
+//        
+//        NeuronComplex _cn = null;
+//        Collection<LinkQ> links = cn.Qs.values();
+//        while (!links.isEmpty()) {
+//        	_cn = links.iterator().next().synapse;
+//        	links = _cn.Qs.values();
+//        }
+//        if (_cn != null) {
+//        	final int x = _cn.zone.height() + 1;
+//        	final int y = _cn.zone.width() + 1;
+//            
+//        	Graphics g = image.getGraphics();
+//            g.drawLine(0, y, x, y);
+//            g.drawLine(x, y, x, 0);
+//        }
+//
+//		for (LinkQ link : cn.Qs.values()) {
+//			drawStepUp(link.synapse, link.q, link.delay, image);
+//        }
+//        return image;
+//	}
+//
+//	private BufferedImage drawIn() {
+//        BufferedImage image = new BufferedImage(boxSize, boxSize, BufferedImage.TYPE_INT_ARGB);
+//
+//		int pX, pY = 0;
+//        for (LinkQ link : cn.Qs.values()) {
+//
+//        	pX = (boxSize / 2) + (link.synapse.x - (int)(cn.x * link.fX));
+//			pY = (boxSize / 2) + (link.synapse.y - (int)(cn.y * link.fY));
+//        	
+//			if (       pX >= 0 
+//        			&& pX < boxSize 
+//        			&& pY >= 0 
+//        			&& pY < boxSize) {
+//            	
+//		        int value = image.getRGB(pX, pY);
+//
+//		        int g = Utils.get_green(value);
+//		        int b = Utils.get_blue(value);
+//		        int r = Utils.get_red(value);
+//
+//		        switch (link.delay) {
+//				case 0:
+//					g += 255 * link.synapse.activity[link.delay];
+//					if (g > 255) g = 255;
+//					
+//					break;
+//
+//				case 1:
+//					g += 255 * link.synapse.activity[link.delay];
+//					if (g > 255) g = 255;
+//					
+//					break;
+//
+//				default:
+//					r += 255 * link.synapse.activity[2];
+//					if (r > 255) r = 255;
+//
+//					break;
+//				}
+//
+//				image.setRGB(pX, pY, Utils.create_rgb(255, r, g, b));
+//			} else {
+////				System.out.println("WRONG "+pX+" "+pY);
+//            }
+//        }
+//        return image;
+//	}
 
 	private String getName(Field f) {
 		return f.getName();

@@ -55,7 +55,7 @@ public class LayerWLearning extends LayerSimple {
 	public Activation cnActivation = new Activation(this);
 
 	@Params
-	public Task cnLearning = new Learning(this);
+	public Task cnLearning;
 	
 //	@Params
     Inhibitory inhibitory = new Inhibitory(this);

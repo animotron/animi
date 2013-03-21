@@ -200,7 +200,7 @@ public class Application extends JFrame {
 		});
         menu.add(menuItem);
         
-    	createFrame(imageable);
+//    	createFrame(imageable);
     }
     
     JToolBar bar;

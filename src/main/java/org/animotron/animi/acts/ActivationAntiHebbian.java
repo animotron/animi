@@ -43,7 +43,13 @@ public class ActivationAntiHebbian extends Task {
 		float sum = 0.0f;
 
 		for (int i = 0; i < weights.length(); i++) {
-    		sum += in.getByIndex(i) * weights.getByIndex(i);
+			try {
+    		sum += 
+    				in.getByIndex(i) * 
+    				weights.getByIndex(i);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 	    }
 	    
 	    return sum;
@@ -52,6 +58,11 @@ public class ActivationAntiHebbian extends Task {
 	public void gpuMethod(final int x, final int y) {
 		
 		final Mapping m = cz.in_zones[0];
+		
+		//XXX: fix
+		if (m instanceof MappingSOM) {
+			return;
+		}
 		
 		for (int p = 0; p < cz.depth; p++) {
 

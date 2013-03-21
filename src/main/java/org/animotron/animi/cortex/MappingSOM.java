@@ -127,7 +127,15 @@ public class MappingSOM implements Mapping {
 	    lateralWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
-				return getInitWeight();
+				return 0f;
+			}
+		});
+	    
+	    lateralSenapse = new MatrixInteger(toZone.width(), toZone.height(), lateralSize, 2);
+	    lateralSenapse.init(new Matrix.Value<Integer>() {
+			@Override
+			public Integer get(int... dims) {
+				return 0;
 			}
 		});
 
@@ -184,25 +192,33 @@ public class MappingSOM implements Mapping {
 			}
 		}
 
+		int lx = -1, ly = 0;
+
 		// преобразование Бокса — Мюллера для получения
 		// нормально распределенной величины
 		// DispLink - дисперсия связей
 		int count = 0;
 		for (int i = 0; i < ns_links; i++) {
-            int lx, ly;
             do {
-//                do {
-                    if (count > ns_links * 3) {
-                    	if (Double.isInfinite(sigma)) {
-                    		System.out.println("initialization failed @ x = "+x+" y = "+y);
-                    		System.exit(1);
-                    	}
-                    	sigma *= 1.05;//_sigma * 0.1;
-//						System.out.println("\n"+i+" of "+ns_links+" ("+sigma+")");
-                    	count = 0;
+                if (count > ns_links * 3) {
+                	if (Double.isInfinite(sigma)) {
+                		System.out.println("initialization failed @ x = "+x+" y = "+y);
+                		System.exit(1);
+                	}
+                	sigma *= 1.05;//_sigma * 0.1;
+
+                	count = 0;
+                }
+                count++;
+                
+                if (ns_links == frZone.width() * frZone.height()) {
+                    lx++;
+                    if (lx >= frZone.width()) {
+                    	lx = 0;
+                    	ly++;
                     }
-                    count++;
-                    	
+                	
+                } else {
                     do {
                         X = 2.0 * Math.random() - 1;
                         Y = 2.0 * Math.random() - 1;
@@ -213,15 +229,14 @@ public class MappingSOM implements Mapping {
                     double dY = Y * S * sigma;
                     lx = (int) Math.round(x_in_nerv + dX);
                     ly = (int) Math.round(y_in_nerv + dY);
+                }
 
-                    //определяем, что не вышли за границы поля колонок
-                    //колонки по периметру не задействованы
-//                } while (!(soft || (lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1)));
-
+            //определяем, что не вышли за границы поля колонок
+            //колонки по периметру не задействованы
             // Проверка на повтор связи
-			} while ( lx < 1 || ly < 1 || lx > frZone.width() - 1 || ly > frZone.height() - 1 || nerv_links[lx][ly] );
+			} while ( lx < 0 || ly < 0 || lx >= frZone.width() || ly >= frZone.height() || nerv_links[lx][ly] );
 
-            if (lx >= 1 && ly >= 1 && lx < frZone.width() - 1 && ly < frZone.height() - 1) {
+            if (lx >= 0 && ly >= 0 && lx < frZone.width() && ly < frZone.height()) {
                 if (debug) System.out.print(".");
 
                 nerv_links[lx][ly] = true;

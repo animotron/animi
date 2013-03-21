@@ -21,7 +21,6 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
-import org.animotron.animi.cortex.old.NeuronComplex;
 import org.animotron.matrix.MatrixFloat;
 
 import java.awt.Color;
@@ -189,10 +188,6 @@ public class LayerSimple implements Layer {
 	public void closed(Point point) {
 	}
 
-	public NeuronComplex getCol(int x, int y) {
-		return null;//col[x][y];
-	}
-	
 	public boolean isLearning = true;
 	public boolean isLearning() {
 		return isLearning;

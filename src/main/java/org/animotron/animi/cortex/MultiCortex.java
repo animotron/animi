@@ -33,8 +33,6 @@ import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.acts.Learning;
 import org.animotron.animi.acts.LearningSOM;
-import org.animotron.animi.cortex.old.LinkQ;
-import org.animotron.animi.cortex.old.NeuronComplex;
 import org.animotron.animi.gui.Application;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -272,8 +270,6 @@ public class MultiCortex implements Runnable {
 		
 		double fX, fY = 0;
 		
-		NeuronComplex cn = null;
-		
 		List<MappingHebbian> mappings = new ArrayList<MappingHebbian>();
 		
 		public SAXPars(Application app) {
@@ -284,17 +280,17 @@ public class MultiCortex implements Runnable {
 	    public void startElement (String uri, String localName, String qName, Attributes attrs) {
 			if ("linkS".equals(qName)) {
 				
-				new LinkQ(
-						prevZone.getCol(
-							Integer.valueOf(attrs.getValue("sX")),
-							Integer.valueOf(attrs.getValue("sY"))
-						),
-						cn, 
-						Double.valueOf(attrs.getValue("w")),
-						fX,
-						fY,
-						Double.valueOf(attrs.getValue("speed"))
-					);
+//				new LinkQ(
+//						prevZone.getCol(
+//							Integer.valueOf(attrs.getValue("sX")),
+//							Integer.valueOf(attrs.getValue("sY"))
+//						),
+//						cn, 
+//						Double.valueOf(attrs.getValue("w")),
+//						fX,
+//						fY,
+//						Double.valueOf(attrs.getValue("speed"))
+//					);
 
 			} else if ("linkI".equals(qName)) {
 				
@@ -310,10 +306,10 @@ public class MultiCortex implements Runnable {
 				
 				
 			} else if ("cn".equals(qName)) {
-				cn = zone.getCol(
-							Integer.valueOf(attrs.getValue("x")),
-							Integer.valueOf(attrs.getValue("y"))
-						);
+//				cn = zone.getCol(
+//							Integer.valueOf(attrs.getValue("x")),
+//							Integer.valueOf(attrs.getValue("y"))
+//						);
 			
 			} else if ("mapping".equals(qName)) {
 				mappings.add(
