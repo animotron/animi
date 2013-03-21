@@ -57,7 +57,7 @@ public class Activation extends Task {
 		switch (stage) {
 		case 0:
 			
-			float prev10 = cz.prev.get(x, y) * 0.2f;
+//			float prev10 = cz.prev.get(x, y) * 0.2f;
 			
 			positive.gpuMethod(x, y);
 			negative.gpuMethod(x, y);
@@ -70,7 +70,7 @@ public class Activation extends Task {
 			for (int index = 0; index < pack.length(); index++) {
 				final float value = pack.getByIndex(index);
 				if (value > 0) {
-					pack.setByIndex(value + prev10, index);
+					pack.setByIndex(value, index);
 					postPack.setByIndex(value, index);
 				}
 			}

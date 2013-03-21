@@ -346,6 +346,8 @@ public class LayerWLearning extends LayerSimple {
 					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
 			}
 			
+			final Mapping m = in_zones[0];
+			
 			for (int x = 0; x < width(); x++) {
 				for (int y = 0; y < height(); y++) {
 					g.setColor(Color.DARK_GRAY);
@@ -358,7 +360,7 @@ public class LayerWLearning extends LayerSimple {
 		        		x*boxSize, y*boxSize,
 		        		x, y,
 		        		Xl, Yl,
-		        		in_zones[0]
+		        		m
 		    		);
 				}
 			}
