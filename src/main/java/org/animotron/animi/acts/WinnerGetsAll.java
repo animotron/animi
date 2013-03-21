@@ -21,6 +21,7 @@
 package org.animotron.animi.acts;
 
 import org.animotron.animi.cortex.*;
+import org.animotron.matrix.Matrix;
 
 /**
  * Winner gets all

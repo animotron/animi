@@ -22,6 +22,8 @@ package org.animotron.animi.acts;
 
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
+import org.animotron.matrix.Matrix;
+import org.animotron.matrix.MatrixMapped;
 
 /**
  * Delta rule. http://en.wikipedia.org/wiki/Delta_rule

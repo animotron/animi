@@ -18,7 +18,7 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.cortex;
+package org.animotron.matrix;
 
 import java.text.DecimalFormat;
 import java.util.AbstractList;

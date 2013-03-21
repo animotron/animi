@@ -22,6 +22,8 @@ package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
 import org.animotron.animi.acts.*;
+import org.animotron.matrix.MatrixDelay;
+import org.animotron.matrix.MatrixFloat;
 
 import java.awt.Color;
 import java.awt.Graphics;

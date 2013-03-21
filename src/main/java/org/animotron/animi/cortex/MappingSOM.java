@@ -23,6 +23,9 @@ package org.animotron.animi.cortex;
 import java.util.Random;
 
 import org.animotron.animi.InitParam;
+import org.animotron.matrix.Matrix;
+import org.animotron.matrix.MatrixFloat;
+import org.animotron.matrix.MatrixInteger;
 
 /**
  * Projection description of the one zone to another

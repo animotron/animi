@@ -22,6 +22,7 @@ package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
 import org.animotron.animi.cortex.old.NeuronComplex;
+import org.animotron.matrix.MatrixFloat;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -132,8 +133,8 @@ public class LayerSimple implements Layer {
     	DataBufferInt dataBuffer = (DataBufferInt)image.getRaster().getDataBuffer();
     	int data[] = dataBuffer.getData();
       
-    	for (int i = 0; i < cols.data.length; i++) {
-    		final float value = cols.data[i];
+    	for (int i = 0; i < cols.length(); i++) {
+    		final float value = cols.getByIndex(i);
       	
     		if (Float.isNaN(value))
     			data[i] = Color.RED.getRGB();

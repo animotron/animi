@@ -1,4 +1,4 @@
-package org.animotron.animi.cortex;
+package org.animotron.matrix;
 
 public interface Matrix<T extends Number> {
 

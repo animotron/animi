@@ -22,6 +22,7 @@ package org.animotron.animi.acts;
 
 import org.animotron.animi.Params;
 import org.animotron.animi.cortex.*;
+import org.animotron.matrix.MatrixProxy;
 
 /**
  * 

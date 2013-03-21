@@ -23,6 +23,8 @@ package org.animotron.animi.cortex;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
+import org.animotron.matrix.MatrixFloat;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *

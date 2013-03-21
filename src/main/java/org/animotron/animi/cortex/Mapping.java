@@ -20,6 +20,8 @@
  */
 package org.animotron.animi.cortex;
 
+import org.animotron.matrix.Matrix;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
