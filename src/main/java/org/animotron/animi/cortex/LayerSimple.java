@@ -38,7 +38,7 @@ import java.util.UUID;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class CortexZoneSimple implements Layer {
+public class LayerSimple implements Layer {
 
 	String id = UUID.randomUUID().toString();
 
@@ -97,12 +97,12 @@ public class CortexZoneSimple implements Layer {
 	
 	public int count = 0;
 
-	CortexZoneSimple() {
+	LayerSimple() {
     	name = null;
     	mc = null;
     }
 
-    public CortexZoneSimple(String name, MultiCortex mc) {
+    public LayerSimple(String name, MultiCortex mc) {
         this.name = name;
         this.mc = mc;
     }

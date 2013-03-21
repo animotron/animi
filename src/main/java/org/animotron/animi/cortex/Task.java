@@ -30,18 +30,18 @@ package org.animotron.animi.cortex;
  */
 public abstract class Task {
 	
-	protected CortexZoneSimple sz;
-	protected CortexZoneComplex cz = null;
+	protected LayerSimple sz;
+	protected LayerWLearning cz = null;
 	
     /**
      * Creates a new Task that computes.
      * 
      * @param outputMem The target memory object
      */
-    protected Task(CortexZoneSimple sz) {
+    protected Task(LayerSimple sz) {
     	this.sz = sz;
-    	if (sz instanceof CortexZoneComplex) {
-    		this.cz = (CortexZoneComplex) sz;
+    	if (sz instanceof LayerWLearning) {
+    		this.cz = (LayerWLearning) sz;
 		}
     }
     

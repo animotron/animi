@@ -33,7 +33,7 @@ public class ActivationAntiHebbian extends Task {
 	@RuntimeParam(name = "k")
 	public float k = 1f;
 
-	public ActivationAntiHebbian(CortexZoneComplex cz) {
+	public ActivationAntiHebbian(LayerWLearning cz) {
 		super(cz);
 	}
 

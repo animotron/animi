@@ -31,7 +31,7 @@ import org.animotron.animi.cortex.*;
  */
 public class WinnerGetsAll extends Task {
 
-	public WinnerGetsAll(CortexZoneComplex cz) {
+	public WinnerGetsAll(LayerWLearning cz) {
 		super(cz);
 	}
 
@@ -42,7 +42,7 @@ public class WinnerGetsAll extends Task {
 		}
 	}
 	
-	public static void _(CortexZoneComplex cz, Matrix<Float> source, boolean inhibitory) {
+	public static void _(LayerWLearning cz, Matrix<Float> source, boolean inhibitory) {
 		
 		Matrix<Float> cols = source.copy();
     	

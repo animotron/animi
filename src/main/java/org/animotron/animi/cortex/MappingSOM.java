@@ -28,7 +28,6 @@ import org.animotron.animi.InitParam;
  * Projection description of the one zone to another
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
- * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class MappingSOM implements Mapping {
@@ -37,8 +36,8 @@ public class MappingSOM implements Mapping {
 	
 	private static final Random rnd = new Random();
 	
-	private CortexZoneSimple frZone;
-	private CortexZoneComplex toZone;
+	private LayerSimple frZone;
+	private LayerWLearning toZone;
 	
 	public double fX = 1;
 	public double fY = 1;
@@ -90,7 +89,7 @@ public class MappingSOM implements Mapping {
 
 	MappingSOM () {}
 	
-    public MappingSOM(CortexZoneSimple zone, int ns_links, double disp, int lateralSize) {
+    public MappingSOM(LayerSimple zone, int ns_links, double disp, int lateralSize) {
         frZone = zone;
         
         this.disp = disp;
@@ -105,7 +104,7 @@ public class MappingSOM implements Mapping {
 
 	// Связи распределяются случайным образом.
 	// Плотность связей убывает экспоненциально с удалением от колонки.
-	public void map(CortexZoneComplex zone) {
+	public void map(LayerWLearning zone) {
 		toZone = zone;
 	    
 		System.out.println(toZone);
@@ -323,12 +322,12 @@ public class MappingSOM implements Mapping {
 	}
 
 	@Override
-	public CortexZoneSimple frZone() {
+	public LayerSimple frZone() {
 		return frZone;
 	}
 
 	@Override
-	public CortexZoneComplex toZone() {
+	public LayerWLearning toZone() {
 		return toZone;
 	}
 

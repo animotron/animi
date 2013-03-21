@@ -26,9 +26,9 @@ package org.animotron.animi.cortex;
  */
 public interface Mapping {
 
-	public CortexZoneSimple frZone();
+	public LayerSimple frZone();
 	
-	public CortexZoneComplex toZone();
+	public LayerWLearning toZone();
 
 	public Matrix<Integer> senapses();
 
@@ -38,7 +38,7 @@ public interface Mapping {
 	
 	public Matrix<Integer> lateralSenapse();
 
-	public void map(CortexZoneComplex cortexZoneComplex);
+	public void map(LayerWLearning cortexZoneComplex);
 
 	public int toZoneCenterX();
 

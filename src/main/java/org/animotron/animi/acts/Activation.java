@@ -35,7 +35,7 @@ public class Activation extends Task {
 	@Params
 	private ActivationAntiHebbian negative;
 	
-	public Activation(CortexZoneComplex cz) {
+	public Activation(LayerWLearning cz) {
 		super(cz);
 		
 		positive = new ActivationHebbian(cz);

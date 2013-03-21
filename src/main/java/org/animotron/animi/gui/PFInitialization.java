@@ -32,7 +32,7 @@ import javax.swing.*;
 import org.animotron.animi.InitParam;
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
-import org.animotron.animi.cortex.CortexZoneSimple;
+import org.animotron.animi.cortex.LayerSimple;
 import org.animotron.animi.cortex.MultiCortex;
 
 /**
@@ -167,8 +167,8 @@ public class PFInitialization extends JInternalFrame {
 			return;
 		}
 
-		if (obj instanceof CortexZoneSimple) {
-			final CortexZoneSimple zone = (CortexZoneSimple)obj;
+		if (obj instanceof LayerSimple) {
+			final LayerSimple zone = (LayerSimple)obj;
 	        JButton btn = new JButton("reinit");
 	        btn.addActionListener(new ActionListener() {
 				@Override

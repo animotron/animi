@@ -26,7 +26,7 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 
 import org.animotron.animi.RuntimeParam;
-import org.animotron.animi.cortex.CortexZoneSimple;
+import org.animotron.animi.cortex.LayerSimple;
 
 /**
  * Complex neuron
@@ -45,12 +45,12 @@ public class NeuronComplex extends Neuron {
 
 	public double q = 0;
 	
-	public CortexZoneSimple zone = null;
+	public LayerSimple zone = null;
 
 	public Map<NeuronComplex, LinkQ> Qs = new FastMap<NeuronComplex, LinkQ>();
 	public FastList<LinkQ> a_Qs = new FastList<LinkQ>();
 
-	public NeuronComplex(CortexZoneSimple zone, int x, int y) {
+	public NeuronComplex(LayerSimple zone, int x, int y) {
 		super(x,y);
 		
 		this.zone = zone;

@@ -23,7 +23,7 @@ package org.animotron.animi;
 import javolution.xml.stream.XMLInputFactory;
 import javolution.xml.stream.XMLStreamException;
 import javolution.xml.stream.XMLStreamReader;
-import org.animotron.animi.cortex.CortexZoneSimple;
+import org.animotron.animi.cortex.LayerSimple;
 import org.animotron.animi.cortex.Mapping;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -218,7 +218,7 @@ public class Utils {
 			final int cnX, final int cnY, 
 			final Mapping m) {
 		
-		final CortexZoneSimple sz = m.frZone();
+		final LayerSimple sz = m.frZone();
 		
 		if (sz.cols.get(cnX, cnY) > 0) {
 			return image;

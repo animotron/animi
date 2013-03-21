@@ -42,7 +42,7 @@ public class LearningHebbian extends Task {
 
 	private float factor;
 	
-	public LearningHebbian(CortexZoneComplex cz) {
+	public LearningHebbian(LayerWLearning cz) {
 		super(cz);
 		
 		factor = ny;

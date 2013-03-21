@@ -28,7 +28,6 @@ import org.animotron.animi.InitParam;
  * Projection description of the one zone to another
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
- * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class MappingHebbian implements Mapping {
@@ -37,8 +36,8 @@ public class MappingHebbian implements Mapping {
 	
 	private static final Random rnd = new Random();
 	
-	private CortexZoneSimple frZone;
-	private CortexZoneComplex toZone;
+	private LayerSimple frZone;
+	private LayerWLearning toZone;
 	
 	@InitParam(name="ns_links")
     public int ns_links;           // Number of synaptic connections for the zone
@@ -55,29 +54,28 @@ public class MappingHebbian implements Mapping {
 
 	public float w;
 	
-	private Matrix<Float> vertWeight;
-	private Matrix<Integer> vertSenapse;
+	private Matrix<Float> senapseWeight;
+	private Matrix<Integer> senapse;
 	
-	private Matrix<Float> horzWeight;
-	private Matrix<Integer> horzSenapse;
+	private Matrix<Float> lateralWeight;
 	
 	private void linksSenapse(int Sx, int Sy, int x, int y, int l) {
 		if (toZone.singleReceptionField) {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
-					vertSenapse.set(Sx, xi, yi, l, 0);
-					vertSenapse.set(Sy, xi, yi, l, 1);
+					senapse.set(Sx, xi, yi, l, 0);
+					senapse.set(Sy, xi, yi, l, 1);
 				}
 			}
 		} else {
-			vertSenapse.set(Sx, x, y, l, 0);
-			vertSenapse.set(Sy, x, y, l, 1);
+			senapse.set(Sx, x, y, l, 0);
+			senapse.set(Sy, x, y, l, 1);
 		}
 	}
 
 	MappingHebbian () {}
 	
-    public MappingHebbian(CortexZoneSimple zone, int ns_links, double disp, boolean soft) {
+    public MappingHebbian(LayerSimple zone, int ns_links, double disp, boolean soft) {
         frZone = zone;
         this.disp = disp;
         this.ns_links = ns_links;
@@ -90,7 +88,7 @@ public class MappingHebbian implements Mapping {
 
 	// Связи распределяются случайным образом.
 	// Плотность связей убывает экспоненциально с удалением от колонки.
-	public void map(CortexZoneComplex zone) {
+	public void map(LayerWLearning zone) {
 		toZone = zone;
 	    
 		System.out.println(toZone);
@@ -98,24 +96,24 @@ public class MappingHebbian implements Mapping {
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)ns_links);// / norm;
 
-	    vertWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
-	    vertWeight.init(new Matrix.Value<Float>() {
+	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
+	    senapseWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
 				return getInitWeight();
 			}
 		});
 	    
-	    horzWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
-	    horzWeight.init(new Matrix.Value<Float>() {
+	    lateralWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
+	    lateralWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
 				return getInitWeight();
 			}
 		});
 
-		vertSenapse = new MatrixInteger(toZone.width(), toZone.height(), ns_links, 2);
-		vertSenapse.fill(0);
+		senapse = new MatrixInteger(toZone.width(), toZone.height(), ns_links, 2);
+		senapse.fill(0);
 		
 //        for (int x = 0; x < zone.width(); x++) {
 //			for (int y = 0; y < zone.height(); y++) {
@@ -235,28 +233,28 @@ public class MappingHebbian implements Mapping {
 	}
 
 	@Override
-	public CortexZoneSimple frZone() {
+	public LayerSimple frZone() {
 		return frZone;
 	}
 
 	@Override
-	public CortexZoneComplex toZone() {
+	public LayerWLearning toZone() {
 		return toZone;
 	}
 
 	@Override
 	public Matrix<Integer> senapses() {
-		return vertSenapse;
+		return senapse;
 	}
 
 	@Override
 	public Matrix<Float> senapseWeight() {
-		return vertWeight;
+		return senapseWeight;
 	}
 
 	@Override
 	public Matrix<Float> lateralWeight() {
-		return horzWeight;
+		return lateralWeight;
 	}
 
 	@Override

@@ -67,12 +67,12 @@ public class PFActual implements Imageable, InternalFrameListener {
 		}
 	}
 	
-	CortexZoneComplex zone;
+	LayerWLearning zone;
 	Point point;
 	NeuronComplex cn;
 	
 	public PFActual(Object[] objs) {
-		zone = (CortexZoneComplex) objs[0];
+		zone = (LayerWLearning) objs[0];
 		point = (Point) objs[1];
 		cn = null;//zone.col[point.x][point.y];
 	}

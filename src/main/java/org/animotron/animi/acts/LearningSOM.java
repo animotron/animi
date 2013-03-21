@@ -39,7 +39,7 @@ public class LearningSOM extends Task {
 	
 	private float factor;
 	
-	public LearningSOM(CortexZoneComplex cz) {
+	public LearningSOM(LayerWLearning cz) {
 		super(cz);
 		
 		factor = ny;

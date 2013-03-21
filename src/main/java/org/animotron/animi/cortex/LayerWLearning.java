@@ -29,6 +29,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Constructor;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +42,7 @@ import java.util.List;
  * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class CortexZoneComplex extends CortexZoneSimple {
+public class LayerWLearning extends LayerSimple {
 	
 	protected boolean singleReceptionField = true;
 	
@@ -52,7 +53,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 	public Activation cnActivation = new Activation(this);
 
 	@Params
-	public Learning cnLearning = new Learning(this);
+	public Task cnLearning = new Learning(this);
 	
 //	@Params
     Inhibitory inhibitory = new Inhibitory(this);
@@ -97,11 +98,11 @@ public class CortexZoneComplex extends CortexZoneSimple {
     public MatrixFloat colWeights;
     public MatrixFloat colCorrelation;
 
-    CortexZoneComplex() {
+    LayerWLearning() {
 		super();
     }
 
-	CortexZoneComplex(String name, MultiCortex mc, int width, int height, int depth, Mapping[] in_zones) {
+	LayerWLearning(String name, MultiCortex mc, int width, int height, int depth, Mapping[] in_zones, Class<? extends Task> learning) {
 		super(name, mc);
 		
 		this.width = width;;
@@ -109,10 +110,16 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		this.depth = depth;
 		
 		this.in_zones = in_zones;
-		
-    }
 	
-    /**
+		try {
+			Constructor<? extends Task> constructor = learning.getConstructor(this.getClass());
+			cnLearning = constructor.newInstance(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+
+	/**
      * Initializes the OpenCL memory object and the BufferedImage which will later receive the pixels
      */
     public void init() {
@@ -317,7 +324,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 	
 		public String getImageName() {
-			return "cols map "+CortexZoneComplex.this.name+" ["+Xl+","+Yl+"]";
+			return "cols map "+LayerWLearning.this.name+" ["+Xl+","+Yl+"]";
 		}
 
 		public BufferedImage getImage() {
@@ -379,7 +386,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 					
 					watching.add(pos);
 					
-					return new Object[] { CortexZoneComplex.this, pos };
+					return new Object[] { LayerWLearning.this, pos };
 				}
 			} catch (Exception e) {
 			}
@@ -424,7 +431,7 @@ public class CortexZoneComplex extends CortexZoneSimple {
 		}
 	    
 	    public void init() {
-			CortexZoneSimple zone = in_zones[0].frZone();
+			LayerSimple zone = in_zones[0].frZone();
 	        image = new BufferedImage(zone.width, zone.height, BufferedImage.TYPE_INT_RGB);
 	    }
 	

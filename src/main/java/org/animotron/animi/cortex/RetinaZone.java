@@ -54,7 +54,7 @@ public class RetinaZone extends Task {
 
 	public static int safeZone = (int)(0.1 * ((Retina.WIDTH + Retina.HEIGHT) / 2));
 
-	protected RetinaZone(Retina retina, CortexZoneSimple sz) {
+	protected RetinaZone(Retina retina, LayerSimple sz) {
 		super(sz);
 		
 		this.retina = retina;

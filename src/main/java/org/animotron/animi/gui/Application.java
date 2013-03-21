@@ -172,12 +172,12 @@ public class Application extends JFrame {
     	
     	addMenu(windowsMenu, stimulator);
  
-        for (CortexZoneSimple zone : cortexs.zones) {
-        	if (zone instanceof CortexZoneComplex) {
+        for (LayerSimple zone : cortexs.zones) {
+        	if (zone instanceof LayerWLearning) {
         		JMenu menu = new JMenu(zone.toString());
     	        windowsMenu.add(menu);
 
-    	        CortexZoneComplex z = (CortexZoneComplex) zone;
+    	        LayerWLearning z = (LayerWLearning) zone;
 
     	        addMenu(menu, z);
     	        for (Imageable imgable : z.getCRF()) {
@@ -381,8 +381,8 @@ public class Application extends JFrame {
     private void addToBar() {
         bar.addSeparator();
 
-        for (final CortexZoneSimple z : cortexs.zones) {
-        	if (!(z instanceof CortexZoneComplex)) {
+        for (final LayerSimple z : cortexs.zones) {
+        	if (!(z instanceof LayerWLearning)) {
 //	        	final JCheckBox chB_ = new JCheckBox("Saccade");
 //	        	chB_.addActionListener(new ActionListener() {
 //					
@@ -395,7 +395,7 @@ public class Application extends JFrame {
 //		        bar.add(chB_);
         		continue;
 			}
-        	final CortexZoneComplex zone = (CortexZoneComplex)z;
+        	final LayerWLearning zone = (LayerWLearning)z;
         	
         	final JLabel label = new JLabel(zone.toString());
 	        bar.add(label);

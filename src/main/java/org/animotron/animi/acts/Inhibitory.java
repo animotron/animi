@@ -38,7 +38,7 @@ public class Inhibitory extends Task {
 	@RuntimeParam(name = "minDelta")
 	public float minDelta = 0.01f;
 	
-	public Inhibitory(CortexZoneComplex cz) {
+	public Inhibitory(LayerWLearning cz) {
 		super(cz);
 	}
 

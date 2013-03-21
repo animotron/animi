@@ -31,6 +31,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.acts.Learning;
+import org.animotron.animi.acts.LearningSOM;
 import org.animotron.animi.cortex.old.LinkQ;
 import org.animotron.animi.cortex.old.NeuronComplex;
 import org.animotron.animi.gui.Application;
@@ -67,14 +69,14 @@ public class MultiCortex implements Runnable {
     
     public Retina retina;
 
-    public CortexZoneSimple z_in;
-    public CortexZoneComplex layer_1;
-    public CortexZoneComplex layer_2;
+    public LayerSimple z_in;
+    public LayerWLearning layer_1;
+    public LayerWLearning layer_2;
     
     @Params
-    public CortexZoneSimple [] zones;
+    public LayerSimple [] zones;
 
-    private MultiCortex(Application app, CortexZoneSimple [] zones) {
+    private MultiCortex(Application app, LayerSimple [] zones) {
     	this.app = app;
     	this.zones = zones;
 
@@ -85,24 +87,26 @@ public class MultiCortex implements Runnable {
     public MultiCortex(Application app) {
     	this.app = app;
     	
-        z_in = new CortexZoneSimple("Зрительный нерв", this);
+        z_in = new LayerSimple("Зрительный нерв", this);
         
         //1st zone
-        layer_1 = new CortexZoneComplex("1й", this, 10, 10, 9, //120, 120, //160, 120,
+        layer_1 = new LayerWLearning("1й", this, 10, 10, 9, //120, 120, //160, 120,
             new Mapping[]{
                 new MappingHebbian(z_in, 100, 1, false) //7x7 (50)
-            }
+            },
+            Learning.class
         );
         
-        layer_2 = new CortexZoneComplex("2й", this, 10, 10, 1, //120, 120, //160, 120,
+        layer_2 = new LayerWLearning("2й", this, 10, 10, 1, //120, 120, //160, 120,
             new Mapping[]{
                 new MappingSOM(layer_1, 100, 1, 100) //7x7 (50)
-            }
+            },
+            LearningSOM.class
         );
 
 //        z_1st.addMappring(z_1st);
         
-        zones = new CortexZoneSimple[]{z_in, layer_1};
+        zones = new LayerSimple[]{z_in, layer_1, layer_2};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);
@@ -112,7 +116,7 @@ public class MultiCortex implements Runnable {
     	// Flush all pending tasks
         flush();
 
-		for (CortexZoneSimple zone : zones) {
+		for (LayerSimple zone : zones) {
 			zone.init();
 		}
     }
@@ -173,7 +177,7 @@ public class MultiCortex implements Runnable {
         if (MODE >= STEP) {
         	retina.process(app.getStimulator());
         	
-    		for (CortexZoneSimple zone : zones) {
+    		for (LayerSimple zone : zones) {
     			zone.process();
     		}
     		count++;
@@ -233,7 +237,7 @@ public class MultiCortex implements Runnable {
 
     public void save(Writer out) throws IOException {
     	out.write("<cortex>");
-		for (CortexZoneSimple zone : zones) {
+		for (LayerSimple zone : zones) {
 			zone.save(out);
 		}
     	out.write("</cortex>");
@@ -261,10 +265,10 @@ public class MultiCortex implements Runnable {
 		Application app;
 		
 		MultiCortex mc = null;
-		List<CortexZoneSimple> zones = new ArrayList<CortexZoneSimple>();
+		List<LayerSimple> zones = new ArrayList<LayerSimple>();
 		
-		CortexZoneSimple prevZone = null;
-		CortexZoneSimple zone = null;
+		LayerSimple prevZone = null;
+		LayerSimple zone = null;
 		
 		double fX, fY = 0;
 		
@@ -323,13 +327,13 @@ public class MultiCortex implements Runnable {
 				
 			} else if ("zone".equals(qName)) {
 				if ("complex".equals(attrs.getValue("type"))) {
-					CortexZoneComplex cZone;
-					zone = cZone = new CortexZoneComplex();
+					LayerWLearning cZone;
+					zone = cZone = new LayerWLearning();
 
 					cZone.count = Integer.valueOf(attrs.getValue("count"));
 					
 				} else {
-					zone = new  CortexZoneSimple();
+					zone = new  LayerSimple();
 				}
 				zone.id = attrs.getValue("id");
 				zone.name = attrs.getValue("name");
@@ -353,8 +357,8 @@ public class MultiCortex implements Runnable {
 				prevZone = zone;
 				zones.add(zone);
 				
-				if (zone instanceof CortexZoneComplex) {
-					((CortexZoneComplex) zone).in_zones = 
+				if (zone instanceof LayerWLearning) {
+					((LayerWLearning) zone).in_zones = 
 						mappings.toArray(new MappingHebbian[mappings.size()]);
 				}
 				mappings.clear();
@@ -364,7 +368,7 @@ public class MultiCortex implements Runnable {
 		}
 		
 	    public void endDocument() throws SAXException {
-	    	mc = new MultiCortex(app, zones.toArray(new CortexZoneSimple[zones.size()]));
+	    	mc = new MultiCortex(app, zones.toArray(new LayerSimple[zones.size()]));
 	    }
 	}
 }

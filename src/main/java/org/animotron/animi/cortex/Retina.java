@@ -55,8 +55,8 @@ public class Retina {
 		this.height = height;
 	}
 	
-	private CortexZoneSimple NL = null;
-	public void setNextLayer(CortexZoneSimple sz) {
+	private LayerSimple NL = null;
+	public void setNextLayer(LayerSimple sz) {
 		NL = sz;
 		
 		width = sz.width();
@@ -67,7 +67,7 @@ public class Retina {
 	
     // создание связей сенсорных полей
 	private void initialize() {
-        retinaTask = new RetinaZone(this, (CortexZoneSimple)NL);
+        retinaTask = new RetinaZone(this, (LayerSimple)NL);
     }
 	
     BufferedImage image = null;

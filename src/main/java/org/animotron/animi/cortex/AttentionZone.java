@@ -26,10 +26,10 @@ import java.util.Random;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class AttentionZone extends CortexZoneComplex {
+public class AttentionZone extends LayerWLearning {
 	
 	public AttentionZone(String name, MultiCortex mc, int width, int height, MappingHebbian[] in_zones) {
-		super(name, mc, width, height, 1, in_zones);
+		super(name, mc, width, height, 1, in_zones, null);
 	}
 	
 	Random rnd = new Random();

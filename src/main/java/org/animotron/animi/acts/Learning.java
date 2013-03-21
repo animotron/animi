@@ -35,7 +35,7 @@ public class Learning extends Task {
 	@Params
 	private LearningAntiHebbian negative;
 	
-	public Learning(CortexZoneComplex cz) {
+	public Learning(LayerWLearning cz) {
 		super(cz);
 		
 		positive = new LearningHebbian(cz);
@@ -58,6 +58,7 @@ public class Learning extends Task {
 		positive.gpuMethod(x, y);
 		negative.gpuMethod(x, y);
 
+		//learning for post activity
 		LearningHebbian.learn(
 				cz.colPostNeurons, 
 				cz.colWeights.sub(x, y), 

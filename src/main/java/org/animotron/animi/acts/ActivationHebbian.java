@@ -30,7 +30,7 @@ import org.animotron.animi.cortex.*;
  */
 public class ActivationHebbian extends Task {
 	
-	public ActivationHebbian(CortexZoneComplex cz) {
+	public ActivationHebbian(LayerWLearning cz) {
 		super(cz);
 	}
 
