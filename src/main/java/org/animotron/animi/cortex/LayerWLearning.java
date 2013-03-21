@@ -332,6 +332,8 @@ public class LayerWLearning extends LayerSimple {
 		public BufferedImage getImage() {
 //			in_zones[0].toZone.colWeights.debug("colWeights");
 
+			final Mapping m = in_zones[0];
+			
 			Graphics g = image.getGraphics();
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, image.getWidth(), image.getHeight());
@@ -345,8 +347,6 @@ public class LayerWLearning extends LayerSimple {
 				} else
 					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
 			}
-			
-			final Mapping m = in_zones[0];
 			
 			for (int x = 0; x < width(); x++) {
 				for (int y = 0; y < height(); y++) {
