@@ -1,6 +1,6 @@
 package org.animotron.matrix;
 
-public interface Matrix<T extends Number> {
+public interface Matrix<T> {
 
 	public interface Value<K> {
 		public K get(int... dims);

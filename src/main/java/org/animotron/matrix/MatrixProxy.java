@@ -23,13 +23,11 @@ package org.animotron.matrix;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
-import org.animotron.matrix.MatrixFloat.Integers;
-
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class MatrixProxy<T extends Number> implements Matrix<T> {
+public class MatrixProxy<T> implements Matrix<T> {
 	
 	interface Function {
 		public void call(int[] pos);
@@ -106,9 +104,9 @@ public class MatrixProxy<T extends Number> implements Matrix<T> {
 	    	Number max = 0f;
 	    	
 	    	public void call(int[] pos) {
-	    		if (compare(matrix.get(pos), max) == 1) {
+	    		if (compare((Number)matrix.get(pos), max) == 1) {
 	    			System.arraycopy(pos, 0, maxPos, 0, pos.length);
-	    			max = matrix.get(pos);
+	    			max = (Number)matrix.get(pos);
 	    		}
 	    	}
 

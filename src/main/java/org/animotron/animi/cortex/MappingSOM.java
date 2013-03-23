@@ -30,6 +30,7 @@ import org.animotron.animi.Imageable;
 import org.animotron.animi.InitParam;
 import org.animotron.animi.Utils;
 import org.animotron.matrix.Matrix;
+import org.animotron.matrix.MatrixArrayInteger;
 import org.animotron.matrix.MatrixFloat;
 import org.animotron.matrix.MatrixInteger;
 import org.animotron.matrix.MatrixProxy;
@@ -62,7 +63,8 @@ public class MappingSOM implements Mapping {
 	public double disp;      // Describe a size of sensor field
 
 	private Matrix<Float> senapseWeight;
-	private Matrix<Integer> senapses;
+	private Matrix<Integer[]> senapses;
+	private Matrix<Integer> _senapses;
 	
 	private Matrix<Float> lateralWeight;
 	private Matrix<Integer> lateralSenapse;
@@ -74,17 +76,23 @@ public class MappingSOM implements Mapping {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
 					for (int zi = 0; zi < toZone.depth; zi++) {
-						senapses.set(Sx, xi, yi, zi, l, 0);
-						senapses.set(Sy, xi, yi, zi, l, 1);
-						senapses.set(Sz, xi, yi, zi, l, 2);
+						senapses.set(new Integer[] {Sx, Sy, Sz}, xi, yi, zi, l);
+
+						_senapses.set(Sx, xi, yi, zi, l, 0);
+						_senapses.set(Sy, xi, yi, zi, l, 1);
+						_senapses.set(Sz, xi, yi, zi, l, 2);
 					}
 				}
 			}
 		} else {
-			senapses.set(Sx, x, y, z, l, 0);
-			senapses.set(Sy, x, y, z, l, 1);
-			senapses.set(Sz, x, y, z, l, 2);
+			senapses.set(new Integer[] {Sx, Sy, Sz}, x, y, z, l);
+
+			_senapses.set(Sx, x, y, z, l, 0);
+			_senapses.set(Sy, x, y, z, l, 1);
+			_senapses.set(Sz, x, y, z, l, 2);
 		}
+		
+//		senapses.debug("linksSenapse");
 	}
 
 	private void lateralSenapse(int Sx, int Sy, int x, int y, int l) {
@@ -126,8 +134,9 @@ public class MappingSOM implements Mapping {
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)ns_links);// / norm;
 
-		senapses = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth, ns_links, 3);
-		senapses.fill(0);
+		senapses = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth, ns_links);
+		_senapses = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth, ns_links, 3);
+		_senapses.fill(0);
 		
 	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
 	    senapseWeight.init(new Matrix.Value<Float>() {
@@ -366,7 +375,7 @@ public class MappingSOM implements Mapping {
 
 	@Override
 	public Matrix<Integer> senapses() {
-		return senapses;
+		return _senapses;
 	}
 
 	@Override
@@ -427,6 +436,7 @@ public class MappingSOM implements Mapping {
 	    private BufferedImage image;
 	    
 	    public ColumnRF_Image() {
+	    	init();
 		}
 
 		public void init() {
@@ -473,11 +483,15 @@ public class MappingSOM implements Mapping {
 						}
 					}
 					
-					final MatrixProxy<Integer> sf = senapses.sub(x,y);
+					final MatrixProxy<Integer[]> sf = senapses.sub(x,y);
 					
-					final int xi = sf.getByIndex(pos + 0);
-					final int yi = sf.getByIndex(pos + 1);
-					final int zi = sf.getByIndex(pos + 2);
+					Integer[] xyz = sf.getByIndex(pos);
+					
+					final int xi = xyz[0];
+					final int yi = xyz[1];
+					final int zi = xyz[2];
+					
+					System.out.println(xi+" "+yi+" "+zi);
 					
 					Utils.drawRF(true , image, boxMini, 
 							boxSize * x, 
