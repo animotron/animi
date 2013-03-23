@@ -28,15 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.animotron.animi.Imageable;
-import org.animotron.animi.InitParam;
-import org.animotron.animi.Utils;
+import org.animotron.animi.*;
 import org.animotron.animi.cortex.MappingHebbian.ColumnRF_Image;
-import org.animotron.matrix.Matrix;
-import org.animotron.matrix.MatrixArrayInteger;
-import org.animotron.matrix.MatrixFloat;
-import org.animotron.matrix.MatrixInteger;
-import org.animotron.matrix.MatrixProxy;
+import org.animotron.matrix.*;
 
 /**
  * Projection description of the one zone to another
@@ -59,8 +53,11 @@ public class MappingSOM implements Mapping {
 	public float w;
 	
 	@InitParam(name="ns_links")
-    public int ns_links;           // Number of synaptic connections for the zone
+    public int ns_links;           // Number of synaptic connections for the layer
     
+	@InitParam(name="nl_links")
+    public int nl_links;           // Number of lateral connections for the layer
+
 	/** дисперсия связей **/
 	@InitParam(name="disp")
 	public double disp;      // Describe a size of sensor field
@@ -71,8 +68,6 @@ public class MappingSOM implements Mapping {
 	
 	private Matrix<Float> lateralWeight;
 	private Matrix<Integer[]> lateralSenapse;
-	
-	private int lateralSize;
 	
 	private void linksSenapse(int Sx, int Sy, int Sz, int x, int y, int z, int l) {
 		if (toZone.singleReceptionField) {
@@ -112,13 +107,32 @@ public class MappingSOM implements Mapping {
 
 	MappingSOM () {}
 	
-    public MappingSOM(LayerSimple zone, int ns_links, double disp, int lateralSize) {
+    public MappingSOM(LayerSimple zone, int ns_links, double disp, int nl_links) {
         frZone = zone;
         
         this.disp = disp;
         this.ns_links = ns_links;
         
-        this.lateralSize = lateralSize;
+        this.nl_links = nl_links;
+        
+//		DecimalFormat df = new DecimalFormat("0.00000");
+//
+//		double value = 0f;
+//        double sigma2 = Math.sqrt(6*6 / Math.PI);
+//        int lx = 2, ly = 2;
+//        for (int x = 0; x < 6; x++) {
+//            for (int y = 0; y < 6; y++) {
+//        
+//            	value = Math.exp( 
+//	            			- Math.sqrt( (lx - x)*(lx - x) + (ly - y)*(ly - y) )
+//	            			/ 2.0
+//            			);
+//            	
+//            	System.out.print(df.format( value ) );
+//            	System.out.print(" ");
+//            }
+//            System.out.println();
+//        }        
     }
 
     public String toString() {
@@ -133,13 +147,13 @@ public class MappingSOM implements Mapping {
 		System.out.println(toZone);
 		
 //		float norm = (float) Math.sqrt(sumQ2);
-		w = (1 / (float)ns_links);// / norm;
+		w = (1 / (float)(ns_links * frZone.depth));// / norm;
 
-		senapses = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth, ns_links);
-		_senapses = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth, ns_links, 3);
+		senapses = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
+		_senapses = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth, 3);
 		_senapses.fill(0);
 		
-	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
+	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
 	    senapseWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
@@ -147,7 +161,7 @@ public class MappingSOM implements Mapping {
 			}
 		});
 	    
-	    lateralWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, lateralSize);
+	    lateralWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, nl_links);
 	    lateralWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
@@ -155,7 +169,7 @@ public class MappingSOM implements Mapping {
 			}
 		});
 	    
-	    lateralSenapse = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth, lateralSize);
+	    lateralSenapse = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth, nl_links);
 	    lateralSenapse.init(new Matrix.Value<Integer[]>() {
 			@Override
 			public Integer[] get(int... dims) {
@@ -167,6 +181,7 @@ public class MappingSOM implements Mapping {
 		fY = frZone.height() / (double) toZone.height();
 
 		final boolean[][] nerv_links = new boolean[frZone.width()][frZone.height()];
+		final boolean[][] lateral_nerv_links = new boolean[toZone.width()][toZone.height()];
         
 		if (toZone.singleReceptionField) {
 
@@ -175,10 +190,13 @@ public class MappingSOM implements Mapping {
 				(int)(toZone.height() / 2.0), 
 				nerv_links);
 			
-			initLateral(
-					(int)(toZone.width() / 2.0), 
-					(int)(toZone.height() / 2.0), 
-					nerv_links);
+	        for (int x = 0; x < toZone.width(); x++) {
+				for (int y = 0; y < toZone.height(); y++) {
+					initLateral(
+						x, y, 
+						lateral_nerv_links);
+				}
+	        }
 		} else {
 
 	        for (int x = 0; x < toZone.width(); x++) {
@@ -186,7 +204,7 @@ public class MappingSOM implements Mapping {
 	
 					initReceptionFields(x, y, nerv_links);
 
-					initLateral(x, y, nerv_links);
+					initLateral(x, y, lateral_nerv_links);
 				}
 			}
 		}
@@ -263,9 +281,11 @@ public class MappingSOM implements Mapping {
                 nerv_links[lx][ly] = true;
 
 				// Создаем синаптическую связь
+                //XXX: fix depth 
                 for (int z = 0; z < toZone.depth; z++) {
+                	int j = i * frZone.depth;
                 	for (int lz = 0; lz < frZone.depth; lz++) {
-                		linksSenapse(lx, ly, lz, x, y, z, i);
+                		linksSenapse(lx, ly, lz, x, y, z, j + lz);
                 	}
                 }
             } else {
@@ -276,11 +296,13 @@ public class MappingSOM implements Mapping {
     }
     
     private void initLateral(final int x, final int y, final boolean[][] nerv_links) {
-        double X, Y, S;
+        float value = 0f;
+        
+    	double X, Y, S;
 		double x_in_nerv, y_in_nerv;
         double _sigma, sigma;
         
-        double sigma2 = Math.sqrt(lateralSize / Math.PI);
+        double sigma2 = Math.sqrt(nl_links / Math.PI);
 
 		// Определение координат текущего нейрона в масштабе
 		// проецируемой зоны
@@ -292,8 +314,8 @@ public class MappingSOM implements Mapping {
         sigma = _sigma;
 
 		// Обнуление массива занятости связей
-		for (int n1 = 0; n1 < frZone.width(); n1++) {
-			for (int n2 = 0; n2 < frZone.height(); n2++) {
+		for (int n1 = 0; n1 < toZone.width(); n1++) {
+			for (int n2 = 0; n2 < toZone.height(); n2++) {
 				nerv_links[n1][n2] = false;
 			}
 		}
@@ -302,49 +324,49 @@ public class MappingSOM implements Mapping {
 		// нормально распределенной величины
 		// DispLink - дисперсия связей
 		int count = 0;
-		for (int i = 0; i < ns_links; i++) {
+		for (int i = 0; i < nl_links; i++) {
             int lx, ly;
             do {
-//                do {
-                    if (count > ns_links * 3) {
-                    	if (Double.isInfinite(sigma)) {
-                    		System.out.println("initialization failed @ x = "+x+" y = "+y);
-                    		System.exit(1);
-                    	}
-                    	sigma *= 1.05;//_sigma * 0.1;
-//						System.out.println("\n"+i+" of "+ns_links+" ("+sigma+")");
-                    	count = 0;
-                    }
-                    count++;
-                    	
-                    do {
-                        X = 2.0 * Math.random() - 1;
-                        Y = 2.0 * Math.random() - 1;
-                        S = X * X + Y * Y;
-                    } while (S > 1 || S == 0);
-                    S = Math.sqrt(-2 * Math.log(S) / S);
-                    double dX = X * S * sigma;
-                    double dY = Y * S * sigma;
-                    lx = (int) Math.round(x_in_nerv + dX);
-                    ly = (int) Math.round(y_in_nerv + dY);
+                if (count > nl_links * 3) {
+                	if (Double.isInfinite(sigma)) {
+                		System.out.println("initialization failed @ x = "+x+" y = "+y);
+                		System.exit(1);
+                	}
+                	sigma *= 1.05;//_sigma * 0.1;
+                	count = 0;
+                }
+                count++;
+                	
+                do {
+                    X = 2.0 * Math.random() - 1;
+                    Y = 2.0 * Math.random() - 1;
+                    S = X * X + Y * Y;
+                } while (S > 1 || S == 0);
+                S = Math.sqrt(-2 * Math.log(S) / S);
+                double dX = X * S * sigma;
+                double dY = Y * S * sigma;
+                lx = (int) Math.round(x_in_nerv + dX);
+                ly = (int) Math.round(y_in_nerv + dY);
 
-                    //определяем, что не вышли за границы поля колонок
-                    //колонки по периметру не задействованы
-//                } while (!(soft || (lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1)));
-
+            //определяем, что не вышли за границы поля колонок
+            //колонки по периметру не задействованы
             // Проверка на повтор связи
-			} while ( lx < 1 || ly < 1 || lx > frZone.width() - 1 || ly > frZone.height() - 1 || nerv_links[lx][ly] );
+			} while ( lx < 0 || ly < 0 || lx >= toZone.width() || ly >= toZone.height() || nerv_links[lx][ly] );
 
-            if (lx >= 1 && ly >= 1 && lx < frZone.width() - 1 && ly < frZone.height() - 1) {
+            if (lx >= 0 && ly >= 0 && lx < toZone.width() && ly < toZone.height()) {
                 if (debug) System.out.print(".");
 
                 nerv_links[lx][ly] = true;
 
-                final float value = (float) Math.exp( -( (lx - x)^2 + (ly - y)^2 ) / (2 * sigma2));
+            	value = (float) Math.exp( 
+            			- Math.sqrt( (lx - x)*(lx - x) + (ly - y)*(ly - y) )
+            			/ 2.0
+        			);
 
                 // Создаем синаптическую связь
+                //XXX: fix relation with depth, if present?
                 for (int z = 0; z < toZone.depth; z++) {
-                	for (int lz = 0; lz < frZone.depth; lz++) {
+                	for (int lz = 0; lz < toZone.depth; lz++) {
                     	lateralSenapse(lx, ly, lz, x, y, z, i);
                     }
                     lateralWeight.set(value, x, y, z, i);

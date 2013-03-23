@@ -189,16 +189,8 @@ public class MatrixArrayInteger implements Matrix<Integer[]> {
 		DecimalFormat df = new DecimalFormat("0.00000");
 		
 		System.out.print(Arrays.toString(pos));
-		Object v = get(pos);
-		if (v.getClass().isArray()) {
-			for (Object obj : (Object[])v) {
-				System.out.print(" ");
-				System.out.print(v);
-			}
-		} else {
-			System.out.print(" ");
-			System.out.print(df.format(v));
-		}
+		System.out.print(" ");
+		debugValue( df, get(pos) );
 		System.out.print(" ");
 		
 		boolean print = false;
@@ -225,9 +217,20 @@ public class MatrixArrayInteger implements Matrix<Integer[]> {
 				System.out.print(" ");
     		}
 
-			System.out.print(df.format(get(pos)));
+    		debugValue( df, get(pos) );
 			System.out.print(" ");
 		}
     	System.out.println();
+	}
+	
+	private void debugValue(DecimalFormat df, Object val) {
+		if (val.getClass().isArray()) {
+			for (Object obj : (Object[])val) {
+				System.out.print(obj);
+				System.out.print(" ");
+			}
+		} else {
+			System.out.print(df.format(val));
+		}
 	}
 }

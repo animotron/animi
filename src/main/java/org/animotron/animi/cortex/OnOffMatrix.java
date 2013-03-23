@@ -104,9 +104,9 @@ public class OnOffMatrix {
                         numCenter++;
                     }
                 }
-                System.out.print(" "+matrix[pos]);
+//                System.out.print(" "+matrix[pos]);
         	}
-        	System.out.println();
+//        	System.out.println();
         }
         
         if (context == null) {

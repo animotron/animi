@@ -143,20 +143,14 @@ public class MappingHebbian implements Mapping {
 		final boolean[][] nerv_links = new boolean[frZone.width()][frZone.height()];
         
 		if (toZone.singleReceptionField) {
-//			fX = 0;
-//			fY = 0;
-
 			initReceptionFields(
 				(int)(toZone.width() / 2.0), 
 				(int)(toZone.height() / 2.0), 
 				nerv_links);
 			
 		} else {
-//			float sumQ2 = (1 / (float)ns_links * 1 / (float)ns_links) * ns_links;
 	        for (int x = 0; x < toZone.width(); x++) {
 				for (int y = 0; y < toZone.height(); y++) {
-//					System.out.println("x = "+x+" y = "+y);
-	
 					initReceptionFields(x, y, nerv_links);
 				}
 			}
@@ -172,7 +166,6 @@ public class MappingHebbian implements Mapping {
 		// проецируемой зоны
 		x_in_nerv = x * frZone.width() / (double) toZone.width();
 		y_in_nerv = y * frZone.height() / (double) toZone.height();
-//		System.out.println("x_in_nerv = "+x_in_nerv+" y_in_nerv = "+y_in_nerv);
 
         _sigma = disp;// * ((m.zone.width() + m.zone.height()) / 2);
         sigma = _sigma;
@@ -191,33 +184,29 @@ public class MappingHebbian implements Mapping {
 		for (int i = 0; i < ns_links; i++) {
             int lx, ly;
             do {
-//                do {
-                    if (count > ns_links * 3) {
-                    	if (Double.isInfinite(sigma)) {
-                    		System.out.println("initialization failed @ x = "+x+" y = "+y);
-                    		System.exit(1);
-                    	}
-                    	sigma *= 1.05;//_sigma * 0.1;
-//						System.out.println("\n"+i+" of "+ns_links+" ("+sigma+")");
-                    	count = 0;
-                    }
-                    count++;
-                    	
-                    do {
-                        X = 2.0 * Math.random() - 1;
-                        Y = 2.0 * Math.random() - 1;
-                        S = X * X + Y * Y;
-                    } while (S > 1 || S == 0);
-                    S = Math.sqrt(-2 * Math.log(S) / S);
-                    double dX = X * S * sigma;
-                    double dY = Y * S * sigma;
-                    lx = (int) Math.round(x_in_nerv + dX);
-                    ly = (int) Math.round(y_in_nerv + dY);
+                if (count > ns_links * 3) {
+                	if (Double.isInfinite(sigma)) {
+                		System.out.println("initialization failed @ x = "+x+" y = "+y);
+                		System.exit(1);
+                	}
+                	sigma *= 1.05;//_sigma * 0.1;
+                	count = 0;
+                }
+                count++;
+                	
+                do {
+                    X = 2.0 * Math.random() - 1;
+                    Y = 2.0 * Math.random() - 1;
+                    S = X * X + Y * Y;
+                } while (S > 1 || S == 0);
+                S = Math.sqrt(-2 * Math.log(S) / S);
+                double dX = X * S * sigma;
+                double dY = Y * S * sigma;
+                lx = (int) Math.round(x_in_nerv + dX);
+                ly = (int) Math.round(y_in_nerv + dY);
 
-                    //определяем, что не вышли за границы поля колонок
-                    //колонки по периметру не задействованы
-//                } while (!(soft || (lx >= 1 && ly >= 1 && lx < zone.width() - 1 && ly < zone.height() - 1)));
-
+            //определяем, что не вышли за границы поля колонок
+            //колонки по периметру не задействованы
             // Проверка на повтор связи
 			} while ( lx < 1 || ly < 1 || lx > frZone.width() - 1 || ly > frZone.height() - 1 || nerv_links[lx][ly] );
 
@@ -339,7 +328,7 @@ public class MappingHebbian implements Mapping {
 		public void init() {
 
 	        boxMini = 16;
-	        boxN = (int) Math.round( Math.sqrt(toZone.depth) );
+	        boxN = (int) Math.ceil( Math.sqrt(toZone.depth) );
 	        boxSize = boxMini * boxN;
 
 			int maxX = toZone.width() * boxSize;

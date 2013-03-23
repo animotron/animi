@@ -93,12 +93,12 @@ public class LearningSOM extends Task {
 			
 			final float sumQ2 = adjust(
 					new MatrixMapped<Float>(m.frZone().neurons, m.senapses().sub(xi, yi, zi)), 
-					m.senapseWeight().sub(xi, yi, zi), 
+					weights, 
 					m.toZone().neurons.get(xi, yi, zi),
 					factor
 			);
 			
-//			normalization(weights, sumQ2);
+			normalization(weights, sumQ2);
 		}
 	}
 
@@ -116,6 +116,16 @@ public class LearningSOM extends Task {
 			m.lateralWeight().sub(x, y, z),
 			factor
 		);
+		
+		
+	}
+	public boolean isDone() {
+		final MappingSOM m = (MappingSOM) cz.in_zones[0];
+
+		m.senapses().debug("senapses");
+		m.senapseWeight().debug("senapseWeight");
+		
+		return super.isDone();
 	}
 
 	@Override
