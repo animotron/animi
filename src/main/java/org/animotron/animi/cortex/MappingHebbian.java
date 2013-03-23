@@ -316,14 +316,14 @@ public class MappingHebbian implements Mapping {
 		return imageable;
 	}
 	
-	class ColumnRF_Image implements Imageable {
+	protected class ColumnRF_Image implements Imageable {
 		
 		private int Xl;
 		private int Yl;
 		
-		private int boxMini;
-		private int boxSize;
-		private int boxN;
+		protected int boxMini;
+		protected int boxSize;
+		protected int boxN;
 	    private BufferedImage image;
 	    
 	    private List<Point> watching = new ArrayList<Point>();
@@ -403,8 +403,8 @@ public class MappingHebbian implements Mapping {
 		public Object whatAt(Point point) {
 			try {
 				Point pos = new Point(
-					(int)Math.ceil(point.x / (double)boxSize), 
-					(int)Math.ceil(point.y / (double)boxSize)
+					point.x / boxSize, 
+					point.y / boxSize
 				);
 				
 				if (pos.x >= 0 && pos.x < toZone.width && pos.y >= 0 && pos.y < toZone.height) {

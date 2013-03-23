@@ -24,11 +24,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.animotron.animi.Imageable;
 import org.animotron.animi.InitParam;
 import org.animotron.animi.Utils;
+import org.animotron.animi.cortex.MappingHebbian.ColumnRF_Image;
 import org.animotron.matrix.Matrix;
 import org.animotron.matrix.MatrixArrayInteger;
 import org.animotron.matrix.MatrixFloat;
@@ -418,24 +421,27 @@ public class MappingSOM implements Mapping {
 		return false;
 	}
 
-	ColumnRF_Image imageable = null;
+	ShowByMax imageable = null;
 
 	@Override
 	public Imageable getImageable() {
 		if (imageable == null) {
-			imageable = new ColumnRF_Image();
+			imageable = new ShowByMax();
 		}
 		return imageable;
 	}
 	
-	class ColumnRF_Image implements Imageable {
+	class ShowByMax implements Imageable {
 		
 		private int boxMini;
 		private int boxSize;
 		private int boxN;
 	    private BufferedImage image;
 	    
-	    public ColumnRF_Image() {
+	    private List<Point> watching = new ArrayList<Point>();
+	    private Point atFocus = null;
+
+	    public ShowByMax() {
 	    	init();
 		}
 
@@ -496,6 +502,111 @@ public class MappingSOM implements Mapping {
 							boxSize * y,
 							xi, yi, zi, m);
 				}
+			}
+			
+			return image;
+		}
+
+		@Override
+		public Object whatAt(Point point) {
+			try {
+				Point pos = new Point(
+					point.x / boxSize, 
+					point.y / boxSize
+				);
+				
+				if (pos.x >= 0 && pos.x < toZone.width && pos.y >= 0 && pos.y < toZone.height) {
+					
+					watching.add(pos);
+					
+					return new ShowByOne(pos.x, pos.y);
+				}
+			} catch (Exception e) {
+			}
+			return null;
+		}
+
+		@Override
+		public void focusGained(Point point) {
+		}
+
+		@Override
+		public void focusLost(Point point) {
+		}
+
+		@Override
+		public void closed(Point point) {
+		}
+	}
+
+	class ShowByOne implements Imageable {
+		
+	    private BufferedImage image;
+	    
+	    final Mapping m;
+	    final ColumnRF_Image rf;
+	    final int nX;
+	    final int nY;
+	    
+	    public ShowByOne(int nX, int nY) {
+	    	this.nX = nX;
+	    	this.nY = nY;
+	    	
+			m = ((LayerWLearning)frZone).in_zones[0];
+			rf = (ColumnRF_Image) m.getImageable();
+		}
+
+		@Override
+		public String getImageName() {
+			return "["+nX+","+nY+"] "+MappingSOM.this+" "+toZone.name;
+		}
+
+		@Override
+		public void refreshImage() {
+		}
+
+		@Override
+		public BufferedImage getImage() {
+			int gray = 0;
+			
+			image = rf.getImage();
+
+			Graphics g = image.getGraphics();
+
+			final MatrixProxy<Float> ws = senapseWeight.sub(nX, nY, 0);
+			
+			final MatrixProxy<Integer[]> sf = senapses.sub(nX, nY, 0);
+
+			Integer[] xyz = null;
+			
+			for (int index = 0; index < senapseWeight.length(); index++) {
+				
+				try {
+					xyz = sf.getByIndex(index);
+				} catch (Exception e) {
+					break;
+				}
+				
+				final int xi = xyz[0];
+				final int yi = xyz[1];
+				final int zi = xyz[2];
+				
+				final int offsetX = xi * rf.boxSize;
+				final int offsetY = yi * rf.boxSize;
+				
+				final int pY = (int) ( zi / rf.boxN );
+				final int pX = zi - (rf.boxN * pY);
+					
+				//weight box
+				gray = (int) (255 * ws.getByIndex(index));
+				if (gray > 255) gray = 255;
+				
+				g.setColor(new Color(gray, gray, gray));
+				g.draw3DRect(
+						offsetX + rf.boxMini * pX + 1, 
+						offsetY + rf.boxMini * pY + 1, 
+						rf.boxMini - 2, rf.boxMini - 2, true);
+
 			}
 			
 			return image;
