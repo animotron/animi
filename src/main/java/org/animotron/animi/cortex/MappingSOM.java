@@ -622,7 +622,7 @@ public class MappingSOM implements Mapping {
 				final int pX = zi - (rf.boxN * pY);
 					
 				//weight box
-				gray = (int) (255 * ws.getByIndex(index));
+				gray = (int) (255 * ws.getByIndex(index) * 100);
 				if (gray > 255) gray = 255;
 				
 				g.setColor(new Color(gray, gray, gray));
