@@ -120,11 +120,11 @@ public class LearningSOM extends Task {
 		
 	}
 	public boolean isDone() {
-		final MappingSOM m = (MappingSOM) cz.in_zones[0];
-
-		m.senapses().debug("senapses");
-		m.senapseWeight().debug("senapseWeight");
-		
+//		final MappingSOM m = (MappingSOM) cz.in_zones[0];
+//
+//		m.senapses().debug("senapses");
+//		m.senapseWeight().debug("senapseWeight");
+//		
 		return super.isDone();
 	}
 
