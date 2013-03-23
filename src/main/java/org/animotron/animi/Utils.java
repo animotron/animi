@@ -120,12 +120,12 @@ public class Utils {
 							Utils.create_rgb(255, gray, gray, gray));
 
 					//point of post neuron activity in top left plus one pixel left corner
-//					gray = (int) (255 * m.toZone().colPostNeurons.get(cnX, cnY, p));
-//					if (gray > 255) gray = 255;
-//					image.setRGB(
-//							offsetX + boxMini * pX + 3, 
-//							offsetY + boxMini * pY + 2,
-//							Utils.create_rgb(255, gray, gray, gray));
+					gray = (int) (255 * m.toZone().axons.get(cnX, cnY, z));
+					if (gray > 255) gray = 255;
+					image.setRGB(
+							offsetX + boxMini * pX + 3, 
+							offsetY + boxMini * pY + 2,
+							Utils.create_rgb(255, gray, gray, gray));
 			        
 					//weight box
 //					gray = (int) (255 * m.toZone().colWeights.get(Xl, Yl, cnX, cnY, p));
