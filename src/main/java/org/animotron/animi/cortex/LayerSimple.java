@@ -21,6 +21,7 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
+import org.animotron.matrix.MatrixDelay;
 import org.animotron.matrix.MatrixFloat;
 
 import java.awt.Color;
@@ -58,9 +59,14 @@ public class LayerSimple implements Layer {
 	@InitParam(name="depth")
 	public int depth = 9;
 
-    public MatrixFloat cols;
+    @InitParam(name="delay")
+	public int delay = 1;
     
-	public BufferedImage image;
+    public MatrixDelay axons;
+    
+    public MatrixFloat cols;
+
+    public BufferedImage image;
 
 //	@InitParam(name="speed")
 //	public double speed = Integer.MAX_VALUE;
@@ -72,13 +78,15 @@ public class LayerSimple implements Layer {
     	mc = null;
     }
 
-    public LayerSimple(String name, MultiCortex mc, int width, int height, int depth) {
+    public LayerSimple(String name, MultiCortex mc, int width, int height, int depth, int delay) {
         this.name = name;
         this.mc = mc;
 
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
+
+		this.delay = delay;
     }
     
     /**
@@ -89,7 +97,10 @@ public class LayerSimple implements Layer {
     	cols = new MatrixFloat(width, height, depth);
     	cols.fill(0f);
 
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    	axons = new MatrixDelay(delay, width, height, depth);
+    	axons.fill(0f);
+
+    	image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 
     public void release() {
@@ -143,6 +154,7 @@ public class LayerSimple implements Layer {
 
 	@Override
 	public void process() {
+		axons.step(cols);
 	}
 
 	@Override

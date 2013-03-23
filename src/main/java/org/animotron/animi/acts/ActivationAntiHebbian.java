@@ -69,7 +69,7 @@ public class ActivationAntiHebbian extends Task {
 			final float activity = 
 					cz.cols.get(x, y, z) - 
 					activity(
-						new MatrixMapped<Float>(m.frZone().cols, m.senapses().sub(x, y, z)), 
+						new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z)), 
 						m.lateralWeight().sub(x, y, z)
 					);
 	

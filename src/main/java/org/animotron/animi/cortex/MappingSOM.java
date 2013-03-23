@@ -491,8 +491,6 @@ public class MappingSOM implements Mapping {
 					final int yi = xyz[1];
 					final int zi = xyz[2];
 					
-					System.out.println(xi+" "+yi+" "+zi);
-					
 					Utils.drawRF(true , image, boxMini, 
 							boxSize * x, 
 							boxSize * y,

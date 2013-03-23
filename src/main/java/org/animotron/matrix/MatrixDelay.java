@@ -85,7 +85,7 @@ public class MatrixDelay extends MatrixFloat {
 	}
 	
 	public int[] max() {
-		throw new IllegalArgumentException();
+		return super.max();
 	}
 	
 	public MatrixDelay copy() {
@@ -100,6 +100,23 @@ public class MatrixDelay extends MatrixFloat {
 		throw new IllegalArgumentException();
 	}
 	
+	public void step(MatrixFloat matrix) {
+		for (int index = 0; index < length(); index++) {
+			final float value = matrix.getByIndex(index);
+			if (value > 0) {
+				setByIndex(value, index);
+			
+			} else if (delays[index] > 1) {
+				delays[index]--;
+			
+			} else if (delays[index] == 1) {
+				delays[index]--;
+				super.setByIndex(0f, index);
+			}
+		}
+		
+	}
+
 	public void step() {
 		
 //		super.debug("before step");

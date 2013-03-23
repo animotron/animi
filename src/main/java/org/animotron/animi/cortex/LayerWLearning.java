@@ -30,7 +30,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 
 /**
@@ -55,9 +54,6 @@ public class LayerWLearning extends LayerSimple {
 //	@Params
     Inhibitory inhibitory = new Inhibitory(this);
     WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
-    
-    @InitParam(name="delay")
-	public int delay = 12;
     
     @InitParam(name="disper")
 	public double disper = 1.5;
@@ -90,8 +86,8 @@ public class LayerWLearning extends LayerSimple {
 		super();
     }
 
-	LayerWLearning(String name, MultiCortex mc, int width, int height, int depth, Mapping[] in_zones, Class<? extends Task> learning) {
-		super(name, mc, width, height, depth);
+	LayerWLearning(String name, MultiCortex mc, int width, int height, int depth, int delay, Mapping[] in_zones, Class<? extends Task> learning) {
+		super(name, mc, width, height, depth, delay);
 		
 		this.in_zones = in_zones;
 	
@@ -338,6 +334,8 @@ public class LayerWLearning extends LayerSimple {
     	if (!isActive()) {
     		return;
     	}
+
+    	super.process();
     	
         //Такт 1. Активация колонок (узнавание)
     	performTask(cnActivation);
@@ -355,10 +353,6 @@ public class LayerWLearning extends LayerSimple {
     	
     		count++;
     	}
-		
-//		colPostNeurons.step();
-		
-//		history();
     }
     
     private void performTask(Task task) {
