@@ -96,8 +96,8 @@ public class RetinaZone extends Task {
 		return input[(y * inputSizeX) + x];
 	}
 
-	private void output(float value, int x, int y) {
-    	sz.cols.set(value, x, y);
+	private void output(final float value, final int x, final int y, final int z) {
+    	sz.cols.set(value, x, y, z);
     }
 	
 	private float gray(final int x, final int y) {
@@ -140,7 +140,7 @@ public class RetinaZone extends Task {
 	}
 	
 	@Override
-	public void gpuMethod(int x, int y) {
+	public void gpuMethod(final int x, final int y, final int z) {
     	
     	int numInPeref = 0;
     	int numInCenter = 0;
@@ -181,8 +181,8 @@ public class RetinaZone extends Task {
         	}
     	}
     	if (numInCenter == 0 || numInPeref == 0) {
-			history.set(0f, x, y);
-			output(0, x, y);
+			history.set(0f, x, y, z);
+			output(0, x, y, z);
 			return;
     	}
     	
@@ -203,7 +203,7 @@ public class RetinaZone extends Task {
 
 		//if no stimuli, check if opposite was 
 		if (value == 0) {
-			if (history.get(x, y) == 1f && oppositeStimuli == 0) {
+			if (history.get(x, y, z) == 1f && oppositeStimuli == 0) {
 				value = 1f; //0.3f;
 			}
 		} else {
@@ -212,8 +212,8 @@ public class RetinaZone extends Task {
 				value = 1f; //0.7f;
 		}
 		
-		output(value, x, y);
+		output(value, x, y, z);
 
-		history.set((float)oppositeStimuli, x, y);
+		history.set((float)oppositeStimuli, x, y, z);
 	}
 }

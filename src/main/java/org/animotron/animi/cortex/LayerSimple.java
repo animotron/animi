@@ -29,6 +29,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.DecimalFormat;
 import java.util.UUID;
 
 /**
@@ -50,46 +51,15 @@ public class LayerSimple implements Layer {
     
 	@InitParam(name="width")
 	public int width = 30;//160;
+
 	@InitParam(name="height")
 	public int height = 30;//120;
-	
-    public MatrixFloat cols;
-    public MatrixFloat prev;
     
-    public MatrixFloat neighborLearning;
-    
-    int neighborLearningStage = 0;
-    public void history() {
-//    	if (neighborLearningStage >= 2) {
-//    		neighborLearningStage--;
-//    		return;
-//    	}
-//    	switch (neighborLearningStage) {
-//		case 1:
-//    		neighborLearningStage--;
-//    		neighborLearning.fill(0);
-//			
-//			break;
-//		case 0:
-//    		for (int i = 0; i < cols.length; i++) {
-//    			if (cols[i] > 0) {
-//    				neighborLearningStage = 1;
-//    				break;
-//    			}
-//        	}
-//    		if (neighborLearningStage == 1) {
-//        		neighborLearning.copy(cols);
-//        		neighborLearningStage = 3;
-//    		}
-//			
-//			break;
-//		default:
-//			break;
-//		}
-    }
-    
-    public MatrixFloat rememberCols;
+	@InitParam(name="depth")
+	public int depth = 9;
 
+    public MatrixFloat cols;
+    
 	public BufferedImage image;
 
 //	@InitParam(name="speed")
@@ -102,9 +72,13 @@ public class LayerSimple implements Layer {
     	mc = null;
     }
 
-    public LayerSimple(String name, MultiCortex mc) {
+    public LayerSimple(String name, MultiCortex mc, int width, int height, int depth) {
         this.name = name;
         this.mc = mc;
+
+		this.width = width;
+		this.height = height;
+		this.depth = depth;
     }
     
     /**
@@ -112,15 +86,9 @@ public class LayerSimple implements Layer {
      */
     public void init() {
     	
-    	cols = new MatrixFloat(width, height);
+    	cols = new MatrixFloat(width, height, depth);
     	cols.fill(0f);
 
-    	neighborLearning = new MatrixFloat(width, height);
-    	neighborLearning.fill(0f);
-    	
-        rememberCols = new MatrixFloat(width, height);
-    	rememberCols.fill(0f);
-    	
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 
@@ -132,7 +100,8 @@ public class LayerSimple implements Layer {
     	DataBufferInt dataBuffer = (DataBufferInt)image.getRaster().getDataBuffer();
     	int data[] = dataBuffer.getData();
       
-    	for (int i = 0; i < cols.length(); i++) {
+//    	for (int i = 0; i < cols.length(); i++) {
+    	for (int i = 0; i < data.length; i++) {
     		final float value = cols.getByIndex(i);
       	
     		if (Float.isNaN(value))
@@ -216,5 +185,23 @@ public class LayerSimple implements Layer {
 		write(out, "learning", isLearning);
 //		write(out, "speed", speed);
 		out.write("/>");
+	}
+
+	
+	public void debug(String comment) {
+		System.out.println(comment);
+		
+		DecimalFormat df = new DecimalFormat("0.00000");
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				for (int z = 0; z < depth; z++) {
+					System.out.print(df.format(cols.get(x, y, z)));
+					System.out.print(" ");
+				}
+				if (depth > 1)
+					System.out.print("| ");
+			}
+			System.out.println();
+		}
 	}
 }

@@ -53,7 +53,7 @@ public class Inhibitory extends Task {
 	}
 
 	@Override
-	public void gpuMethod(int x, int y) {
+	public void gpuMethod(final int x, final int y, final int z) {
 		
 		float delta = 0;
 		if (cz.isSingleReceptionField()) {

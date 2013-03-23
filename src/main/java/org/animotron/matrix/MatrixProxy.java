@@ -20,7 +20,10 @@
  */
 package org.animotron.matrix;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
+
+import org.animotron.matrix.MatrixFloat.Integers;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -185,7 +188,14 @@ public class MatrixProxy<T extends Number> implements Matrix<T> {
 
 	@Override
 	public void debug(String comment) {
-		throw new IllegalArgumentException();
+		DecimalFormat df = new DecimalFormat("0.00000");
+
+		System.out.println(comment);
+		for (int index = 0; index < length(); index++) {
+			System.out.print(df.format(getByIndex(index)));
+			System.out.print(" ");
+		}
+		System.out.println();
 	}
 	
 	private int[] pos(final int index) {

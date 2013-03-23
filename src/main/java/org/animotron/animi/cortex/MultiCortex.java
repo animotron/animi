@@ -85,7 +85,7 @@ public class MultiCortex implements Runnable {
     public MultiCortex(Application app) {
     	this.app = app;
     	
-        z_in = new LayerSimple("Зрительный нерв", this);
+        z_in = new LayerSimple("Зрительный нерв", this, 30, 30, 1);
         
         //1st zone
         layer_1 = new LayerWLearning("1й", this, 5, 5, 4, //120, 120, //160, 120,

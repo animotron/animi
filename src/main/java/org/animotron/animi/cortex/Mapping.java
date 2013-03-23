@@ -20,6 +20,7 @@
  */
 package org.animotron.animi.cortex;
 
+import org.animotron.animi.Imageable;
 import org.animotron.matrix.Matrix;
 
 /**
@@ -55,4 +56,6 @@ public interface Mapping {
 	public double disp();
 
 	public boolean soft();
+	
+	public Imageable getImageable();
 }

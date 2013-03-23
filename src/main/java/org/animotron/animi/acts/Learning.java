@@ -47,24 +47,24 @@ public class Learning extends Task {
 		negative.prepare();
 	}
 
-	public void gpuMethod(int x, int y) {
-		if (cz.cols.get(x, y) <= 0) { // && cz.neighborLearning.get(x, y) > 0) {
+	public void gpuMethod(final int x, final int y, final int z) {
+		if (cz.cols.get(x, y, z) <= 0) { // && cz.neighborLearning.get(x, y) > 0) {
 			return;
 		}
 
 //		cz.neighborLearning.fill(1f);
 //		cz.neighborLearning.set(0f, x, y);
 //		
-		positive.gpuMethod(x, y);
-		negative.gpuMethod(x, y);
+		positive.gpuMethod(x, y, z);
+		negative.gpuMethod(x, y, z);
 
 		//learning for post activity
-		LearningHebbian.learn(
-				cz.colPostNeurons, 
-				cz.colWeights.sub(x, y), 
-				cz.colCorrelation.get(x, y), 
-				0.1f / 5.0f,
-				10^-11);
+//		LearningHebbian.learn(
+//				cz.colPostNeurons, 
+//				cz.colWeights.sub(x, y), 
+//				cz.colCorrelation.get(x, y), 
+//				0.1f / 5.0f,
+//				10^-11);
 	}
 
 	public boolean isDone() {

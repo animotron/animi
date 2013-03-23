@@ -37,8 +37,8 @@ public class WinnerGetsAll extends Task {
 	}
 
 	@Override
-	public void gpuMethod(int x, int y) {
-		if (x == 0 && y == 0) {
+	public void gpuMethod(final int x, final int y, final int z) {
+		if (x == 0 && y == 0 && z == 0) {
 			_(cz, cz.cols, !cz.isSingleReceptionField());
 		}
 	}

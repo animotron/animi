@@ -72,7 +72,7 @@ public class MatrixFloat implements Matrix<Float> {
 		
 		for (int i = 0; i < dims.length; i++) {
 			if (dims[i] >= dimensions[i]) {
-				throw new IndexOutOfBoundsException("Matrix's "+i+" dimension have "+dimensions[i]+" elements, but requested "+dims[i]+" element.");
+				throw new IndexOutOfBoundsException("Matrix's "+(i+1)+" dimension have "+dimensions[i]+" elements, but requested "+dims[i]+" element.");
 			}
 		}
 		

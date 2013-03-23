@@ -98,21 +98,21 @@ public class Utils {
 		
 		for (int pX = 0; pX < size; pX++) {
 			for (int pY = 0; pY < size; pY++) {
-				final int p = (pY * size) + pX;
-				if (p < m.toZone().depth) {
+				final int z = (pY * size) + pX;
+				if (z < m.toZone().depth) {
 					
 					img = drawRF(true , image, boxMini, 
 							offsetX + boxMini * pX, 
 							offsetY + boxMini * pY,
-							cnX, cnY, p, m);
+							cnX, cnY, z, m);
 					
 					img = drawRF(false, image, boxMini, 
 							offsetX + boxMini * pX, 
 							offsetY + boxMini * pY,
-							cnX, cnY, p, m);
+							cnX, cnY, z, m);
 
 					//point of neuron activity in top left corner
-					gray = (int) (255 * m.toZone().colNeurons.get(cnX, cnY, p));
+					gray = (int) (255 * m.toZone().cols.get(cnX, cnY, z));
 					if (gray > 255) gray = 255;
 					image.setRGB(
 							offsetX + boxMini * pX + 2, 
@@ -120,22 +120,22 @@ public class Utils {
 							Utils.create_rgb(255, gray, gray, gray));
 
 					//point of post neuron activity in top left plus one pixel left corner
-					gray = (int) (255 * m.toZone().colPostNeurons.get(cnX, cnY, p));
-					if (gray > 255) gray = 255;
-					image.setRGB(
-							offsetX + boxMini * pX + 3, 
-							offsetY + boxMini * pY + 2,
-							Utils.create_rgb(255, gray, gray, gray));
+//					gray = (int) (255 * m.toZone().colPostNeurons.get(cnX, cnY, p));
+//					if (gray > 255) gray = 255;
+//					image.setRGB(
+//							offsetX + boxMini * pX + 3, 
+//							offsetY + boxMini * pY + 2,
+//							Utils.create_rgb(255, gray, gray, gray));
 			        
 					//weight box
-					gray = (int) (255 * m.toZone().colWeights.get(Xl, Yl, cnX, cnY, p));
-					if (gray > 255) gray = 255;
-					
-					g.setColor(new Color(gray, gray, gray));
-					g.draw3DRect(
-							offsetX + boxMini * pX + 1, 
-							offsetY + boxMini * pY + 1, 
-							boxMini - 2, boxMini - 2, true);
+//					gray = (int) (255 * m.toZone().colWeights.get(Xl, Yl, cnX, cnY, p));
+//					if (gray > 255) gray = 255;
+//					
+//					g.setColor(new Color(gray, gray, gray));
+//					g.draw3DRect(
+//							offsetX + boxMini * pX + 1, 
+//							offsetY + boxMini * pY + 1, 
+//							boxMini - 2, boxMini - 2, true);
 				}
 			}
 		}
@@ -146,14 +146,13 @@ public class Utils {
 			final boolean isPos,
 			final BufferedImage image, final int boxSize,
 			final int offsetX, final int offsetY,
-			final int cnX, final int cnY,
-			final int pN,
+			final int cnX, final int cnY, final int cnZ,
 			final Mapping m) {
 
 		int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links(); l++) {
-        	final int xi = m.senapses().get(cnX, cnY, l, 0);
-        	final int yi = m.senapses().get(cnX, cnY, l, 1);
+        	final int xi = m.senapses().get(cnX, cnY, cnZ, l, 0);
+        	final int yi = m.senapses().get(cnX, cnY, cnZ, l, 1);
         	
         	if (m.toZone().isSingleReceptionField()) {
 	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX()));
@@ -177,9 +176,9 @@ public class Utils {
 
 		        final float w;
 		        if (isPos) {
-		        	w = m.senapseWeight().get(cnX, cnY, pN, l);
+		        	w = m.senapseWeight().get(cnX, cnY, cnZ, l);
 		        } else {
-		        	w = m.lateralWeight().get(cnX, cnY, pN, l);
+		        	w = m.lateralWeight().get(cnX, cnY, cnZ, l);
 		        }
 				if (Float.isNaN(w) || Float.isInfinite(w)) {
 					R = 255;

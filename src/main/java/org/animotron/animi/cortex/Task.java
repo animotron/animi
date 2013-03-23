@@ -55,7 +55,9 @@ public abstract class Task {
 //			System.out.println("Execute "+getClass());
 			for (int x = 0; x < sz.width; x++) {
 				for (int y = 0; y < sz.height; y++) {
-					gpuMethod(x, y);
+					for (int z = 0; z < sz.depth; z++) {
+						gpuMethod(x, y, z);
+					}
 				}
 			}
 		} while (!isDone());
@@ -63,7 +65,7 @@ public abstract class Task {
 	
 	public void prepare() {}
 
-	public abstract void gpuMethod(final int x, final int y);
+	public abstract void gpuMethod(final int x, final int y, final int z);
 	
 	public boolean isDone() {
 		return true;

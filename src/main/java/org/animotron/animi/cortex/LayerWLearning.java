@@ -22,8 +22,6 @@ package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
 import org.animotron.animi.acts.*;
-import org.animotron.matrix.MatrixDelay;
-import org.animotron.matrix.MatrixFloat;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -33,15 +31,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
- * Complex cortex zone
+ * Layer with learning.
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
- * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class LayerWLearning extends LayerSimple {
@@ -85,31 +80,18 @@ public class LayerWLearning extends LayerSimple {
 
 	/** Number of synaptic connections of the all simple neurons **/
 	public int ns_links;
-	/** Number of axonal connections of the all simple neurons **/
-	protected int nas_links = 9;
-	/** Number of synaptic connections of the complex neuron **/
-	public int nsc_links;
-	
-    @InitParam(name="depth")
-	public int depth = 9;
 
-    public MatrixFloat colNeurons;
-    
-    public MatrixDelay colPostNeurons;
-    
-    public MatrixFloat colWeights;
-    public MatrixFloat colCorrelation;
+//    public MatrixFloat colNeurons;
+//    public MatrixDelay colPostNeurons;
+//    public MatrixFloat colWeights;
+//    public MatrixFloat colCorrelation;
 
     LayerWLearning() {
 		super();
     }
 
 	LayerWLearning(String name, MultiCortex mc, int width, int height, int depth, Mapping[] in_zones, Class<? extends Task> learning) {
-		super(name, mc);
-		
-		this.width = width;;
-		this.height = height;
-		this.depth = depth;
+		super(name, mc, width, height, depth);
 		
 		this.in_zones = in_zones;
 	
@@ -127,15 +109,8 @@ public class LayerWLearning extends LayerSimple {
     public void init() {
     	super.init();
     	
-		prev = cols.copy();
-    	colCorrelation = cols.copy();
+//    	colCorrelation = cols.copy();
     	
-		//count number of links
-//    	ns_links = 0;
-//        for (Mapping m : in_zones) {
-//            ns_links += m.ns_links;
-//		}
-
         //mapping
 		for (Mapping m : in_zones) {
 			m.map(this);
@@ -179,24 +154,24 @@ public class LayerWLearning extends LayerSimple {
 			}
 		}
 		
-    	colNeurons = new MatrixFloat(width, height, depth);
-    	colNeurons.fill(0f);
+//    	colNeurons = new MatrixFloat(width, height, depth);
+//    	colNeurons.fill(0f);
     	
-    	colPostNeurons = new MatrixDelay(delay, width, height, depth);
-    	colPostNeurons.fill(0f);
+//    	colPostNeurons = new MatrixDelay(delay, width, height, depth);
+//    	colPostNeurons.fill(0f);
+//
+//    	colWeights = new MatrixFloat(width, height, width, height, depth);
+//    	colWeights.fill(getWeight());
 
-    	colWeights = new MatrixFloat(width, height, width, height, depth);
-    	colWeights.fill(getWeight());
-
-    	if (CRFs != null) {
-    		for (ColumnRF_Image CRF : CRFs) {
-    			CRF.init();
-    		}
-        }
-        
-        if (RRF != null) {
-        	RRF.init();
-        }
+//    	if (CRFs != null) {
+//    		for (ColumnRF_Image CRF : CRFs) {
+//    			CRF.init();
+//    		}
+//        }
+//        
+//        if (RRF != null) {
+//        	RRF.init();
+//        }
 	}
     
     public Float getWeight() {
@@ -278,144 +253,20 @@ public class LayerWLearning extends LayerSimple {
 		}
     }
     
-	ColumnRF_Image CRFs[] = null;
-	
-	public Imageable[] getCRF() {
-		if (CRFs == null) {
-			CRFs = new ColumnRF_Image[width * height];
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
-					CRFs[(y * width) + x] = new ColumnRF_Image(x, y);
-				}
-			}
-		}
-		
-		return CRFs;
-	}
-
-	class ColumnRF_Image implements Imageable {
-		
-		private int Xl;
-		private int Yl;
-		
-		private int boxMini;
-		private int boxSize;
-		private int boxN;
-	    private BufferedImage image;
-	    
-	    private List<Point> watching = new ArrayList<Point>();
-	    private Point atFocus = null;
-
-		ColumnRF_Image(int Xl, int Yl) {
-			init();
-			
-			this.Xl = Xl;
-			this.Yl = Yl;
-		}
-
-		public void init() {
-
-	        boxMini = 16;
-	        boxN = (int) Math.round( Math.sqrt(depth) );
-	        boxSize = boxMini * boxN;
-
-			int maxX = width() * boxSize;
-	        int maxY = height() * boxSize;
-
-	        image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
-		}
-	
-		public String getImageName() {
-			return "cols map "+LayerWLearning.this.name+" ["+Xl+","+Yl+"]";
-		}
-
-		public BufferedImage getImage() {
-//			in_zones[0].toZone.colWeights.debug("colWeights");
-
-			final Mapping m = in_zones[0];
-			
-			Graphics g = image.getGraphics();
-			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, image.getWidth(), image.getHeight());
-	
-			g.setColor(Color.YELLOW);
-			for (Point p : watching) {
-				if (atFocus == p) {
-					g.setColor(Color.RED);
-					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
-					g.setColor(Color.YELLOW);
-				} else
-					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
-			}
-			
-			for (int x = 0; x < width(); x++) {
-				for (int y = 0; y < height(); y++) {
-					g.setColor(Color.DARK_GRAY);
-					g.draw3DRect(x*boxSize, y*boxSize, boxSize, boxSize, true);
-					
-					Utils.drawRF(
-		        		image, g,
-		        		boxSize,
-		        		boxMini,
-		        		x*boxSize, y*boxSize,
-		        		x, y,
-		        		Xl, Yl,
-		        		m
-		    		);
-				}
-			}
-
-//			g.setColor(Color.WHITE);
-//			
-//			int textY = g.getFontMetrics(g.getFont()).getHeight();
-//			int x = 0, y = textY;
-//			g.drawString("count: "+count, x, y);
-			
-//			currentPackage++;
-//			if (!(currentPackage < package_size))
-//				currentPackage = 0;
-			
-			return image;
-		}
-
-		@Override
-		public Object whatAt(Point point) {
-			try {
-				Point pos = new Point(
-					(int)Math.ceil(point.x / (double)boxSize), 
-					(int)Math.ceil(point.y / (double)boxSize)
-				);
-				
-				if (pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height) {
-					
-					watching.add(pos);
-					
-					return new Object[] { LayerWLearning.this, pos };
-				}
-			} catch (Exception e) {
-			}
-			return null;
-		}
-
-		@Override
-		public void focusGained(Point point) {
-			atFocus = point;
-		}
-
-		@Override
-		public void focusLost(Point point) {
-			atFocus = null;
-		}
-
-		@Override
-		public void closed(Point point) {
-			watching.remove(point);
-		}
-
-		@Override
-		public void refreshImage() {
-		}
-	}
+//	ColumnRF_Image CRFs[] = null;
+//	
+//	public Imageable[] getCRF() {
+//		if (CRFs == null) {
+//			CRFs = new ColumnRF_Image[width * height];
+//			for (int x = 0; x < width; x++) {
+//				for (int y = 0; y < height; y++) {
+//					CRFs[(y * width) + x] = new ColumnRF_Image(x, y);
+//				}
+//			}
+//		}
+//		
+//		return CRFs;
+//	}
 
 	RRF_Image RRF = null;
 
@@ -505,9 +356,7 @@ public class LayerWLearning extends LayerSimple {
     		count++;
     	}
 		
-		colPostNeurons.step();
-		
-		prev = cols.copy();
+//		colPostNeurons.step();
 		
 //		history();
     }
@@ -578,18 +427,5 @@ public class LayerWLearning extends LayerSimple {
 
 	public boolean isSingleReceptionField() {
 		return singleReceptionField;
-	}
-	
-	public void debug(String comment) {
-		System.out.println(comment);
-		
-		DecimalFormat df = new DecimalFormat("0.00000");
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				System.out.print(df.format(cols.get(x, y)));
-				System.out.print(" ");
-			}
-			System.out.println();
-		}
 	}
 }

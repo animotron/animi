@@ -55,7 +55,7 @@ public class ActivationAntiHebbian extends Task {
 	    return sum;
 	}
 
-	public void gpuMethod(final int x, final int y) {
+	public void gpuMethod(final int x, final int y, final int z) {
 		
 		final Mapping m = cz.in_zones[0];
 		
@@ -64,17 +64,17 @@ public class ActivationAntiHebbian extends Task {
 			return;
 		}
 		
-		for (int p = 0; p < cz.depth; p++) {
+//		for (int p = 0; p < cz.depth; p++) {
 
 			final float activity = 
-					cz.colNeurons.get(x, y, p) - 
+					cz.cols.get(x, y, z) - 
 					activity(
-						new MatrixMapped<Float>(m.frZone().cols, m.senapses().sub(x, y)), 
-						m.lateralWeight().sub(x, y, p)
+						new MatrixMapped<Float>(m.frZone().cols, m.senapses().sub(x, y, z)), 
+						m.lateralWeight().sub(x, y, z)
 					);
 	
-			cz.colNeurons.set(activity < 0 ? 0 : activity, x, y, p);
-		}
+			cz.cols.set(activity < 0 ? 0 : activity, x, y, z);
+//		}
 	}
 
 	@Override

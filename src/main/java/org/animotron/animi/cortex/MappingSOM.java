@@ -20,12 +20,19 @@
  */
 package org.animotron.animi.cortex;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
+import org.animotron.animi.Imageable;
 import org.animotron.animi.InitParam;
+import org.animotron.animi.Utils;
 import org.animotron.matrix.Matrix;
 import org.animotron.matrix.MatrixFloat;
 import org.animotron.matrix.MatrixInteger;
+import org.animotron.matrix.MatrixProxy;
 
 /**
  * Projection description of the one zone to another
@@ -62,17 +69,21 @@ public class MappingSOM implements Mapping {
 	
 	private int lateralSize;
 	
-	private void linksSenapse(int Sx, int Sy, int x, int y, int l) {
+	private void linksSenapse(int Sx, int Sy, int Sz, int x, int y, int z, int l) {
 		if (toZone.singleReceptionField) {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
-					senapses.set(Sx, xi, yi, l, 0);
-					senapses.set(Sy, xi, yi, l, 1);
+					for (int zi = 0; zi < toZone.depth; zi++) {
+						senapses.set(Sx, xi, yi, zi, l, 0);
+						senapses.set(Sy, xi, yi, zi, l, 1);
+						senapses.set(Sz, xi, yi, zi, l, 2);
+					}
 				}
 			}
 		} else {
-			senapses.set(Sx, x, y, l, 0);
-			senapses.set(Sy, x, y, l, 1);
+			senapses.set(Sx, x, y, z, l, 0);
+			senapses.set(Sy, x, y, z, l, 1);
+			senapses.set(Sz, x, y, z, l, 2);
 		}
 	}
 
@@ -115,6 +126,9 @@ public class MappingSOM implements Mapping {
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)ns_links);// / norm;
 
+		senapses = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth, ns_links, 3);
+		senapses.fill(0);
+		
 	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
 	    senapseWeight.init(new Matrix.Value<Float>() {
 			@Override
@@ -139,9 +153,6 @@ public class MappingSOM implements Mapping {
 			}
 		});
 
-		senapses = new MatrixInteger(toZone.width(), toZone.height(), ns_links, 2);
-		senapses.fill(0);
-		
 		fX = frZone.width() / (double) toZone.width();
 		fY = frZone.height() / (double) toZone.height();
 
@@ -242,7 +253,11 @@ public class MappingSOM implements Mapping {
                 nerv_links[lx][ly] = true;
 
 				// Создаем синаптическую связь
-                linksSenapse(lx, ly, x, y, i);
+                for (int z = 0; z < toZone.depth; z++) {
+                	for (int lz = 0; lz < frZone.depth; lz++) {
+                		linksSenapse(lx, ly, lz, x, y, z, i);
+                	}
+                }
             } else {
             	if (debug) System.out.print("!");
             }
@@ -392,5 +407,103 @@ public class MappingSOM implements Mapping {
 	@Override
 	public boolean soft() {
 		return false;
+	}
+
+	ColumnRF_Image imageable = null;
+
+	@Override
+	public Imageable getImageable() {
+		if (imageable == null) {
+			imageable = new ColumnRF_Image();
+		}
+		return imageable;
+	}
+	
+	class ColumnRF_Image implements Imageable {
+		
+		private int boxMini;
+		private int boxSize;
+		private int boxN;
+	    private BufferedImage image;
+	    
+	    public ColumnRF_Image() {
+		}
+
+		public void init() {
+
+	        boxMini = 16;
+	        boxN = (int) Math.round( Math.sqrt(toZone.depth) );
+	        boxSize = boxMini * boxN;
+
+			int maxX = toZone.width() * boxSize;
+	        int maxY = toZone.height() * boxSize;
+
+	        image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
+		}
+
+		@Override
+		public String getImageName() {
+			return MappingSOM.this+" "+toZone.name;
+		}
+
+		@Override
+		public void refreshImage() {
+		}
+
+		@Override
+		public BufferedImage getImage() {
+			Graphics g = image.getGraphics();
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, image.getWidth(), image.getHeight());
+
+			Mapping m = ((LayerWLearning)frZone).in_zones[0];
+			
+			float max = 0;
+			int pos = 0;
+
+			for (int x = 0; x < toZone.width(); x++) {
+				for (int y = 0; y < toZone.height(); y++) {
+					final MatrixProxy<Float> ws = senapseWeight.sub(x, y);
+					
+					max = 0; pos = -1;
+					for (int index = 0; index < ws.length(); index++) {
+						if (max < ws.getByIndex(index)) {
+							max = ws.getByIndex(index);
+							pos = index;
+						}
+					}
+					
+					final MatrixProxy<Integer> sf = senapses.sub(x,y);
+					
+					final int xi = sf.getByIndex(pos + 0);
+					final int yi = sf.getByIndex(pos + 1);
+					final int zi = sf.getByIndex(pos + 2);
+					
+					Utils.drawRF(true , image, boxMini, 
+							boxSize * x, 
+							boxSize * y,
+							xi, yi, zi, m);
+				}
+			}
+			
+			return image;
+		}
+
+		@Override
+		public Object whatAt(Point point) {
+			return null;
+		}
+
+		@Override
+		public void focusGained(Point point) {
+		}
+
+		@Override
+		public void focusLost(Point point) {
+		}
+
+		@Override
+		public void closed(Point point) {
+		}
 	}
 }

@@ -20,9 +20,17 @@
  */
 package org.animotron.animi.cortex;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import org.animotron.animi.Imageable;
 import org.animotron.animi.InitParam;
+import org.animotron.animi.Utils;
 import org.animotron.matrix.Matrix;
 import org.animotron.matrix.MatrixFloat;
 import org.animotron.matrix.MatrixInteger;
@@ -62,17 +70,21 @@ public class MappingHebbian implements Mapping {
 	
 	private Matrix<Float> lateralWeight;
 	
-	private void linksSenapse(int Sx, int Sy, int x, int y, int l) {
+	private void linksSenapse(final int Sx, final int Sy, final int Sz, final int x, final int y, final int z, final int l) {
 		if (toZone.singleReceptionField) {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
-					senapse.set(Sx, xi, yi, l, 0);
-					senapse.set(Sy, xi, yi, l, 1);
+					for (int zi = 0; zi < toZone.depth; zi++) {
+						senapse.set(Sx, xi, yi, zi, l, 0);
+						senapse.set(Sy, xi, yi, zi, l, 1);
+						senapse.set(Sz, xi, yi, zi, l, 2);
+					}
 				}
 			}
 		} else {
-			senapse.set(Sx, x, y, l, 0);
-			senapse.set(Sy, x, y, l, 1);
+			senapse.set(Sx, x, y, z, l, 0);
+			senapse.set(Sy, x, y, z, l, 1);
+			senapse.set(Sz, x, y, z, l, 3);
 		}
 	}
 
@@ -115,7 +127,7 @@ public class MappingHebbian implements Mapping {
 			}
 		});
 
-		senapse = new MatrixInteger(toZone.width(), toZone.height(), ns_links, 2);
+		senapse = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth, ns_links, 3);
 		senapse.fill(0);
 		
 //        for (int x = 0; x < zone.width(); x++) {
@@ -215,7 +227,11 @@ public class MappingHebbian implements Mapping {
                 nerv_links[lx][ly] = true;
 
 				// Создаем синаптическую связь
-                linksSenapse(lx, ly, x, y, i);
+                for (int z = 0; z < toZone.depth; z++) {
+                    for (int lz = 0; lz < frZone.depth; lz++) {
+                    	linksSenapse(lx, ly, lz, x, y, z, i);
+                    }
+                }
             } else {
             	if (debug) System.out.print("!");
             }
@@ -288,5 +304,137 @@ public class MappingHebbian implements Mapping {
 	@Override
 	public Matrix<Integer> lateralSenapse() {
 		return null;
+	}
+	
+	ColumnRF_Image imageable = null;
+
+	@Override
+	public Imageable getImageable() {
+		if (imageable == null) {
+			imageable = new ColumnRF_Image();
+		}
+		return imageable;
+	}
+	
+	class ColumnRF_Image implements Imageable {
+		
+		private int Xl;
+		private int Yl;
+		
+		private int boxMini;
+		private int boxSize;
+		private int boxN;
+	    private BufferedImage image;
+	    
+	    private List<Point> watching = new ArrayList<Point>();
+	    private Point atFocus = null;
+
+		ColumnRF_Image() {
+			init();
+			
+			this.Xl = 0;
+			this.Yl = 0;
+		}
+
+		public void init() {
+
+	        boxMini = 16;
+	        boxN = (int) Math.round( Math.sqrt(toZone.depth) );
+	        boxSize = boxMini * boxN;
+
+			int maxX = toZone.width() * boxSize;
+	        int maxY = toZone.height() * boxSize;
+
+	        image = new BufferedImage(maxX, maxY, BufferedImage.TYPE_INT_RGB);
+		}
+	
+		public String getImageName() {
+			return "cols map "+MappingHebbian.this.toZone().name+" ["+Xl+","+Yl+"]";
+		}
+
+		public BufferedImage getImage() {
+//			in_zones[0].toZone.colWeights.debug("colWeights");
+
+			Graphics g = image.getGraphics();
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, image.getWidth(), image.getHeight());
+	
+			g.setColor(Color.YELLOW);
+			for (Point p : watching) {
+				if (atFocus == p) {
+					g.setColor(Color.RED);
+					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
+					g.setColor(Color.YELLOW);
+				} else
+					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
+			}
+			
+			for (int x = 0; x < toZone().width(); x++) {
+				for (int y = 0; y < toZone().height(); y++) {
+					g.setColor(Color.DARK_GRAY);
+					g.draw3DRect(x*boxSize, y*boxSize, boxSize, boxSize, true);
+					
+					Utils.drawRF(
+		        		image, g,
+		        		boxSize,
+		        		boxMini,
+		        		x*boxSize, y*boxSize,
+		        		x, y,
+		        		Xl, Yl,
+		        		MappingHebbian.this
+		    		);
+				}
+			}
+
+//			g.setColor(Color.WHITE);
+//			
+//			int textY = g.getFontMetrics(g.getFont()).getHeight();
+//			int x = 0, y = textY;
+//			g.drawString("count: "+count, x, y);
+			
+//			currentPackage++;
+//			if (!(currentPackage < package_size))
+//				currentPackage = 0;
+			
+			return image;
+		}
+
+		@Override
+		public Object whatAt(Point point) {
+			try {
+				Point pos = new Point(
+					(int)Math.ceil(point.x / (double)boxSize), 
+					(int)Math.ceil(point.y / (double)boxSize)
+				);
+				
+				if (pos.x >= 0 && pos.x < toZone.width && pos.y >= 0 && pos.y < toZone.height) {
+					
+					watching.add(pos);
+					
+					return new Object[] { toZone, pos };
+				}
+			} catch (Exception e) {
+			}
+			return null;
+		}
+
+		@Override
+		public void focusGained(Point point) {
+			atFocus = point;
+		}
+
+		@Override
+		public void focusLost(Point point) {
+			atFocus = null;
+		}
+
+		@Override
+		public void closed(Point point) {
+			watching.remove(point);
+		}
+
+		@Override
+		public void refreshImage() {
+		}
 	}
 }

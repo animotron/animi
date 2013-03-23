@@ -107,7 +107,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 //			g.drawString(String.valueOf(zone.freePackageCols(point.x, point.y, pN)), x, cY);		
 
 			cY += textY;
-			g.drawString("act "+Math.round(zone.colNeurons.get(point.x, point.y, pN)*1000)/(double)1000, x, cY);		
+			g.drawString("act "+Math.round(zone.cols.get(point.x, point.y, pN)*1000)/(double)1000, x, cY);		
 			
 //			System.out.println(zone.packageCols.get(point.x, point.y, pN));
 			
@@ -170,13 +170,14 @@ public class PFActual implements Imageable, InternalFrameListener {
 
         final int cnX = point.x;
         final int cnY = point.y;
+        final int cnZ = 0;
 
         Mapping m = zone.in_zones[0];
         
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links(); l++) {
-        	int xi = m.senapses().get(cnX, cnY, l, 0);
-        	int yi = m.senapses().get(cnX, cnY, l, 1);
+        	int xi = m.senapses().get(cnX, cnY, cnZ, l, 0);
+        	int yi = m.senapses().get(cnX, cnY, cnZ, l, 1);
 
         	if (m.toZone().isSingleReceptionField()) {
 	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX()));

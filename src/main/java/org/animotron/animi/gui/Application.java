@@ -180,8 +180,8 @@ public class Application extends JFrame {
     	        LayerWLearning z = (LayerWLearning) zone;
 
     	        addMenu(menu, z);
-    	        for (Imageable imgable : z.getCRF()) {
-    	        	addMenu(menu, imgable);
+    	        for (Mapping m : z.in_zones) {
+    	        	addMenu(menu, m.getImageable());
     	        }
     	        addMenu(menu, z.getRRF());
 			} else {

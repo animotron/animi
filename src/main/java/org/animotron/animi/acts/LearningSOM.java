@@ -81,19 +81,19 @@ public class LearningSOM extends Task {
 			final Matrix<Integer> lateralSenapse, 
 			final Matrix<Float> lateralWeight, 
 			final float factor,
-			final int p) {
+			final int z) {
 		
 		for (int index = 0; index < lateralWeight.length(); index++) {
 			
 			final int xi = lateralSenapse.getByIndex(index*2 + 0);
 			final int yi = lateralSenapse.getByIndex(index*2 + 0);
 		
-			final Matrix<Float> weights = m.senapseWeight().sub(xi, yi, p);
+			final Matrix<Float> weights = m.senapseWeight().sub(xi, yi, z);
 			
 			final float sumQ2 = adjust(
 					new MatrixMapped<Float>(m.frZone().cols, m.senapses().sub(xi, yi)), 
-					m.senapseWeight().sub(xi, yi, p), 
-					m.toZone().colNeurons.get(xi, yi, p),
+					m.senapseWeight().sub(xi, yi, z), 
+					m.toZone().cols.get(xi, yi, z),
 					factor
 			);
 			
@@ -101,24 +101,25 @@ public class LearningSOM extends Task {
 		}
 	}
 
-	public void gpuMethod(int x, int y) {
+	public void gpuMethod(final int x, final int y, final int z) {
 		
 		final MappingSOM m = (MappingSOM) cz.in_zones[0];
 		
-		for (int p = 0; p < cz.depth; p++) {
+//		for (int p = 0; p < cz.depth; p++) {
 		
-			if (cz.colNeurons.get(x, y, p) <= 0) {
-				continue;
+			if (cz.cols.get(x, y, z) <= 0) {
+//				continue;
+				return;
 			}
 			
 			learn(
 				m,
-				m.lateralSenapse().sub(x, y),
-				m.lateralWeight().sub(x, y),
+				m.lateralSenapse().sub(x, y, z),
+				m.lateralWeight().sub(x, y, z),
 				factor,
-				p
+				z
 			);
-		}
+//		}
 	}
 
 	@Override

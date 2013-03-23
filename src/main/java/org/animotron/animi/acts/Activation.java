@@ -53,48 +53,54 @@ public class Activation extends Task {
 		stage = 0;
 	}
 
-	public void gpuMethod(int x, int y) {
+	public void gpuMethod(final int x, final int y, final int z) {
 		switch (stage) {
 		case 0:
+			positive.gpuMethod(x, y, z);
 			
-//			float prev10 = cz.prev.get(x, y) * 0.2f;
-			
-			positive.gpuMethod(x, y);
-			negative.gpuMethod(x, y);
-			
-			MatrixProxy<Float> pack = cz.colNeurons.sub(x, y);
-			
-			WinnerGetsAll._(cz, pack, false);
+			break;
+		case 1:
+			negative.gpuMethod(x, y, z);
 
-			MatrixProxy<Float> postPack = cz.colPostNeurons.sub(x, y);
+			break;
+		case 2:
+			if (z != 0)
+				return;
+			
+			MatrixProxy<Float> pack = cz.cols.sub(x, y);
+			
+//			pack.debug("pack before");
+			WinnerGetsAll._(cz, pack, false);
+//			pack.debug("pack after");
+
+//			MatrixProxy<Float> postPack = cz.colPostNeurons.sub(x, y);
 			for (int index = 0; index < pack.length(); index++) {
 				final float value = pack.getByIndex(index);
 				if (value > 0) {
 					pack.setByIndex(value, index);
-					postPack.setByIndex(value, index);
+//					postPack.setByIndex(value, index);
 				}
 			}
 
 			//zero just in case...
-			cz.cols.set(0f, x, y);
+			cz.cols.set(0f, x, y, z);
 			
 			//set activity equal to winner activity 
-			for (int i = 0; i < cz.depth; i++) {
+			for (int i = 0; i < pack.length(); i++) {
 				if (pack.get(i) > 0) {
-					cz.cols.set(pack.get(i), x, y);
+					cz.cols.set(pack.get(i), x, y, i);
 					break;
 				}
 			}
 
 			break;
 
-		case 1:
-			cz.colCorrelation.set(
-				ActivationHebbian.activity(cz.colNeurons, cz.colWeights.sub(x, y)),
-				x, y
-			);
-			
-			break;
+//		case 1:
+//			cz.colCorrelation.set(
+//				ActivationHebbian.activity(cz.colNeurons, cz.colWeights.sub(x, y)),
+//				x, y
+//			);
+//			break;
 
 		default:
 			break;
@@ -102,11 +108,22 @@ public class Activation extends Task {
 	}
 	
 	public boolean isDone() {
-		if (stage == 1) {
-			WinnerGetsAll._(cz, cz.colCorrelation, false);
-		}
+//		switch (stage) {
+//		case 0:
+//			cz.debug("after positive");
+//			break;
+//			
+//		case 1:
+//			cz.debug("after negative");
+//			break;
+//
+//		case 2:
+//			cz.debug("after inhibitory");
+//			break;
+//		}
+
 		stage++;
-		return stage >= 2;
+		return stage >= 3;
 	}
 
 	@Override
