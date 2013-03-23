@@ -302,7 +302,7 @@ public class MappingHebbian implements Mapping {
 	}
 
 	@Override
-	public Matrix<Integer> lateralSenapse() {
+	public Matrix<Integer[]> lateralSenapse() {
 		return null;
 	}
 	

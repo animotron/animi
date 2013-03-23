@@ -58,7 +58,7 @@ public class ActivationHebbian extends Task {
 						m.senapseWeight().sub(x, y, z)
 					);
 			
-			cz.cols.set(activity, x, y, z);
+			cz.neurons.set(activity, x, y, z);
 //		}
 	}
 

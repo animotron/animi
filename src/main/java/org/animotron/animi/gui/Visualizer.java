@@ -54,7 +54,7 @@ public class Visualizer extends JInternalFrame {
 	private BufferedImage image = null;
 	private Image bufImage = null;
 	
-	private int zoom = 1;
+	private int zoom = 2;
 	
 	public Visualizer(Imageable imageable) {
 	    super(imageable.getImageName(),

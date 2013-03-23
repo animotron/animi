@@ -67,7 +67,7 @@ public class RetinaZone extends Task {
 	public void setInput(final BufferedImage image) {
 		
 		if (history == null) {// || history.length != sz.cols.length) {
-			history = new MatrixFloat(sz.cols);
+			history = new MatrixFloat(sz.neurons);
 			history.fill(0f);
 		}
 		
@@ -97,7 +97,7 @@ public class RetinaZone extends Task {
 	}
 
 	private void output(final float value, final int x, final int y, final int z) {
-    	sz.cols.set(value, x, y, z);
+    	sz.neurons.set(value, x, y, z);
     }
 	
 	private float gray(final int x, final int y) {

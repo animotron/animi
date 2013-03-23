@@ -49,7 +49,7 @@ public class Inhibitory extends Task {
 	
 	@Override
 	public void prepare() {
-		cols = new MatrixFloat(cz.cols);
+		cols = new MatrixFloat(cz.neurons);
 	}
 
 	@Override
@@ -76,13 +76,13 @@ public class Inhibitory extends Task {
 			}
 		}
 		
-		float activity = cz.cols.get(x, y);
+		float activity = cz.neurons.get(x, y);
 		activity -= delta * k;
 		if (activity < 0) {
 			activity = 0;
 		}
 		
-		cz.cols.set(activity, x, y);
+		cz.neurons.set(activity, x, y);
 		
 		synchronized (this) {
 			maxDelta = Math.max(maxDelta, delta);

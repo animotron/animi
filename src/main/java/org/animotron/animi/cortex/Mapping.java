@@ -39,7 +39,7 @@ public interface Mapping {
 
 	public Matrix<Float> lateralWeight();
 	
-	public Matrix<Integer> lateralSenapse();
+	public Matrix<Integer[]> lateralSenapse();
 
 	public void map(LayerWLearning cortexZoneComplex);
 

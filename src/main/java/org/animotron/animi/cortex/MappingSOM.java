@@ -70,7 +70,7 @@ public class MappingSOM implements Mapping {
 	private Matrix<Integer> _senapses;
 	
 	private Matrix<Float> lateralWeight;
-	private Matrix<Integer> lateralSenapse;
+	private Matrix<Integer[]> lateralSenapse;
 	
 	private int lateralSize;
 	
@@ -98,17 +98,15 @@ public class MappingSOM implements Mapping {
 //		senapses.debug("linksSenapse");
 	}
 
-	private void lateralSenapse(int Sx, int Sy, int x, int y, int l) {
+	private void lateralSenapse(int Sx, int Sy, int Sz, int x, int y, int z, int l) {
 		if (toZone.singleReceptionField) {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
-					lateralSenapse.set(Sx, xi, yi, l, 0);
-					lateralSenapse.set(Sy, xi, yi, l, 1);
+					lateralSenapse.set(new Integer[] {Sx, Sy, Sz}, xi, yi, z, l);
 				}
 			}
 		} else {
-			lateralSenapse.set(Sx, x, y, l, 0);
-			lateralSenapse.set(Sy, x, y, l, 1);
+			lateralSenapse.set(new Integer[] {Sx, Sy, Sz}, x, y, z, l);
 		}
 	}
 
@@ -149,7 +147,7 @@ public class MappingSOM implements Mapping {
 			}
 		});
 	    
-	    lateralWeight = new MatrixFloat(toZone.width(), toZone.height(), lateralSize);
+	    lateralWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, lateralSize);
 	    lateralWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
@@ -157,11 +155,11 @@ public class MappingSOM implements Mapping {
 			}
 		});
 	    
-	    lateralSenapse = new MatrixInteger(toZone.width(), toZone.height(), lateralSize, 2);
-	    lateralSenapse.init(new Matrix.Value<Integer>() {
+	    lateralSenapse = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth, lateralSize);
+	    lateralSenapse.init(new Matrix.Value<Integer[]>() {
 			@Override
-			public Integer get(int... dims) {
-				return 0;
+			public Integer[] get(int... dims) {
+				return new Integer[] {0, 0, 0};
 			}
 		});
 
@@ -342,11 +340,15 @@ public class MappingSOM implements Mapping {
 
                 nerv_links[lx][ly] = true;
 
-				// Создаем синаптическую связь
-                lateralSenapse(lx, ly, x, y, i);
-                
                 final float value = (float) Math.exp( -( (lx - x)^2 + (ly - y)^2 ) / (2 * sigma2));
-                lateralWeight.set(value, x, y, i);
+
+                // Создаем синаптическую связь
+                for (int z = 0; z < toZone.depth; z++) {
+                	for (int lz = 0; lz < frZone.depth; lz++) {
+                    	lateralSenapse(lx, ly, lz, x, y, z, i);
+                    }
+                    lateralWeight.set(value, x, y, z, i);
+                }
             } else {
             	if (debug) System.out.print("!");
             }
@@ -387,7 +389,7 @@ public class MappingSOM implements Mapping {
 	}
 
 	@Override
-	public Matrix<Integer> lateralSenapse() {
+	public Matrix<Integer[]> lateralSenapse() {
 		return lateralSenapse;
 	}
 

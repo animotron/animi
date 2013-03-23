@@ -107,7 +107,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 //			g.drawString(String.valueOf(zone.freePackageCols(point.x, point.y, pN)), x, cY);		
 
 			cY += textY;
-			g.drawString("act "+Math.round(zone.cols.get(point.x, point.y, pN)*1000)/(double)1000, x, cY);		
+			g.drawString("act "+Math.round(zone.neurons.get(point.x, point.y, pN)*1000)/(double)1000, x, cY);		
 			
 //			System.out.println(zone.packageCols.get(point.x, point.y, pN));
 			
@@ -130,7 +130,7 @@ public class PFActual implements Imageable, InternalFrameListener {
 		x = 0;
 		y += 2+(img.getHeight()*zoom);
 		y += textY;
-		g.drawString("act "+String.valueOf(zone.cols.get(point.x, point.y)), x, y);		
+		g.drawString("act "+String.valueOf(zone.neurons.get(point.x, point.y)), x, y);		
 
 		return image;
 	}

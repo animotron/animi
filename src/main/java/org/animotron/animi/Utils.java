@@ -112,7 +112,7 @@ public class Utils {
 							cnX, cnY, z, m);
 
 					//point of neuron activity in top left corner
-					gray = (int) (255 * m.toZone().cols.get(cnX, cnY, z));
+					gray = (int) (255 * m.toZone().neurons.get(cnX, cnY, z));
 					if (gray > 255) gray = 255;
 					image.setRGB(
 							offsetX + boxMini * pX + 2, 
@@ -220,7 +220,7 @@ public class Utils {
 		
 		final LayerSimple sz = m.frZone();
 		
-		if (sz.cols.get(cnX, cnY) > 0) {
+		if (sz.neurons.get(cnX, cnY) > 0) {
 			return image;
 		}
 				
@@ -238,7 +238,7 @@ public class Utils {
         			&& pY < image.getHeight()) {
 
 				int c = calcGrey(image, pX, pY);
-				c += 255 * sz.cols.get(cnX, cnY) * m.senapseWeight().get(cnX, cnY, 0, l) * 1000;
+				c += 255 * sz.neurons.get(cnX, cnY) * m.senapseWeight().get(cnX, cnY, 0, l) * 1000;
 				if (c > 255) c = 255;
 				image.setRGB(pX, pY, create_rgb(255, c, c, c));
         	}

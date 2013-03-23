@@ -67,7 +67,7 @@ public class Activation extends Task {
 			if (z != 0)
 				return;
 			
-			MatrixProxy<Float> pack = cz.cols.sub(x, y);
+			MatrixProxy<Float> pack = cz.neurons.sub(x, y);
 			
 //			pack.debug("pack before");
 			WinnerGetsAll._(cz, pack, false);
@@ -83,12 +83,12 @@ public class Activation extends Task {
 			}
 
 			//zero just in case...
-			cz.cols.set(0f, x, y, z);
+			cz.neurons.set(0f, x, y, z);
 			
 			//set activity equal to winner activity 
 			for (int i = 0; i < pack.length(); i++) {
 				if (pack.get(i) > 0) {
-					cz.cols.set(pack.get(i), x, y, i);
+					cz.neurons.set(pack.get(i), x, y, i);
 					break;
 				}
 			}

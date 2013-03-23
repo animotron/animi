@@ -78,26 +78,27 @@ public class LearningSOM extends Task {
 
 	public static void learn(
 			final MappingSOM m,
-			final Matrix<Integer> lateralSenapse, 
+			final Matrix<Integer[]> lateralSenapse, 
 			final Matrix<Float> lateralWeight, 
-			final float factor,
-			final int z) {
+			final float factor) {
 		
 		for (int index = 0; index < lateralWeight.length(); index++) {
+			Integer[] xyz = lateralSenapse.getByIndex(index);
 			
-			final int xi = lateralSenapse.getByIndex(index*2 + 0);
-			final int yi = lateralSenapse.getByIndex(index*2 + 0);
+			final int xi = xyz[0];
+			final int yi = xyz[1];
+			final int zi = xyz[2];
 		
-			final Matrix<Float> weights = m.senapseWeight().sub(xi, yi, z);
+			final Matrix<Float> weights = m.senapseWeight().sub(xi, yi, zi);
 			
 			final float sumQ2 = adjust(
-					new MatrixMapped<Float>(m.frZone().cols, m.senapses().sub(xi, yi)), 
-					m.senapseWeight().sub(xi, yi, z), 
-					m.toZone().cols.get(xi, yi, z),
+					new MatrixMapped<Float>(m.frZone().neurons, m.senapses().sub(xi, yi, zi)), 
+					m.senapseWeight().sub(xi, yi, zi), 
+					m.toZone().neurons.get(xi, yi, zi),
 					factor
 			);
 			
-			normalization(weights, sumQ2);
+//			normalization(weights, sumQ2);
 		}
 	}
 
@@ -105,21 +106,16 @@ public class LearningSOM extends Task {
 		
 		final MappingSOM m = (MappingSOM) cz.in_zones[0];
 		
-//		for (int p = 0; p < cz.depth; p++) {
+		if (cz.neurons.get(x, y, z) <= 0) {
+			return;
+		}
 		
-			if (cz.cols.get(x, y, z) <= 0) {
-//				continue;
-				return;
-			}
-			
-			learn(
-				m,
-				m.lateralSenapse().sub(x, y, z),
-				m.lateralWeight().sub(x, y, z),
-				factor,
-				z
-			);
-//		}
+		learn(
+			m,
+			m.lateralSenapse().sub(x, y, z),
+			m.lateralWeight().sub(x, y, z),
+			factor
+		);
 	}
 
 	@Override

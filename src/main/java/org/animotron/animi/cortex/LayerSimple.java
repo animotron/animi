@@ -34,21 +34,17 @@ import java.text.DecimalFormat;
 import java.util.UUID;
 
 /**
- * Simple cortex zone
+ * Simple layer.
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
- * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
 public class LayerSimple implements Layer {
 
 	String id = UUID.randomUUID().toString();
-
 	String name;
-    public final MultiCortex mc;
     
-    /** State of complex neurons (outputs cortical columns) **/
-//    public NeuronComplex[][] col;
+	public final MultiCortex mc;
     
 	@InitParam(name="width")
 	public int width = 30;//160;
@@ -64,13 +60,10 @@ public class LayerSimple implements Layer {
     
     public MatrixDelay axons;
     
-    public MatrixFloat cols;
+    public MatrixFloat neurons;
 
-    public BufferedImage image;
+    private BufferedImage image;
 
-//	@InitParam(name="speed")
-//	public double speed = Integer.MAX_VALUE;
-	
 	public int count = 0;
 
 	LayerSimple() {
@@ -94,8 +87,8 @@ public class LayerSimple implements Layer {
      */
     public void init() {
     	
-    	cols = new MatrixFloat(width, height, depth);
-    	cols.fill(0f);
+    	neurons = new MatrixFloat(width, height, depth);
+    	neurons.fill(0f);
 
     	axons = new MatrixDelay(delay, width, height, depth);
     	axons.fill(0f);
@@ -113,7 +106,7 @@ public class LayerSimple implements Layer {
       
 //    	for (int i = 0; i < cols.length(); i++) {
     	for (int i = 0; i < data.length; i++) {
-    		final float value = cols.getByIndex(i);
+    		final float value = neurons.getByIndex(i);
       	
     		if (Float.isNaN(value))
     			data[i] = Color.RED.getRGB();
@@ -154,7 +147,7 @@ public class LayerSimple implements Layer {
 
 	@Override
 	public void process() {
-		axons.step(cols);
+		axons.step(neurons);
 	}
 
 	@Override
@@ -207,7 +200,7 @@ public class LayerSimple implements Layer {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				for (int z = 0; z < depth; z++) {
-					System.out.print(df.format(cols.get(x, y, z)));
+					System.out.print(df.format(neurons.get(x, y, z)));
 					System.out.print(" ");
 				}
 				if (depth > 1)

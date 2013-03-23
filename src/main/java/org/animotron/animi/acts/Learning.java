@@ -48,7 +48,7 @@ public class Learning extends Task {
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {
-		if (cz.cols.get(x, y, z) <= 0) { // && cz.neighborLearning.get(x, y) > 0) {
+		if (cz.neurons.get(x, y, z) <= 0) { // && cz.neighborLearning.get(x, y) > 0) {
 			return;
 		}
 
