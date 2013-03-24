@@ -31,7 +31,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
-import org.animotron.animi.acts.Learning;
+import org.animotron.animi.acts.LearningHebbian;
 import org.animotron.animi.acts.LearningSOM;
 import org.animotron.animi.gui.Application;
 import org.xml.sax.Attributes;
@@ -92,7 +92,7 @@ public class MultiCortex implements Runnable {
             new Mapping[]{
                 new MappingHebbian(z_in, 100, 1, false) //7x7 (50)
             },
-            Learning.class
+            LearningHebbian.class
         );
         
         layer_2 = new LayerWLearning("2й", this, 1, 1, 1, 1, //120, 120, //160, 120,

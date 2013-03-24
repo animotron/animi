@@ -20,50 +20,42 @@
  */
 package org.animotron.animi.acts;
 
-import org.animotron.animi.RuntimeParam;
-import org.animotron.animi.cortex.*;
 import org.animotron.matrix.Matrix;
-import org.animotron.matrix.MatrixMapped;
 
 /**
  * 
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class LearningHebbianAnti extends Task {
+public class LearningHebbianAnti {
 	
-	@RuntimeParam(name = "count")
-	public int count = 10000;
-
-	@RuntimeParam(name = "ny")
-	public float ny = 0.01f;
-	
-	@RuntimeParam(name = "minWeight")
-	public float minWeight = 0;//10^-11;
-
-	private float factor;
-	
-	public LearningHebbianAnti(LayerWLearning cz) {
-		super(cz);
-		
-		factor = ny;
-//		factor = (float) (ny / Math.pow(2, cz.count / count));
-	}
+	private LearningHebbianAnti() {}
 
 	private static float adjust(
 			final Matrix<Float> in, 
-			final Matrix<Float> weights, 
-			final float activity, 
+			final Matrix<Float> posW, 
+			final Matrix<Float> negW, 
+			final float activity,
+			final float avg,
 			final float factor) {
 		
 		float sumQ2 = 0.0f;
-		for (int index = 0; index < weights.length(); index++) {
-			final float inActivity = (1 - in.getByIndex(index));
-    		final float q = weights.getByIndex(index) + inActivity * activity * factor;
+		for (int index = 0; index < negW.length(); index++) {
+			
+			if (posW.getByIndex(index) > 0)
+				continue;
+
+			final float inActivity = avg - in.getByIndex(index);
     		
-    		weights.setByIndex(q, index);
+			final float q = negW.getByIndex(index) + inActivity * activity * factor;
     		
-    		sumQ2 += q * q;
+    		if (q > 0.00001f) {
+				negW.setByIndex(q, index);
+	    		
+	    		sumQ2 += q * q;
+    		} else {
+				negW.setByIndex(0f, index);
+    		}
 		}
 	    
 	    return sumQ2;
@@ -72,67 +64,27 @@ public class LearningHebbianAnti extends Task {
 	private static void normalization(
 			final Matrix<Float> posWeights, 
 			final Matrix<Float> weights, 
-			final float sumQ2, 
-			final float minWeight) {
+			final float sumQ2) {
 		
 		float norm = (float) Math.sqrt(sumQ2);
 		for (int index = 0; index < weights.length(); index++) {
 	    	
 	    	final float q = weights.getByIndex(index) / norm;
 	    	
-//	    	if (q >= minWeight) {
-//		    	final float pos = posWeights.getByIndex(index);
-//	    		if (pos > q) {
-//	    			weights.setByIndex(minWeight, index);
-//	    			
-//	    		} else {
-//	    			posWeights.setByIndex(minWeight, index);
-	    			weights.setByIndex(q, index);
-//	    		}
-//	    	} else {
-//	    		weights.setByIndex(minWeight, index);
-//	    	}
+			weights.setByIndex(q, index);
 	    }
 	}
 
 	public static void learn(
 			final Matrix<Float> in, 
-			final Matrix<Float> posWeights, 
-			final Matrix<Float> weights, 
+			final Matrix<Float> posW, 
+			final Matrix<Float> negW, 
 			final float activity, 
-			final float factor, 
-			final float minWeight) {
+			final float avg,
+			final float factor) {
 		
-		if (activity > 0) {
-			final float sumQ2 = adjust(in, weights, activity, factor);
-			
-			normalization(posWeights, weights, sumQ2, minWeight);
-		}
+		final float sumQ2 = adjust(in, posW, negW, activity, avg, factor);
+		
+		normalization(posW, negW, sumQ2);
 	}
-
-	public void gpuMethod(final int x, final int y, final int z) {
-		
-		final Mapping m = cz.in_zones[0];
-		
-//		for (int p = 0; p < cz.depth; p++) {
-			
-			if (cz.neurons.get(x, y, z) <= 0) {
-//				continue;
-				return;
-			}
-
-			learn(
-					new MatrixMapped<Float>(m.frZone().neurons, m.senapses().sub(x, y, z)), 
-					m.senapseWeight().sub(x, y, z), 
-					m.inhibitoryWeight().sub(x, y, z), 
-					m.toZone().neurons.get(x, y, z),
-					factor,
-					minWeight
-				);
-//		}
-	}
-	
-	@Override
-    protected void release() {
-    }
 }

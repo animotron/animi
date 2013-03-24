@@ -163,7 +163,7 @@ public class MappingSOM implements Mapping {
 	    senapseWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
-				return w;//getInitWeight();
+				return getInitWeight();
 			}
 		});
 	    
@@ -171,7 +171,7 @@ public class MappingSOM implements Mapping {
 	    inhibitoryWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
-				return getInitWeight();
+				return 0f;//getInitWeight();
 			}
 		});
 
@@ -615,7 +615,7 @@ public class MappingSOM implements Mapping {
 
 		@Override
 		public BufferedImage getImage() {
-			int gray = 0;
+			int R = 0, G = 0, B = 0;
 			
 			image = rf.getImage();
 			
@@ -626,13 +626,14 @@ public class MappingSOM implements Mapping {
 			
 			Graphics g = image.getGraphics();
 
-			final MatrixProxy<Float> ws = senapseWeight.sub(nX, nY, 0);
+			final MatrixProxy<Float> pos = senapseWeight.sub(nX, nY, 0);
+			final MatrixProxy<Float> neg = inhibitoryWeight.sub(nX, nY, 0);
 			
 			final MatrixProxy<Integer[]> sf = senapses.sub(nX, nY, 0);
 
 			Integer[] xyz = null;
 			
-			for (int index = 0; index < ws.length(); index++) {
+			for (int index = 0; index < pos.length(); index++) {
 				
 				xyz = sf.getByIndex(index);
 				
@@ -647,10 +648,14 @@ public class MappingSOM implements Mapping {
 				final int pX = zi - (rf.boxN * pY);
 					
 				//weight box
-				gray = (int) (255 * ws.getByIndex(index) * 100);
-				if (gray > 255) gray = 255;
+				G = (int) (255 * pos.getByIndex(index) * 10);
+				if (G > 255) G = 255;
 				
-				g.setColor(new Color(gray, gray, gray));
+				B = (int) (255 * neg.getByIndex(index) * 10);
+				if (B > 255) B = 255;
+				
+				
+				g.setColor(new Color(R, G, B));
 				g.draw3DRect(
 						offsetX + rf.boxMini * pX + 1, 
 						offsetY + rf.boxMini * pY + 1, 

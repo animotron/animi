@@ -123,7 +123,7 @@ public class MappingHebbian implements Mapping {
 	    inhibitoryWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
-				return getInitWeight();
+				return 0f;//getInitWeight();
 			}
 		});
 
