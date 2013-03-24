@@ -344,15 +344,15 @@ public class LayerWLearning extends LayerSimple {
     	//Такт 1. Активация колонок (узнавание)
     	performTask(cnActivation);
 
-//    	if (cnLearning instanceof LearningSOM) {
-//    		debugNeurons("before inhibitory");
-//		}
+    	if (cnLearning instanceof LearningSOM) {
+    		debugNeurons("before inhibitory");
+		}
 
 		performTask(winnerGetsAll);
 
-//    	if (cnLearning instanceof LearningSOM) {
-//    		debugNeurons("after inhibitory");
-//		}
+    	if (cnLearning instanceof LearningSOM) {
+    		debugNeurons("after inhibitory");
+		}
 		
 //		performTask(inhibitory);
 //		debug("after inhibitory");

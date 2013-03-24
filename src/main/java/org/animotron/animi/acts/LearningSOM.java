@@ -95,14 +95,18 @@ public class LearningSOM extends Task {
 					new MatrixMapped<Float>(m.frZone().neurons, m.senapses().sub(xi, yi, zi)), 
 					weights, 
 					//m.toZone().neurons.get(xi, yi, zi),
-					factor
+					factor * lateralWeight.getByIndex(index)
 			);
+			
+//			System.out.println("["+xi+","+yi+","+zi+"] "+lateralWeight.getByIndex(index));
 			
 			normalization(weights, sumQ2);
 		}
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {
+		
+//		System.out.println("! ["+x+","+y+","+z+"]");
 		
 		final MappingSOM m = (MappingSOM) cz.in_zones[0];
 		
