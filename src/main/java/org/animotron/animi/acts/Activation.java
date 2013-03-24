@@ -54,7 +54,7 @@ public class Activation extends Task {
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {
-		final Mapping m = cz.in_zones[0];
+//		final Mapping m = cz.in_zones[0];
 		
 		switch (stage) {
 		case 0:

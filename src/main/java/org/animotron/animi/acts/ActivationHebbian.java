@@ -21,9 +21,7 @@
 package org.animotron.animi.acts;
 
 import org.animotron.animi.cortex.*;
-import org.animotron.matrix.Matrix;
-import org.animotron.matrix.MatrixMapped;
-import org.animotron.matrix.MatrixProxy;
+import org.animotron.matrix.*;
 
 /**
  * Delta rule. http://en.wikipedia.org/wiki/Delta_rule
@@ -51,17 +49,17 @@ public class ActivationHebbian extends Task {
 		
 		Mapping m = cz.in_zones[0];
 		
-		if (m instanceof MappingSOM) {
-			MatrixMapped<Float> in = new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z));
-			MatrixProxy<Float> ws = m.senapseWeight().sub(x, y, z);
-			
+//		if (m instanceof MappingSOM) {
+//			MatrixMapped<Float> in = new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z));
+//			MatrixProxy<Float> ws = m.senapseWeight().sub(x, y, z);
+//			
 //			System.out.println("************************************************");
 //			System.out.println("X = "+x+"; Y = "+y+"; Z = "+z);
-			for (int i = 0; i < ws.length(); i++) {
-				float v = in.getByIndex(i) * ws.getByIndex(i);
+//			for (int i = 0; i < ws.length(); i++) {
+//				float v = in.getByIndex(i) * ws.getByIndex(i);
 //	    		System.out.println( in.getByIndex(i) + " * " + ws.getByIndex(i) + " = " + v);
-		    }
-		}
+//		    }
+//		}
 		
 		
 		final float activity = 
