@@ -52,19 +52,19 @@ public class LearningHebbian extends Task {
 			final Matrix<Float> posW, 
 			final Matrix<Float> negW, 
 			final float activity, 
-			final float arg,
+			final float avg,
 			final float factor) {
 		
 		float sumQ2 = 0.0f;
 		for (int index = 0; index < posW.length(); index++) {
     		
-			if (negW.getByIndex(index) > 0)
+			if (negW.getByIndex(index) > 0f)
 				continue;
 
-			final float X = in.getByIndex(index) - arg;
+			final float X = in.getByIndex(index) - avg;
 			
 			final float q = posW.getByIndex(index) + X * activity * factor;
-			if (q > 0.00001f) {
+			if (q > 0f) {
 	    		posW.setByIndex(q, index);
 			
 	    		sumQ2 += q * q;
@@ -81,7 +81,7 @@ public class LearningHebbian extends Task {
 			final Matrix<Float> weights, 
 			final float sumQ2) {
 		
-		float norm = (float) Math.sqrt(sumQ2);
+		final float norm = (float) Math.sqrt(sumQ2);
 		for (int index = 0; index < weights.length(); index++) {
 	    	
 	    	final float q = weights.getByIndex(index) / norm;
@@ -101,7 +101,8 @@ public class LearningHebbian extends Task {
 		if (activity > 0) {
 			final float sumQ2 = adjust(in, posW, negW, activity, avg, factor);
 			
-			normalization(posW, sumQ2);
+			if (sumQ2 > 0f)
+				normalization(posW, sumQ2);
 		}
 	}
 	

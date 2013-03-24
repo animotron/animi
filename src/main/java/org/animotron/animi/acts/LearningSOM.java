@@ -23,7 +23,9 @@ package org.animotron.animi.acts;
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 import org.animotron.matrix.Matrix;
+import org.animotron.matrix.MatrixFloat;
 import org.animotron.matrix.MatrixMapped;
+import org.animotron.matrix.MatrixProxy;
 
 /**
  * Self-organizing feature map.
@@ -50,24 +52,38 @@ public class LearningSOM extends Task {
 
 	private static float adjust(
 			final Matrix<Float> in, 
-			final Matrix<Float> weights, 
-			//final float activity, 
+			final Matrix<Float> posW, 
+			final Matrix<Float> negW, 
+			final float avg, 
 			final float factor) {
+		
 		float sumQ2 = 0.0f;
-		for (int index = 0; index < weights.length(); index++) {
+		for (int index = 0; index < posW.length(); index++) {
     		
-			final float q = weights.getByIndex(index) + in.getByIndex(index) * factor; // * activity;
+			if (negW.getByIndex(index) > 0f) {
+				
+	    		posW.setByIndex(0f, index);
+				continue;
+			}
+
+			final float X = in.getByIndex(index) - avg;
+
+			final float q = posW.getByIndex(index) + X * factor;
     		
-    		weights.setByIndex(q, index);
-    		
-    		sumQ2 += q * q;
+			if (q > 0f) {
+	    		posW.setByIndex(q, index);
+	    		
+	    		sumQ2 += q * q;
+			} else {
+	    		posW.setByIndex(0f, index);
+			}
 		}
 	    
 	    return sumQ2;
 	}
 
 	private static void normalization(final Matrix<Float> weights, final float sumQ2) {
-		float norm = (float) Math.sqrt(sumQ2);
+		final float norm = (float) Math.sqrt(sumQ2);
 		for (int index = 0; index < weights.length(); index++) {
 	    	
 	    	final float q = weights.getByIndex(index) / norm;
@@ -79,7 +95,8 @@ public class LearningSOM extends Task {
 	public static void learn(
 			final MappingSOM m,
 			final Matrix<Integer[]> lateralSenapse, 
-			final Matrix<Float> lateralWeight, 
+			final Matrix<Float> lateralWeight,
+			final float avg,
 			final float factor) {
 		
 		for (int index = 0; index < lateralWeight.length(); index++) {
@@ -89,19 +106,39 @@ public class LearningSOM extends Task {
 			final int yi = xyz[1];
 			final int zi = xyz[2];
 		
-			final Matrix<Float> weights = m.senapseWeight().sub(xi, yi, zi);
+			final Matrix<Float> posW = m.senapseWeight().sub(xi, yi, zi);
+			final Matrix<Float> negW = m.inhibitoryWeight().sub(xi, yi, zi);
 			
 			final float sumQ2 = adjust(
-					new MatrixMapped<Float>(m.frZone().neurons, m.senapses().sub(xi, yi, zi)), 
-					weights, 
-					//m.toZone().neurons.get(xi, yi, zi),
+					new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(xi, yi, zi)), 
+					posW,
+					negW,
+					avg,
 					factor * lateralWeight.getByIndex(index)
 			);
 			
 //			System.out.println("["+xi+","+yi+","+zi+"] "+lateralWeight.getByIndex(index));
 			
-			normalization(weights, sumQ2);
+			if (sumQ2 > 0f)
+				normalization(posW, sumQ2);
 		}
+	}
+
+	private float avg = 0f;
+
+	public void prepare() {
+		avg = 0f;
+		
+		final Mapping m = cz.in_zones[0];
+
+		final MatrixFloat neurons = m.frZone().axons;
+		
+		float sum = 0f;
+		for (int index = 0; index < neurons.length(); index++) {
+			sum += neurons.getByIndex(index);
+		}
+		
+		avg = sum / (float)neurons.length();
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {
@@ -110,29 +147,36 @@ public class LearningSOM extends Task {
 		
 		final MappingSOM m = (MappingSOM) cz.in_zones[0];
 		
-		if (cz.neurons.get(x, y, z) <= 0) {
+		final float act = m.toZone().neurons.get(x, y, z);
+
+		if (act <= 0) {
 			return;
 		}
 		
+		final MatrixProxy<Integer[]> lateralSenapse = m.lateralSenapse().sub(x, y, z);
+		final MatrixProxy<Float> lateralWeight = m.lateralWeight().sub(x, y, z);
+
 		LearningSOM.learn(
 			m,
-			m.lateralSenapse().sub(x, y, z),
-			m.lateralWeight().sub(x, y, z),
-			factor * cz.neurons.get(x, y, z)
+			lateralSenapse,
+			lateralWeight,
+			avg,
+			factor * act
 		);
 		
 		LearningSOMAnti.learn(
 			m,
-			m.lateralSenapse().sub(x, y, z),
-			m.lateralWeight().sub(x, y, z),
-			factor * cz.neurons.get(x, y, z)
+			lateralSenapse,
+			lateralWeight,
+			avg,
+			factor * act
 		);
 	}
 	public boolean isDone() {
 //		final MappingSOM m = (MappingSOM) cz.in_zones[0];
-//
 //		m.frZone().debugAxons("axons");
 //		m.senapseWeight().debug("senapseWeight");
+//		m.inhibitoryWeight().debug("inhibitoryWeight");
 		
 		return super.isDone();
 	}

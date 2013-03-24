@@ -532,6 +532,8 @@ public class MappingSOM implements Mapping {
 							pos = index;
 						}
 					}
+					if (pos == -1)
+						continue;
 					
 					final MatrixProxy<Integer[]> sf = senapses.sub(x,y);
 					
@@ -648,10 +650,10 @@ public class MappingSOM implements Mapping {
 				final int pX = zi - (rf.boxN * pY);
 					
 				//weight box
-				G = (int) (255 * pos.getByIndex(index) * 10);
+				G = (int) (255 * pos.getByIndex(index) * 100);
 				if (G > 255) G = 255;
 				
-				B = (int) (255 * neg.getByIndex(index) * 10);
+				B = (int) (255 * neg.getByIndex(index) * 100);
 				if (B > 255) B = 255;
 				
 				

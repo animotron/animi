@@ -42,14 +42,14 @@ public class LearningHebbianAnti {
 		float sumQ2 = 0.0f;
 		for (int index = 0; index < negW.length(); index++) {
 			
-			if (posW.getByIndex(index) > 0)
+			if (posW.getByIndex(index) > 0f)
 				continue;
 
 			final float inActivity = avg - in.getByIndex(index);
     		
 			final float q = negW.getByIndex(index) + inActivity * activity * factor;
     		
-    		if (q > 0.00001f) {
+    		if (q > 0f) {
 				negW.setByIndex(q, index);
 	    		
 	    		sumQ2 += q * q;
@@ -85,6 +85,8 @@ public class LearningHebbianAnti {
 		
 		final float sumQ2 = adjust(in, posW, negW, activity, avg, factor);
 		
-		normalization(posW, negW, sumQ2);
+		if (sumQ2 > 0f) {
+			normalization(posW, negW, sumQ2);
+		}
 	}
 }

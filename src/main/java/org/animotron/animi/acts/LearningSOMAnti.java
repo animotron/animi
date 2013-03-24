@@ -20,10 +20,8 @@
  */
 package org.animotron.animi.acts;
 
-import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
-import org.animotron.matrix.Matrix;
-import org.animotron.matrix.MatrixMapped;
+import org.animotron.matrix.*;
 
 /**
  * Self-organizing feature map.
@@ -31,43 +29,42 @@ import org.animotron.matrix.MatrixMapped;
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class LearningSOMAnti extends Task {
+public class LearningSOMAnti {
 	
-	@RuntimeParam(name = "count")
-	public int count = 10000;
-
-	@RuntimeParam(name = "ny")
-	public float ny = 0.01f;
-	
-	private float factor;
-	
-	public LearningSOMAnti(LayerWLearning cz) {
-		super(cz);
-		
-		factor = ny;
-//		factor = (float) (ny / Math.pow(2, cz.count / count));
-	}
-
 	private static float adjust(
 			final Matrix<Float> in, 
-			final Matrix<Float> weights, 
-			//final float activity, 
+			final Matrix<Float> posW, 
+			final Matrix<Float> negW, 
+			final float avg, 
 			final float factor) {
+		
 		float sumQ2 = 0.0f;
-		for (int index = 0; index < weights.length(); index++) {
+		for (int index = 0; index < negW.length(); index++) {
+			
+			if (posW.getByIndex(index) > 0f) {
+	    		
+				negW.setByIndex(0f, index);
+	    		continue;
+			}
+
+			final float inActivity = avg - in.getByIndex(index);
     		
-			final float q = weights.getByIndex(index) + in.getByIndex(index) * factor; // * activity;
+			final float q = negW.getByIndex(index) + inActivity * factor;
     		
-    		weights.setByIndex(q, index);
-    		
-    		sumQ2 += q * q;
+    		if (q > 0f) {
+	    		negW.setByIndex(q, index);
+	    		
+	    		sumQ2 += q * q;
+    		} else {
+	    		negW.setByIndex(0f, index);
+    		}
 		}
 	    
 	    return sumQ2;
 	}
 
 	private static void normalization(final Matrix<Float> weights, final float sumQ2) {
-		float norm = (float) Math.sqrt(sumQ2);
+		final float norm = (float) Math.sqrt(sumQ2);
 		for (int index = 0; index < weights.length(); index++) {
 	    	
 	    	final float q = weights.getByIndex(index) / norm;
@@ -80,6 +77,7 @@ public class LearningSOMAnti extends Task {
 			final MappingSOM m,
 			final Matrix<Integer[]> lateralSenapse, 
 			final Matrix<Float> lateralWeight, 
+			final float avg,
 			final float factor) {
 		
 		for (int index = 0; index < lateralWeight.length(); index++) {
@@ -89,50 +87,21 @@ public class LearningSOMAnti extends Task {
 			final int yi = xyz[1];
 			final int zi = xyz[2];
 		
-			final Matrix<Float> weights = m.inhibitoryWeight().sub(xi, yi, zi);
+			final Matrix<Float> posW = m.senapseWeight().sub(xi, yi, zi);
+			final Matrix<Float> negW = m.inhibitoryWeight().sub(xi, yi, zi);
 			
 			final float sumQ2 = adjust(
-					new MatrixMapped<Float>(m.frZone().neurons, m.senapses().sub(xi, yi, zi)), 
-					weights, 
-					//m.toZone().neurons.get(xi, yi, zi),
+					new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(xi, yi, zi)), 
+					posW,
+					negW, 
+					avg,
 					factor * lateralWeight.getByIndex(index)
 			);
 			
 //			System.out.println("["+xi+","+yi+","+zi+"] "+lateralWeight.getByIndex(index));
 			
-			normalization(weights, sumQ2);
+			if (sumQ2 > 0f)
+				normalization(negW, sumQ2);
 		}
 	}
-
-	public void gpuMethod(final int x, final int y, final int z) {
-		
-//		System.out.println("! ["+x+","+y+","+z+"]");
-		
-		final MappingSOM m = (MappingSOM) cz.in_zones[0];
-		
-		if (cz.neurons.get(x, y, z) <= 0) {
-			return;
-		}
-		
-		learn(
-			m,
-			m.lateralSenapse().sub(x, y, z),
-			m.lateralWeight().sub(x, y, z),
-			factor * cz.neurons.get(x, y, z)
-		);
-		
-		
-	}
-	public boolean isDone() {
-//		final MappingSOM m = (MappingSOM) cz.in_zones[0];
-//
-//		m.frZone().debugAxons("axons");
-//		m.senapseWeight().debug("senapseWeight");
-		
-		return super.isDone();
-	}
-
-	@Override
-    protected void release() {
-    }
 }
