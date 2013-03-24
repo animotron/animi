@@ -55,11 +55,11 @@ public class ActivationHebbian extends Task {
 			MatrixMapped<Float> in = new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z));
 			MatrixProxy<Float> ws = m.senapseWeight().sub(x, y, z);
 			
-			System.out.println("************************************************");
-			System.out.println("X = "+x+"; Y = "+y+"; Z = "+z);
+//			System.out.println("************************************************");
+//			System.out.println("X = "+x+"; Y = "+y+"; Z = "+z);
 			for (int i = 0; i < ws.length(); i++) {
 				float v = in.getByIndex(i) * ws.getByIndex(i);
-	    		System.out.println( in.getByIndex(i) + " * " + ws.getByIndex(i) + " = " + v);
+//	    		System.out.println( in.getByIndex(i) + " * " + ws.getByIndex(i) + " = " + v);
 		    }
 		}
 		
