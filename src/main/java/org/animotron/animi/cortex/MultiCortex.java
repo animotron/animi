@@ -95,9 +95,9 @@ public class MultiCortex implements Runnable {
             Learning.class
         );
         
-        layer_2 = new LayerWLearning("2й", this, 5, 5, 1, 1, //120, 120, //160, 120,
+        layer_2 = new LayerWLearning("2й", this, 1, 1, 1, 1, //120, 120, //160, 120,
             new Mapping[]{
-                new MappingSOM(layer_1, 25, 1, 25) //7x7 (50)
+                new MappingSOM(layer_1, 25, 1, 1) //7x7 (50)
             },
             LearningSOM.class
         );
