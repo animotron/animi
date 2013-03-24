@@ -37,7 +37,7 @@ public class LearningSOM extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.01f;
+	public float ny = 1f;//0.01f;
 	
 	private float factor;
 	
@@ -51,12 +51,12 @@ public class LearningSOM extends Task {
 	private static float adjust(
 			final Matrix<Float> in, 
 			final Matrix<Float> weights, 
-			final float activity, 
+			//final float activity, 
 			final float factor) {
 		float sumQ2 = 0.0f;
 		for (int index = 0; index < weights.length(); index++) {
     		
-			final float q = weights.getByIndex(index) + in.getByIndex(index) * activity * factor;
+			final float q = weights.getByIndex(index) + in.getByIndex(index) * factor; // * activity;
     		
     		weights.setByIndex(q, index);
     		
@@ -94,7 +94,7 @@ public class LearningSOM extends Task {
 			final float sumQ2 = adjust(
 					new MatrixMapped<Float>(m.frZone().neurons, m.senapses().sub(xi, yi, zi)), 
 					weights, 
-					m.toZone().neurons.get(xi, yi, zi),
+					//m.toZone().neurons.get(xi, yi, zi),
 					factor
 			);
 			
@@ -114,7 +114,7 @@ public class LearningSOM extends Task {
 			m,
 			m.lateralSenapse().sub(x, y, z),
 			m.lateralWeight().sub(x, y, z),
-			factor
+			factor * cz.neurons.get(x, y, z)
 		);
 		
 		
@@ -122,9 +122,9 @@ public class LearningSOM extends Task {
 	public boolean isDone() {
 //		final MappingSOM m = (MappingSOM) cz.in_zones[0];
 //
-//		m.senapses().debug("senapses");
+//		m.frZone().debugAxons("axons");
 //		m.senapseWeight().debug("senapseWeight");
-//		
+		
 		return super.isDone();
 	}
 

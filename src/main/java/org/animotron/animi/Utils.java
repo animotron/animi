@@ -29,7 +29,6 @@ import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_event;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -92,8 +91,6 @@ public class Utils {
 
 		BufferedImage img = image;
 		
-		int gray = 0;
-		
 		final int size = (int) (boxSize / (double)boxMini);
 		
 		for (int pX = 0; pX < size; pX++) {
@@ -110,23 +107,9 @@ public class Utils {
 							offsetX + boxMini * pX, 
 							offsetY + boxMini * pY,
 							cnX, cnY, z, m);
+					
+					drawNA(image, m, boxMini, offsetX, offsetY, cnX, cnY, z, pX, pY);
 
-					//point of neuron activity in top left corner
-					gray = (int) (255 * m.toZone().neurons.get(cnX, cnY, z));
-					if (gray > 255) gray = 255;
-					image.setRGB(
-							offsetX + boxMini * pX + 2, 
-							offsetY + boxMini * pY + 2,
-							Utils.create_rgb(255, gray, gray, gray));
-
-					//point of post neuron activity in top left plus one pixel left corner
-					gray = (int) (255 * m.toZone().axons.get(cnX, cnY, z));
-					if (gray > 255) gray = 255;
-					image.setRGB(
-							offsetX + boxMini * pX + 3, 
-							offsetY + boxMini * pY + 2,
-							Utils.create_rgb(255, gray, gray, gray));
-			        
 					//weight box
 //					gray = (int) (255 * m.toZone().colWeights.get(Xl, Yl, cnX, cnY, p));
 //					if (gray > 255) gray = 255;
@@ -141,6 +124,29 @@ public class Utils {
 		}
 		return img;
 	}
+	
+	public static void drawNA(
+			final BufferedImage image, final Mapping m, final int boxMini,
+			final int offsetX, final int offsetY,
+			final int cnX, final int cnY, final int cnZ,
+			final int pX, final int pY
+			) {
+		//point of neuron activity in top left corner
+		int gray = (int) (255 * m.toZone().neurons.get(cnX, cnY, cnZ));
+		if (gray > 255) gray = 255;
+		image.setRGB(
+				offsetX + boxMini * pX + 2, 
+				offsetY + boxMini * pY + 2,
+				Utils.create_rgb(255, gray, gray, gray));
+
+		//point of post neuron activity in top left plus one pixel left corner
+		gray = (int) (255 * m.toZone().axons.get(cnX, cnY, cnZ));
+		if (gray > 255) gray = 255;
+		image.setRGB(
+				offsetX + boxMini * pX + 3, 
+				offsetY + boxMini * pY + 2,
+				Utils.create_rgb(255, gray, gray, gray));
+	}
 
     public static BufferedImage drawRF(
 			final boolean isPos,
@@ -153,7 +159,7 @@ public class Utils {
         for (int l = 0; l < m.ns_links(); l++) {
         	final int xi = m.senapses().get(cnX, cnY, cnZ, l, 0);
         	final int yi = m.senapses().get(cnX, cnY, cnZ, l, 1);
-        	final int zi = m.senapses().get(cnX, cnY, cnZ, l, 2);
+        	//XXX: final int zi = m.senapses().get(cnX, cnY, cnZ, l, 2);
         	
         	if (m.toZone().isSingleReceptionField()) {
 	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX()));
@@ -173,7 +179,6 @@ public class Utils {
 		        int G = Utils.get_green(value);
 		        int B = Utils.get_blue(value);
 		        int R = Utils.get_red(value);
-
 
 		        final float w;
 		        if (isPos) {

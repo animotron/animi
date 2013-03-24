@@ -159,7 +159,7 @@ public class MappingSOM implements Mapping {
 	    senapseWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
-				return getInitWeight();
+				return w;//getInitWeight();
 			}
 		});
 	    
@@ -465,7 +465,7 @@ public class MappingSOM implements Mapping {
 	    private BufferedImage image;
 	    
 	    private List<Point> watching = new ArrayList<Point>();
-	    private Point atFocus = null;
+	    //XXX: private Point atFocus = null;
 
 	    public ShowByMax() {
 	    	init();
@@ -497,6 +497,7 @@ public class MappingSOM implements Mapping {
 			Graphics g = image.getGraphics();
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, image.getWidth(), image.getHeight());
+			g.setColor(Color.WHITE);
 
 			Mapping m = ((LayerWLearning)frZone).in_zones[0];
 			
@@ -523,10 +524,14 @@ public class MappingSOM implements Mapping {
 					final int yi = xyz[1];
 					final int zi = xyz[2];
 					
+					final int offsetX = boxSize * x;
+					final int offsetY = boxSize * y;
+					
 					Utils.drawRF(true , image, boxMini, 
-							boxSize * x, 
-							boxSize * y,
+							offsetX, offsetY,
 							xi, yi, zi, m);
+					
+					Utils.drawNA(image, MappingSOM.this, 0, offsetX, offsetY, x, y, 0, 0, 0);
 				}
 			}
 			
