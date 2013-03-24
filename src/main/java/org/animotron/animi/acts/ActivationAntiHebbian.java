@@ -43,13 +43,7 @@ public class ActivationAntiHebbian extends Task {
 		float sum = 0.0f;
 
 		for (int i = 0; i < weights.length(); i++) {
-			try {
-    		sum += 
-    				in.getByIndex(i) * 
-    				weights.getByIndex(i);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
+    		sum += in.getByIndex(i) * weights.getByIndex(i);
 	    }
 	    
 	    return sum;
@@ -59,22 +53,14 @@ public class ActivationAntiHebbian extends Task {
 		
 		final Mapping m = cz.in_zones[0];
 		
-		//XXX: fix
-		if (m instanceof MappingSOM) {
-			return;
-		}
-		
-//		for (int p = 0; p < cz.depth; p++) {
-
-			final float activity = 
-					cz.neurons.get(x, y, z) - 
-					activity(
-						new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z)), 
-						m.lateralWeight().sub(x, y, z)
-					);
+		final float activity = 
+				cz.neurons.get(x, y, z) - 
+				activity(
+					new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z)), 
+					m.lateralWeight().sub(x, y, z)
+				);
 	
-			cz.neurons.set(activity < 0 ? 0 : activity, x, y, z);
-//		}
+		cz.neurons.set(activity < 0 ? 0 : activity, x, y, z);
 	}
 
 	@Override

@@ -304,7 +304,7 @@ public class MappingSOM implements Mapping {
 		double x_in_nerv, y_in_nerv;
         double _sigma, sigma;
         
-        double sigma2 = Math.sqrt(nl_links / Math.PI);
+        double sigma2 = Math.sqrt(nl_links / Math.PI) / 3;
 
 		// Определение координат текущего нейрона в масштабе
 		// проецируемой зоны
@@ -362,7 +362,7 @@ public class MappingSOM implements Mapping {
 
             	value = (float) Math.exp( 
             			- Math.sqrt( (lx - x)*(lx - x) + (ly - y)*(ly - y) )
-            			/ 2.0
+            			/ sigma2
         			);
 
                 // Создаем синаптическую связь

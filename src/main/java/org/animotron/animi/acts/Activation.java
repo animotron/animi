@@ -54,12 +54,19 @@ public class Activation extends Task {
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {
+		final Mapping m = cz.in_zones[0];
+		
 		switch (stage) {
 		case 0:
 			positive.gpuMethod(x, y, z);
 			
 			break;
 		case 1:
+			//XXX: fix
+			if (m instanceof MappingSOM) {
+				return;
+			}
+			
 			negative.gpuMethod(x, y, z);
 
 			break;
@@ -68,6 +75,10 @@ public class Activation extends Task {
 				return;
 			
 			MatrixProxy<Float> pack = cz.neurons.sub(x, y);
+			
+			if (pack.length() == 1) {
+				return;
+			}
 			
 //			pack.debug("pack before");
 			WinnerGetsAll._(cz, pack, false);
@@ -108,18 +119,22 @@ public class Activation extends Task {
 	}
 	
 	public boolean isDone() {
-//		switch (stage) {
-//		case 0:
-//			cz.debug("after positive");
-//			break;
-//			
-//		case 1:
-//			cz.debug("after negative");
-//			break;
-//
-//		case 2:
-//			cz.debug("after inhibitory");
-//			break;
+//		final Mapping m = cz.in_zones[0];
+//		
+//		if (m instanceof MappingSOM) {
+//			switch (stage) {
+//			case 0:
+//				cz.debugNeurons("after positive");
+//				break;
+//				
+//			case 1:
+//				cz.debugNeurons("after negative");
+//				break;
+//	
+//			case 2:
+//				cz.debugNeurons("after inhibitory");
+//				break;
+//			}
 //		}
 
 		stage++;

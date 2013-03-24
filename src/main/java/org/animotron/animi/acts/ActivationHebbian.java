@@ -50,16 +50,13 @@ public class ActivationHebbian extends Task {
 		
 		Mapping m = cz.in_zones[0];
 		
-//		for (int p = 0; p < cz.depth; p++) {
-
-			final float activity = 
-					activity(
-						new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z)), 
-						m.senapseWeight().sub(x, y, z)
-					);
-			
-			cz.neurons.set(activity, x, y, z);
-//		}
+		final float activity = 
+				activity(
+					new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z)), 
+					m.senapseWeight().sub(x, y, z)
+				);
+		
+		cz.neurons.set(activity, x, y, z);
 	}
 
 	@Override

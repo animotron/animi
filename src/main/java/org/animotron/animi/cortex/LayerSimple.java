@@ -21,6 +21,7 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
+import org.animotron.matrix.Matrix;
 import org.animotron.matrix.MatrixDelay;
 import org.animotron.matrix.MatrixFloat;
 
@@ -199,7 +200,7 @@ public class LayerSimple implements Layer {
 	}
 
 	
-	public void debug(String comment) {
+	private void debug(String comment, Matrix<Float> neurons) {
 		System.out.println(comment);
 		
 		DecimalFormat df = new DecimalFormat("0.00000");
@@ -214,5 +215,13 @@ public class LayerSimple implements Layer {
 			}
 			System.out.println();
 		}
+	}
+
+	public void debugNeurons(String comment) {
+		debug(comment, neurons);
+	}
+
+	public void debugAxons(String comment) {
+		debug(comment, axons);
 	}
 }
