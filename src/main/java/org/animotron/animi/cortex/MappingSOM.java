@@ -64,9 +64,11 @@ public class MappingSOM implements Mapping {
 	@InitParam(name="disp")
 	public double disp;      // Describe a size of sensor field
 
-	private Matrix<Float> senapseWeight;
 	private Matrix<Integer[]> senapses;
 	private Matrix<Integer> _senapses;
+
+	private Matrix<Float> senapseWeight;
+	private Matrix<Float> inhibitoryWeight;
 	
 	private Matrix<Float> lateralWeight;
 	private Matrix<Integer[]> lateralSenapse;
@@ -165,6 +167,14 @@ public class MappingSOM implements Mapping {
 			}
 		});
 	    
+	    inhibitoryWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth);
+	    inhibitoryWeight.init(new Matrix.Value<Float>() {
+			@Override
+			public Float get(int... dims) {
+				return getInitWeight();
+			}
+		});
+
 	    lateralWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth(), nl_links);
 	    lateralWeight.init(new Matrix.Value<Float>() {
 			@Override
@@ -422,6 +432,11 @@ public class MappingSOM implements Mapping {
 	@Override
 	public Matrix<Float> lateralWeight() {
 		return lateralWeight;
+	}
+
+	@Override
+	public Matrix<Float> inhibitoryWeight() {
+		return inhibitoryWeight;
 	}
 
 	@Override

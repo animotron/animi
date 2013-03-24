@@ -114,14 +114,19 @@ public class LearningSOM extends Task {
 			return;
 		}
 		
-		learn(
+		LearningSOM.learn(
 			m,
 			m.lateralSenapse().sub(x, y, z),
 			m.lateralWeight().sub(x, y, z),
 			factor * cz.neurons.get(x, y, z)
 		);
 		
-		
+		LearningSOMAnti.learn(
+			m,
+			m.lateralSenapse().sub(x, y, z),
+			m.lateralWeight().sub(x, y, z),
+			factor * cz.neurons.get(x, y, z)
+		);
 	}
 	public boolean isDone() {
 //		final MappingSOM m = (MappingSOM) cz.in_zones[0];

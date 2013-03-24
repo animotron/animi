@@ -33,13 +33,13 @@ public class Learning extends Task {
 	@Params
 	private LearningHebbian positive;
 	@Params
-	private LearningAntiHebbian negative;
+	private LearningHebbianAnti negative;
 	
 	public Learning(LayerWLearning cz) {
 		super(cz);
 		
 		positive = new LearningHebbian(cz);
-		negative = new LearningAntiHebbian(cz);
+		negative = new LearningHebbianAnti(cz);
 	}
 
 	public void prepare() {

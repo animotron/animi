@@ -30,12 +30,12 @@ import org.animotron.matrix.MatrixMapped;
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class ActivationAntiHebbian extends Task {
+public class ActivationHebbianAnti extends Task {
 	
 	@RuntimeParam(name = "k")
 	public float k = 1f;
 
-	public ActivationAntiHebbian(LayerWLearning cz) {
+	public ActivationHebbianAnti(LayerWLearning cz) {
 		super(cz);
 	}
 
@@ -57,7 +57,7 @@ public class ActivationAntiHebbian extends Task {
 				cz.neurons.get(x, y, z) - 
 				activity(
 					new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z)), 
-					m.lateralWeight().sub(x, y, z)
+					m.inhibitoryWeight().sub(x, y, z)
 				);
 	
 		cz.neurons.set(activity < 0 ? 0 : activity, x, y, z);

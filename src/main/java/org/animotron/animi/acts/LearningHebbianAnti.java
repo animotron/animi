@@ -30,7 +30,7 @@ import org.animotron.matrix.MatrixMapped;
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class LearningAntiHebbian extends Task {
+public class LearningHebbianAnti extends Task {
 	
 	@RuntimeParam(name = "count")
 	public int count = 10000;
@@ -43,7 +43,7 @@ public class LearningAntiHebbian extends Task {
 
 	private float factor;
 	
-	public LearningAntiHebbian(LayerWLearning cz) {
+	public LearningHebbianAnti(LayerWLearning cz) {
 		super(cz);
 		
 		factor = ny;
@@ -124,7 +124,7 @@ public class LearningAntiHebbian extends Task {
 			learn(
 					new MatrixMapped<Float>(m.frZone().neurons, m.senapses().sub(x, y, z)), 
 					m.senapseWeight().sub(x, y, z), 
-					m.lateralWeight().sub(x, y, z), 
+					m.inhibitoryWeight().sub(x, y, z), 
 					m.toZone().neurons.get(x, y, z),
 					factor,
 					minWeight

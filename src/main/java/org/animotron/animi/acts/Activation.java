@@ -34,13 +34,13 @@ public class Activation extends Task {
 //	@Params
 	private ActivationHebbian positive;
 	@Params
-	private ActivationAntiHebbian negative;
+	private ActivationHebbianAnti negative;
 	
 	public Activation(LayerWLearning cz) {
 		super(cz);
 		
 		positive = new ActivationHebbian(cz);
-		negative = new ActivationAntiHebbian(cz);
+		negative = new ActivationHebbianAnti(cz);
 	}
 	
 	private int stage = 0;
@@ -62,11 +62,6 @@ public class Activation extends Task {
 			
 			break;
 		case 1:
-			//XXX: fix
-			if (m instanceof MappingSOM) {
-				return;
-			}
-			
 			negative.gpuMethod(x, y, z);
 
 			break;

@@ -65,10 +65,10 @@ public class MappingHebbian implements Mapping {
 
 	public float w;
 	
-	private Matrix<Float> senapseWeight;
 	private Matrix<Integer> senapse;
 	
-	private Matrix<Float> lateralWeight;
+	private Matrix<Float> senapseWeight;
+	private Matrix<Float> inhibitoryWeight;
 	
 	private void linksSenapse(final int Sx, final int Sy, final int Sz, final int x, final int y, final int z, final int l) {
 		if (toZone.singleReceptionField) {
@@ -119,8 +119,8 @@ public class MappingHebbian implements Mapping {
 			}
 		});
 	    
-	    lateralWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
-	    lateralWeight.init(new Matrix.Value<Float>() {
+	    inhibitoryWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
+	    inhibitoryWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
 				return getInitWeight();
@@ -262,7 +262,7 @@ public class MappingHebbian implements Mapping {
 
 	@Override
 	public Matrix<Float> lateralWeight() {
-		return lateralWeight;
+		return null;
 	}
 
 	@Override
@@ -295,6 +295,11 @@ public class MappingHebbian implements Mapping {
 		return null;
 	}
 	
+	@Override
+	public Matrix<Float> inhibitoryWeight() {
+		return inhibitoryWeight;
+	}
+
 	ColumnRF_Image imageable = null;
 
 	@Override
