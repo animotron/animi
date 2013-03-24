@@ -97,7 +97,9 @@ public class MappingSOM implements Mapping {
 		if (toZone.singleReceptionField) {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
-					lateralSenapse.set(new Integer[] {Sx, Sy, Sz}, xi, yi, z, l);
+					for (int zi = 0; zi < toZone.depth; zi++) {
+						lateralSenapse.set(new Integer[] {Sx, Sy, Sz}, xi, yi, zi, l);
+					}
 				}
 			}
 		} else {
@@ -149,11 +151,11 @@ public class MappingSOM implements Mapping {
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)(ns_links * frZone.depth));// / norm;
 
-		senapses = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
-		_senapses = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth, 3);
+		senapses = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth);
+		_senapses = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth, 3);
 		_senapses.fill(0);
 		
-	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
+	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth);
 	    senapseWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
@@ -161,7 +163,7 @@ public class MappingSOM implements Mapping {
 			}
 		});
 	    
-	    lateralWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, nl_links);
+	    lateralWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth(), nl_links);
 	    lateralWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
@@ -603,13 +605,9 @@ public class MappingSOM implements Mapping {
 
 			Integer[] xyz = null;
 			
-			for (int index = 0; index < senapseWeight.length(); index++) {
+			for (int index = 0; index < ws.length(); index++) {
 				
-				try {
-					xyz = sf.getByIndex(index);
-				} catch (Exception e) {
-					break;
-				}
+				xyz = sf.getByIndex(index);
 				
 				final int xi = xyz[0];
 				final int yi = xyz[1];

@@ -137,15 +137,21 @@ public class LayerSimple implements Layer {
     	return name;
     }
 
+    @Override
     public int width() {
         return width;
     }
 
+    @Override
     public int height() {
         return height;
     }
 
-	@Override
+    public int depth() {
+        return depth;
+    }
+
+    @Override
 	public void process() {
 		axons.step(neurons);
 	}
