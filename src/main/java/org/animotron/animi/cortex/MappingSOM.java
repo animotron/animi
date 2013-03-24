@@ -24,6 +24,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -601,7 +603,12 @@ public class MappingSOM implements Mapping {
 			int gray = 0;
 			
 			image = rf.getImage();
-
+			
+			ColorModel cm = image.getColorModel();
+			boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+			WritableRaster raster = image.copyData(null);
+			image = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+			
 			Graphics g = image.getGraphics();
 
 			final MatrixProxy<Float> ws = senapseWeight.sub(nX, nY, 0);
