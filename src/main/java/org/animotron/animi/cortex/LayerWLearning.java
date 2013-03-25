@@ -77,11 +77,6 @@ public class LayerWLearning extends LayerSimple {
 	/** Number of synaptic connections of the all simple neurons **/
 	public int ns_links;
 
-//    public MatrixFloat colNeurons;
-//    public MatrixDelay colPostNeurons;
-//    public MatrixFloat colWeights;
-//    public MatrixFloat colCorrelation;
-
     LayerWLearning() {
 		super();
     }
@@ -105,14 +100,10 @@ public class LayerWLearning extends LayerSimple {
     public void init() {
     	super.init();
     	
-//    	colCorrelation = cols.copy();
-    	
         //mapping
 		for (Mapping m : in_zones) {
 			m.map(this);
 		}
-
-//		inhibitoryLinks = clCreateBuffer(mc.context, CL_MEM_WRITE_ONLY, inhibitory_links * Sizeof.cl_uint, null, null);
 
 		//разброс торозных связей
 		if (singleReceptionField) {
@@ -127,9 +118,6 @@ public class LayerWLearning extends LayerSimple {
         
         int _sigma_ = 1;//(int) _sigma;
 
-		//UNDERSTAND: is it ok to have sum ^2 ~ 1
-//		double w = Math.sqrt(1 / (double)inhibitory_links);
-
 		if (singleReceptionField) {
 			initReceptionFields(
 				(int)(width() / 2.0), 
@@ -139,35 +127,11 @@ public class LayerWLearning extends LayerSimple {
 		} else {
 			for (int x = _sigma_; x < width() - _sigma_; x++) {
 				for (int y = _sigma_; y < height() - _sigma_; y++) {
-	//				System.out.println("x = "+x+" y = "+y);
-	
-//					x_in_nerv = x;
-//					y_in_nerv = y;
-	
+
 					initReceptionFields(x, y, _sigma, nerv_links);
-	//				System.out.println();
 				}
 			}
 		}
-		
-//    	colNeurons = new MatrixFloat(width, height, depth);
-//    	colNeurons.fill(0f);
-    	
-//    	colPostNeurons = new MatrixDelay(delay, width, height, depth);
-//    	colPostNeurons.fill(0f);
-//
-//    	colWeights = new MatrixFloat(width, height, width, height, depth);
-//    	colWeights.fill(getWeight());
-
-//    	if (CRFs != null) {
-//    		for (ColumnRF_Image CRF : CRFs) {
-//    			CRF.init();
-//    		}
-//        }
-//        
-//        if (RRF != null) {
-//        	RRF.init();
-//        }
 	}
     
     public Float getWeight() {
@@ -198,35 +162,30 @@ public class LayerWLearning extends LayerSimple {
 		for (int i = 0; i < inhibitory_number_of_links; i++) {
             int lx, ly;
             do {
-//                do {
-                    if (count > inhibitory_number_of_links * 5) {
-                    	if (Double.isInfinite(sigma)) {
-                    		System.out.println("initialization failed @ x = "+x+" y = "+y);
-                    		System.exit(1);
-                    	}
-                    	sigma += _sigma * .1;
-//						System.out.println("\n"+i+" of ("+sigma+")");
-                    	count = 0;
-                    }
-                    count++;
-                    	
-                    do {
-                        X = 2.0 * Math.random() - 1;
-                        Y = 2.0 * Math.random() - 1;
-                        S = X * X + Y * Y;
-                    } while (S > 1 || S == 0);
-                    S = Math.sqrt(-2 * Math.log(S) / S);
-                    double dX = X * S * sigma;
-                    double dY = Y * S * sigma;
-                    lx = (int) Math.round(x_in_nerv + dX);
-                    ly = (int) Math.round(y_in_nerv + dY);
+                if (count > inhibitory_number_of_links * 5) {
+                	if (Double.isInfinite(sigma)) {
+                		System.out.println("initialization failed @ x = "+x+" y = "+y);
+                		System.exit(1);
+                	}
+                	sigma += _sigma * .1;
 
-                    //определяем, что не вышли за границы поля колонок
-                    //колонки по периметру не задействованы
-//                } while (!(lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1));
+                	count = 0;
+                }
+                count++;
+                	
+                do {
+                    X = 2.0 * Math.random() - 1;
+                    Y = 2.0 * Math.random() - 1;
+                    S = X * X + Y * Y;
+                } while (S > 1 || S == 0);
+                S = Math.sqrt(-2 * Math.log(S) / S);
+                double dX = X * S * sigma;
+                double dY = Y * S * sigma;
+                lx = (int) Math.round(x_in_nerv + dX);
+                ly = (int) Math.round(y_in_nerv + dY);
 
-//                System.out.print("!");
-
+            //определяем, что не вышли за границы поля колонок
+            //колонки по периметру не задействованы
             // Проверка на повтор связи
 			} while ((lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1) && nerv_links[lx][ly]);
 //            System.out.print(".");
@@ -249,21 +208,6 @@ public class LayerWLearning extends LayerSimple {
 		}
     }
     
-//	ColumnRF_Image CRFs[] = null;
-//	
-//	public Imageable[] getCRF() {
-//		if (CRFs == null) {
-//			CRFs = new ColumnRF_Image[width * height];
-//			for (int x = 0; x < width; x++) {
-//				for (int y = 0; y < height; y++) {
-//					CRFs[(y * width) + x] = new ColumnRF_Image(x, y);
-//				}
-//			}
-//		}
-//		
-//		return CRFs;
-//	}
-
 	RRF_Image RRF = null;
 
 	public Imageable getRRF() {
@@ -348,7 +292,11 @@ public class LayerWLearning extends LayerSimple {
 //    		debugNeurons("before inhibitory");
 //		}
 
-		performTask(winnerGetsAll);
+    	if (cnLearning instanceof LearningSOM) {
+    		
+    	} else {
+    		performTask(winnerGetsAll);
+    	}
 
 //    	if (cnLearning instanceof LearningSOM) {
 //    		debugNeurons("after inhibitory");

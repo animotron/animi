@@ -39,7 +39,7 @@ public class LearningSOM extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.00001f;
+	public float ny = 0.001f;
 	
 	private float factor;
 	
@@ -171,6 +171,14 @@ public class LearningSOM extends Task {
 			avg,
 			factor * act
 		);
+
+		LearningSOMLateral.learn(
+				m,
+				lateralSenapse,
+				lateralWeight,
+				act,
+				0.001f
+			);
 	}
 	public boolean isDone() {
 //		final MappingSOM m = (MappingSOM) cz.in_zones[0];

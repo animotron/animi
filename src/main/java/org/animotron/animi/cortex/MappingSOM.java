@@ -46,6 +46,10 @@ public class MappingSOM implements Mapping {
 	
 	private static final Random rnd = new Random();
 	
+	interface Value {
+		public float value(int x1, int y1, int x2, int y2, double sigma);
+	}
+	
 	private LayerSimple frZone;
 	private LayerWLearning toZone;
 	
@@ -72,6 +76,7 @@ public class MappingSOM implements Mapping {
 	
 	private Matrix<Float> lateralWeight;
 	private Matrix<Integer[]> lateralSenapse;
+	private Value lateralWeightValue;
 	
 	private void linksSenapse(int Sx, int Sy, int Sz, int x, int y, int z, int l) {
 		if (toZone.singleReceptionField) {
@@ -113,13 +118,27 @@ public class MappingSOM implements Mapping {
 
 	MappingSOM () {}
 	
-    public MappingSOM(LayerSimple zone, int ns_links, double disp, int nl_links) {
+    public MappingSOM(LayerSimple zone, int ns_links, double disp, int nl_links, Value lateralWeightValue) {
         frZone = zone;
         
         this.disp = disp;
         this.ns_links = ns_links;
         
         this.nl_links = nl_links;
+        
+        this.lateralWeightValue = lateralWeightValue;
+        if (this.lateralWeightValue == null) {
+        	this.lateralWeightValue = new Value() {
+				@Override
+				public float value(int x1, int y1, int x2, int y2, double sigma) {
+	            	return 
+            			(float) Math.exp( 
+	            			- Math.sqrt( (x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1) )
+	            			/ sigma
+	        			);
+				}
+        	};
+        }
         
 //		DecimalFormat df = new DecimalFormat("0.00000");
 //
@@ -372,10 +391,7 @@ public class MappingSOM implements Mapping {
 
                 nerv_links[lx][ly] = true;
 
-            	value = (float) Math.exp( 
-            			- Math.sqrt( (lx - x)*(lx - x) + (ly - y)*(ly - y) )
-            			/ sigma2
-        			);
+            	value = lateralWeightValue.value(x, y, lx, ly, sigma2);
 
                 // Создаем синаптическую связь
                 //XXX: fix relation with depth, if present?
