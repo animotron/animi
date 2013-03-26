@@ -451,6 +451,11 @@ public class MappingSOM implements Mapping {
 	}
 
 	@Override
+	public boolean haveInhibitoryWeight() {
+		return inhibitoryWeight == null;
+	}
+
+	@Override
 	public Matrix<Float> inhibitoryWeight() {
 		return inhibitoryWeight;
 	}

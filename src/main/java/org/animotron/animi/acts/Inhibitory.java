@@ -45,11 +45,11 @@ public class Inhibitory extends Task {
 
 	private float maxDelta = 0;
 	private float preDelta = 0;
-	private MatrixFloat cols = null;
+//	private MatrixFloat cols = null;
 	
 	@Override
 	public void prepare() {
-		cols = new MatrixFloat(cz.neurons);
+//		cols = new MatrixFloat(cz.neurons);
 	}
 
 	@Override
@@ -59,9 +59,11 @@ public class Inhibitory extends Task {
 		if (cz.isSingleReceptionField()) {
 			for (int xi = 0; xi < cz.width; xi++) {
 				for (int yi = 0; yi < cz.height; yi++) {
+					for (int zi = 0; zi < cz.depth; zi++) {
 					
-					if (xi != x && yi != y) {
-						delta += cz.inhibitory_w * cols.get(xi, yi);
+						if (xi != x && yi != y && zi != z) {
+							delta += cz.inhibitory_w * cz.neurons.get(xi, yi, zi);
+						}
 					}
 				}
 			}
@@ -69,20 +71,21 @@ public class Inhibitory extends Task {
 			for (int l = 0; l < cz.inhibitory_number_of_links; l++) {
 				final int xi = cz.inhibitoryLinksSenapse(x, y, l, 0);
 				final int yi = cz.inhibitoryLinksSenapse(x, y, l, 1);
+				final int zi = cz.inhibitoryLinksSenapse(x, y, l, 2);
 				
-				if (xi != x && yi != y) {
-					delta += cz.inhibitory_w * cols.get(xi, yi);
+				if (xi != x && yi != y && zi != z) {
+					delta += cz.inhibitory_w * cz.neurons.get(xi, yi, zi);
 				}
 			}
 		}
 		
-		float activity = cz.neurons.get(x, y);
+		float activity = cz.neurons.get(x, y, z);
 		activity -= delta * k;
 		if (activity < 0) {
 			activity = 0;
 		}
 		
-		cz.neurons.set(activity, x, y);
+		cz.neurons.set(activity, x, y, z);
 		
 		synchronized (this) {
 			maxDelta = Math.max(maxDelta, delta);
@@ -95,10 +98,15 @@ public class Inhibitory extends Task {
 			preDelta = maxDelta + 1;
 		}
 		if (preDelta <= maxDelta) {
-			System.out.println("maxDelta increased or equal");
+//			System.out.println("maxDelta increased or equal");
 			return true;
+		} else {
+			preDelta = maxDelta;
 		}
-		return maxDelta > minDelta;
+		boolean isDone = maxDelta < minDelta;
+		maxDelta = 0f;
+		
+		return isDone;
 	}
 	
 	@Override

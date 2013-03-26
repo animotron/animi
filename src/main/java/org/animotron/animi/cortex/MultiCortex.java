@@ -91,7 +91,7 @@ public class MultiCortex implements Runnable {
         //1st zone
         layer_1 = new LayerWLearning("1й", this, 5, 5, 9, 12, //120, 120, //160, 120,
             new Mapping[]{
-                new MappingHebbian(z_in, 100, 1, false) //7x7 (50)
+                new MappingHebbian(z_in, 100, 1, false, false) //7x7 (50)
             },
             LearningHebbian.class
         );
@@ -325,7 +325,8 @@ public class MultiCortex implements Runnable {
 						prevZone,
 						Integer.valueOf(attrs.getValue("number-of-synaptic-links")),
 						Double.valueOf(attrs.getValue("synaptic-links-dispersion")),
-						Boolean.valueOf(attrs.getValue("soft"))
+						Boolean.valueOf(attrs.getValue("soft")),
+						Boolean.valueOf(attrs.getValue("haveInhibitory"))
 					)
 				);
 				

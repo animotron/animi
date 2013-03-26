@@ -295,7 +295,8 @@ public class LayerWLearning extends LayerSimple {
     	if (cnLearning instanceof LearningSOM) {
     		
     	} else {
-    		performTask(winnerGetsAll);
+    		performTask(inhibitory);
+//    		performTask(winnerGetsAll);
     	}
 
 //    	if (cnLearning instanceof LearningSOM) {

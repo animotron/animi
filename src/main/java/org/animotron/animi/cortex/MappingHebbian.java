@@ -65,6 +65,8 @@ public class MappingHebbian implements Mapping {
 
 	public float w;
 	
+	boolean haveInhibitory;
+	
 	private Matrix<Integer> senapse;
 	
 	private Matrix<Float> senapseWeight;
@@ -90,11 +92,14 @@ public class MappingHebbian implements Mapping {
 
 	MappingHebbian () {}
 	
-    public MappingHebbian(LayerSimple zone, int ns_links, double disp, boolean soft) {
+    public MappingHebbian(LayerSimple zone, int ns_links, double disp, boolean soft, boolean haveInhibitory) {
         frZone = zone;
+        
         this.disp = disp;
         this.ns_links = ns_links;
         this.soft = soft;
+        
+        this.haveInhibitory = haveInhibitory;
     }
 
     public String toString() {
@@ -119,13 +124,17 @@ public class MappingHebbian implements Mapping {
 			}
 		});
 	    
-	    inhibitoryWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
-	    inhibitoryWeight.init(new Matrix.Value<Float>() {
-			@Override
-			public Float get(int... dims) {
-				return 0f;//getInitWeight();
-			}
-		});
+	    if (haveInhibitory) {
+		    inhibitoryWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
+		    inhibitoryWeight.init(new Matrix.Value<Float>() {
+				@Override
+				public Float get(int... dims) {
+					return 0f;//getInitWeight();
+				}
+			});
+	    } else {
+	    	inhibitoryWeight = null;
+	    }
 
 		senapse = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth, ns_links, 3);
 		senapse.fill(0);
@@ -295,6 +304,11 @@ public class MappingHebbian implements Mapping {
 		return null;
 	}
 	
+	@Override
+	public boolean haveInhibitoryWeight() {
+		return inhibitoryWeight != null;
+	}
+
 	@Override
 	public Matrix<Float> inhibitoryWeight() {
 		return inhibitoryWeight;

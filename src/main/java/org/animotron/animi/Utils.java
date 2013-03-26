@@ -184,7 +184,11 @@ public class Utils {
 		        if (isPos) {
 		        	w = m.senapseWeight().get(cnX, cnY, cnZ, l);
 		        } else {
-		        	w = m.inhibitoryWeight().get(cnX, cnY, cnZ, l);
+		        	if (m.haveInhibitoryWeight()) {
+		        		w = m.inhibitoryWeight().get(cnX, cnY, cnZ, l);
+		        	} else {
+		        		w = 0f;
+		        	}
 		        }
 				if (Float.isNaN(w) || Float.isInfinite(w)) {
 					R = 255;

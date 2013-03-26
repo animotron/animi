@@ -101,21 +101,14 @@ public class Activation extends Task {
 
 			break;
 
-//		case 1:
-//			cz.colCorrelation.set(
-//				ActivationHebbian.activity(cz.colNeurons, cz.colWeights.sub(x, y)),
-//				x, y
-//			);
-//			break;
-
 		default:
 			break;
 		}
 	}
 	
 	public boolean isDone() {
-//		final Mapping m = cz.in_zones[0];
-//		
+		final Mapping m = cz.in_zones[0];
+		
 //		if (m instanceof MappingSOM) {
 //			switch (stage) {
 //			case 0:
@@ -131,8 +124,11 @@ public class Activation extends Task {
 //				break;
 //			}
 //		}
-
+		
 		stage++;
+		if (stage == 1 && !m.haveInhibitoryWeight()) {
+			stage++;
+		}
 		return stage >= 3;
 	}
 

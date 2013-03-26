@@ -36,7 +36,7 @@ public class LearningHebbian extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 1f;
+	public float ny = 0.1f;
 	
 	private float factor;
 	
@@ -58,7 +58,7 @@ public class LearningHebbian extends Task {
 		float sumQ2 = 0.0f;
 		for (int index = 0; index < posW.length(); index++) {
     		
-			if (negW.getByIndex(index) > 0f)
+			if (negW != null && negW.getByIndex(index) > 0f)
 				continue;
 
 			final float X = in.getByIndex(index) - avg;
@@ -112,15 +112,18 @@ public class LearningHebbian extends Task {
 		avg = 0f;
 		
 		final Mapping m = cz.in_zones[0];
+		
+		if (m.haveInhibitoryWeight()) {
 
-		final MatrixFloat neurons = m.frZone().axons;
-		
-		float sum = 0f;
-		for (int index = 0; index < neurons.length(); index++) {
-			sum += neurons.getByIndex(index);
+			final MatrixFloat neurons = m.frZone().axons;
+			
+			float sum = 0f;
+			for (int index = 0; index < neurons.length(); index++) {
+				sum += neurons.getByIndex(index);
+			}
+			
+			avg = sum / (float)neurons.length();
 		}
-		
-		avg = sum / (float)neurons.length();
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {
@@ -135,7 +138,10 @@ public class LearningHebbian extends Task {
 
 		Matrix<Float> in = new MatrixMapped<Float>(m.frZone().neurons, m.senapses().sub(x, y, z));
 		Matrix<Float> posW = m.senapseWeight().sub(x, y, z);
-		Matrix<Float> negW = m.inhibitoryWeight().sub(x, y, z);
+		Matrix<Float> negW = null;
+		if (m.haveInhibitoryWeight()) {
+			negW = m.inhibitoryWeight().sub(x, y, z);
+		}
 		
 		LearningHebbian.learn(
 			in, 
@@ -146,14 +152,16 @@ public class LearningHebbian extends Task {
 			factor
 		);
 
-		LearningHebbianAnti.learn(
-			in, 
-			posW, 
-			negW, 
-			act,
-			avg,
-			factor
-		);
+		if (m.haveInhibitoryWeight()) {
+			LearningHebbianAnti.learn(
+				in, 
+				posW, 
+				negW, 
+				act,
+				avg,
+				factor
+			);
+		}
 	}
 
 	@Override
