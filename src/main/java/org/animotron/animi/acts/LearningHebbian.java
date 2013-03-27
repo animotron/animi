@@ -188,7 +188,7 @@ public class LearningHebbian extends Task {
 				}
 				
 				float f = 10;
-				if (m.senapseWeight().getByIndex(index) > 1/25) {
+				if (m.senapseWeight().getByIndex(index) > 1/(float)2) {
 					f = 0.1f;
 				}
 	
