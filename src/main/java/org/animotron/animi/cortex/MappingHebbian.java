@@ -117,7 +117,8 @@ public class MappingHebbian implements Mapping {
 		System.out.println(toZone);
 		
 //		float norm = (float) Math.sqrt(sumQ2);
-		w = (1 / (float)ns_links);// / norm;
+		w = (1 / (float)(ns_links * frZone.depth));// / norm;
+		w = (float) (w / Math.sqrt((w * w) * ns_links * frZone.depth));
 
 	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
 	    senapseWeight.init(new Matrix.Value<Float>() {
@@ -262,7 +263,7 @@ public class MappingHebbian implements Mapping {
 	}
 
 	public Float getInitWeight() {
-		return w * rnd.nextFloat();
+		return w * (rnd.nextFloat() / 10);
 	}
 
 	@Override
