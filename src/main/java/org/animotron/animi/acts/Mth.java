@@ -32,16 +32,15 @@ public class Mth {
 			final Matrix<Float> values, 
 			final float sum2) {
 		
-		if (sum2 > 0f)
-			return;
-
-		final float norm = (float) Math.sqrt(sum2);
-		for (int index = 0; index < values.length(); index++) {
-	    	
-	    	final float value = values.getByIndex(index) / norm;
-	    	
-    		values.setByIndex(value, index);
-	    }
+		if (sum2 > 0f) {
+			final float norm = (float) Math.sqrt(sum2);
+			for (int index = 0; index < values.length(); index++) {
+		    	
+		    	final float value = values.getByIndex(index) / norm;
+		    	
+	    		values.setByIndex(value, index);
+		    }
+		}
 	}
 
 }
