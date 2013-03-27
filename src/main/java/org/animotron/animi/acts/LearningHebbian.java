@@ -71,23 +71,8 @@ public class LearningHebbian extends Task {
 			} else {
 	    		posW.setByIndex(0f, index);
 			}
-    		
 		}
-	    
 	    return sumQ2;
-	}
-
-	private static void normalization(
-			final Matrix<Float> weights, 
-			final float sumQ2) {
-		
-		final float norm = (float) Math.sqrt(sumQ2);
-		for (int index = 0; index < weights.length(); index++) {
-	    	
-	    	final float q = weights.getByIndex(index) / norm;
-	    	
-    		weights.setByIndex(q, index);
-	    }
 	}
 
 	public static void learn(
@@ -101,8 +86,7 @@ public class LearningHebbian extends Task {
 		if (activity > 0) {
 			final float sumQ2 = adjust(in, posW, negW, activity, avg, factor);
 			
-			if (sumQ2 > 0f)
-				normalization(posW, sumQ2);
+			Mth.normalization(posW, sumQ2);
 		}
 	}
 	
@@ -128,7 +112,11 @@ public class LearningHebbian extends Task {
 
 	public void gpuMethod(final int x, final int y, final int z) {
 		
-		final Mapping m = cz.in_zones[0];
+		Mapping m = cz.in_zones[0];
+		
+		if (!m.isDirectLearning()) {
+			return;
+		}
 		
 		final float act = m.toZone().neurons.get(x, y, z);
 		
@@ -136,7 +124,7 @@ public class LearningHebbian extends Task {
 			return;
 		}
 
-		Matrix<Float> in = new MatrixMapped<Float>(m.frZone().neurons, m.senapses().sub(x, y, z));
+		Matrix<Float> in = new MatrixMapped<Float>(m.frZone().neurons, m._senapses().sub(x, y, z));
 		Matrix<Float> posW = m.senapseWeight().sub(x, y, z);
 		Matrix<Float> negW = null;
 		if (m.haveInhibitoryWeight()) {
@@ -161,6 +149,55 @@ public class LearningHebbian extends Task {
 				avg,
 				factor
 			);
+		}
+		
+		LayerSimple frLayer = m.frZone();
+		if (frLayer instanceof LayerWLearning) {
+			
+			Mapping _m = ((LayerWLearning) frLayer).in_zones[0];
+			if (_m.isDirectLearning()) {
+				return;
+			}
+			
+			//XXX: to fix!
+			LearningHebbian learning = (LearningHebbian)((LayerWLearning) frLayer).cnLearning;
+			
+			MatrixProxy<Integer[]> senapses = m.senapses().sub(x, y, z);
+			for (int index = 0; index < senapses.length(); index++) {
+				Integer[] xyz = senapses.getByIndex(index);
+				
+				if (xyz == null) {
+					System.out.println("ERROR! at ["+x+","+y+","+z+"] "+index);
+				}
+				
+				final int xi = xyz[0];
+				final int yi = xyz[1];
+				final int zi = xyz[2];
+			
+				final float _act = _m.toZone().neurons.get(xi, yi, zi);
+				
+				if (_act <= 0) {
+					continue;
+				}
+	
+				MatrixMapped<Float> _in = new MatrixMapped<Float>(_m.frZone().neurons, _m._senapses().sub(xi, yi, zi));
+				MatrixProxy<Float> _posW = _m.senapseWeight().sub(xi, yi, zi);
+				Matrix<Float> _negW = null;
+				if (m.haveInhibitoryWeight()) {
+					_m.inhibitoryWeight().sub(xi, yi, zi);
+				}
+				
+				float f = 10;
+				if (m.senapseWeight().getByIndex(index) > 1/25) {
+					f = 0.1f;
+				}
+	
+				//XXX: fix: factor
+				learning.learn(
+						_in, _posW, _negW, 
+						_act * f,
+						0, factor);
+			}
 		}
 	}
 

@@ -64,7 +64,7 @@ public class ActivationHebbian extends Task {
 		
 		final float activity = 
 				activity(
-					new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z)), 
+					new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z)), 
 					m.senapseWeight().sub(x, y, z)
 				);
 		

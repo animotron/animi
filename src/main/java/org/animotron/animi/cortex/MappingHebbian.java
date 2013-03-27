@@ -24,6 +24,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -31,9 +33,7 @@ import java.util.Random;
 import org.animotron.animi.Imageable;
 import org.animotron.animi.InitParam;
 import org.animotron.animi.Utils;
-import org.animotron.matrix.Matrix;
-import org.animotron.matrix.MatrixFloat;
-import org.animotron.matrix.MatrixInteger;
+import org.animotron.matrix.*;
 
 /**
  * Projection description of the one zone to another
@@ -57,8 +57,8 @@ public class MappingHebbian implements Mapping {
 	@InitParam(name="disp")
 	public double disp;      // Describe a size of sensor field
 
-	@InitParam(name="soft")
-	public boolean soft = true;
+	@InitParam(name="direct-learning")
+	public boolean directLearning = true;
 	
 	public double fX = 1;
 	public double fY = 1;
@@ -67,7 +67,8 @@ public class MappingHebbian implements Mapping {
 	
 	boolean haveInhibitory;
 	
-	private Matrix<Integer> senapse;
+	private Matrix<Integer[]> senapses;
+	private Matrix<Integer> _senapses;
 	
 	private Matrix<Float> senapseWeight;
 	private Matrix<Float> inhibitoryWeight;
@@ -77,27 +78,29 @@ public class MappingHebbian implements Mapping {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
 					for (int zi = 0; zi < toZone.depth; zi++) {
-						senapse.set(Sx, xi, yi, zi, l, 0);
-						senapse.set(Sy, xi, yi, zi, l, 1);
-						senapse.set(Sz, xi, yi, zi, l, 2);
+						senapses.set(new Integer[] {Sx, Sy, Sz}, xi, yi, zi, l);
+						_senapses.set(Sx, xi, yi, zi, l, 0);
+						_senapses.set(Sy, xi, yi, zi, l, 1);
+						_senapses.set(Sz, xi, yi, zi, l, 2);
 					}
 				}
 			}
 		} else {
-			senapse.set(Sx, x, y, z, l, 0);
-			senapse.set(Sy, x, y, z, l, 1);
-			senapse.set(Sz, x, y, z, l, 3);
+			senapses.set(new Integer[] {Sx, Sy, Sz}, x, y, z, l);
+			_senapses.set(Sx, x, y, z, l, 0);
+			_senapses.set(Sy, x, y, z, l, 1);
+			_senapses.set(Sz, x, y, z, l, 3);
 		}
 	}
 
 	MappingHebbian () {}
 	
-    public MappingHebbian(LayerSimple zone, int ns_links, double disp, boolean soft, boolean haveInhibitory) {
+    public MappingHebbian(LayerSimple zone, int ns_links, double disp, boolean directLearning, boolean haveInhibitory) {
         frZone = zone;
         
         this.disp = disp;
         this.ns_links = ns_links;
-        this.soft = soft;
+        this.directLearning = directLearning;
         
         this.haveInhibitory = haveInhibitory;
     }
@@ -116,7 +119,7 @@ public class MappingHebbian implements Mapping {
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)ns_links);// / norm;
 
-	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
+	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
 	    senapseWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
@@ -136,8 +139,9 @@ public class MappingHebbian implements Mapping {
 	    	inhibitoryWeight = null;
 	    }
 
-		senapse = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth, ns_links, 3);
-		senapse.fill(0);
+		senapses = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
+		_senapses = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth, 3);
+		_senapses.fill(0);
 		
 //        for (int x = 0; x < zone.width(); x++) {
 //			for (int y = 0; y < zone.height(); y++) {
@@ -186,12 +190,13 @@ public class MappingHebbian implements Mapping {
 			}
 		}
 
+		int lx = -1, ly = 0;
+
 		// преобразование Бокса — Мюллера для получения
 		// нормально распределенной величины
 		// DispLink - дисперсия связей
 		int count = 0;
 		for (int i = 0; i < ns_links; i++) {
-            int lx, ly;
             do {
                 if (count > ns_links * 3) {
                 	if (Double.isInfinite(sigma)) {
@@ -203,31 +208,42 @@ public class MappingHebbian implements Mapping {
                 }
                 count++;
                 	
-                do {
-                    X = 2.0 * Math.random() - 1;
-                    Y = 2.0 * Math.random() - 1;
-                    S = X * X + Y * Y;
-                } while (S > 1 || S == 0);
-                S = Math.sqrt(-2 * Math.log(S) / S);
-                double dX = X * S * sigma;
-                double dY = Y * S * sigma;
-                lx = (int) Math.round(x_in_nerv + dX);
-                ly = (int) Math.round(y_in_nerv + dY);
+                if (ns_links == frZone.width() * frZone.height()) {
+                    lx++;
+                    if (lx >= frZone.width()) {
+                    	lx = 0;
+                    	ly++;
+                    }
+                	
+                } else {
+	                do {
+	                    X = 2.0 * Math.random() - 1;
+	                    Y = 2.0 * Math.random() - 1;
+	                    S = X * X + Y * Y;
+	                } while (S > 1 || S == 0);
+	                S = Math.sqrt(-2 * Math.log(S) / S);
+	                double dX = X * S * sigma;
+	                double dY = Y * S * sigma;
+	                lx = (int) Math.round(x_in_nerv + dX);
+	                ly = (int) Math.round(y_in_nerv + dY);
+                }
 
             //определяем, что не вышли за границы поля колонок
             //колонки по периметру не задействованы
             // Проверка на повтор связи
-			} while ( lx < 1 || ly < 1 || lx > frZone.width() - 1 || ly > frZone.height() - 1 || nerv_links[lx][ly] );
+			} while ( lx < 0 || ly < 0 || lx >= frZone.width() || ly >= frZone.height() || nerv_links[lx][ly] );
 
-            if (lx >= 1 && ly >= 1 && lx < frZone.width() - 1 && ly < frZone.height() - 1) {
+            if (lx >= 0 && ly >= 0 && lx < frZone.width() && ly < frZone.height()) {
                 if (debug) System.out.print(".");
 
                 nerv_links[lx][ly] = true;
 
 				// Создаем синаптическую связь
                 for (int z = 0; z < toZone.depth; z++) {
+                    //XXX: fixed? depth 
+                	int j = i * frZone.depth;
                     for (int lz = 0; lz < frZone.depth; lz++) {
-                    	linksSenapse(lx, ly, lz, x, y, z, i);
+                    	linksSenapse(lx, ly, lz, x, y, z, j + lz);
                     }
                 }
             } else {
@@ -260,8 +276,13 @@ public class MappingHebbian implements Mapping {
 	}
 
 	@Override
-	public Matrix<Integer> senapses() {
-		return senapse;
+	public Matrix<Integer[]> senapses() {
+		return senapses;
+	}
+
+	@Override
+	public Matrix<Integer> _senapses() {
+		return _senapses;
 	}
 
 	@Override
@@ -295,15 +316,15 @@ public class MappingHebbian implements Mapping {
 	}
 
 	@Override
-	public boolean soft() {
-		return soft;
-	}
-
-	@Override
 	public Matrix<Integer[]> lateralSenapse() {
 		return null;
 	}
 	
+	@Override
+	public boolean isDirectLearning() {
+		return directLearning;
+	}
+
 	@Override
 	public boolean haveInhibitoryWeight() {
 		return inhibitoryWeight != null;
@@ -419,6 +440,13 @@ public class MappingHebbian implements Mapping {
 					
 					watching.add(pos);
 					
+					try {
+						if (frZone instanceof LayerWLearning && !((LayerWLearning)frZone).in_zones[0].isDirectLearning()) {
+							return new ShowByOne(pos.x, pos.y);
+						}
+					} catch (Exception e) {
+					}
+					
 					return new Object[] { toZone, pos };
 				}
 			} catch (Exception e) {
@@ -443,6 +471,117 @@ public class MappingHebbian implements Mapping {
 
 		@Override
 		public void refreshImage() {
+		}
+	}
+
+	class ShowByOne implements Imageable {
+		
+	    private BufferedImage image;
+	    
+	    final Mapping m;
+	    final ColumnRF_Image rf;
+	    final int nX;
+	    final int nY;
+	    
+	    public ShowByOne(int nX, int nY) {
+	    	this.nX = nX;
+	    	this.nY = nY;
+	    	
+			m = ((LayerWLearning)frZone).in_zones[0];
+			rf = (ColumnRF_Image) m.getImageable();
+		}
+
+		@Override
+		public String getImageName() {
+			return "["+nX+","+nY+"] "+MappingHebbian.this+" "+toZone.name;
+		}
+
+		@Override
+		public void refreshImage() {
+		}
+
+		@Override
+		public BufferedImage getImage() {
+			int R = 0, G = 0, B = 0;
+			
+			image = rf.getImage();
+			
+			ColorModel cm = image.getColorModel();
+			boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+			WritableRaster raster = image.copyData(null);
+			image = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+			
+			Graphics g = image.getGraphics();
+
+			final MatrixProxy<Float> pos = senapseWeight.sub(nX, nY, 0);
+			final MatrixProxy<Float> neg;
+			if (haveInhibitoryWeight()) {
+				neg = inhibitoryWeight.sub(nX, nY, 0);
+			} else {
+				neg = null;
+			}
+			
+			final MatrixProxy<Integer[]> sf = senapses.sub(nX, nY, 0);
+
+			Integer[] xyz = null;
+			
+			for (int index = 0; index < pos.length(); index++) {
+				
+				xyz = sf.getByIndex(index);
+				
+				if (xyz == null || xyz[0] == null || xyz[1] == null || xyz[2] == null) {
+					System.out.println("ERROR! at ["+nX+","+nY+",0] "+index);
+					continue;
+				}
+				
+				final int xi = xyz[0];
+				final int yi = xyz[1];
+				final int zi = xyz[2];
+				
+				final int offsetX = xi * rf.boxSize;
+				final int offsetY = yi * rf.boxSize;
+				
+				final int pY = (int) ( zi / rf.boxN );
+				final int pX = zi - (rf.boxN * pY);
+					
+				//weight box
+				G = (int) (255 * pos.getByIndex(index) * 100);
+				if (G > 255) G = 255;
+				
+				if (neg == null) {
+					B = 0;
+				} else {
+					B = (int) (255 * neg.getByIndex(index) * 100);
+					if (B > 255) B = 255;
+				}
+				
+				
+				g.setColor(new Color(R, G, B));
+				g.draw3DRect(
+						offsetX + rf.boxMini * pX + 1, 
+						offsetY + rf.boxMini * pY + 1, 
+						rf.boxMini - 2, rf.boxMini - 2, true);
+
+			}
+			
+			return image;
+		}
+
+		@Override
+		public Object whatAt(Point point) {
+			return null;
+		}
+
+		@Override
+		public void focusGained(Point point) {
+		}
+
+		@Override
+		public void focusLost(Point point) {
+		}
+
+		@Override
+		public void closed(Point point) {
 		}
 	}
 }

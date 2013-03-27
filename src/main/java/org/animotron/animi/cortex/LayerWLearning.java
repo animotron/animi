@@ -341,7 +341,7 @@ public class LayerWLearning extends LayerSimple {
 			write(out, "synaptic-links-dispersion", mapping.disp());
 			write(out, "number-of-synaptic-links", mapping.ns_links());
 			write(out, "with-zone", mapping.frZone().id);
-			write(out, "soft", mapping.soft());
+//			write(out, "soft", mapping.soft());
 			out.write("/>");
 			
 		}

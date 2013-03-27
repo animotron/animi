@@ -33,7 +33,9 @@ public interface Mapping {
 	
 	public LayerWLearning toZone();
 
-	public Matrix<Integer> senapses();
+	public Matrix<Integer[]> senapses();
+
+	public Matrix<Integer> _senapses();
 
 	public Matrix<Float> senapseWeight();
 
@@ -46,6 +48,8 @@ public interface Mapping {
 	public boolean haveInhibitoryWeight();
 	
 	public Matrix<Float> inhibitoryWeight();
+
+	public boolean isDirectLearning();
 
 	public void map(LayerWLearning cortexZoneComplex);
 
@@ -61,7 +65,5 @@ public interface Mapping {
 
 	public double disp();
 
-	public boolean soft();
-	
 	public Imageable getImageable();
 }

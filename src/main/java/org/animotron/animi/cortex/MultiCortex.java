@@ -98,16 +98,18 @@ public class MultiCortex implements Runnable {
         
         layer_2 = new LayerWLearning("2й", this, 5, 5, 1, 1, //120, 120, //160, 120,
             new Mapping[]{
-                new MappingSOM(layer_1, 25, 1, 25,
-            		new Value() {
-	    				@Override
-	    				public float value(int x1, int y1, int x2, int y2, double sigma) {
-	    	            	return 1 / (float)25;
-	    				}
-	            	}
-            	)
+                new MappingHebbian(layer_1, 25, 1, true, false) //7x7 (50)
+//                new MappingSOM(layer_1, 25, 1, 25,
+//            		new Value() {
+//	    				@Override
+//	    				public float value(int x1, int y1, int x2, int y2, double sigma) {
+//	    	            	return 1 / (float)25;
+//	    				}
+//	            	}
+//            	)
             },
-            LearningSOM.class
+            LearningHebbian.class
+//            LearningSOM.class
         );
 
 //        z_1st.addMappring(z_1st);

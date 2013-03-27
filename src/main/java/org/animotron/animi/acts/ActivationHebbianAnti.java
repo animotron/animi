@@ -56,7 +56,7 @@ public class ActivationHebbianAnti extends Task {
 		final float activity = 
 				cz.neurons.get(x, y, z) - 
 				activity(
-					new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z)), 
+					new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z)), 
 					m.inhibitoryWeight().sub(x, y, z)
 				);
 	

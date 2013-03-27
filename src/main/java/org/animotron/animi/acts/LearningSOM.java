@@ -100,7 +100,7 @@ public class LearningSOM extends Task {
 			final Matrix<Float> negW = m.inhibitoryWeight().sub(xi, yi, zi);
 			
 			final float sumQ2 = adjust(
-					new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(xi, yi, zi)), 
+					new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(xi, yi, zi)), 
 					posW,
 					negW,
 					avg,

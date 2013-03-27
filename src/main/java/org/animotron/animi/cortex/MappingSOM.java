@@ -314,8 +314,8 @@ public class MappingSOM implements Mapping {
                 nerv_links[lx][ly] = true;
 
 				// Создаем синаптическую связь
-                //XXX: fix depth 
                 for (int z = 0; z < toZone.depth; z++) {
+                    //XXX: fixed? depth 
                 	int j = i * frZone.depth;
                 	for (int lz = 0; lz < frZone.depth; lz++) {
                 		linksSenapse(lx, ly, lz, x, y, z, j + lz);
@@ -431,7 +431,12 @@ public class MappingSOM implements Mapping {
 	}
 
 	@Override
-	public Matrix<Integer> senapses() {
+	public Matrix<Integer[]> senapses() {
+		return senapses;
+	}
+
+	@Override
+	public Matrix<Integer> _senapses() {
 		return _senapses;
 	}
 
@@ -478,11 +483,6 @@ public class MappingSOM implements Mapping {
 	@Override
 	public double disp() {
 		return disp;
-	}
-
-	@Override
-	public boolean soft() {
-		return false;
 	}
 
 	ShowByMax imageable = null;
@@ -705,5 +705,10 @@ public class MappingSOM implements Mapping {
 		@Override
 		public void closed(Point point) {
 		}
+	}
+
+	@Override
+	public boolean isDirectLearning() {
+		return true;
 	}
 }

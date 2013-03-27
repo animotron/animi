@@ -157,8 +157,8 @@ public class Utils {
 
 		int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links(); l++) {
-        	final int xi = m.senapses().get(cnX, cnY, cnZ, l, 0);
-        	final int yi = m.senapses().get(cnX, cnY, cnZ, l, 1);
+        	final int xi = m._senapses().get(cnX, cnY, cnZ, l, 0);
+        	final int yi = m._senapses().get(cnX, cnY, cnZ, l, 1);
         	//XXX: final int zi = m.senapses().get(cnX, cnY, cnZ, l, 2);
         	
         	if (m.toZone().isSingleReceptionField()) {
@@ -235,8 +235,8 @@ public class Utils {
 				
         int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links(); l++) {
-        	final int xi = m.senapses().get(cnX, cnY, l, 0);
-        	final int yi = m.senapses().get(cnX, cnY, l, 1);
+        	final int xi = m._senapses().get(cnX, cnY, l, 0);
+        	final int yi = m._senapses().get(cnX, cnY, l, 1);
         	
         	pX = xi;
 			pY = yi;
