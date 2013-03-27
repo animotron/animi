@@ -124,7 +124,7 @@ public class LearningHebbian extends Task {
 			return;
 		}
 
-		Matrix<Float> in = new MatrixMapped<Float>(m.frZone().neurons, m._senapses().sub(x, y, z));
+		Matrix<Float> in = new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z));
 		Matrix<Float> posW = m.senapseWeight().sub(x, y, z);
 		Matrix<Float> negW = null;
 		if (m.haveInhibitoryWeight()) {

@@ -545,8 +545,13 @@ public class MappingHebbian implements Mapping {
 				final int pX = zi - (rf.boxN * pY);
 					
 				//weight box
-				G = (int) (255 * pos.getByIndex(index) * 100);
-				if (G > 255) G = 255;
+				float w = pos.getByIndex(index);
+				if (Float.isNaN(w) || Float.isInfinite(w)) {
+					R = 255;
+				} else {
+					G = (int) (255 * w * 100);
+					if (G > 255) G = 255;
+				}
 				
 				if (neg == null) {
 					B = 0;
