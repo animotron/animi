@@ -22,7 +22,6 @@ package org.animotron.animi.acts;
 
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
-import org.animotron.matrix.MatrixFloat;
 
 /**
  * Активация простых нейронов при узнавании запомненной картины

@@ -61,20 +61,6 @@ public class LearningHebbianAnti {
 	    return sumQ2;
 	}
 	
-	private static void normalization(
-			final Matrix<Float> posWeights, 
-			final Matrix<Float> weights, 
-			final float sumQ2) {
-		
-		float norm = (float) Math.sqrt(sumQ2);
-		for (int index = 0; index < weights.length(); index++) {
-	    	
-	    	final float q = weights.getByIndex(index) / norm;
-	    	
-			weights.setByIndex(q, index);
-	    }
-	}
-
 	public static void learn(
 			final Matrix<Float> in, 
 			final Matrix<Float> posW, 
@@ -85,8 +71,6 @@ public class LearningHebbianAnti {
 		
 		final float sumQ2 = adjust(in, posW, negW, activity, avg, factor);
 		
-		if (sumQ2 > 0f) {
-			normalization(posW, negW, sumQ2);
-		}
+		Mth.normalization(negW, sumQ2);
 	}
 }

@@ -20,41 +20,28 @@
  */
 package org.animotron.animi.acts;
 
-import org.animotron.animi.cortex.*;
-import org.animotron.matrix.*;
+import org.animotron.matrix.Matrix;
 
 /**
- * Self-organizing feature map.
- * 
- * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ *
  */
-public class LearningSOMLateral {
-	
-	public static void learn(
-			final MappingSOM m,
-			final Matrix<Integer[]> lateralSenapse, 
-			final Matrix<Float> lateralWeight, 
-			final float act,
-			final float factor) {
-		
-		float sumQ2 = 0f;
-		for (int index = 0; index < lateralWeight.length(); index++) {
-			Integer[] xyz = lateralSenapse.getByIndex(index);
-			
-			final int xi = xyz[0];
-			final int yi = xyz[1];
-			final int zi = xyz[2];
-			
-			final float q = 
-					lateralWeight.getByIndex(index) 
-					+ m.toZone().neurons.get(xi, yi, zi) * act * factor;
-		
-			lateralWeight.setByIndex(q, index);
-			
-			sumQ2 = q * q;
-		}
+public class Mth {
 
-		Mth.normalization(lateralWeight, sumQ2);
+	public static void normalization(
+			final Matrix<Float> values, 
+			final float sum2) {
+		
+		if (sum2 > 0f)
+			return;
+
+		final float norm = (float) Math.sqrt(sum2);
+		for (int index = 0; index < values.length(); index++) {
+	    	
+	    	final float value = values.getByIndex(index) / norm;
+	    	
+    		values.setByIndex(value, index);
+	    }
 	}
+
 }

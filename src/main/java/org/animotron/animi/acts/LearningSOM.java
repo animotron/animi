@@ -82,16 +82,6 @@ public class LearningSOM extends Task {
 	    return sumQ2;
 	}
 
-	private static void normalization(final Matrix<Float> weights, final float sumQ2) {
-		final float norm = (float) Math.sqrt(sumQ2);
-		for (int index = 0; index < weights.length(); index++) {
-	    	
-	    	final float q = weights.getByIndex(index) / norm;
-	    	
-    		weights.setByIndex(q, index);
-	    }
-	}
-
 	public static void learn(
 			final MappingSOM m,
 			final Matrix<Integer[]> lateralSenapse, 
@@ -119,8 +109,7 @@ public class LearningSOM extends Task {
 			
 //			System.out.println("["+xi+","+yi+","+zi+"] "+lateralWeight.getByIndex(index));
 			
-			if (sumQ2 > 0f)
-				normalization(posW, sumQ2);
+			Mth.normalization(posW, sumQ2);
 		}
 	}
 
@@ -164,21 +153,21 @@ public class LearningSOM extends Task {
 			factor * act
 		);
 		
-		LearningSOMAnti.learn(
-			m,
-			lateralSenapse,
-			lateralWeight,
-			avg,
-			factor * act
-		);
+//		LearningSOMAnti.learn(
+//			m,
+//			lateralSenapse,
+//			lateralWeight,
+//			avg,
+//			factor * act
+//		);
 
-		LearningSOMLateral.learn(
-				m,
-				lateralSenapse,
-				lateralWeight,
-				act,
-				0.001f
-			);
+//		LearningSOMLateral.learn(
+//			m,
+//			lateralSenapse,
+//			lateralWeight,
+//			act,
+//			0.001f
+//		);
 	}
 	public boolean isDone() {
 //		final MappingSOM m = (MappingSOM) cz.in_zones[0];

@@ -63,16 +63,6 @@ public class LearningSOMAnti {
 	    return sumQ2;
 	}
 
-	private static void normalization(final Matrix<Float> weights, final float sumQ2) {
-		final float norm = (float) Math.sqrt(sumQ2);
-		for (int index = 0; index < weights.length(); index++) {
-	    	
-	    	final float q = weights.getByIndex(index) / norm;
-	    	
-    		weights.setByIndex(q, index);
-	    }
-	}
-
 	public static void learn(
 			final MappingSOM m,
 			final Matrix<Integer[]> lateralSenapse, 
@@ -100,8 +90,7 @@ public class LearningSOMAnti {
 			
 //			System.out.println("["+xi+","+yi+","+zi+"] "+lateralWeight.getByIndex(index));
 			
-			if (sumQ2 > 0f)
-				normalization(negW, sumQ2);
+			Mth.normalization(negW, sumQ2);
 		}
 	}
 }

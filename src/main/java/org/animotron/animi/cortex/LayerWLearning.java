@@ -292,12 +292,8 @@ public class LayerWLearning extends LayerSimple {
 //    		debugNeurons("before inhibitory");
 //		}
 
-    	if (cnLearning instanceof LearningSOM) {
-    		
-    	} else {
-    		performTask(inhibitory);
-//    		performTask(winnerGetsAll);
-    	}
+//		performTask(inhibitory);
+		performTask(winnerGetsAll);
 
 //    	if (cnLearning instanceof LearningSOM) {
 //    		debugNeurons("after inhibitory");
