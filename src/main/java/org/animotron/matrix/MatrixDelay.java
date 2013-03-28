@@ -28,62 +28,77 @@ import java.util.Arrays;
  */
 public class MatrixDelay extends MatrixFloat {
 	
-	int delay;
+	public interface Attenuation {
+		float next(int step, float value);
+	}
 	
-	int[] delays;
+	public final static Attenuation oneStepAttenuation = new Attenuation() {
+		@Override
+		public float next(int step, float value) {
+			return step <= 1 ? value : 0f;
+		}
+	};
 	
-	public MatrixDelay(int delay, int ... dims) {
+	Attenuation attenuation;
+	
+	float[] original;
+	int[] stepsFromLastSet;
+	
+	public MatrixDelay(Attenuation attenuation, int ... dims) {
 		super(dims);
 		
-		this.delay = delay;
+		this.attenuation = attenuation;
 
-		delays = new int[data.length];
+		original = new float[data.length];
+		stepsFromLastSet = new int[data.length];
+	}
+	
+	public MatrixDelay(Attenuation attenuation, MatrixFloat source) {
+		this(attenuation, source.dimensions.clone());
 	}
 	
 	public MatrixDelay(MatrixDelay source) {
 		super(source);
 		
-		delay = source.delay;
+		attenuation = source.attenuation;
 		
-		delays = new int[source.delays.length];
-		System.arraycopy(source.delays, 0, delays, 0, source.delays.length);
+		original = new float[source.original.length];
+		System.arraycopy(source.original, 0, original, 0, source.original.length);
+
+		stepsFromLastSet = new int[source.stepsFromLastSet.length];
+		System.arraycopy(source.stepsFromLastSet, 0, stepsFromLastSet, 0, source.stepsFromLastSet.length);
 	}
 
 	public void init(Value<Float> value) {
-		for (int i = 0; i < data.length; i++) {
-			data[i] = value.get();
-		}
+		super.init(value);
 
-		//zero delays
-		for (int i = 0; i < delays.length; i++) {
-			delays[i] = 0;
+		//zero steps
+		for (int i = 0; i < stepsFromLastSet.length; i++) {
+			stepsFromLastSet[i] = 0;
 		}
 	}
 
 	public void set(Float value, int ... dims) {
 		final int index = index(dims);
 		super.setByIndex(value, index);
-		if (value == 0) {
-			delays[index] = 0;
-		} else {
-			delays[index] = delay;
-		}
+		stepsFromLastSet[index] = 0;
 	}
 	
 	public void setByIndex(Float value, int index) {
 		super.setByIndex(value, index);
-		if (value == 0f) {
-			delays[index] = 0;
-		} else {
-			delays[index] = delay;
-		}
+		stepsFromLastSet[index] = 0;
 	}
 
 	public void fill(Float value) {
 		super.fill(value);
-		Arrays.fill(delays, 0);
+		Arrays.fill(stepsFromLastSet, 0);
 	}
 	
+	@Override
+	public Float getByIndex(final int index) {
+		return attenuation.next(stepsFromLastSet[index], data[index]);
+	}
+
 	public int[] max() {
 		return super.max();
 	}
@@ -102,38 +117,16 @@ public class MatrixDelay extends MatrixFloat {
 	
 	public void step(MatrixFloat matrix) {
 		for (int index = 0; index < length(); index++) {
-			final float value = matrix.getByIndex(index);
-			if (value > 0) {
-				setByIndex(value, index);
-			
-			} else if (delays[index] > 1) {
-				delays[index]--;
-			
-			} else if (delays[index] == 1) {
-				delays[index]--;
-				super.setByIndex(0f, index);
+			if (matrix.isSet(index)) {
+				setByIndex(matrix.getByIndex(index), index);
 			}
+			stepsFromLastSet[index]++;
 		}
-		
+		isSet.clear(0, isSet.size() - 1);
 	}
 
+	@Override
 	public void step() {
-		
-//		super.debug("before step");
-//		System.out.println("before delays");
-//		debug(new Integers(delays), true);
-		
-		for (int i = 0; i < delays.length; i++) {
-			if (delays[i] > 1) {
-				delays[i]--;
-			} else if (delays[i] == 1) {
-				delays[i]--;
-				super.setByIndex(0f, i);
-			}
-		}
-
-//		super.debug("after step");
-//		System.out.println("after delays");
-//		debug(new Integers(delays), true);
+		throw new IllegalAccessError();
 	}
 }

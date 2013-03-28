@@ -160,6 +160,11 @@ public class MatrixProxy<T> implements Matrix<T> {
 	}
 
 	@Override
+	public void step() {
+		throw new IllegalAccessError();
+	}
+
+	@Override
 	public int length() {
 		return length;
 	}

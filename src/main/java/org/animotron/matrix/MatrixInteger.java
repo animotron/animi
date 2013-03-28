@@ -63,6 +63,11 @@ public class MatrixInteger implements Matrix<Integer> {
 		}
 	}
 
+	@Override
+	public void step() {
+		throw new IllegalAccessError();
+	}
+	
 	protected int index(int ... dims) {
 		if (dims.length != dimensions.length) {
 			throw new IndexOutOfBoundsException("Matrix have "+dimensions.length+" dimensions, but get "+dims.length+".");

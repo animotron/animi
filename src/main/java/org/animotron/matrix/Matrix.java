@@ -7,6 +7,8 @@ public interface Matrix<T> {
 	}
 
 	public void init(Value<T> value);
+	
+	public void step();
 
 	public int length();
 

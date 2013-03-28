@@ -65,6 +65,10 @@ public class MatrixArrayInteger implements Matrix<Integer[]> {
 			data[i][j] = v[j];
 		}
 	}
+	
+	@Override
+	public void step() {
+	}
 
 	protected int index(int ... dims) {
 		if (dims.length != dimensions.length) {

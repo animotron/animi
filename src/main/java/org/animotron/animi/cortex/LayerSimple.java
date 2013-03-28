@@ -56,9 +56,8 @@ public class LayerSimple implements Layer {
 	@InitParam(name="depth")
 	public int depth = 9;
 
-    @InitParam(name="delay")
-	public int delay = 1;
-    
+	public MatrixDelay.Attenuation attenuation;
+	
     public MatrixDelay axons;
     
     public MatrixFloat neurons;
@@ -72,7 +71,7 @@ public class LayerSimple implements Layer {
     	mc = null;
     }
 
-    public LayerSimple(String name, MultiCortex mc, int width, int height, int depth, int delay) {
+    public LayerSimple(String name, MultiCortex mc, int width, int height, int depth, MatrixDelay.Attenuation attenuation) {
         this.name = name;
         this.mc = mc;
 
@@ -80,7 +79,7 @@ public class LayerSimple implements Layer {
 		this.height = height;
 		this.depth = depth;
 
-		this.delay = delay;
+		this.attenuation = attenuation;
     }
     
     /**
@@ -91,7 +90,7 @@ public class LayerSimple implements Layer {
     	neurons = new MatrixFloat(width, height, depth);
     	neurons.fill(0f);
 
-    	axons = new MatrixDelay(delay, width, height, depth);
+    	axons = new MatrixDelay(attenuation, width, height, depth);
     	axons.fill(0f);
 
     	image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -107,7 +106,7 @@ public class LayerSimple implements Layer {
       
 //    	for (int i = 0; i < cols.length(); i++) {
     	for (int i = 0; i < data.length; i++) {
-    		final float value = neurons.getByIndex(i);
+    		final float value = axons.getByIndex(i);
       	
     		if (Float.isNaN(value))
     			data[i] = Color.RED.getRGB();
@@ -155,6 +154,7 @@ public class LayerSimple implements Layer {
     @Override
 	public void process() {
 		axons.step(neurons);
+		neurons.step();
 	}
 
 	@Override

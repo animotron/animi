@@ -23,6 +23,7 @@ package org.animotron.matrix;
 import java.text.DecimalFormat;
 import java.util.AbstractList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 
 /**
@@ -34,8 +35,9 @@ public class MatrixFloat implements Matrix<Float> {
 	int[] dimensions;
 	
 	float[] data;
+	BitSet isSet;
 	
-	public MatrixFloat(int ... dims) {
+	public MatrixFloat(final int ... dims) {
 		dimensions = new int[dims.length];
 		System.arraycopy(dims, 0, dimensions, 0, dims.length);
 		
@@ -45,27 +47,37 @@ public class MatrixFloat implements Matrix<Float> {
 		}
 		
 		data = new float[length];
+		isSet = new BitSet(length);
 	}
 	
-	public MatrixFloat(MatrixFloat source) {
+	public MatrixFloat(final MatrixFloat source) {
 		dimensions = new int[source.dimensions.length];
 		System.arraycopy(source.dimensions, 0, dimensions, 0, source.dimensions.length);
 		
 		data = new float[source.data.length];
 		System.arraycopy(source.data, 0, data, 0, source.data.length);
+
+		isSet = new BitSet(source.data.length);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.animotron.animi.cortex.Matrix#init(org.animotron.animi.cortex.Matrix.Value)
 	 */
 	@Override
-	public void init(Value<Float> value) {
+	public void init(final Value<Float> value) {
 		for (int i = 0; i < data.length; i++) {
 			data[i] = value.get();
 		}
+		isSet.clear(0, isSet.size() - 1);
+	}
+	
+	@Override
+	public void step() {
+		isSet.clear(0, isSet.size() - 1);
+		Arrays.fill(data, 0f);
 	}
 
-	protected int index(int ... dims) {
+	protected int index(final int ... dims) {
 		if (dims.length != dimensions.length) {
 			throw new IndexOutOfBoundsException("Matrix have "+dimensions.length+" dimensions, but get "+dims.length+".");
 		}
@@ -103,7 +115,7 @@ public class MatrixFloat implements Matrix<Float> {
 	 * @see org.animotron.animi.cortex.Matrix#dimension(int)
 	 */
 	@Override
-	public int dimension(int index) {
+	public int dimension(final int index) {
 		return dimensions[index];
 	}
 
@@ -111,7 +123,7 @@ public class MatrixFloat implements Matrix<Float> {
 	 * @see org.animotron.animi.cortex.Matrix#getByIndex(int)
 	 */
 	@Override
-	public Float getByIndex(int index) {
+	public Float getByIndex(final int index) {
 		return data[index];
 	}
 
@@ -119,8 +131,9 @@ public class MatrixFloat implements Matrix<Float> {
 	 * @see org.animotron.animi.cortex.Matrix#setByIndex(float, int)
 	 */
 	@Override
-	public void setByIndex(Float value, int index) {
+	public void setByIndex(final Float value, final int index) {
 		data[index] = value;
+		isSet.set(index);
 	}
 
 	/* (non-Javadoc)
@@ -131,19 +144,27 @@ public class MatrixFloat implements Matrix<Float> {
 		return data[index(dims)];
 	}
 
+	public boolean isSet(final int ... dims) {
+		return isSet(index(dims));
+	}
+	
+	public boolean isSet(final int index) {
+		return isSet.get(index);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.animotron.animi.cortex.Matrix#set(float, int)
 	 */
 	@Override
-	public void set(Float value, int ... dims) {
-		data[index(dims)] = value;
+	public void set(final Float value, final int ... dims) {
+		this.setByIndex(value, index(dims));
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.animotron.animi.cortex.Matrix#fill(float)
 	 */
 	@Override
-	public void fill(Float value) {
+	public void fill(final Float value) {
 		Arrays.fill(data, value);
 	}
 	
@@ -193,38 +214,7 @@ public class MatrixFloat implements Matrix<Float> {
 	@Override
 	public MatrixFloat copy() {
 		return new MatrixFloat(this);
-//		System.arraycopy(source.data, 0, data, 0, data.length);
 	}
-
-//	public void copy(Matrix source) {
-//		if (source.dimensions.length != dimensions.length) {
-//			throw new IndexOutOfBoundsException("Matrix have "+dimensions.length+" dimensions, but get "+source.dimensions.length+".");
-//		}
-//		
-//		for (int i = 0; i < dimensions.length; i++) {
-//			if (source.dimensions[i] != dimensions[i]) {
-//				throw new IndexOutOfBoundsException("Matrix's "+i+" dimension have "+dimensions[i]+" elements, but source dimension have "+source.dimensions[i]+" element.");
-//			}
-//		}
-//
-//		System.arraycopy(source.data, 0, data, 0, data.length);
-//	}
-
-//	public void copy(Matrix source, int ... dims) {
-//		//XXX: checks?
-//		
-//		int offset = 0;
-//		for (int i = dims.length - 1; i >= 0; i--) {
-//			offset = (offset + dims[i]) * dimensions[i];
-//		}
-//		
-//		int length = 1;
-//		for (int i = dims.length; i < dimensions.length; i++) {
-//			length *= dimensions[i];
-//		}
-//
-//		System.arraycopy(source.data, 0, data, offset, length);
-//	}
 
 	/* (non-Javadoc)
 	 * @see org.animotron.animi.cortex.Matrix#sub(int)

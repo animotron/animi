@@ -23,6 +23,8 @@ package org.animotron.animi.cortex;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
+import org.animotron.matrix.Matrix;
+import org.animotron.matrix.MatrixDelay;
 import org.animotron.matrix.MatrixFloat;
 
 /**
@@ -47,7 +49,7 @@ public class RetinaZone extends Task {
     
     float XScale, YScale;
 	
-	MatrixFloat history = null;
+	Matrix<Float> history = null;
 	
 	int[] input;
 	int inputSizeX, inputSizeY;
@@ -200,19 +202,20 @@ public class RetinaZone extends Task {
 		float value = onOff(type, SA, SC, SP, K_cont);
 		
 		int oppositeStimuli = onOff(type % 2 + 1, SA, SC, SP, K_cont);
-
-		//if no stimuli, check if opposite was 
-		if (value == 0) {
+		
+		if (oppositeStimuli == 1) {
+			output(0f, x, y, z);
+			
+			//if no stimuli, check if opposite was 
+		} else if (value == 0) {
 			if (history.get(x, y, z) == 1f && oppositeStimuli == 0) {
-				value = 1f; //0.3f;
+				//ответ после противоположного стимула
+				output(0.9f, x, y, z);
 			}
 		} else {
-			//for debug
-			if (type == 1)
-				value = 1f; //0.7f;
+			//увидил свой образ
+			output(1f, x, y, z);
 		}
-		
-		output(value, x, y, z);
 
 		history.set((float)oppositeStimuli, x, y, z);
 	}

@@ -26,10 +26,10 @@ package org.animotron.matrix;
  */
 public class MatrixMapped<T extends Number> implements Matrix<T> {
 	
-	Matrix<T> source;
-	Matrix<Integer> mapper;
+	final Matrix<T> source;
+	final Matrix<Integer> mapper;
 	
-	public MatrixMapped(Matrix<T> source, Matrix<Integer> mapper) {
+	public MatrixMapped(final Matrix<T> source, final Matrix<Integer> mapper) {
 		this.source = source;
 		this.mapper = mapper;
 		
@@ -37,8 +37,13 @@ public class MatrixMapped<T extends Number> implements Matrix<T> {
 	}
 
 	@Override
-	public void init(Value<T> value) {
+	public void init(final Value<T> value) {
 		throw new IllegalArgumentException();
+	}
+	
+	@Override
+	public void step() {
+		throw new IllegalAccessError();
 	}
 
 	@Override
@@ -52,37 +57,37 @@ public class MatrixMapped<T extends Number> implements Matrix<T> {
 	}
 
 	@Override
-	public int dimension(int index) {
+	public int dimension(final int index) {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public T getByIndex(int index) {
+	public T getByIndex(final int index) {
 		final int length = mapper.dimension(1);
 		int[] dims = new int[length];
 		for (int i = 0; i < length; i++) {
-			dims[i] = mapper.get(new int[] {index, i});
+			dims[i] = mapper.get(new int[] {index, i}); //XXX: try to remove 'new int[]'
 		}
 		return source.get(dims);
 	}
 
 	@Override
-	public void setByIndex(T value, int index) {
+	public void setByIndex(final T value, final int index) {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public T get(int... dims) {
+	public T get(final int... dims) {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public void set(T value, int... dims) {
+	public void set(final T value, final int... dims) {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public void fill(T value) {
+	public void fill(final T value) {
 		throw new IllegalArgumentException();
 	}
 
@@ -97,12 +102,12 @@ public class MatrixMapped<T extends Number> implements Matrix<T> {
 	}
 
 	@Override
-	public MatrixProxy<T> sub(int... dims) {
+	public MatrixProxy<T> sub(final int... dims) {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public void debug(String comment) {
+	public void debug(final String comment) {
 		throw new IllegalArgumentException();
 	}
 }

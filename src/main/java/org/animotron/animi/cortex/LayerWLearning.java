@@ -22,6 +22,7 @@ package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
 import org.animotron.animi.acts.*;
+import org.animotron.matrix.MatrixDelay;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -81,8 +82,8 @@ public class LayerWLearning extends LayerSimple {
 		super();
     }
 
-	LayerWLearning(String name, MultiCortex mc, int width, int height, int depth, int delay, Mapping[] in_zones, Class<? extends Task> learning) {
-		super(name, mc, width, height, depth, delay);
+	LayerWLearning(String name, MultiCortex mc, int width, int height, int depth, Mapping[] in_zones, Class<? extends Task> learning) {
+		super(name, mc, width, height, depth, MatrixDelay.oneStepAttenuation);
 		
 		this.in_zones = in_zones;
 	
@@ -279,7 +280,7 @@ public class LayerWLearning extends LayerSimple {
     		return;
     	}
 
-    	super.process();
+		neurons.step();
     	
 //    	if (cnLearning instanceof LearningSOM) {
 //    		in_zones[0].frZone().debugAxons("cnActivation");
@@ -308,6 +309,8 @@ public class LayerWLearning extends LayerSimple {
     	
     		count++;
     	}
+
+		axons.step(neurons);
     }
     
     private void performTask(Task task) {
