@@ -42,8 +42,10 @@ public class LearningHebbianAnti {
 		float sumQ2 = 0.0f;
 		for (int index = 0; index < negW.length(); index++) {
 			
-			if (posW.getByIndex(index) > 0f)
+			if (posW.getByIndex(index) > 0f) {
+				negW.setByIndex(0f, index);
 				continue;
+			}
 
 			final float inActivity = avg - in.getByIndex(index);
     		

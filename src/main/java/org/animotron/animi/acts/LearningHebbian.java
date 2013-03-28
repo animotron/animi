@@ -36,7 +36,7 @@ public class LearningHebbian extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.1f;
+	public float ny = 0.01f;
 	
 	private float factor;
 	
@@ -58,8 +58,10 @@ public class LearningHebbian extends Task {
 		float sumQ2 = 0.0f;
 		for (int index = 0; index < posW.length(); index++) {
     		
-			if (negW != null && negW.getByIndex(index) > 0f)
+			if (negW != null && negW.getByIndex(index) > 0f) {
+	    		posW.setByIndex(0f, index);
 				continue;
+			}
 
 			final float X = in.getByIndex(index) - avg;
 			
@@ -106,7 +108,7 @@ public class LearningHebbian extends Task {
 				sum += neurons.getByIndex(index);
 			}
 			
-			avg = (sum / (float)neurons.length());
+			avg = sum / (float)neurons.length();
 		}
 	}
 

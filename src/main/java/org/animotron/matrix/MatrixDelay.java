@@ -99,6 +99,11 @@ public class MatrixDelay extends MatrixFloat {
 		return attenuation.next(stepsFromLastSet[index], data[index]);
 	}
 
+	@Override
+	public Float get(final int ... dims) {
+		return getByIndex(index(dims));
+	}
+
 	public int[] max() {
 		return super.max();
 	}
