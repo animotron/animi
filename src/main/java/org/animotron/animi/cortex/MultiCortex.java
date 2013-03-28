@@ -95,6 +95,9 @@ public class MultiCortex implements Runnable {
 					if (step > delay)
 						return 0f;
 					
+					if (value == 1f && step > 1)
+						return 0f;
+					
 					return (float) ((pow(step - delay, 2) / pow(delay, 2)) * value);
 				}
         	}

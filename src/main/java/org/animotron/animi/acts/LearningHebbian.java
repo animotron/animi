@@ -121,7 +121,7 @@ public class LearningHebbian extends Task {
 		final float act = m.toZone().neurons.get(x, y, z);
 		final float axonAct = m.toZone().axons.get(x, y, z);
 		
-		if (act <= 0 || axonAct > 0) {
+		if (act <= 0) {// || axonAct > 0) {
 			return;
 		}
 
