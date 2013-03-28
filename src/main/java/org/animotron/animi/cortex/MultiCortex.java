@@ -86,7 +86,7 @@ public class MultiCortex implements Runnable {
     public MultiCortex(Application app) {
     	this.app = app;
     	
-    	final int delay = 32;
+    	final int delay = 1;
         z_in = new LayerSimple("Зрительный нерв", this, 30, 30, 1,
     		new MatrixDelay.Attenuation() {
 
@@ -95,10 +95,15 @@ public class MultiCortex implements Runnable {
 					if (step > delay)
 						return 0f;
 					
-					if (value == 1f && step > 1)
-						return 0f;
+					if (value == 1f) {
+						if (step > 1)
+							return 0f;
+						
+						return value;
+					}
 					
-					return (float) ((pow(step - delay, 2) / pow(delay, 2)) * value);
+					return value;
+//					return (float) ((pow(step - delay, 2) / pow(delay, 2)) * value);
 				}
         	}
         );
