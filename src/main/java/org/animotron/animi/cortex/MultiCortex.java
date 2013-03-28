@@ -89,14 +89,14 @@ public class MultiCortex implements Runnable {
         z_in = new LayerSimple("Зрительный нерв", this, 30, 30, 1, 1);
         
         //1st zone
-        layer_1 = new LayerWLearning("1й", this, 5, 5, 9, 1, //120, 120, //160, 120,
+        layer_1 = new LayerWLearning("1й", this, 5, 5, 9, 2, //120, 120, //160, 120,
             new Mapping[]{
                 new MappingHebbian(z_in, 100, 1, false, false) //7x7 (50)
             },
             LearningHebbian.class
         );
         
-        layer_2 = new LayerWLearning("2й", this, 5, 5, 1, 6, //120, 120, //160, 120,
+        layer_2 = new LayerWLearning("2й", this, 5, 5, 1, 1, //120, 120, //160, 120,
             new Mapping[]{
                 new MappingHebbian(layer_1, 25, 1, true, false) //7x7 (50)
 //                new MappingSOM(layer_1, 25, 1, 25,

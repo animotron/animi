@@ -33,6 +33,7 @@ import java.util.Random;
 import org.animotron.animi.Imageable;
 import org.animotron.animi.InitParam;
 import org.animotron.animi.Utils;
+import org.animotron.animi.acts.Mth;
 import org.animotron.matrix.*;
 
 /**
@@ -118,15 +119,32 @@ public class MappingHebbian implements Mapping {
 		
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)(ns_links * frZone.depth));// / norm;
-		w = (float) (w / Math.sqrt((w * w) * ns_links * frZone.depth));
+//		w = (float) (w / Math.sqrt((w * w) * ns_links * frZone.depth));
 
 	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
 	    senapseWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
-				return getInitWeight();
+				return rnd.nextFloat();//getInitWeight();
 			}
 		});
+		float sumQ2 = 0f;
+	    for (int x = 0; x < toZone.width(); x++) {
+	    	for (int y = 0; y < toZone.height(); y++) {
+		    	for (int z = 0; z < toZone.depth(); z++) {
+		    		Matrix<Float> weights = senapseWeight.sub(x, y, z);
+		    		
+		    		sumQ2 = 0f;
+		    		for (int index = 0; index < weights.length(); index++) {
+		    			final float q = weights.getByIndex(index);
+		    			sumQ2 += q * q;
+		    		}
+		    		
+		    		Mth.normalization(weights, sumQ2);
+		    	}
+	    	}
+	    }
+	    
 	    
 	    if (haveInhibitory) {
 		    inhibitoryWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
@@ -263,7 +281,7 @@ public class MappingHebbian implements Mapping {
 	}
 
 	public Float getInitWeight() {
-		return w * (rnd.nextFloat() / 10);
+		return w;
 	}
 
 	@Override
