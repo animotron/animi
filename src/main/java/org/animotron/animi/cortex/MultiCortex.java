@@ -31,7 +31,9 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.acts.Inhibitory;
 import org.animotron.animi.acts.LearningHebbian;
+import org.animotron.animi.acts.WinnerGetsAll;
 import org.animotron.animi.gui.Application;
 import org.animotron.matrix.MatrixDelay;
 import org.xml.sax.Attributes;
@@ -69,7 +71,8 @@ public class MultiCortex implements Runnable {
     public Retina retina;
 
     public LayerSimple z_in;
-    public LayerWLearning layer_1;
+    public LayerWLearning layer_1a;
+    public LayerWLearning layer_1b;
     public LayerWLearning layer_2;
     
     @Params
@@ -104,10 +107,19 @@ public class MultiCortex implements Runnable {
         );
         
         //1st zone
-        layer_1 = new LayerWLearning("1й", this, 5, 5, 9, //120, 120, //160, 120,
+        layer_1a = new LayerWLearning("1й образы", this, 5, 5, 9, //120, 120, //160, 120,
             new Mapping[]{
                 new MappingHebbian(z_in, 100, 1, true, true) //7x7 (50)
             },
+            WinnerGetsAll.class,
+            LearningHebbian.class
+        );
+
+        layer_1b = new LayerWLearning("1й факторы", this, 5, 5, 9, //120, 120, //160, 120,
+            new Mapping[]{
+                new MappingHebbian(z_in, 100, 1, true, false) //7x7 (50)
+            },
+            Inhibitory.class,
             LearningHebbian.class
         );
         
@@ -129,7 +141,7 @@ public class MultiCortex implements Runnable {
 
 //        z_1st.addMappring(z_1st);
         
-        zones = new LayerSimple[]{z_in, layer_1};//, layer_2};
+        zones = new LayerSimple[]{z_in, layer_1a, layer_1b};//, layer_2};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);

@@ -31,7 +31,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Layer with learning.
@@ -53,8 +55,7 @@ public class LayerWLearning extends LayerSimple {
 	public Task cnLearning;
 	
 //	@Params
-    Inhibitory inhibitory = new Inhibitory(this);
-    WinnerGetsAll winnerGetsAll = new WinnerGetsAll(this);
+    public Task cnInhibitory;
     
     @InitParam(name="disper")
 	public double disper = 1.5;
@@ -82,11 +83,24 @@ public class LayerWLearning extends LayerSimple {
 		super();
     }
 
-	LayerWLearning(String name, MultiCortex mc, int width, int height, int depth, Mapping[] in_zones, Class<? extends Task> learning) {
+	LayerWLearning(
+			String name, MultiCortex mc, 
+			int width, int height, int depth, 
+			Mapping[] in_zones, 
+			Class<? extends Task> inhibitory,
+			Class<? extends Task> learning) {
+		
 		super(name, mc, width, height, depth, MatrixDelay.oneStepAttenuation);
 		
 		this.in_zones = in_zones;
 	
+		try {
+			Constructor<? extends Task> constructor = inhibitory.getConstructor(this.getClass());
+			cnInhibitory = constructor.newInstance(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		try {
 			Constructor<? extends Task> constructor = learning.getConstructor(this.getClass());
 			cnLearning = constructor.newInstance(this);
@@ -293,8 +307,8 @@ public class LayerWLearning extends LayerSimple {
 //    		debugNeurons("before inhibitory");
 //		}
 
-//		performTask(inhibitory);
-		performTask(winnerGetsAll);
+		performTask(cnInhibitory);
+//		performTask(winnerGetsAll);
 
 //    	if (cnLearning instanceof LearningSOM) {
 //    		debugNeurons("after inhibitory");
@@ -311,6 +325,22 @@ public class LayerWLearning extends LayerSimple {
     	}
 
 		axons.step(neurons);
+		
+		//debuging
+		List<Float> list = new ArrayList<Float>();
+		for (int index = 0; index < axons.length(); index++) {
+			final float act = axons.getByIndex(index);
+			if (act > 0f) {
+				list.add(act);
+			}
+		}
+		float[] l = new float[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			l[i] = list.get(i);
+		}
+		Arrays.sort(l);
+		System.out.println("");
+		System.out.println(Arrays.toString(l));
     }
     
     private void performTask(Task task) {

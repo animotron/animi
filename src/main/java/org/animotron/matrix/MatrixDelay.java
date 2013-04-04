@@ -116,9 +116,11 @@ public class MatrixDelay extends MatrixFloat {
 		return new MatrixProxy<Float>(this, dims);
 	}
 
-	public void debug(String comment) {
-		throw new IllegalArgumentException();
-	}
+//	public void debug(String comment) {
+//		System.out.println(comment);
+//		
+//		debug(new Floats(data), false);
+//	}
 	
 	public void step(MatrixFloat matrix) {
 		for (int index = 0; index < length(); index++) {

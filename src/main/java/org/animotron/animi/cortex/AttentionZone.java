@@ -29,7 +29,7 @@ import java.util.Random;
 public class AttentionZone extends LayerWLearning {
 	
 	public AttentionZone(String name, MultiCortex mc, int width, int height, MappingHebbian[] in_zones) {
-		super(name, mc, width, height, 1, in_zones, null);
+		super(name, mc, width, height, 1, in_zones, null, null);
 	}
 	
 	Random rnd = new Random();
