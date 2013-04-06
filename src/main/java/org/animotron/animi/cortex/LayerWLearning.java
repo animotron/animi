@@ -327,20 +327,20 @@ public class LayerWLearning extends LayerSimple {
 		axons.step(neurons);
 		
 		//debuging
-		List<Float> list = new ArrayList<Float>();
-		for (int index = 0; index < axons.length(); index++) {
-			final float act = axons.getByIndex(index);
-			if (act > 0f) {
-				list.add(act);
-			}
-		}
-		float[] l = new float[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			l[i] = list.get(i);
-		}
-		Arrays.sort(l);
-		System.out.println("");
-		System.out.println(Arrays.toString(l));
+//		List<Float> list = new ArrayList<Float>();
+//		for (int index = 0; index < axons.length(); index++) {
+//			final float act = axons.getByIndex(index);
+//			if (act > 0f) {
+//				list.add(act);
+//			}
+//		}
+//		float[] l = new float[list.size()];
+//		for (int i = 0; i < list.size(); i++) {
+//			l[i] = list.get(i);
+//		}
+//		Arrays.sort(l);
+//		System.out.println("");
+//		System.out.println(Arrays.toString(l));
     }
     
     private void performTask(Task task) {

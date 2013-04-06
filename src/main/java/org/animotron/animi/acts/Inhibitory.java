@@ -22,6 +22,7 @@ package org.animotron.animi.acts;
 
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
+import org.animotron.matrix.Matrix;
 
 /**
  * Активация простых нейронов при узнавании запомненной картины
@@ -42,13 +43,13 @@ public class Inhibitory extends Task {
 		super(cz);
 	}
 
-	private float maxDelta = 0;
-	private float preDelta = 0;
-//	private MatrixFloat cols = null;
+	private float maxDelta = 0f;
+	private Matrix<Float> cols = null;
 	
 	@Override
 	public void prepare() {
-//		cols = new MatrixFloat(cz.neurons);
+		cols = cz.neurons.copy();
+		maxDelta = 0f;
 	}
 
 	@Override
@@ -61,7 +62,7 @@ public class Inhibitory extends Task {
 					for (int zi = 0; zi < cz.depth; zi++) {
 					
 						if (xi != x && yi != y && zi != z) {
-							delta += cz.inhibitory_w * cz.neurons.get(xi, yi, zi);
+							delta += cz.inhibitory_w * cols.get(xi, yi, zi);
 						}
 					}
 				}
@@ -73,15 +74,16 @@ public class Inhibitory extends Task {
 				final int zi = cz.inhibitoryLinksSenapse(x, y, l, 2);
 				
 				if (xi != x && yi != y && zi != z) {
-					delta += cz.inhibitory_w * cz.neurons.get(xi, yi, zi);
+					delta += cz.inhibitory_w * cols.get(xi, yi, zi);
 				}
 			}
 		}
 		
 		float activity = cz.neurons.get(x, y, z);
 		activity -= delta * k;
-		if (activity < 0) {
-			activity = 0;
+		if (activity < 0f) {
+			activity = 0f;
+			delta = 0f;
 		}
 		
 		cz.neurons.set(activity, x, y, z);
@@ -93,17 +95,11 @@ public class Inhibitory extends Task {
 	
 	@Override
 	public boolean isDone() {
-		if (preDelta == 0) {
-			preDelta = maxDelta + 1;
-		}
-		if (preDelta <= maxDelta) {
-//			System.out.println("maxDelta increased or equal");
-			return true;
-		} else {
-			preDelta = maxDelta;
-		}
 		boolean isDone = maxDelta < minDelta;
-		maxDelta = 0f;
+		if (!isDone) {
+			maxDelta = 0f;
+			cols = cz.neurons.copy();
+		}
 		
 		return isDone;
 	}

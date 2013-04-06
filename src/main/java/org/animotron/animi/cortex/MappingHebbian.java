@@ -416,21 +416,61 @@ public class MappingHebbian implements Mapping {
 				} else
 					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
 			}
+
+			boolean showMax = frZone instanceof LayerWLearning;
+			Mapping m = null;
+			if (showMax) {
+				m = ((LayerWLearning)frZone).in_zones[0];
+			}
+			
+			float max = 0;
+			int pos = 0;
 			
 			for (int x = 0; x < toZone().width(); x++) {
 				for (int y = 0; y < toZone().height(); y++) {
-					g.setColor(Color.DARK_GRAY);
-					g.draw3DRect(x*boxSize, y*boxSize, boxSize, boxSize, true);
-					
-					Utils.drawRF(
-		        		image, g,
-		        		boxSize,
-		        		boxMini,
-		        		x*boxSize, y*boxSize,
-		        		x, y,
-		        		Xl, Yl,
-		        		MappingHebbian.this
-		    		);
+					if (showMax) {
+						final MatrixProxy<Float> ws = senapseWeight.sub(x, y);
+						
+						max = 0; pos = -1;
+						for (int index = 0; index < ws.length(); index++) {
+							if (max < ws.getByIndex(index)) {
+								max = ws.getByIndex(index);
+								pos = index;
+							}
+						}
+						if (pos == -1)
+							continue;
+						
+						final MatrixProxy<Integer[]> sf = senapses.sub(x,y);
+						
+						Integer[] xyz = sf.getByIndex(pos);
+						
+						final int xi = xyz[0];
+						final int yi = xyz[1];
+						final int zi = xyz[2];
+						
+						final int offsetX = boxSize * x;
+						final int offsetY = boxSize * y;
+						
+						Utils.drawRF(true , image, boxMini, 
+								offsetX, offsetY,
+								xi, yi, zi, m);
+						
+						Utils.drawNA(image, MappingHebbian.this, 0, offsetX, offsetY, x, y, 0, 0, 0);
+					} else {
+						g.setColor(Color.DARK_GRAY);
+						g.draw3DRect(x*boxSize, y*boxSize, boxSize, boxSize, true);
+						
+						Utils.drawRF(
+			        		image, g,
+			        		boxSize,
+			        		boxMini,
+			        		x*boxSize, y*boxSize,
+			        		x, y,
+			        		Xl, Yl,
+			        		MappingHebbian.this
+			    		);
+					}
 				}
 			}
 
@@ -460,7 +500,7 @@ public class MappingHebbian implements Mapping {
 					watching.add(pos);
 					
 					try {
-						if (frZone instanceof LayerWLearning && !((LayerWLearning)frZone).in_zones[0].isDirectLearning()) {
+						if (frZone instanceof LayerWLearning) {// && !((LayerWLearning)frZone).in_zones[0].isDirectLearning()) {
 							return new ShowByOne(pos.x, pos.y);
 						}
 					} catch (Exception e) {

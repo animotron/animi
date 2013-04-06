@@ -39,7 +39,7 @@ public class LearningSOM extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.001f;
+	public float ny = 0.01f;
 	
 	private float factor;
 	

@@ -33,6 +33,7 @@ import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.acts.Inhibitory;
 import org.animotron.animi.acts.LearningHebbian;
+import org.animotron.animi.acts.LearningSOM;
 import org.animotron.animi.acts.WinnerGetsAll;
 import org.animotron.animi.gui.Application;
 import org.animotron.matrix.MatrixDelay;
@@ -73,7 +74,8 @@ public class MultiCortex implements Runnable {
     public LayerSimple z_in;
     public LayerWLearning layer_1a;
     public LayerWLearning layer_1b;
-    public LayerWLearning layer_2;
+    public LayerWLearning layer_2a_on_1b;
+    public LayerWLearning layer_2b_on_1b;
     
     @Params
     public LayerSimple [] zones;
@@ -123,25 +125,33 @@ public class MultiCortex implements Runnable {
             LearningHebbian.class
         );
         
-//        layer_2 = new LayerWLearning("2й", this, 5, 5, 1, //120, 120, //160, 120,
-//            new Mapping[]{
-//                new MappingHebbian(layer_1, 25, 1, true, false) //7x7 (50)
-////                new MappingSOM(layer_1, 25, 1, 25,
-////            		new Value() {
-////	    				@Override
-////	    				public float value(int x1, int y1, int x2, int y2, double sigma) {
-////	    	            	return 1 / (float)25;
-////	    				}
-////	            	}
-////            	)
-//            },
-//            LearningHebbian.class
-////            LearningSOM.class
-//        );
+        layer_2a_on_1b = new LayerWLearning("2й SOM", this, 5, 5, 1,
+            new Mapping[]{
+//                new MappingHebbian(layer_1b, 25, 1, true, false) //7x7 (50)
+                new MappingSOM(layer_1b, 25, 1, 25,
+            		new MappingSOM.Value() {
+	    				@Override
+	    				public float value(int x1, int y1, int x2, int y2, double sigma) {
+	    	            	return 1 / (float)25;
+	    				}
+	            	}
+            	)
+            },
+            WinnerGetsAll.class,
+            LearningSOM.class
+        );
+
+        layer_2b_on_1b = new LayerWLearning("2й факторы", this, 5, 5, 1,
+            new Mapping[]{
+                new MappingHebbian(layer_1b, 25, 1, true, false) //7x7 (50)
+            },
+            WinnerGetsAll.class, //Inhibitory.class,
+            LearningHebbian.class
+        );
 
 //        z_1st.addMappring(z_1st);
         
-        zones = new LayerSimple[]{z_in, layer_1a, layer_1b};//, layer_2};
+        zones = new LayerSimple[]{z_in, layer_1a, layer_1b, layer_2a_on_1b, layer_2b_on_1b};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);

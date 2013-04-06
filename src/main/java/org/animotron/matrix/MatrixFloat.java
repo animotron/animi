@@ -212,7 +212,7 @@ public class MatrixFloat implements Matrix<Float> {
 	 * @see org.animotron.animi.cortex.Matrix#copy()
 	 */
 	@Override
-	public MatrixFloat copy() {
+	public Matrix<Float> copy() {
 		return new MatrixFloat(this);
 	}
 
