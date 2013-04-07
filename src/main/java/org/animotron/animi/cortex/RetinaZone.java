@@ -24,7 +24,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
 import org.animotron.matrix.Matrix;
-import org.animotron.matrix.MatrixDelay;
 import org.animotron.matrix.MatrixFloat;
 
 /**

@@ -110,6 +110,7 @@ public class LearningHebbian extends Task {
 			
 			avg = sum / (float)neurons.length();
 		}
+//		System.out.println("Learning");
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {
@@ -121,11 +122,13 @@ public class LearningHebbian extends Task {
 		}
 		
 		final float act = m.toZone().neurons.get(x, y, z);
-		final float axonAct = m.toZone().axons.get(x, y, z);
+//		final float axonAct = m.toZone().axons.get(x, y, z);
 		
-		if (act <= 0 || axonAct > 0) {
+		if (act <= 0) {// || axonAct > 0) {
 			return;
 		}
+		
+//		System.out.println("["+x+","+y+","+z+"] "+act);
 
 		Matrix<Float> in = new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z));
 		Matrix<Float> posW = m.senapseWeight().sub(x, y, z);

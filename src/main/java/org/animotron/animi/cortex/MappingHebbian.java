@@ -90,7 +90,7 @@ public class MappingHebbian implements Mapping {
 			senapses.set(new Integer[] {Sx, Sy, Sz}, x, y, z, l);
 			_senapses.set(Sx, x, y, z, l, 0);
 			_senapses.set(Sy, x, y, z, l, 1);
-			_senapses.set(Sz, x, y, z, l, 3);
+			_senapses.set(Sz, x, y, z, l, 2);
 		}
 	}
 
@@ -132,7 +132,7 @@ public class MappingHebbian implements Mapping {
 	    for (int x = 0; x < toZone.width(); x++) {
 	    	for (int y = 0; y < toZone.height(); y++) {
 		    	for (int z = 0; z < toZone.depth(); z++) {
-		    		Matrix<Float> weights = senapseWeight.sub(x, y, z);
+		    		final Matrix<Float> weights = senapseWeight.sub(x, y, z);
 		    		
 		    		sumQ2 = 0f;
 		    		for (int index = 0; index < weights.length(); index++) {

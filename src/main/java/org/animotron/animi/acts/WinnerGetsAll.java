@@ -51,7 +51,7 @@ public class WinnerGetsAll extends Task {
     	int[] maxPos;
     	float max = 0;
 
-        final int linksNumber = cz.inhibitoryLinksSenapse.length;
+        final int linksNumber = cz.inhibitory_number_of_links;
     	
     	while (true) {
 	    	maxPos = cols.max();
@@ -72,10 +72,19 @@ public class WinnerGetsAll extends Task {
 	        }
 	        
     		for (int l = 0; l < linksNumber; l++) {
-    	    	final int xi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 0);
-    	    	final int yi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 1);
-    	        
-    	    	cols.set(0f, xi, yi);
+    			try {
+	    	    	final int xi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 0);
+	    	    	final int yi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 1);
+	    	        
+	    	    	for (int zi = 0; zi < cz.depth; zi++) {
+	    	    		cols.set(0f, xi, yi, zi);
+	    	    	}
+    			} catch (Exception e) {
+    				e.printStackTrace();
+
+    				final int xi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 0);
+	    	    	final int yi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 1);
+    			}
     		}
     		cols.set(0f, maxPos);
     	}

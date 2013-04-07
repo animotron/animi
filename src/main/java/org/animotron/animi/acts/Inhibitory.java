@@ -71,15 +71,17 @@ public class Inhibitory extends Task {
 			for (int l = 0; l < cz.inhibitory_number_of_links; l++) {
 				final int xi = cz.inhibitoryLinksSenapse(x, y, l, 0);
 				final int yi = cz.inhibitoryLinksSenapse(x, y, l, 1);
-				final int zi = cz.inhibitoryLinksSenapse(x, y, l, 2);
+				//final int zi = cz.inhibitoryLinksSenapse(x, y, l, 2);
 				
-				if (xi != x && yi != y && zi != z) {
-					delta += cz.inhibitory_w * cols.get(xi, yi, zi);
+				for (int zi = 0; zi < cz.depth; zi++) {
+					if (xi != x && yi != y && zi != z) {
+						delta += cz.inhibitory_w * cols.get(xi, yi, zi);
+					}
 				}
 			}
 		}
 		
-		float activity = cz.neurons.get(x, y, z);
+		float activity = cols.get(x, y, z);
 		activity -= delta * k;
 		if (activity < 0f) {
 			activity = 0f;

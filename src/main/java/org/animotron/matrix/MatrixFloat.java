@@ -58,6 +58,7 @@ public class MatrixFloat implements Matrix<Float> {
 		System.arraycopy(source.data, 0, data, 0, source.data.length);
 
 		isSet = new BitSet(source.data.length);
+		isSet.or(source.isSet);
 	}
 
 	/* (non-Javadoc)
