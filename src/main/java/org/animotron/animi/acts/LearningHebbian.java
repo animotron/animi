@@ -121,7 +121,24 @@ public class LearningHebbian extends Task {
 			return;
 		}
 		
-		final float act = m.toZone().neurons.get(x, y, z);
+		final Layer layer = m.toZone();
+		
+		float nAct = 0;
+		for (int dx = -1; dx <= 1; dx += 2) {
+			for (int dy = -1; dy <= 1; dy += 2) {
+				for (int dz = -1; dz <= 1; dz += 2) {
+					final int fx = x + dx;
+					final int fy = y + dy;
+					final int fz = z + dz;
+					
+					if (fx >= 0 && fx < layer.width() && fy >= 0 && fy < layer.height() && fz >= 0 && fz < layer.depth()) {
+						nAct += m.toZone().neurons.get(fx, fy, fz);
+					}
+				}
+			}
+		}
+
+		final float act = m.toZone().neurons.get(x, y, z) + (nAct * 0.9f);
 //		final float axonAct = m.toZone().axons.get(x, y, z);
 		
 		if (act <= 0) {// || axonAct > 0) {
