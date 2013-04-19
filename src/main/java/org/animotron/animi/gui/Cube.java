@@ -135,8 +135,8 @@ public class Cube extends JInternalFrame implements GLEventListener, MouseListen
 
 		gl.glPushMatrix();
 
-		gl.glRotatef(30.0f, 1.0f, 0.0f, 0.0f);
-		gl.glRotatef(35.0f, 0.0f, 1.0f, 0.0f);
+//		gl.glRotatef(30.0f, 1.0f, 0.0f, 0.0f);
+//		gl.glRotatef(35.0f, 0.0f, 1.0f, 0.0f);
 
 		gl.glColor3f(0xff, 0xff, 0xff);
 

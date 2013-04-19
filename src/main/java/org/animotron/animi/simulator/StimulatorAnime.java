@@ -31,6 +31,7 @@ import org.animotron.animi.cortex.Retina;
 import org.animotron.animi.gui.Application;
 import org.animotron.animi.simulator.figures.Figure;
 import org.animotron.animi.simulator.figures.RectAnime;
+import org.animotron.animi.simulator.figures.RotateAnime;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -59,7 +60,7 @@ public class StimulatorAnime extends AbstractStimulator {
         		height,
         		BufferedImage.TYPE_INT_RGB);
 		
-        figures = new Figure[4];
+        figures = new Figure[1];
         
         int f = 0;
 
@@ -69,90 +70,92 @@ public class StimulatorAnime extends AbstractStimulator {
         int j = 0;
         int[][] steps = new int[step][];
 
-        for (int k = 0; k < 2; k++) {
-	        for (int i = 0; i < step/4; i++) {
-	        	steps[j++] = new int[] {-retina.worldStep(), 0};
-	        }
-	        for (int i = 0; i < step/4; i++) {
-	        	steps[j++] = new int[] {+retina.worldStep(), 0};
-	        }
-        }
-        
-        Point first  = new Point((int)(width * 0 - offset), (int)(height * 0 - offset * 2));
-        Point second = new Point((int)(width * 1 + offset), (int)(height * 1 + offset * 0));
-        Point third  = new Point(second.x + width * 2, second.y);
-        Point fourth = new Point(first.x, first.y + height * 2);
-        		
-    	figures[f++] = new RectAnime(
-	        new Point2D[] {first, second, third, fourth, first},
-    	    true,
-    	    steps,
-			true
-    	);
+//        for (int k = 0; k < 2; k++) {
+//	        for (int i = 0; i < step/4; i++) {
+//	        	steps[j++] = new int[] {-retina.worldStep(), 0};
+//	        }
+//	        for (int i = 0; i < step/4; i++) {
+//	        	steps[j++] = new int[] {+retina.worldStep(), 0};
+//	        }
+//        }
+//        
+//        Point first  = new Point((int)(width * 0 - offset), (int)(height * 0 - offset * 2));
+//        Point second = new Point((int)(width * 1 + offset), (int)(height * 1 + offset * 0));
+//        Point third  = new Point(second.x + width * 2, second.y);
+//        Point fourth = new Point(first.x, first.y + height * 2);
+//        		
+//    	figures[f++] = new RectAnime(
+//	        new Point2D[] {first, second, third, fourth, first},
+//    	    true,
+//    	    steps,
+//			true
+//    	);
 
-    	j = 0;
-        steps = new int[step][];
+//    	j = 0;
+//        steps = new int[step][];
+//
+//        for (int k = 0; k < 2; k++) {
+//	        for (int i = 0; i < step/4; i++) {
+//	        	steps[j++] = new int[] {-retina.worldStep(), 0};
+//	        }
+//	        for (int i = 0; i < step/4; i++) {
+//	        	steps[j++] = new int[] {+retina.worldStep(), 0};
+//	        }
+//        }
+//        
+//        first  = new Point((int)(width * 0 - offset), (int)(height * 1 + offset * 2));
+//        second = new Point((int)(width * 1 + offset), (int)(height * 0 - offset * 0));
+//        third  = new Point(second.x + width * 2, second.y);
+//        fourth = new Point(first.x, first.y + height * 2);
+//        		
+//    	figures[f++] = new RectAnime(
+//	        new Point2D[] {first, second, third, fourth, first},
+//    	    true,
+//    	    steps,
+//			true
+//    	);
+//
+//    	j = 0;
+//    	steps = new int[step][];
+//
+//        for (int k = 0; k < 2; k++) {
+//	        for (int i = 0; i < step/4; i++) {
+//	        	steps[j++] = new int[] {-retina.worldStep(), 0};
+//	        }
+//	        for (int i = 0; i < step/4; i++) {
+//	        	steps[j++] = new int[] {+retina.worldStep(), 0};
+//	        }
+//        }
+//
+//    	figures[f++] = new RectAnime(
+//			(int)(img.getWidth() * 0.5) + retina.worldStep() * step / 8, (int)(img.getHeight() * -0.2),
+//			(int)(img.getWidth() * 2), (int)(img.getHeight() *  2),
+//    	    true,
+//    	    null,//steps,
+//			true
+//    	);
+//
+//    	j = 0;
+//        steps = new int[step][];
+//        
+//    	for (int k = 0; k < 2; k++) {
+//	    	for (int i = 0; i < step/4; i++) {
+//	        	steps[j++] = new int[] {0, -retina.worldStep()};
+//	        }
+//	        for (int i = 0; i < step/4; i++) {
+//	        	steps[j++] = new int[] {0, +retina.worldStep()};
+//	        }
+//    	}
+//
+//        figures[f++] = new RectAnime(
+//    			(int)(img.getWidth() * -0.5), (int)(img.getHeight() * 0.5) + retina.worldStep() * step / 8,
+//    			(int)(img.getWidth() *  2), (int)(img.getHeight() * 2),
+//	    	    true,
+//	    	    steps,
+//    			true
+//	    	);
 
-        for (int k = 0; k < 2; k++) {
-	        for (int i = 0; i < step/4; i++) {
-	        	steps[j++] = new int[] {-retina.worldStep(), 0};
-	        }
-	        for (int i = 0; i < step/4; i++) {
-	        	steps[j++] = new int[] {+retina.worldStep(), 0};
-	        }
-        }
-        
-        first  = new Point((int)(width * 0 - offset), (int)(height * 1 + offset * 2));
-        second = new Point((int)(width * 1 + offset), (int)(height * 0 - offset * 0));
-        third  = new Point(second.x + width * 2, second.y);
-        fourth = new Point(first.x, first.y + height * 2);
-        		
-    	figures[f++] = new RectAnime(
-	        new Point2D[] {first, second, third, fourth, first},
-    	    true,
-    	    steps,
-			true
-    	);
-
-    	j = 0;
-    	steps = new int[step][];
-
-        for (int k = 0; k < 2; k++) {
-	        for (int i = 0; i < step/4; i++) {
-	        	steps[j++] = new int[] {-retina.worldStep(), 0};
-	        }
-	        for (int i = 0; i < step/4; i++) {
-	        	steps[j++] = new int[] {+retina.worldStep(), 0};
-	        }
-        }
-
-    	figures[f++] = new RectAnime(
-    			(int)(img.getWidth() * 0.5) + retina.worldStep() * step / 8, (int)(img.getHeight() * -0.2),
-    			(int)(img.getWidth() * 2), (int)(img.getHeight() *  2),
-	    	    true,
-	    	    steps,
-    			true
-	    	);
-
-      j = 0;
-        steps = new int[step][];
-        
-    	for (int k = 0; k < 2; k++) {
-	    	for (int i = 0; i < step/4; i++) {
-	        	steps[j++] = new int[] {0, -retina.worldStep()};
-	        }
-	        for (int i = 0; i < step/4; i++) {
-	        	steps[j++] = new int[] {0, +retina.worldStep()};
-	        }
-    	}
-
-        figures[f++] = new RectAnime(
-    			(int)(img.getWidth() * -0.5), (int)(img.getHeight() * 0.5) + retina.worldStep() * step / 8,
-    			(int)(img.getWidth() *  2), (int)(img.getHeight() * 2),
-	    	    true,
-	    	    steps,
-    			true
-	    	);
+        figures[f++] = new RotateAnime(img.getWidth(), img.getHeight(), true);
 	}
 	
 	int step = 0;
