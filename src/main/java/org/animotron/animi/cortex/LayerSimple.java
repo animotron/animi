@@ -224,4 +224,9 @@ public class LayerSimple implements Layer {
 	public void debugAxons(String comment) {
 		debug(comment, axons);
 	}
+
+	@Override
+	public Matrix<Float> axons() {
+		return axons;
+	}
 }

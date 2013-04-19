@@ -155,31 +155,30 @@ public class StimulatorAnime extends AbstractStimulator {
 	    	);
 	}
 	
-//	int delay = -1;
+	int step = 0;
 	Figure active = null;
+	
+	public boolean isReset() {
+		return step == 0;
+	}
 
 	public void step() {
 		
 		if (active == null || active.step()) {
 			
-//			delay = 18;
-			
 			do {
 				active = figures[rnd.nextInt(figures.length)];
 				//XXX: protection?
 			} while (!active.isActive());
+			
+			step = -1;
 		}
+		step++;
 
         Graphics g = img.getGraphics();
         g.clearRect(0, 0, img.getWidth(), img.getHeight());
         
-//        if (delay > 0) {
-//        	delay--;
-//        
-//        } else {
-    		active.drawImage(g);
-//
-//        }
+		active.drawImage(g);
 	}
 
 	public BufferedImage getNextImage() {

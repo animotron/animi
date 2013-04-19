@@ -77,4 +77,10 @@ public class StimulatorStatic extends AbstractStimulator {
         }
         return img;
 	}
+
+	@Override
+	public boolean isReset() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

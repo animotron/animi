@@ -104,4 +104,10 @@ public class StimulatorImage extends AbstractStimulator {
 	private Image loadImage(File file) throws IOException {
 		return ImageIO.read(file);
 	}
+
+	@Override
+	public boolean isReset() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

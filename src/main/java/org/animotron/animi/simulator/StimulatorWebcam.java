@@ -72,4 +72,10 @@ public class StimulatorWebcam extends AbstractStimulator implements WebcamListen
 		
 		return img;
 	}
+
+	@Override
+	public boolean isReset() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

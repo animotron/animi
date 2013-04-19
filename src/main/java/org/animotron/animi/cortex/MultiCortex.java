@@ -34,9 +34,11 @@ import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.acts.Inhibitory;
 import org.animotron.animi.acts.LearningHebbian;
 import org.animotron.animi.acts.LearningSOM;
+import org.animotron.animi.acts.LearningTest;
 import org.animotron.animi.acts.WinnerGetsAll;
 import org.animotron.animi.gui.Application;
 import org.animotron.matrix.MatrixDelay;
+import org.animotron.matrix.MatrixDelay.Attenuation;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -44,9 +46,8 @@ import org.xml.sax.helpers.DefaultHandler;
 import static java.lang.Math.*;
 
 /**
- * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
- * @author <a href="mailto:gazdovsky@gmail.com">Evgeny Gazdovsky</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  */
 public class MultiCortex implements Runnable {
 
@@ -71,12 +72,6 @@ public class MultiCortex implements Runnable {
     
     public Retina retina;
 
-    public LayerSimple z_in;
-    public LayerWLearning layer_1a;
-    public LayerWLearning layer_1b;
-    public LayerWLearning layer_2a_on_1b;
-    public LayerWLearning layer_2b_on_1b;
-    
     @Params
     public LayerSimple [] zones;
 
@@ -91,38 +86,51 @@ public class MultiCortex implements Runnable {
     public MultiCortex(Application app) {
     	this.app = app;
     	
-    	final int delay = 8;
-        z_in = new LayerSimple("Зрительный нерв", this, 30, 30, 1,
-    		new MatrixDelay.Attenuation() {
-
-				@Override
-				public float next(int step, float value) {
-					if (step > delay)
-						return 0f;
-					
-					if (value == 1f && step > 1)
-						return 0f;
-					
-					return (float) ((pow(step - delay, 2) / pow(delay, 2)) * value);
-				}
-        	}
+//    	final int delay = 8;
+    	LayerSimple z_in = new LayerSimple("Зрительный нерв", this, 30, 30, 1,
+			MatrixDelay.oneStepAttenuation
+//    		new MatrixDelay.Attenuation() {
+//
+//				@Override
+//				public float next(int step, float value) {
+//					if (step > delay)
+//						return 0f;
+//					
+//					if (value == 1f && step > 1)
+//						return 0f;
+//					
+//					return (float) ((pow(step - delay, 2) / pow(delay, 2)) * value);
+//				}
+//        	}
         );
         
         //1st zone
-//        layer_1a = new LayerWLearning("1й образы", this, 5, 5, 9, //120, 120, //160, 120,
+//    	LayerWLearning layer_1a = new LayerWLearning("1й образы", this, 5, 5, 4, //120, 120, //160, 120,
 //            new Mapping[]{
 //                new MappingHebbian(z_in, 100, 1, true, true) //7x7 (50)
 //            },
 //            WinnerGetsAll.class,
-//            LearningHebbian.class
+//            LearningHebbian.class,
+//            new Attenuation() {
+//	    		@Override
+//	    		public float next(int step, float value) {
+//	    			return step <= 5 ? value : 0f;
+//	    		}
+//	    	}
 //        );
 
-        layer_1b = new LayerWLearning("1й факторы", this, 5, 5, 9, //120, 120, //160, 120,
+    	LayerWLearning layer_1b = new LayerWLearning("1й факторы", this, 5, 5, 9, //120, 120, //160, 120,
             new Mapping[]{
                 new MappingHebbian(z_in, 100, 1, true, false) //7x7 (50)
             },
             WinnerGetsAll.class, //Inhibitory.class,
-            LearningHebbian.class
+            LearningHebbian.class,
+			new Attenuation() {
+				@Override
+				public float next(int step, float value) {
+					return step <= 10 ? value : 0f;
+				}
+			}
         );
         
 //        layer_2a_on_1b = new LayerWLearning("2й SOM", this, 5, 5, 1,
@@ -141,21 +149,23 @@ public class MultiCortex implements Runnable {
 //            LearningSOM.class
 //        );
 
-        layer_2b_on_1b = new LayerWLearning("2й факторы", this, 5, 5, 1,
-            new Mapping[]{
-                new MappingHebbian(layer_1b, 25, 1, true, false) //7x7 (50)
-            },
-            WinnerGetsAll.class, //Inhibitory.class,
-            LearningHebbian.class
-        );
+//    	LayerWLearning layer_2a_on_1a = new LayerWLearning("2й тестовый", this, 5, 5, 1,
+//            new Mapping[]{
+//                new MappingHebbian(layer_1b, 25, 1, true, false) //7x7 (50)
+//            },
+//            WinnerGetsAll.class,
+//            LearningTest.class,
+//        	MatrixDelay.oneStepAttenuation
+//        );
 
 //        z_1st.addMappring(z_1st);
         
 //        zones = new LayerSimple[]{z_in, layer_1a, layer_1b, layer_2a_on_1b, layer_2b_on_1b};
-        zones = new LayerSimple[]{z_in, layer_1b, layer_2b_on_1b};
+        zones = new LayerSimple[]{z_in, layer_1b}; //, layer_2a_on_1a};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);
+        retina.setResetLayer(layer_1b);
     }
     
     public void init() {

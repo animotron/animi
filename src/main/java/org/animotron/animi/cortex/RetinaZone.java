@@ -62,7 +62,7 @@ public class RetinaZone extends Task {
 		
 		this.retina = retina;
 		
-    	matrix = new OnOffMatrix(null);
+    	matrix = new OnOffMatrix();
 	}
 	
 	public void setInput(final BufferedImage image) {

@@ -36,7 +36,7 @@ public class LearningHebbian extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.01f;
+	public float ny = 0.001f;
 	
 	private float factor;
 	
@@ -115,33 +115,15 @@ public class LearningHebbian extends Task {
 
 	public void gpuMethod(final int x, final int y, final int z) {
 		
-		Mapping m = cz.in_zones[0];
+		final Mapping m = cz.in_zones[0];
 		
 		if (!m.isDirectLearning()) {
 			return;
 		}
 		
-		final Layer layer = m.toZone();
+		final float act = m.toZone().neurons.get(x, y, z);
 		
-		float nAct = 0;
-		for (int dx = -1; dx <= 1; dx += 2) {
-			for (int dy = -1; dy <= 1; dy += 2) {
-				for (int dz = -1; dz <= 1; dz += 2) {
-					final int fx = x + dx;
-					final int fy = y + dy;
-					final int fz = z + dz;
-					
-					if (fx >= 0 && fx < layer.width() && fy >= 0 && fy < layer.height() && fz >= 0 && fz < layer.depth()) {
-						nAct += m.toZone().neurons.get(fx, fy, fz);
-					}
-				}
-			}
-		}
-
-		final float act = m.toZone().neurons.get(x, y, z) + (nAct * 0.9f);
-//		final float axonAct = m.toZone().axons.get(x, y, z);
-		
-		if (act <= 0) {// || axonAct > 0) {
+		if (act <= 0) {
 			return;
 		}
 		

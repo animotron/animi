@@ -55,6 +55,7 @@ public class Activation extends Task {
 
 	public void gpuMethod(final int x, final int y, final int z) {
 //		final Mapping m = cz.in_zones[0];
+		MatrixProxy<Float> pack;
 		
 		switch (stage) {
 		case 0:
@@ -66,10 +67,37 @@ public class Activation extends Task {
 
 			break;
 		case 2:
+			Mapping m = cz.in_zones[0];
+
+			final Layer layer = m.toZone();
+			
+			float nAct = cz.neurons.get(x, y, z);
+			for (int dx = -1; dx <= 1; dx += 2) {
+				for (int dy = -1; dy <= 1; dy += 2) {
+					for (int dz = -1; dz <= 1; dz += 2) {
+						final int fx = x + dx;
+						final int fy = y + dy;
+						final int fz = z + dz;
+						
+						if (    (fx >= 0 && fx < layer.width()) && 
+								(fy >= 0 && fy < layer.height()) && 
+								(fz >= 0 && fz < layer.depth())
+							) {
+
+							nAct += m.toZone().axons.get(fx, fy, fz) * 0.5f;
+						}
+					}
+				}
+			}
+			
+			cz.neurons.set(nAct, x, y, z);
+			
+			break;
+		case 3:
 			if (z != 0)
 				return;
 			
-			MatrixProxy<Float> pack = cz.neurons.sub(x, y);
+			pack = cz.neurons.sub(x, y);
 			
 			if (pack.length() == 1) {
 				return;
@@ -129,7 +157,7 @@ public class Activation extends Task {
 		if (stage == 1 && !m.haveInhibitoryWeight()) {
 			stage++;
 		}
-		return stage >= 3;
+		return stage >= 4;
 	}
 
 	@Override

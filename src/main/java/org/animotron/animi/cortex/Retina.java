@@ -65,6 +65,11 @@ public class Retina {
 		initialize();
 	}
 	
+	LayerWLearning RL = null;
+	public void setResetLayer(LayerWLearning layer) {
+		RL = layer;
+	}
+	
     // создание связей сенсорных полей
 	private void initialize() {
         retinaTask = new RetinaZone(this, (LayerSimple)NL);
@@ -73,6 +78,10 @@ public class Retina {
     BufferedImage image = null;
 	
 	public void process(Stimulator stimulator) {
+		
+		if (stimulator.isReset()) {
+			RL.reset();
+		}
 		
         retinaTask.setInput(image = stimulator.getNextImage());
 

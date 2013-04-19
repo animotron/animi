@@ -21,6 +21,7 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.Imageable;
+import org.animotron.matrix.Matrix;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -32,6 +33,8 @@ public interface Layer extends Imageable {
 	public int width();
 	public int height();
 	public int depth();
+	
+	public Matrix<Float> axons();
 	
     public void process();
 }

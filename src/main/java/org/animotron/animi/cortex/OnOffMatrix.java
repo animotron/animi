@@ -20,15 +20,6 @@
  */
 package org.animotron.animi.cortex;
 
-import static org.jocl.CL.CL_MEM_READ_ONLY;
-import static org.jocl.CL.CL_MEM_USE_HOST_PTR;
-import static org.jocl.CL.clCreateBuffer;
-
-import org.jocl.Pointer;
-import org.jocl.Sizeof;
-import org.jocl.cl_context;
-import org.jocl.cl_mem;
-
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
@@ -48,13 +39,12 @@ public class OnOffMatrix {
     
     int regionSize = 0;
     int[] matrix;
-    cl_mem cl_matrix;
-    
-    public OnOffMatrix(cl_context context) {
-    	initialize(context);
+
+    public OnOffMatrix() {
+    	initialize();
     };
     
-    public void initialize(cl_context context) {
+    public void initialize() {
 //    	radius = 4;
 //    			
 //    	regionSize = 8;
@@ -107,15 +97,6 @@ public class OnOffMatrix {
 //                System.out.print(" "+matrix[pos]);
         	}
 //        	System.out.println();
-        }
-        
-        if (context == null) {
-        	cl_matrix = null;
-        } else {
-	        cl_matrix = clCreateBuffer(
-	    		context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, 
-	    		matrix.length * Sizeof.cl_int, Pointer.to(matrix), null
-			);
         }
 	}
     

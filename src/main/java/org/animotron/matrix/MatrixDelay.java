@@ -92,6 +92,7 @@ public class MatrixDelay extends MatrixFloat {
 	public void fill(Float value) {
 		super.fill(value);
 		Arrays.fill(stepsFromLastSet, 0);
+		isSet.clear(0, isSet.size() - 1);
 	}
 	
 	@Override
@@ -124,7 +125,7 @@ public class MatrixDelay extends MatrixFloat {
 	
 	public void step(MatrixFloat matrix) {
 		for (int index = 0; index < length(); index++) {
-			if (matrix.isSet(index)) {
+			if (matrix.isSet(index) && matrix.getByIndex(index) > 0f) {//WORKAROUND: > 0f
 				setByIndex(matrix.getByIndex(index), index);
 			}
 			stepsFromLastSet[index]++;

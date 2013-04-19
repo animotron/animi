@@ -29,6 +29,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.Constructor;
 
+import javax.media.opengl.GLCapabilities;
+import javax.media.opengl.GLProfile;
+import javax.media.opengl.glu.GLU;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
@@ -43,6 +46,11 @@ import org.animotron.animi.simulator.*;
 public class Application extends JFrame {
 	
 	private static final long serialVersionUID = 3243253015790558286L;
+	
+	protected static GLU glu = new GLU();
+
+	protected static GLProfile glp = GLProfile.getDefault();
+	protected static GLCapabilities caps = new GLCapabilities(glp);
 	
 	public static Application _ = null;
 
@@ -104,8 +112,8 @@ public class Application extends JFrame {
 
 //		camView = new WebcamPanel();
 //        add(camView, CENTER);
-//
-        setBounds(0, 0, 800, 600);
+
+//        setBounds(0, 0, 800, 600);
         setLocationByPlatform(true);
 	}
 	
@@ -172,6 +180,17 @@ public class Application extends JFrame {
     	
     	addMenu(windowsMenu, stimulator);
  
+        //hack ... remove
+        JMenuItem menuItem = new JMenuItem("Cube");
+        menuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+		        desktop.add(new Cube(cortexs.zones[1]));
+			}
+		});
+        windowsMenu.add(menuItem);
+        //end of hack
+
         for (LayerSimple zone : cortexs.zones) {
         	if (zone instanceof LayerWLearning) {
         		JMenu menu = new JMenu(zone.toString());
@@ -188,6 +207,7 @@ public class Application extends JFrame {
 				addMenu(windowsMenu, zone);
 			}
         }
+        
     }
     
     private void addMenu(JMenu menu, final Imageable imageable) {
@@ -380,7 +400,7 @@ public class Application extends JFrame {
 
     private void addToBar() {
         bar.addSeparator();
-
+        
         for (final LayerSimple z : cortexs.zones) {
         	if (!(z instanceof LayerWLearning)) {
 //	        	final JCheckBox chB_ = new JCheckBox("Saccade");
@@ -491,7 +511,7 @@ public class Application extends JFrame {
     	
     	createWindowsMenuBar(menuBar);
     	addToBar();
-
+    	
 //    	createFrame(stimulator);
     }
     

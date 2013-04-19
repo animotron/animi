@@ -25,9 +25,6 @@ import javolution.xml.stream.XMLStreamException;
 import javolution.xml.stream.XMLStreamReader;
 import org.animotron.animi.cortex.LayerSimple;
 import org.animotron.animi.cortex.Mapping;
-import org.jocl.Pointer;
-import org.jocl.Sizeof;
-import org.jocl.cl_event;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -35,7 +32,6 @@ import java.io.*;
 import java.net.URL;
 
 import static javolution.xml.stream.XMLStreamConstants.START_ELEMENT;
-import static org.jocl.CL.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -254,33 +250,6 @@ public class Utils {
         }
         return image;
 	}
-
-	/*
-     * Print "benchmarking" information 
-     */
-    public static void printBenchmarkInfo(String description, cl_event event) {
-        StringBuilder sb = new StringBuilder();
-        sb
-        	.append(description)
-        	.append(" ")
-        	.append(computeExecutionTimeMs(event))
-        	.append(" ms");
-        
-        System.out.println(sb.toString());
-    }
-    
-    /*
-     * Compute the execution time for the given event, in milliseconds
-     */
-    private static double computeExecutionTimeMs(cl_event event) {
-        long startTime[] = new long[1];
-        long endTime[] = new long[1];
-        clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END,   
-            Sizeof.cl_ulong, Pointer.to(endTime), null);
-        clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, 
-            Sizeof.cl_ulong, Pointer.to(startTime), null);
-        return (endTime[0]-startTime[0]) / 1e6;
-    }
 
 	public static String debug(float[] array) {
 		return debug(array, 7);

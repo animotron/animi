@@ -80,15 +80,16 @@ public class LayerWLearning extends LayerSimple {
     LayerWLearning() {
 		super();
     }
-
+    
 	LayerWLearning(
 			String name, MultiCortex mc, 
 			int width, int height, int depth, 
 			Mapping[] in_zones, 
 			Class<? extends Task> inhibitory,
-			Class<? extends Task> learning) {
+			Class<? extends Task> learning,
+			MatrixDelay.Attenuation attenuation) {
 		
-		super(name, mc, width, height, depth, MatrixDelay.oneStepAttenuation);
+		super(name, mc, width, height, depth, attenuation);
 		
 		this.in_zones = in_zones;
 	
@@ -407,5 +408,9 @@ public class LayerWLearning extends LayerSimple {
 
 	public boolean isSingleReceptionField() {
 		return singleReceptionField;
+	}
+
+	public void reset() {
+		axons.fill(0f);
 	}
 }
