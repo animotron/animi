@@ -127,6 +127,9 @@ public class Cube extends JInternalFrame implements GLEventListener, MouseListen
 		gl.glEnable(GL2.GL_COLOR_MATERIAL);
 		gl.glEnable(GL2.GL_NORMALIZE);
 		gl.glEnable(GL2.GL_DEPTH_TEST);
+//		gl.glDisable(GL2.GL_CULL_FACE);
+		gl.glEnable(GL.GL_BLEND);              //activate blending mode
+	    gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE);  //define blending factors
 
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
@@ -147,8 +150,9 @@ public class Cube extends JInternalFrame implements GLEventListener, MouseListen
 					float act = layer.axons().get(lx, ly, lz);
 					
 					float R = act > 0.1f ? 1f : 0.1f;
+					float alpha = act > 0.1f ? 1f : 0.1f;
 					
-					gl.glColor3f(R, 0f, 0f);
+					gl.glColor4f(R, 0f, 0f, alpha);
 
 					gl.glTranslatef(gs, 0.0f, 0.0f);
 					glut.glutSolidCube(cs);
