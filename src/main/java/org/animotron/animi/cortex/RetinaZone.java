@@ -209,7 +209,7 @@ public class RetinaZone extends Task {
 		} else if (value == 0) {
 			if (history.get(x, y, z) == 1f && oppositeStimuli == 0) {
 				//ответ после противоположного стимула
-				output(0.9f, x, y, z);
+				//XXX: output(0.9f, x, y, z);
 			}
 		} else {
 			//увидил свой образ

@@ -155,7 +155,7 @@ public class StimulatorAnime extends AbstractStimulator {
 //    			true
 //	    	);
 
-        figures[f++] = new RotateAnime(img.getWidth(), img.getHeight(), true);
+        figures[f++] = new RotateAnime(img.getWidth(), img.getHeight(), retina.worldStep(), true);
 	}
 	
 	int step = 0;

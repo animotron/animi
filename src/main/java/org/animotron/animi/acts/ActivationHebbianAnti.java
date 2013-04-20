@@ -33,7 +33,7 @@ import org.animotron.matrix.MatrixMapped;
 public class ActivationHebbianAnti extends Task {
 	
 	@RuntimeParam(name = "k")
-	public float k = 1f;
+	public float k = 10f;
 
 	public ActivationHebbianAnti(LayerWLearning cz) {
 		super(cz);
@@ -55,7 +55,7 @@ public class ActivationHebbianAnti extends Task {
 		
 		final float activity = 
 				cz.neurons.get(x, y, z) - 
-				activity(
+				k * activity(
 					new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z)), 
 					m.inhibitoryWeight().sub(x, y, z)
 				);

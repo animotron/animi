@@ -156,54 +156,54 @@ public class LearningHebbian extends Task {
 			);
 		}
 		
-		LayerSimple frLayer = m.frZone();
-		if (frLayer instanceof LayerWLearning) {
-			
-			Mapping _m = ((LayerWLearning) frLayer).in_zones[0];
-			if (_m.isDirectLearning()) {
-				return;
-			}
-			
-			//XXX: to fix!
-			LearningHebbian learning = (LearningHebbian)((LayerWLearning) frLayer).cnLearning;
-			
-			MatrixProxy<Integer[]> senapses = m.senapses().sub(x, y, z);
-			for (int index = 0; index < senapses.length(); index++) {
-				Integer[] xyz = senapses.getByIndex(index);
-				
-				if (xyz == null) {
-					System.out.println("ERROR! at ["+x+","+y+","+z+"] "+index);
-				}
-				
-				final int xi = xyz[0];
-				final int yi = xyz[1];
-				final int zi = xyz[2];
-			
-				final float _act = _m.toZone().neurons.get(xi, yi, zi);
-				
-				if (_act <= 0) {
-					continue;
-				}
-	
-				MatrixMapped<Float> _in = new MatrixMapped<Float>(_m.frZone().neurons, _m._senapses().sub(xi, yi, zi));
-				MatrixProxy<Float> _posW = _m.senapseWeight().sub(xi, yi, zi);
-				Matrix<Float> _negW = null;
-				if (m.haveInhibitoryWeight()) {
-					_m.inhibitoryWeight().sub(xi, yi, zi);
-				}
-				
-				float f = 10;
-				if (m.senapseWeight().getByIndex(index) > 1/(float)2) {
-					f = 0.1f;
-				}
-	
-				//XXX: fix: factor
-				learning.learn(
-						_in, _posW, _negW, 
-						_act * f,
-						0, factor);
-			}
-		}
+//		LayerSimple frLayer = m.frZone();
+//		if (frLayer instanceof LayerWLearning) {
+//			
+//			Mapping _m = ((LayerWLearning) frLayer).in_zones[0];
+//			if (_m.isDirectLearning()) {
+//				return;
+//			}
+//			
+//			//XXX: to fix!
+//			LearningHebbian learning = (LearningHebbian)((LayerWLearning) frLayer).cnLearning;
+//			
+//			MatrixProxy<Integer[]> senapses = m.senapses().sub(x, y, z);
+//			for (int index = 0; index < senapses.length(); index++) {
+//				Integer[] xyz = senapses.getByIndex(index);
+//				
+//				if (xyz == null) {
+//					System.out.println("ERROR! at ["+x+","+y+","+z+"] "+index);
+//				}
+//				
+//				final int xi = xyz[0];
+//				final int yi = xyz[1];
+//				final int zi = xyz[2];
+//			
+//				final float _act = _m.toZone().neurons.get(xi, yi, zi);
+//				
+//				if (_act <= 0) {
+//					continue;
+//				}
+//	
+//				MatrixMapped<Float> _in = new MatrixMapped<Float>(_m.frZone().neurons, _m._senapses().sub(xi, yi, zi));
+//				MatrixProxy<Float> _posW = _m.senapseWeight().sub(xi, yi, zi);
+//				Matrix<Float> _negW = null;
+//				if (m.haveInhibitoryWeight()) {
+//					_m.inhibitoryWeight().sub(xi, yi, zi);
+//				}
+//				
+//				float f = 10;
+//				if (m.senapseWeight().getByIndex(index) > 1/(float)2) {
+//					f = 0.1f;
+//				}
+//	
+//				//XXX: fix: factor
+//				learning.learn(
+//						_in, _posW, _negW, 
+//						_act * f,
+//						0, factor);
+//			}
+//		}
 	}
 
 	@Override
