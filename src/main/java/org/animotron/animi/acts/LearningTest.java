@@ -32,7 +32,7 @@ import org.animotron.matrix.*;
  */
 public class LearningTest extends LearningHebbian {
 	
-	public float speed = 0.75f;
+	public float speed = 1.0f;
 	
 	public int eachCount = 500;
 
