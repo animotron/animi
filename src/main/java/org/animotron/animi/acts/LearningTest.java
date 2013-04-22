@@ -51,8 +51,8 @@ public class LearningTest extends LearningHebbian {
 	public void gpuMethod(final int x, final int y, final int z) {
 		super.gpuMethod(x, y, z);
 		
-		if (true)
-			return;
+//		if (true)
+//			return;
 		
 		if (count % eachCount == 0) {
 			System.out.println("===== ["+x+","+y+","+z+"]");

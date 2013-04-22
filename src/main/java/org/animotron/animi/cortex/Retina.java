@@ -36,8 +36,8 @@ public class Retina {
 //	public static final int HEIGHT = 144;
 //	public static final int WIDTH = 160;
 //	public static final int HEIGHT = 120;
-	public static final int WIDTH = 30;
-	public static final int HEIGHT = 30;
+	public static final int WIDTH = 120;
+	public static final int HEIGHT = 120;
 	
 	/* x */
 	private int width;

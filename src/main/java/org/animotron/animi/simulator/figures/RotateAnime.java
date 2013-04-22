@@ -79,11 +79,13 @@ public class RotateAnime extends AbstractAnime {
 		
 		Graphics2D g2d = (Graphics2D) g;
 		
+		//bring to center
 		g2d.translate(
 			(int)(width / 2.0),
 			(int)(height / 2.0)
 		);
 		
+		//rotate on angel alfa
 		g2d.rotate(alfa);
 		
 		step++;
@@ -91,6 +93,7 @@ public class RotateAnime extends AbstractAnime {
 			step = 0;
 		}
 		int[] pos = tremor[step];
+		//shift by tremor
 		g2d.translate(
 			pos[0],
 			pos[1]
@@ -98,7 +101,6 @@ public class RotateAnime extends AbstractAnime {
 		
         
 		g2d.setColor(Color.WHITE);
-        
         if (filled)
         	g2d.fillPolygon(polygon);
         else

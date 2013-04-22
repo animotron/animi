@@ -36,7 +36,7 @@ public class LearningHebbian extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.005f;
+	public float ny = 0.01f;
 	
 	public float factor;
 	

@@ -116,7 +116,7 @@ public class MultiCortex implements Runnable {
 //	    	}
 //        );
 
-    	LayerWLearning layer_1b = new LayerWLearning("1й факторы", this, 10, 10, 4, //120, 120, //160, 120,
+    	LayerWLearning layer_1b = new LayerWLearning("1й факторы", this, 7, 7, 6, //120, 120, //160, 120,
             new Mapping[]{
                 new MappingHebbian(z_in, 300, 1, true, false) //7x7 (50)
             },
@@ -147,9 +147,9 @@ public class MultiCortex implements Runnable {
 //            LearningSOM.class
 //        );
 
-    	LayerWLearning layer_2a_on_1b = new LayerWLearning("2й тестовый", this, 12, 12, 1,
+    	LayerWLearning layer_2a_on_1b = new LayerWLearning("2й тестовый", this, 7, 7, 1,
             new Mapping[]{
-                new MappingHebbian(layer_1b, 100, 1, true, false) //7x7 (50)
+                new MappingHebbian(layer_1b, 49, 1, true, false) //7x7 (50)
             },
             InhibitoryTest.class,
             LearningTest.class,
