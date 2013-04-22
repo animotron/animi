@@ -416,6 +416,13 @@ public class MappingHebbian implements Mapping {
 				} else
 					g.draw3DRect(p.x*boxSize, p.y*boxSize, boxSize, boxSize, true);
 			}
+			
+			int R = 0, G = 0, B = 0;
+			
+			final Matrix<Float> neighbors = toZone().neighbors;
+			
+			float maximum = neighbors.maximum();
+			float half = maximum / 2f;
 
 			boolean showMax = frZone instanceof LayerWLearning;
 			Mapping m = null;
@@ -457,6 +464,31 @@ public class MappingHebbian implements Mapping {
 								xi, yi, zi, m);
 						
 						Utils.drawNA(image, MappingHebbian.this, 0, offsetX, offsetY, x, y, 0, 0, 0);
+						
+						R = 0; G = 0; B = 0;
+						//weight box
+						float w = toZone().neighbors.get(x,y,0);
+						if (Float.isNaN(w) || Float.isInfinite(w)) {
+							R = 255;
+							B = 255;
+							G = 255;
+						} else {
+							if (w > half) {
+								R = (int) (254 * ((w - half) / half));
+								if (Float.isInfinite( ((w - half) / half) ) ) {
+									System.out.println("!!!");
+								}
+								if (Float.isNaN( ((w - half) / half) ) ) {
+									System.out.println("!!!");
+								}					
+								B = 255;
+							} else {
+								B = (int) (254 * (w / half));
+							}
+						}
+						g.setColor(new Color(R, G, B));
+						g.draw3DRect(x*boxSize, y*boxSize, boxSize, boxSize, true);
+
 					} else {
 						g.setColor(Color.DARK_GRAY);
 						g.draw3DRect(x*boxSize, y*boxSize, boxSize, boxSize, true);
@@ -584,7 +616,11 @@ public class MappingHebbian implements Mapping {
 
 			Integer[] xyz = null;
 			
+			float maximum = pos.maximum();
+			float half = maximum / 2f;
+
 			for (int index = 0; index < pos.length(); index++) {
+				R = 0; B = 0; G = 0;
 				
 				xyz = sf.getByIndex(index);
 				
@@ -607,18 +643,29 @@ public class MappingHebbian implements Mapping {
 				float w = pos.getByIndex(index);
 				if (Float.isNaN(w) || Float.isInfinite(w)) {
 					R = 255;
+					B = 255;
+					G = 255;
 				} else {
-					G = (int) (255 * w * 100);
-					if (G > 255) G = 255;
+					if (w > half) {
+						R = (int) (254 * ((w - half) / half));
+						if (Float.isInfinite( ((w - half) / half) ) ) {
+							System.out.println("!!!");
+						}
+						if (Float.isNaN( ((w - half) / half) ) ) {
+							System.out.println("!!!");
+						}					
+						B = 255;
+					} else {
+						B = (int) (254 * (w / half));
+					}
 				}
 				
 				if (neg == null) {
-					B = 0;
+					G = 0;
 				} else {
-					B = (int) (255 * neg.getByIndex(index) * 100);
-					if (B > 255) B = 255;
+					G = (int) (255 * neg.getByIndex(index) * 100);
+					if (G > 255) G = 255;
 				}
-				
 				
 				g.setColor(new Color(R, G, B));
 				g.draw3DRect(

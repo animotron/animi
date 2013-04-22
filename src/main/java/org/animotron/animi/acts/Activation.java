@@ -84,7 +84,7 @@ public class Activation extends Task {
 								(fz >= 0 && fz < layer.depth())
 							) {
 
-							nAct += m.toZone().axons.get(fx, fy, fz) * 0.5f;
+							nAct += m.toZone().axons.get(fx, fy, fz) * 0.2f;
 						}
 					}
 				}

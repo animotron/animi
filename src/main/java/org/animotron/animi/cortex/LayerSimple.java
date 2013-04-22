@@ -61,6 +61,7 @@ public class LayerSimple implements Layer {
     public MatrixDelay axons;
     
     public MatrixFloat neurons;
+    public MatrixFloat neighbors;
 
     private BufferedImage image;
 
@@ -89,6 +90,9 @@ public class LayerSimple implements Layer {
     	
     	neurons = new MatrixFloat(width, height, depth);
     	neurons.fill(0f);
+
+    	neighbors = new MatrixFloat(width, height, depth);
+    	neighbors.fill(0f);
 
     	axons = new MatrixDelay(attenuation, width, height, depth);
     	axons.fill(0f);

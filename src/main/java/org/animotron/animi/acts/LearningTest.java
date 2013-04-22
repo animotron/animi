@@ -22,7 +22,6 @@ package org.animotron.animi.acts;
 
 import java.util.Random;
 
-import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.cortex.*;
 import org.animotron.matrix.*;
 
@@ -35,7 +34,7 @@ public class LearningTest extends LearningHebbian {
 	
 	public float speed = 0.75f;
 	
-	public int eachCount = 200;
+	public int eachCount = 500;
 
 	private Random rnd = new Random();
 	
@@ -51,6 +50,9 @@ public class LearningTest extends LearningHebbian {
 
 	public void gpuMethod(final int x, final int y, final int z) {
 		super.gpuMethod(x, y, z);
+		
+		if (true)
+			return;
 		
 		if (count % eachCount == 0) {
 			System.out.println("===== ["+x+","+y+","+z+"]");

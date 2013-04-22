@@ -33,8 +33,8 @@ public class MatrixProxy<T> implements Matrix<T> {
 		public void call(int[] pos);
 	}
 	
-	interface PossitionHolderFunction extends Function {
-		public int[] getPossition();
+	interface ObjectHolderFunction extends Function {
+		public Object getPossition();
 	}
 
 	Matrix<T> matrix;
@@ -98,7 +98,7 @@ public class MatrixProxy<T> implements Matrix<T> {
 	}
 	
 	public int[] max() {
-		PossitionHolderFunction function = new PossitionHolderFunction() {
+		ObjectHolderFunction function = new ObjectHolderFunction() {
 	     	
 			int[] maxPos = new int[matrix.dimensions()];
 	    	Number max = 0f;
@@ -125,9 +125,38 @@ public class MatrixProxy<T> implements Matrix<T> {
     	
 		iterate(function);
     	
-    	return function.getPossition();
+    	return (int[]) function.getPossition();
 	}
 	
+	public T maximum() {
+		ObjectHolderFunction function = new ObjectHolderFunction() {
+	     	
+	    	Number max = 0f;
+	    	
+	    	public void call(int[] pos) {
+	    		if (compare((Number)matrix.get(pos), max) == 1) {
+	    			max = (Number)matrix.get(pos);
+	    		}
+	    	}
+
+			private int compare(Number n1, Number n2) {
+				if (n1 instanceof Float) {
+					return ((Float)n1).compareTo((Float)n2);
+				}
+				throw new IllegalArgumentException();
+			}
+
+			@Override
+			public Number getPossition() {
+				return max;
+			}
+		};
+    	
+		iterate(function);
+    	
+    	return (T) function.getPossition();
+	}
+
 	public MatrixProxy<T> copy() {
 		return new MatrixProxy<T>(matrix.copy(), fixeDimensions);
 	}

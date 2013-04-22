@@ -31,7 +31,9 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.acts.InhibitoryTest;
 import org.animotron.animi.acts.LearningHebbian;
+import org.animotron.animi.acts.LearningTest;
 import org.animotron.animi.acts.WinnerGetsAll;
 import org.animotron.animi.gui.Application;
 import org.animotron.matrix.MatrixDelay;
@@ -82,7 +84,7 @@ public class MultiCortex implements Runnable {
     	this.app = app;
     	
 //    	final int delay = 8;
-    	LayerSimple z_in = new LayerSimple("Зрительный нерв", this, 30, 30, 1,
+    	LayerSimple z_in = new LayerSimple("Зрительный нерв", this, 60, 60, 1,
 			MatrixDelay.oneStepAttenuation
 //    		new MatrixDelay.Attenuation() {
 //
@@ -100,30 +102,31 @@ public class MultiCortex implements Runnable {
         );
         
         //1st zone
-    	LayerWLearning layer_1a = new LayerWLearning("1й образы", this, 5, 5, 4, //120, 120, //160, 120,
-            new Mapping[]{
-                new MappingHebbian(z_in, 200, 1, true, true) //7x7 (50)
-            },
-            WinnerGetsAll.class,
-            LearningHebbian.class,
-            new Attenuation() {
-	    		@Override
-	    		public float next(int step, float value) {
-	    			return step <= 5 ? value : 0f;
-	    		}
-	    	}
-        );
+//    	LayerWLearning layer_1a = new LayerWLearning("1й образы", this, 5, 5, 4, //120, 120, //160, 120,
+//            new Mapping[]{
+//                new MappingHebbian(z_in, 200, 1, true, true) //7x7 (50)
+//            },
+//            WinnerGetsAll.class,
+//            LearningHebbian.class,
+//            new Attenuation() {
+//	    		@Override
+//	    		public float next(int step, float value) {
+//	    			return step <= 5 ? value : 0f;
+//	    		}
+//	    	}
+//        );
 
-    	LayerWLearning layer_1b = new LayerWLearning("1й факторы", this, 5, 5, 4, //120, 120, //160, 120,
+    	LayerWLearning layer_1b = new LayerWLearning("1й факторы", this, 10, 10, 4, //120, 120, //160, 120,
             new Mapping[]{
-                new MappingHebbian(z_in, 200, 1, true, false) //7x7 (50)
+                new MappingHebbian(z_in, 300, 1, true, false) //7x7 (50)
             },
             WinnerGetsAll.class, //Inhibitory.class,
             LearningHebbian.class,
 			new Attenuation() {
 				@Override
 				public float next(int step, float value) {
-					return step <= 5 ? value : 0f;
+					return value;
+//					return step <= 5 ? value : 0f;
 				}
 			}
         );
@@ -144,19 +147,20 @@ public class MultiCortex implements Runnable {
 //            LearningSOM.class
 //        );
 
-//    	LayerWLearning layer_2a_on_1a = new LayerWLearning("2й тестовый", this, 5, 5, 1,
-//            new Mapping[]{
-//                new MappingHebbian(layer_1b, 25, 1, true, false) //7x7 (50)
-//            },
-//            WinnerGetsAll.class,
-//            LearningTest.class,
-//        	MatrixDelay.oneStepAttenuation
-//        );
+    	LayerWLearning layer_2a_on_1b = new LayerWLearning("2й тестовый", this, 12, 12, 1,
+            new Mapping[]{
+                new MappingHebbian(layer_1b, 100, 1, true, false) //7x7 (50)
+            },
+            InhibitoryTest.class,
+            LearningTest.class,
+        	MatrixDelay.oneStepAttenuation
+        );
+    	((LearningHebbian)layer_2a_on_1b.cnLearning).factor = 0.001f;
 
 //        z_1st.addMappring(z_1st);
         
 //        zones = new LayerSimple[]{z_in, layer_1a, layer_1b, layer_2a_on_1b, layer_2b_on_1b};
-        zones = new LayerSimple[]{z_in, layer_1a, layer_1b}; //, layer_2a_on_1a};
+        zones = new LayerSimple[]{z_in, layer_1b, layer_2a_on_1b};
         
         retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
         retina.setNextLayer(z_in);

@@ -21,7 +21,6 @@
 package org.animotron.animi.simulator.figures;
 
 import java.awt.*;
-import java.util.Arrays;
 import java.util.Random;
 
 import static java.lang.Math.*;
@@ -57,13 +56,13 @@ public class RotateAnime extends AbstractAnime {
         polygon.addPoint(width,0);
         polygon.addPoint(-width,0);
         
-        tremor = new int[4*2][2];
+        tremor = new int[8*2][2];
         int i = 0;
-        for (double alfa = 0; alfa < 2.0 * PI; alfa += PI / 4.0) {
+        for (double alfa = 0; alfa < 2.0 * PI; alfa += PI / 8.0) {
         	tremor[i] = 
     			new int[] {
-        			(int) (4.0 * worldStep * cos(alfa)), 
-        			(int) (4.0 * worldStep * sin(alfa))
+        			(int) (6.0 * worldStep * cos(alfa)), 
+        			(int) (6.0 * worldStep * sin(alfa))
         		};
         	i++;
         }
@@ -74,6 +73,7 @@ public class RotateAnime extends AbstractAnime {
 	
 	double alfa = PI * 2.0 * rnd.nextDouble();
 	int step = 0;
+	int start = 0;
 
 	public void drawImage(Graphics g) {
 		
@@ -86,16 +86,15 @@ public class RotateAnime extends AbstractAnime {
 		
 		g2d.rotate(alfa);
 		
+		step++;
 		if (step >= tremor.length) {
 			step = 0;
-			alfa = PI * 2.0 * rnd.nextDouble();
 		}
 		int[] pos = tremor[step];
 		g2d.translate(
 			pos[0],
 			pos[1]
 		);
-		step++;
 		
         
 		g2d.setColor(Color.WHITE);
@@ -105,8 +104,16 @@ public class RotateAnime extends AbstractAnime {
         else
         	g2d.drawPolygon(polygon);
     }
+	
+	@Override
+	public boolean step() {
+		return (start == step);
+	}
+
 
 	@Override
 	public void reset() {
+		start = step = rnd.nextInt(tremor.length);
+		alfa = PI * 2.0 * rnd.nextDouble();
 	}
 }

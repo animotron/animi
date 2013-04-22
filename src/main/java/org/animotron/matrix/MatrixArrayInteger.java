@@ -163,6 +163,14 @@ public class MatrixArrayInteger implements Matrix<Integer[]> {
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.animotron.animi.cortex.Matrix#maximum()
+	 */
+	@Override
+	public Integer[] maximum() {
+		throw new IllegalArgumentException();
+	}
+
+	/* (non-Javadoc)
 	 * @see org.animotron.animi.cortex.Matrix#copy()
 	 */
 	@Override

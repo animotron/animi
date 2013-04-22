@@ -36,9 +36,9 @@ public class LearningHebbian extends Task {
 	public int count = 10000;
 
 	@RuntimeParam(name = "ny")
-	public float ny = 0.001f;
+	public float ny = 0.005f;
 	
-	private float factor;
+	public float factor;
 	
 	public LearningHebbian(LayerWLearning cz) {
 		super(cz);

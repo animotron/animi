@@ -33,7 +33,7 @@ import org.animotron.matrix.MatrixMapped;
 public class ActivationHebbianAnti extends Task {
 	
 	@RuntimeParam(name = "k")
-	public float k = 10f;
+	public float k = 100f;
 
 	public ActivationHebbianAnti(LayerWLearning cz) {
 		super(cz);

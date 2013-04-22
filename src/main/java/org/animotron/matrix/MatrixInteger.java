@@ -191,6 +191,20 @@ public class MatrixInteger implements Matrix<Integer> {
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.animotron.animi.cortex.Matrix#maximum()
+	 */
+	@Override
+	public Integer maximum() {
+    	int max = 0;
+    	for (int pos = 0; pos < data.length; pos++) {
+    		if (data[pos] > max) {
+    			max = data[pos];
+    		}
+    	}
+    	return max;
+	}
+
+	/* (non-Javadoc)
 	 * @see org.animotron.animi.cortex.Matrix#copy()
 	 */
 	@Override

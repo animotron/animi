@@ -158,25 +158,35 @@ public class StimulatorAnime extends AbstractStimulator {
         figures[f++] = new RotateAnime(img.getWidth(), img.getHeight(), retina.worldStep(), true);
 	}
 	
-	int step = 0;
+	int count = 0;
+	int changeAt = 3;
+	boolean resetStage = true;
 	Figure active = null;
 	
 	public boolean isReset() {
-		return step == 0;
+		return resetStage;
 	}
 
 	public void step() {
-		
 		if (active == null || active.step()) {
 			
-			do {
-				active = figures[rnd.nextInt(figures.length)];
-				//XXX: protection?
-			} while (!active.isActive());
-			
-			step = -1;
+			if (active == null || count >= changeAt) {
+				do {
+					active = figures[rnd.nextInt(figures.length)];
+					//XXX: protection?
+				} while (!active.isActive());
+				
+				active.reset();
+				
+				resetStage = true;
+				count = 0;
+			} else {
+				resetStage = true;
+				count++;
+			}
+		} else {
+			resetStage = false;
 		}
-		step++;
 
         Graphics g = img.getGraphics();
         g.clearRect(0, 0, img.getWidth(), img.getHeight());

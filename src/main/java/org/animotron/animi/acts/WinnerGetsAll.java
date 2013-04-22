@@ -82,8 +82,8 @@ public class WinnerGetsAll extends Task {
     			} catch (Exception e) {
     				e.printStackTrace();
 
-    				final int xi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 0);
-	    	    	final int yi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 1);
+//    				final int xi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 0);
+//	    	    	final int yi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 1);
     			}
     		}
     		cols.set(0f, maxPos);

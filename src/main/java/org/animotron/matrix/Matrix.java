@@ -27,6 +27,7 @@ public interface Matrix<T> {
 	public void fill(T value);
 
 	public int[] max();
+	public T maximum();
 
 	public Matrix<T> copy();
 

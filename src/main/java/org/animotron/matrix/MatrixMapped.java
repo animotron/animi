@@ -97,6 +97,11 @@ public class MatrixMapped<T extends Number> implements Matrix<T> {
 	}
 
 	@Override
+	public T maximum() {
+		throw new IllegalArgumentException();
+	}
+
+	@Override
 	public MatrixMapped<T> copy() {
 		throw new IllegalArgumentException();
 	}

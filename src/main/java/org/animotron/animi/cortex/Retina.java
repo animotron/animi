@@ -79,12 +79,12 @@ public class Retina {
 	
 	public void process(Stimulator stimulator) {
 		
+        retinaTask.setInput(image = stimulator.getNextImage());
+
 		if (stimulator.isReset()) {
 			RL.reset();
 		}
 		
-        retinaTask.setInput(image = stimulator.getNextImage());
-
     	try {
             NL.mc.addTask(retinaTask);
         
