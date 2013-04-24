@@ -49,6 +49,9 @@ public class RetinaZone extends Task {
     float XScale, YScale;
 	
 	Matrix<Float> history = null;
+	Matrix<Float> avgs = null;
+	
+	int count = -1;
 	
 	int[] input;
 	int inputSizeX, inputSizeY;
@@ -72,6 +75,11 @@ public class RetinaZone extends Task {
 			history.fill(0f);
 		}
 		
+		if (avgs == null) {
+			avgs = new MatrixFloat(sz.neurons);
+			avgs.fill(0f);
+		}
+		
 		XScale = (image.getWidth()  - (retina.worldSafeZone() * 2)) / (float)sz.width;
 		YScale = (image.getHeight() - (retina.worldSafeZone() * 2)) / (float)sz.height;
 
@@ -87,6 +95,8 @@ public class RetinaZone extends Task {
     	
     	inputSizeX = image.getWidth();
     	inputSizeY = image.getHeight();
+    	
+    	count++;
 	}
 
 	@Override
@@ -198,23 +208,30 @@ public class RetinaZone extends Task {
 		
 		int type = ((x + y) % 2) + 1;
 	
-		float value = onOff(type, SA, SC, SP, K_cont);
+		float value = 0.2f;
+		
+		float onOffValue = onOff(type, SA, SC, SP, K_cont);
 		
 		int oppositeStimuli = onOff(type % 2 + 1, SA, SC, SP, K_cont);
 		
 		if (oppositeStimuli == 1) {
-			output(0f, x, y, z);
+			value = 0f;
 			
 			//if no stimuli, check if opposite was 
-		} else if (value == 0) {
+		} else if (onOffValue == 0) {
 			if (history.get(x, y, z) == 1f && oppositeStimuli == 0) {
 				//ответ после противоположного стимула
-				//XXX: output(0.9f, x, y, z);
+				value = 0.9f;
 			}
 		} else {
 			//увидил свой образ
-			output(1f, x, y, z);
+			value = 1f;
 		}
+
+		final float avg = avgs.get(x,y,z);
+		output(value - avg, x, y, z);
+		
+		avgs.set( (avg * (float)count + value) / (float)(count + 1), x,y,z);
 
 		history.set((float)oppositeStimuli, x, y, z);
 	}

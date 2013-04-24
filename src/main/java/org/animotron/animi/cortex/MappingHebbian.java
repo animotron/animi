@@ -465,22 +465,14 @@ public class MappingHebbian implements Mapping {
 						
 						Utils.drawNA(image, MappingHebbian.this, 0, offsetX, offsetY, x, y, 0, 0, 0);
 						
-						R = 0; G = 0; B = 0;
+						R = G = B = 0;
 						//weight box
 						float w = toZone().neighbors.get(x,y,0);
 						if (Float.isNaN(w) || Float.isInfinite(w)) {
-							R = 255;
-							B = 255;
-							G = 255;
+							R = G = B = 255;
 						} else {
 							if (w > half) {
 								R = (int) (254 * ((w - half) / half));
-								if (Float.isInfinite( ((w - half) / half) ) ) {
-									System.out.println("!!!");
-								}
-								if (Float.isNaN( ((w - half) / half) ) ) {
-									System.out.println("!!!");
-								}					
 								B = 255;
 							} else {
 								B = (int) (254 * (w / half));
@@ -506,16 +498,6 @@ public class MappingHebbian implements Mapping {
 				}
 			}
 
-//			g.setColor(Color.WHITE);
-//			
-//			int textY = g.getFontMetrics(g.getFont()).getHeight();
-//			int x = 0, y = textY;
-//			g.drawString("count: "+count, x, y);
-			
-//			currentPackage++;
-//			if (!(currentPackage < package_size))
-//				currentPackage = 0;
-			
 			return image;
 		}
 

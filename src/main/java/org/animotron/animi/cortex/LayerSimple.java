@@ -24,6 +24,7 @@ import org.animotron.animi.*;
 import org.animotron.matrix.Matrix;
 import org.animotron.matrix.MatrixDelay;
 import org.animotron.matrix.MatrixFloat;
+import org.animotron.matrix.MatrixZeroAvg;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -58,7 +59,7 @@ public class LayerSimple implements Layer {
 
 	public MatrixDelay.Attenuation attenuation;
 	
-    public MatrixDelay axons;
+    public MatrixZeroAvg axons;
     
     public MatrixFloat neurons;
     public MatrixFloat neighbors;
@@ -94,7 +95,7 @@ public class LayerSimple implements Layer {
     	neighbors = new MatrixFloat(width, height, depth);
     	neighbors.fill(0f);
 
-    	axons = new MatrixDelay(attenuation, width, height, depth);
+    	axons = new MatrixZeroAvg(attenuation, width, height, depth);
     	axons.fill(0f);
 
     	image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -107,18 +108,26 @@ public class LayerSimple implements Layer {
     public void refreshImage() {
     	DataBufferInt dataBuffer = (DataBufferInt)image.getRaster().getDataBuffer();
     	int data[] = dataBuffer.getData();
-      
+    	
+    	int R = 0, G = 0, B = 0;
 //    	for (int i = 0; i < cols.length(); i++) {
     	for (int i = 0; i < data.length; i++) {
+    		
+    		R = 0; G = 0; B = 0;
     		final float value = axons.getByIndex(i);
       	
     		if (Float.isNaN(value))
-    			data[i] = Color.RED.getRGB();
+    			data[i] = Color.WHITE.getRGB();
     		else {
-    			int c = (int)(value * 255);
-    			if (c > 255) c = 255;
+    			if (value >= 0) {
+        			R = (int)(value * 255);
+        			if (R > 255) R = 255;
+    			} else {
+	    			B = (int)(-value * 255 * 1000000);
+	    			if (B > 255) B = 255;
+    			}
 					
-				data[i] = Utils.create_rgb(255, c, c, c);
+				data[i] = Utils.create_rgb(255, R, G, B);
     		}
     	}
     }

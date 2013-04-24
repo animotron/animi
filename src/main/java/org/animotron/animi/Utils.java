@@ -25,6 +25,7 @@ import javolution.xml.stream.XMLStreamException;
 import javolution.xml.stream.XMLStreamReader;
 import org.animotron.animi.cortex.LayerSimple;
 import org.animotron.animi.cortex.Mapping;
+import org.animotron.matrix.Matrix;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -55,9 +56,11 @@ public class Utils {
         return (int) Math.round((r + g + b) / (double)3);
     }
 
-    public static int create_rgb(int alpha, int r, int g, int b) {
-        int rgb = (alpha << 24) + (r << 16) + (g << 8) + b;
-        return rgb;
+    public static int create_rgb(int a, int r, int g, int b) {
+        return ((a & 0xFF) << 24) |
+                ((r & 0xFF) << 16) |
+                ((g & 0xFF) << 8)  |
+                ((b & 0xFF) << 0);
     }
 
     public static int get_alpha(int rgb) {
@@ -75,7 +78,7 @@ public class Utils {
     }
 
     public static int get_blue(int rgb) {
-        return rgb & 0xFF;
+        return (rgb >> 0) & 0xFF;
     }
     
 	public static BufferedImage drawRF(
@@ -121,27 +124,41 @@ public class Utils {
 		return img;
 	}
 	
+	private static int color(final float act) {
+		int R = 0, G = 0, B = 0;
+		if (act >= 0) {
+			R = (int) (255 * act);
+			if (R > 255) R = 255;
+			
+			B = 255;
+		
+		} else {
+			B = (int) (255 * -act);
+			if (B > 255) B = 255;
+			if (B < 50) B = 50;
+		}
+		
+		return Utils.create_rgb(255, R, G, B);
+	}
+	
 	public static void drawNA(
 			final BufferedImage image, final Mapping m, final int boxMini,
 			final int offsetX, final int offsetY,
 			final int cnX, final int cnY, final int cnZ,
 			final int pX, final int pY
 			) {
+		
 		//point of neuron activity in top left corner
-		int gray = (int) (255 * m.toZone().neurons.get(cnX, cnY, cnZ));
-		if (gray > 255) gray = 255;
 		image.setRGB(
 				offsetX + boxMini * pX + 2, 
 				offsetY + boxMini * pY + 2,
-				Utils.create_rgb(255, gray, gray, gray));
+				color(m.toZone().neurons.get(cnX, cnY, cnZ)));
 
 		//point of post neuron activity in top left plus one pixel left corner
-		gray = (int) (255 * m.toZone().axons.get(cnX, cnY, cnZ));
-		if (gray > 255) gray = 255;
 		image.setRGB(
 				offsetX + boxMini * pX + 3, 
 				offsetY + boxMini * pY + 2,
-				Utils.create_rgb(255, gray, gray, gray));
+				color(m.toZone().axons.get(cnX, cnY, cnZ)));
 	}
 
     public static BufferedImage drawRF(
@@ -151,9 +168,28 @@ public class Utils {
 			final int cnX, final int cnY, final int cnZ,
 			final Mapping m) {
 
-		int pX = 0, pY = 0;
+    	Matrix<Float> ws = m.senapseWeight().sub(cnX, cnY, cnZ);
+    	
+    	float maximum = Float.MIN_VALUE;
+    	float minimum = Float.MAX_VALUE;
+        for (int index = 0; index < ws.length(); index++) {
+        	final float w = ws.getByIndex(index);
+        	
+        	if (maximum < w)
+        		maximum = w;
+        	
+        	if (minimum > w)
+        		minimum = w;
+        }
+
+    	int R = 0, G = 0, B = 0;
+
+        int pX = 0, pY = 0;
         for (int l = 0; l < m.ns_links(); l++) {
-        	final int xi = m._senapses().get(cnX, cnY, cnZ, l, 0);
+
+            R = 0; G = 0; B = 0;
+
+            final int xi = m._senapses().get(cnX, cnY, cnZ, l, 0);
         	final int yi = m._senapses().get(cnX, cnY, cnZ, l, 1);
         	//XXX: final int zi = m.senapses().get(cnX, cnY, cnZ, l, 2);
         	
@@ -170,48 +206,18 @@ public class Utils {
         			&& pY > 0 
         			&& pY < boxSize) {
 
-		        int value = image.getRGB(offsetX + pX, offsetY + pY);
+		        final float w = m.senapseWeight().get(cnX, cnY, cnZ, l);
 
-		        int G = Utils.get_green(value);
-		        int B = Utils.get_blue(value);
-		        int R = Utils.get_red(value);
+	        	if (Float.isNaN(w) || Float.isInfinite(w)) {
+					R = 255; G = 255; B = 255;
 
-		        final float w;
-		        if (isPos) {
-		        	w = m.senapseWeight().get(cnX, cnY, cnZ, l);
-		        } else {
-		        	if (m.haveInhibitoryWeight()) {
-		        		w = m.inhibitoryWeight().get(cnX, cnY, cnZ, l);
-		        	} else {
-		        		w = 0f;
-		        	}
-		        }
-				if (Float.isNaN(w) || Float.isInfinite(w)) {
-					R = 255;
-				
-				} else if (w == 0.0f) {
-					if (isPos) {
-						G = 0;
-					} else {
-						B = 0;
-					}
-					//B = G = R = 0;
+				} else if (w >= 0.0f) {
+					R = (int) (255 * (w / maximum));
 
-				} else if (w > 0.0f) {
-					int v = (int) (255 * w * 5);
-					if (v > 255) v = 255;
-					//B = v; G = v; R = v;
-					if (isPos) {
-						G = v;
-					} else {
-						B = v;
-					}
 				} else {
-					R = 125;
-					//B = 255;
-					//B += 255 * m.linksWeight[lOffset + l] * 5;
-					//if (B > 255) B = 255;
+					B = (int) (255 * (w / minimum));
 				};
+				
 				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, R, G, B));
         	}
         }

@@ -323,6 +323,7 @@ public class LayerWLearning extends LayerSimple {
     		count++;
     	}
 
+		//XXX: считать средние и аксонную активность это разность собственной активности от средней
 		axons.step(neurons);
 		
 		//debuging

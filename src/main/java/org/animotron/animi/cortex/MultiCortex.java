@@ -34,6 +34,7 @@ import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.acts.InhibitoryTest;
 import org.animotron.animi.acts.LearningHebbian;
 import org.animotron.animi.acts.LearningTest;
+import org.animotron.animi.acts.MassSuicide;
 import org.animotron.animi.acts.WinnerGetsAll;
 import org.animotron.animi.gui.Application;
 import org.animotron.matrix.MatrixDelay;
@@ -152,7 +153,7 @@ public class MultiCortex implements Runnable {
                 new MappingHebbian(layer_1b, 49, 1, true, false) //7x7 (50)
             },
             InhibitoryTest.class,
-            LearningTest.class,
+            MassSuicide.class,
         	MatrixDelay.oneStepAttenuation
         );
     	((LearningHebbian)layer_2a_on_1b.cnLearning).factor = 0.001f;

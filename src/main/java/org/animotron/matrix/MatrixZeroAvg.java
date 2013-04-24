@@ -22,64 +22,50 @@ package org.animotron.matrix;
 
 import java.util.Arrays;
 
+import org.animotron.matrix.MatrixDelay.Attenuation;
+
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class MatrixDelay extends MatrixFloat {
+public class MatrixZeroAvg extends MatrixDelay {
 	
-	public interface Attenuation {
-		float next(int step, float value);
-	}
+	float[] avgs;
+	int count = 0;
 	
-	public final static Attenuation oneStepAttenuation = new Attenuation() {
-		@Override
-		public float next(int step, float value) {
-			return step <= 1 ? value : 0f;
-		}
-	};
-	
-	Attenuation attenuation;
-	
-	int[] stepsFromLastSet;
-	
-	public MatrixDelay(Attenuation attenuation, int ... dims) {
-		super(dims);
+	public MatrixZeroAvg(Attenuation attenuation, int ... dims) {
+		super(attenuation, dims);
 		
-		this.attenuation = attenuation;
-
-		stepsFromLastSet = new int[data.length];
+		avgs = new float[data.length];
 	}
 	
-	public MatrixDelay(Attenuation attenuation, MatrixFloat source) {
+	public MatrixZeroAvg(Attenuation attenuation, MatrixFloat source) {
 		this(attenuation, source.dimensions.clone());
 	}
 	
-	public MatrixDelay(MatrixDelay source) {
+	public MatrixZeroAvg(MatrixZeroAvg source) {
 		super(source);
 		
-		attenuation = source.attenuation;
-		
-		stepsFromLastSet = new int[source.stepsFromLastSet.length];
-		System.arraycopy(source.stepsFromLastSet, 0, stepsFromLastSet, 0, source.stepsFromLastSet.length);
+		avgs = new float[source.avgs.length];
+		System.arraycopy(source.avgs, 0, avgs, 0, source.avgs.length);
 	}
 
 	public void init(Value<Float> value) {
 		super.init(value);
 
 		//zero steps
-		for (int i = 0; i < stepsFromLastSet.length; i++) {
-			stepsFromLastSet[i] = 0;
+		for (int i = 0; i < avgs.length; i++) {
+			avgs[i] = 0;
 		}
 	}
 
-	public void set(Float value, int ... dims) {
+	public void set(final Float value, final int ... dims) {
 		final int index = index(dims);
 		super.setByIndex(value, index);
 		stepsFromLastSet[index] = 0;
 	}
 	
-	public void setByIndex(Float value, int index) {
+	public void setByIndex(final Float value, final int index) {
 		super.setByIndex(value, index);
 		stepsFromLastSet[index] = 0;
 	}
@@ -87,11 +73,16 @@ public class MatrixDelay extends MatrixFloat {
 	public void fill(Float value) {
 		super.fill(value);
 		Arrays.fill(stepsFromLastSet, 0);
+		Arrays.fill(avgs, 0);
 		isSet.clear(0, isSet.size() - 1);
 	}
 	
 	@Override
 	public Float getByIndex(final int index) {
+		return attenuation.next(stepsFromLastSet[index], data[index]) - avgs[index];
+	}
+
+	public Float pureByIndex(final int index) {
 		return attenuation.next(stepsFromLastSet[index], data[index]);
 	}
 
@@ -104,12 +95,13 @@ public class MatrixDelay extends MatrixFloat {
 		return super.max();
 	}
 	
-	public MatrixDelay copy() {
-		return new MatrixDelay(this);
+	public MatrixZeroAvg copy() {
+		return new MatrixZeroAvg(this);
 	}
 
 	public MatrixProxy<Float> sub(int ... dims) {
-		return new MatrixProxy<Float>(this, dims);
+		throw new IllegalArgumentException();
+//		return new MatrixProxy<Float>(this, dims);
 	}
 
 //	public void debug(String comment) {
@@ -119,13 +111,23 @@ public class MatrixDelay extends MatrixFloat {
 //	}
 	
 	public void step(MatrixFloat matrix) {
+		float avg = 0f;
+		
 		for (int index = 0; index < length(); index++) {
-			if (matrix.isSet(index) && matrix.getByIndex(index) != 0f) {//WORKAROUND: > 0f
+
+			if (matrix.isSet(index) && matrix.getByIndex(index) != 0f) {//WORKAROUND: != 0f
 				setByIndex(matrix.getByIndex(index), index);
 			}
+			//calculate average
+			avg = avgs[index];
+			avg = (avg * count + pureByIndex(index)) / (count + 1) ;
+			avgs[index] = avg;
+
 			stepsFromLastSet[index]++;
 		}
 		isSet.clear(0, isSet.size() - 1);
+		
+		count++;
 	}
 
 	@Override

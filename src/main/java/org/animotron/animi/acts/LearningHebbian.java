@@ -58,21 +58,24 @@ public class LearningHebbian extends Task {
 		float sumQ2 = 0.0f;
 		for (int index = 0; index < posW.length(); index++) {
     		
-			if (negW != null && negW.getByIndex(index) > 0f) {
-	    		posW.setByIndex(0f, index);
-				continue;
-			}
+//			if (negW != null && negW.getByIndex(index) > 0f) {
+//	    		posW.setByIndex(0f, index);
+//				continue;
+//			}
 
 			final float X = in.getByIndex(index) - avg;
+			if (X < 0f) {
+				System.out.println();
+			}
 			
 			final float q = posW.getByIndex(index) + X * activity * factor;
-			if (q > 0f) {
+//			if (q > 0f) {
 	    		posW.setByIndex(q, index);
 			
 	    		sumQ2 += q * q;
-			} else {
-	    		posW.setByIndex(0f, index);
-			}
+//			} else {
+//	    		posW.setByIndex(0f, index);
+//			}
 		}
 	    return sumQ2;
 	}
@@ -145,16 +148,16 @@ public class LearningHebbian extends Task {
 			factor
 		);
 
-		if (m.haveInhibitoryWeight()) {
-			LearningHebbianAnti.learn(
-				in, 
-				posW, 
-				negW, 
-				act,
-				avg,
-				factor
-			);
-		}
+//		if (m.haveInhibitoryWeight()) {
+//			LearningHebbianAnti.learn(
+//				in, 
+//				posW, 
+//				negW, 
+//				act,
+//				avg,
+//				factor
+//			);
+//		}
 		
 //		LayerSimple frLayer = m.frZone();
 //		if (frLayer instanceof LayerWLearning) {
