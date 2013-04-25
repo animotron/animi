@@ -36,7 +36,7 @@ public class CodeLearning extends Task {
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {
-		if (cz.learning.get(x,y,z) <= 0f)
+		if (cz.toLearning.get(x,y,z) <= 0f)
 			return;
 			
 		final Mapping m = cz.in_zones[0];

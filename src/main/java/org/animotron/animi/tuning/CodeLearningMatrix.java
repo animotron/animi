@@ -44,6 +44,7 @@ public class CodeLearningMatrix extends Task implements Imageable {
 	@Override
 	public void prepare() {
 		cz.learning.fill(0f);
+		cz.toLearning.fill(0f);
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {
@@ -74,7 +75,6 @@ public class CodeLearningMatrix extends Task implements Imageable {
 	}
 	
 	public boolean isDone() {
-		cz.learning.debug("learning");
 		return true;
 	}
 

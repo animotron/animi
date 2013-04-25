@@ -24,6 +24,7 @@ import org.animotron.animi.RuntimeParam;
 import org.animotron.animi.acts.WinnerGetsAll;
 import org.animotron.animi.cortex.*;
 import org.animotron.matrix.Matrix;
+import org.animotron.matrix.MatrixFloat;
 
 /**
  * Активация простых нейронов при узнавании запомненной картины
@@ -58,7 +59,8 @@ public class InhibitoryLearningMatrix extends Task {
 	@Override
 	public void gpuMethod(final int x, final int y, final int z) {
 		if (x == 0 && y == 0 && z == 0) {
-			_(cz.in_zones[0], cz.learning);
+			cz.toLearning = (MatrixFloat) cz.learning.copy();
+			_(cz.in_zones[0], cz.toLearning);
 		}
 //		
 //		

@@ -67,6 +67,7 @@ public class LayerSimple implements ILayer {
     public MatrixFloat neighbors;
 
     public MatrixFloat learning;
+    public MatrixFloat toLearning;
 
     private BufferedImage image;
 
@@ -98,6 +99,9 @@ public class LayerSimple implements ILayer {
     	
     	learning = new MatrixFloat(width, height, depth);
     	learning.fill(0f);
+    	
+    	toLearning = new MatrixFloat(width, height, depth);
+    	toLearning.fill(0f);
 
     	neighbors = new MatrixFloat(width, height, depth);
     	neighbors.fill(0f);
