@@ -60,12 +60,9 @@ public class CodeLayerViz implements Imageable {
     	int data[] = dataBuffer.getData();
 
 		Matrix<Float> ws = layer.in_zones[0].senapseWeight();
-//		ws.debug("ws");
     	for (int i = 0; i < data.length; i++) {
     		if (ws.getByIndex(i) >= 0f) {
     			data[i] = Codes.GRADIENT_RAINBOW[Math.round( ws.getByIndex(i) )].getRGB();
-    		} else {
-    			System.out.println("");
     		}
     	}
 		return img;
