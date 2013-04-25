@@ -41,7 +41,7 @@ import java.util.UUID;
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class LayerSimple implements Layer {
+public class LayerSimple implements ILayer {
 
 	String id = UUID.randomUUID().toString();
 	String name;
@@ -56,13 +56,17 @@ public class LayerSimple implements Layer {
     
 	@InitParam(name="depth")
 	public int depth = 9;
+	
+	public boolean isZeroAvgAxons = true;
 
 	public MatrixDelay.Attenuation attenuation;
 	
-    public MatrixZeroAvg axons;
+    public MatrixDelay axons;
     
     public MatrixFloat neurons;
     public MatrixFloat neighbors;
+
+    public MatrixFloat learning;
 
     private BufferedImage image;
 
@@ -91,11 +95,18 @@ public class LayerSimple implements Layer {
     	
     	neurons = new MatrixFloat(width, height, depth);
     	neurons.fill(0f);
+    	
+    	learning = new MatrixFloat(width, height, depth);
+    	learning.fill(0f);
 
     	neighbors = new MatrixFloat(width, height, depth);
     	neighbors.fill(0f);
 
-    	axons = new MatrixZeroAvg(attenuation, width, height, depth);
+    	if (isZeroAvgAxons) {
+    		axons = new MatrixZeroAvg(attenuation, width, height, depth);
+    	} else {
+    		axons = new MatrixDelay(attenuation, width, height, depth);
+    	}
     	axons.fill(0f);
 
     	image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -127,7 +138,7 @@ public class LayerSimple implements Layer {
 	    			if (B > 255) B = 255;
     			}
 					
-				data[i] = Utils.create_rgb(255, R, G, B);
+				data[i] = Utils.rgb(255, R, G, B);
     		}
     	}
     }

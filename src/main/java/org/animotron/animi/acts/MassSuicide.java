@@ -32,7 +32,7 @@ import org.animotron.matrix.*;
  */
 public class MassSuicide extends LearningHebbian {
 	
-	public int eachCount = 500;
+	public int eachCount = 500000;
 	
 	Matrix<Float> harakiri;
 

@@ -47,7 +47,7 @@ public class ActivationHebbian extends Task {
 
 	public void gpuMethod(final int x, final int y, final int z) {
 		
-		Mapping m = cz.in_zones[0];
+		final Mapping m = cz.in_zones[0];
 		
 //		if (m instanceof MappingSOM) {
 //			MatrixMapped<Float> in = new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z));

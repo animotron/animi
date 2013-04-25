@@ -18,9 +18,10 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.acts;
+package org.animotron.animi.tuning;
 
 import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.acts.WinnerGetsAll;
 import org.animotron.animi.cortex.*;
 
 /**

@@ -144,6 +144,13 @@ public class MappingHebbian implements Mapping {
 		    	}
 	    	}
 	    }
+	    //WORKAROUND: init by -1
+	    senapseWeight.init(new Matrix.Value<Float>() {
+			@Override
+			public Float get(int... dims) {
+				return -1f;
+			}
+		});
 	    
 	    
 	    if (haveInhibitory) {

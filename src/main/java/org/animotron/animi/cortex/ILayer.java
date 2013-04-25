@@ -25,9 +25,8 @@ import org.animotron.matrix.Matrix;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
- *
  */
-public interface Layer extends Imageable {
+public interface ILayer extends Imageable {
 	
 	//neural image size & set methods
 	public int width();

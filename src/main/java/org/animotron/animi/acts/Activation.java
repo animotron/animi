@@ -69,7 +69,7 @@ public class Activation extends Task {
 		case 2:
 			Mapping m = cz.in_zones[0];
 
-			final Layer layer = m.toZone();
+			final ILayer layer = m.toZone();
 			
 			float nAct = cz.neurons.get(x, y, z);
 			for (int dx = -1; dx <= 1; dx += 2) {

@@ -21,7 +21,7 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
-import org.animotron.animi.acts.*;
+import org.animotron.animi.tuning.InhibitoryLearningMatrix;
 import org.animotron.matrix.MatrixDelay;
 
 import java.awt.Color;
@@ -47,7 +47,13 @@ public class LayerWLearning extends LayerSimple {
 	public Mapping[] in_zones;
 
 	@Params
-	public Activation cnActivation = new Activation(this);
+	public Task cnActivation;
+
+	@Params
+	public Task learningMatrix;
+	
+	@Params
+	public Task learningMatrixInhibitory;
 
 	@Params
 	public Task cnLearning;
@@ -85,8 +91,10 @@ public class LayerWLearning extends LayerSimple {
 			String name, MultiCortex mc, 
 			int width, int height, int depth, 
 			Mapping[] in_zones, 
-			Class<? extends Task> inhibitory,
-			Class<? extends Task> learning,
+			Class<? extends Task> classOfActivation,
+			Class<? extends Task> classOfInhibitory,
+			Class<? extends Task> classOfLearningMatrix,
+			Class<? extends Task> classOfLearning,
 			MatrixDelay.Attenuation attenuation) {
 		
 		super(name, mc, width, height, depth, attenuation);
@@ -94,18 +102,34 @@ public class LayerWLearning extends LayerSimple {
 		this.in_zones = in_zones;
 	
 		try {
-			Constructor<? extends Task> constructor = inhibitory.getConstructor(this.getClass());
+			Constructor<? extends Task> constructor = classOfActivation.getConstructor(this.getClass());
+			cnActivation = constructor.newInstance(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			Constructor<? extends Task> constructor = classOfInhibitory.getConstructor(this.getClass());
 			cnInhibitory = constructor.newInstance(this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		try {
-			Constructor<? extends Task> constructor = learning.getConstructor(this.getClass());
+			Constructor<? extends Task> constructor = classOfLearning.getConstructor(this.getClass());
 			cnLearning = constructor.newInstance(this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		try {
+			Constructor<? extends Task> constructor = classOfLearningMatrix.getConstructor(this.getClass());
+			learningMatrix = constructor.newInstance(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		learningMatrixInhibitory = new InhibitoryLearningMatrix(this);
     }
 
 	/**
@@ -306,7 +330,7 @@ public class LayerWLearning extends LayerSimple {
 //    		debugNeurons("before inhibitory");
 //		}
 
-		performTask(cnInhibitory);
+//		performTask(cnInhibitory);
 //		performTask(winnerGetsAll);
 
 //    	if (cnLearning instanceof LearningSOM) {
@@ -316,8 +340,12 @@ public class LayerWLearning extends LayerSimple {
 //		performTask(inhibitory);
 //		debug("after inhibitory");
 
-		if (isLearning()) {
-    	    //Такт 2. Запоминание и переоценка параметров стабильности нейрона
+    	performTask(learningMatrix);
+    	
+    	if (isLearning()) {
+        	performTask(learningMatrixInhibitory);
+
+        	//Такт 2. Запоминание и переоценка параметров стабильности нейрона
         	performTask(cnLearning);
     	
     		count++;

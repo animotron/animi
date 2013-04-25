@@ -31,17 +31,14 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
-import org.animotron.animi.acts.InhibitoryTest;
-import org.animotron.animi.acts.LearningHebbian;
-import org.animotron.animi.acts.LearningTest;
-import org.animotron.animi.acts.MassSuicide;
-import org.animotron.animi.acts.WinnerGetsAll;
+import org.animotron.animi.acts.*;
 import org.animotron.animi.gui.Application;
-import org.animotron.matrix.MatrixDelay;
-import org.animotron.matrix.MatrixDelay.Attenuation;
+import org.animotron.animi.tuning.*;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import static org.animotron.matrix.MatrixDelay.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -68,7 +65,9 @@ public class MultiCortex implements Runnable {
     
     public long count = 0;
     
-    public Retina retina;
+    public IRetina retina;
+    LayerSimple z_in;
+    LayerWLearning layer_1b;
 
     @Params
     public LayerSimple [] zones;
@@ -85,8 +84,8 @@ public class MultiCortex implements Runnable {
     	this.app = app;
     	
 //    	final int delay = 8;
-    	LayerSimple z_in = new LayerSimple("Зрительный нерв", this, 60, 60, 1,
-			MatrixDelay.oneStepAttenuation
+    	z_in = new LayerSimple("Зрительный нерв", this, 1, 1, 1,
+			oneStepAttenuation
 //    		new MatrixDelay.Attenuation() {
 //
 //				@Override
@@ -101,6 +100,7 @@ public class MultiCortex implements Runnable {
 //				}
 //        	}
         );
+    	z_in.isZeroAvgAxons = false;
         
         //1st zone
 //    	LayerWLearning layer_1a = new LayerWLearning("1й образы", this, 5, 5, 4, //120, 120, //160, 120,
@@ -117,19 +117,15 @@ public class MultiCortex implements Runnable {
 //	    	}
 //        );
 
-    	LayerWLearning layer_1b = new LayerWLearning("1й факторы", this, 7, 7, 6, //120, 120, //160, 120,
+    	layer_1b = new LayerWLearning("1й факторы", this, 20, 20, 1, //120, 120, //160, 120,
             new Mapping[]{
-                new MappingHebbian(z_in, 300, 1, true, false) //7x7 (50)
+                new MappingHebbian(z_in, 1, 1, true, false) //7x7 (50)
             },
-            WinnerGetsAll.class, //Inhibitory.class,
-            LearningHebbian.class,
-			new Attenuation() {
-				@Override
-				public float next(int step, float value) {
-					return value;
-//					return step <= 5 ? value : 0f;
-				}
-			}
+            CodeActivation.class,
+            Inhibitory.class,
+            CodeLearningMatrix.class,
+            CodeLearning.class,
+            noAttenuation
         );
         
 //        layer_2a_on_1b = new LayerWLearning("2й SOM", this, 5, 5, 1,
@@ -148,26 +144,34 @@ public class MultiCortex implements Runnable {
 //            LearningSOM.class
 //        );
 
-    	LayerWLearning layer_2a_on_1b = new LayerWLearning("2й тестовый", this, 7, 7, 1,
-            new Mapping[]{
-                new MappingHebbian(layer_1b, 49, 1, true, false) //7x7 (50)
-            },
-            InhibitoryTest.class,
-            MassSuicide.class,
-        	MatrixDelay.oneStepAttenuation
-        );
-    	((LearningHebbian)layer_2a_on_1b.cnLearning).factor = 0.001f;
+//    	LayerWLearning layer_2a_on_1b = new LayerWLearning("2й тестовый", this, 7, 7, 1,
+//            new Mapping[]{
+//                new MappingHebbian(layer_1b, 49, 1, true, false) //7x7 (50)
+//            },
+//            InhibitoryTest.class,
+//            CodeLearningMatrix.class,
+//            MassSuicide.class,
+//        	MatrixDelay.oneStepAttenuation
+//        );
+//    	((LearningHebbian)layer_2a_on_1b.cnLearning).factor = 0.001f;
 
 //        z_1st.addMappring(z_1st);
         
 //        zones = new LayerSimple[]{z_in, layer_1a, layer_1b, layer_2a_on_1b, layer_2b_on_1b};
-        zones = new LayerSimple[]{z_in, layer_1b, layer_2a_on_1b};
-        
-        retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
-        retina.setNextLayer(z_in);
-        retina.setResetLayer(layer_1b);
+        zones = new LayerSimple[]{z_in, layer_1b}; //, layer_2a_on_1b};
     }
     
+
+	public void setRetina(IRetina retina) {
+		if (retina == null)
+			this.retina = new Retina(Retina.WIDTH, Retina.HEIGHT);
+		else
+			this.retina = retina;
+		
+        this.retina.setNextLayer(z_in);
+        this.retina.setResetLayer(layer_1b);
+	}
+
     public void init() {
     	// Flush all pending tasks
         flush();

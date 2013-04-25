@@ -39,6 +39,13 @@ public class MatrixDelay extends MatrixFloat {
 		}
 	};
 	
+	public final static Attenuation noAttenuation = new Attenuation() {
+		@Override
+		public float next(int step, float value) {
+			return value;
+		}
+	};
+
 	Attenuation attenuation;
 	
 	int[] stepsFromLastSet;

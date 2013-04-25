@@ -29,7 +29,7 @@ import java.awt.image.BufferedImage;
  *
  */
 //TODO: macula lutea
-public class Retina {
+public class Retina implements IRetina {
 
 	//Сетчатка
 //  public static final int WIDTH = 192;
@@ -56,6 +56,10 @@ public class Retina {
 	}
 	
 	private LayerSimple NL = null;
+	/* (non-Javadoc)
+	 * @see org.animotron.animi.cortex.IRetina#setNextLayer(org.animotron.animi.cortex.LayerSimple)
+	 */
+	@Override
 	public void setNextLayer(LayerSimple sz) {
 		NL = sz;
 		
@@ -66,6 +70,10 @@ public class Retina {
 	}
 	
 	LayerWLearning RL = null;
+	/* (non-Javadoc)
+	 * @see org.animotron.animi.cortex.IRetina#setResetLayer(org.animotron.animi.cortex.LayerWLearning)
+	 */
+	@Override
 	public void setResetLayer(LayerWLearning layer) {
 		RL = layer;
 	}

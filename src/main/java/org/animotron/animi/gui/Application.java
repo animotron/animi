@@ -38,6 +38,8 @@ import javax.swing.border.BevelBorder;
 import org.animotron.animi.Imageable;
 import org.animotron.animi.cortex.*;
 import org.animotron.animi.simulator.*;
+import org.animotron.animi.tuning.CodeLayerViz;
+import org.animotron.animi.tuning.Codes;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -64,7 +66,8 @@ public class Application extends JFrame {
 	
 	public JLabel count;
 	
-    String stimulatorClass = "org.animotron.animi.simulator.StimulatorAnime";
+//    String stimulatorClass = "org.animotron.animi.simulator.StimulatorAnime";
+	String stimulatorClass = "org.animotron.animi.tuning.CodeSignal";
     Stimulator stimulator = null;
 	
 	private Application() {
@@ -142,7 +145,7 @@ public class Application extends JFrame {
         menu.setMnemonic(KeyEvent.VK_D);
         menuBar.add(menu);
 
-        String[][] sets = 
+        final String[][] sets = 
     		new String[][] {
         		new String[] {"Webcamera", "org.animotron.animi.simulator.StimulatorWebcam"},
         		new String[] {"Image", "org.animotron.animi.simulator.StimulatorImage"},
@@ -180,7 +183,9 @@ public class Application extends JFrame {
     	
     	addMenu(windowsMenu, stimulator);
  
-        //hack ... remove
+    	addMenu(windowsMenu, new Codes());
+
+    	//hack ... remove
         JMenuItem menuItem = new JMenuItem("Cube");
         menuItem.addActionListener(new ActionListener() {
 			@Override
@@ -198,11 +203,16 @@ public class Application extends JFrame {
 
     	        LayerWLearning z = (LayerWLearning) zone;
 
+    	        if (z.learningMatrix instanceof Imageable) {
+	    	        addMenu(menu, (Imageable) z.learningMatrix);
+				}
+    	       	addMenu(menu, new CodeLayerViz((LayerWLearning)zone));
+    	        
     	        addMenu(menu, z);
     	        for (Mapping m : z.in_zones) {
     	        	addMenu(menu, m.getImageable());
     	        }
-    	        addMenu(menu, z.getRRF());
+//    	        addMenu(menu, z.getRRF());
 			} else {
 				addMenu(windowsMenu, zone);
 			}
@@ -497,6 +507,12 @@ public class Application extends JFrame {
 			
 			stimulator = constructor.newInstance(this);
 			
+			if (stimulator instanceof IRetina) {
+				cortexs.setRetina( (IRetina) stimulator );
+			} else {
+				cortexs.setRetina( null );
+			}
+			
 //	    	createFrame(stimulator);
     	} catch (Exception e) {
 		}
@@ -513,6 +529,10 @@ public class Application extends JFrame {
     	addToBar();
     	
 //    	createFrame(stimulator);
+		cortexs.setRetina((IRetina) stimulator);
+		cortexs.setRetina((IRetina) stimulator);
+		cortexs.setRetina((IRetina) stimulator);
+		cortexs.setRetina((IRetina) stimulator);
     }
     
     private synchronized void run() {

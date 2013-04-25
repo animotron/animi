@@ -56,7 +56,7 @@ public class Utils {
         return (int) Math.round((r + g + b) / (double)3);
     }
 
-    public static int create_rgb(int a, int r, int g, int b) {
+    public static int rgb(int a, int r, int g, int b) {
         return ((a & 0xFF) << 24) |
                 ((r & 0xFF) << 16) |
                 ((g & 0xFF) << 8)  |
@@ -138,7 +138,7 @@ public class Utils {
 			if (B < 50) B = 50;
 		}
 		
-		return Utils.create_rgb(255, R, G, B);
+		return Utils.rgb(255, R, G, B);
 	}
 	
 	public static void drawNA(
@@ -218,7 +218,7 @@ public class Utils {
 					B = (int) (255 * (w / minimum));
 				};
 				
-				image.setRGB(offsetX + pX, offsetY + pY, create_rgb(255, R, G, B));
+				image.setRGB(offsetX + pX, offsetY + pY, rgb(255, R, G, B));
         	}
         }
         return image;
@@ -251,7 +251,7 @@ public class Utils {
 				int c = calcGrey(image, pX, pY);
 				c += 255 * sz.neurons.get(cnX, cnY) * m.senapseWeight().get(cnX, cnY, 0, l) * 1000;
 				if (c > 255) c = 255;
-				image.setRGB(pX, pY, create_rgb(255, c, c, c));
+				image.setRGB(pX, pY, rgb(255, c, c, c));
         	}
         }
         return image;

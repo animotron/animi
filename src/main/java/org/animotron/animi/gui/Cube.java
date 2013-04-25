@@ -32,7 +32,7 @@ import javax.media.opengl.*;
 import javax.media.opengl.awt.GLCanvas;
 import javax.swing.JInternalFrame;
 
-import org.animotron.animi.cortex.Layer;
+import org.animotron.animi.cortex.ILayer;
 
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.gl2.GLUT;
@@ -45,7 +45,7 @@ import static org.animotron.animi.gui.Application.*;
  */
 public class Cube extends JInternalFrame implements GLEventListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
-	Layer layer;
+	ILayer layer;
 	
 	//eye position for gluLookAt()
 	float eyeX = 0f;
@@ -61,7 +61,7 @@ public class Cube extends JInternalFrame implements GLEventListener, MouseListen
 	GLCanvas canvas;
 	GLUT glut = new GLUT();
 	
-	public Cube(Layer layer) {
+	public Cube(ILayer layer) {
 		super("Cube", true, // resizable
 				true,		 // closable
 				false,		 // maximizable

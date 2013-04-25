@@ -24,7 +24,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import org.animotron.animi.Params;
-import org.animotron.animi.cortex.Retina;
+import org.animotron.animi.cortex.IRetina;
 import org.animotron.animi.gui.Application;
 import org.animotron.animi.simulator.figures.*;
 
@@ -43,7 +43,7 @@ public class StimulatorStatic extends AbstractStimulator {
 	}
 
 	public void init() {
-		final Retina retina = app.cortexs.retina;
+		final IRetina retina = app.cortexs.retina;
 		
         figures = new Figure[] {
 //        	new OvalAnime(15, mc.retina.width(), mc.retina.height()),
@@ -67,7 +67,7 @@ public class StimulatorStatic extends AbstractStimulator {
 
 	@Override
 	public BufferedImage getNextImage() {
-		final Retina retina = app.cortexs.retina;
+		final IRetina retina = app.cortexs.retina;
 
 		img = new BufferedImage(retina.worldWidth(), retina.worldHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();

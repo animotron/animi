@@ -21,16 +21,13 @@
 package org.animotron.animi.simulator;
 
 import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import org.animotron.animi.Params;
-import org.animotron.animi.cortex.Retina;
+import org.animotron.animi.cortex.IRetina;
 import org.animotron.animi.gui.Application;
 import org.animotron.animi.simulator.figures.Figure;
-import org.animotron.animi.simulator.figures.RectAnime;
 import org.animotron.animi.simulator.figures.RotateAnime;
 
 /**
@@ -50,7 +47,7 @@ public class StimulatorAnime extends AbstractStimulator {
 	}
 
 	public void init() {
-		Retina retina = app.cortexs.retina;
+		IRetina retina = app.cortexs.retina;
 		
 		int width = retina.worldWidth();
 		int height = retina.worldHeight();
@@ -64,12 +61,12 @@ public class StimulatorAnime extends AbstractStimulator {
         
         int f = 0;
 
-		int step = 56;
-        int offset = retina.worldStep() * step / 8;
-
-        int j = 0;
-        int[][] steps = new int[step][];
-
+//		int step = 56;
+//        int offset = retina.worldStep() * step / 8;
+//
+//        int j = 0;
+//        int[][] steps = new int[step][];
+//
 //        for (int k = 0; k < 2; k++) {
 //	        for (int i = 0; i < step/4; i++) {
 //	        	steps[j++] = new int[] {-retina.worldStep(), 0};
