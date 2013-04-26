@@ -4,7 +4,7 @@
 
 	<groupId>org.animotron</groupId>
 	<artifactId>animi</artifactId>
-	<version>0.4M01</version>
+	<version>0.4M02</version>
 	<packaging>jar</packaging>
 
 	<name>Animi</name>
