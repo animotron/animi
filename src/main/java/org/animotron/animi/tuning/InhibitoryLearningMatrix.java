@@ -109,12 +109,16 @@ public class InhibitoryLearningMatrix extends Task {
 	public static void _(final Mapping m, final Matrix<Float> source) {
 		
 		final Matrix<Float> cols = source.copy();
+		
+		int count = 0;
     	
     	//max is winner & winner gets all
     	int[] maxPos;
     	float max = 0;
     	
-    	while (true) {
+    	source.fill(0f);
+
+    	while (count == 0) {
 	    	maxPos = cols.max();
 	        if (maxPos == null) {
 	        	break;
@@ -122,13 +126,13 @@ public class InhibitoryLearningMatrix extends Task {
 	        
 	    	max = cols.get(maxPos);
 	    	
-	    	if (m.senapseWeight().get(maxPos[0],maxPos[1],maxPos[2],0) < 0f) {
-	        	source.fill(0f);
+//	    	if (m.senapseWeight().get(maxPos[0],maxPos[1],maxPos[2],0) < 0f) {
 	        	source.set(max, maxPos);
-        		return;
-	        } else {
+	        	count++;
+//        		return;
+//	        } else {
 	        	cols.set(0f, maxPos);
-	        }
+//	        }
     	}
 	}
 }

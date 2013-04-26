@@ -41,9 +41,9 @@ public class CodeLearning extends Task {
 			
 		final Mapping m = cz.in_zones[0];
 		
-		if (m.senapseWeight().get(x,y,z,0) >= 0f) {
-			return;
-		}
+//		if (m.senapseWeight().get(x,y,z,0) >= 0f) {
+//			return;
+//		}
 
 		final Integer[] pos = m.senapses().get(x, y, z, 0);
 		final float in = m.frZone().axons().get(pos[0], pos[1], pos[2]);

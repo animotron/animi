@@ -54,20 +54,21 @@ public class CodeLearningMatrix extends Task implements Imageable {
 		if (act <= 0f)
 			return;
 		
+		Mapping m = cz.in_zones[0];
+		
 		for (int xx = 0; xx < cz.width; xx++) {
 			for (int yy = 0; yy < cz.height; yy++) {
 				for (int zz = 0; zz < cz.depth; zz++) {
-//				if (xx == x && yy == y) 
-//					continue;
 				
-				final int dx = xx - x;
-				final int dy = yy - y;
-				final int dz = zz - z;
-//				
-//				final double l = 10.0 / (Math.sqrt(dx*dx + dy*dy) + 1);
-				final double l = 10.0 - Math.sqrt(dx*dx + dy*dy + dz*dz);
+					final int dx = xx - x;
+					final int dy = yy - y;
+					final int dz = zz - z;
 	
-				cz.learning.set(cz.learning.get(xx,yy,zz) + (float)(l > 0f ? l * act : 0f), xx,yy,zz);
+					final double l = .2 / (Math.sqrt(dx*dx + dy*dy + dz*dz) + 1.0);
+					
+					float factor = cz.learning.get(xx,yy,zz) + (float)(l > 0f ? l * act : 0f);
+					
+					cz.learning.set(factor, xx,yy,zz);
 				}
 			}
 		}
@@ -75,6 +76,21 @@ public class CodeLearningMatrix extends Task implements Imageable {
 	}
 	
 	public boolean isDone() {
+		Mapping m = cz.in_zones[0];
+		
+		for (int xx = 0; xx < cz.width; xx++) {
+			for (int yy = 0; yy < cz.height; yy++) {
+				for (int zz = 0; zz < cz.depth; zz++) {
+					final float w = m.senapseWeight().get(xx, yy, zz, 0);
+					
+					float factor = cz.learning.get(xx,yy,zz);
+					factor += w >= 0 ? 0f : 1f;
+					
+					cz.learning.set(factor, xx,yy,zz);
+				}
+			}
+		}
+		
 		return true;
 	}
 
@@ -98,7 +114,7 @@ public class CodeLearningMatrix extends Task implements Imageable {
     	DataBufferInt dataBuffer = (DataBufferInt)img.getRaster().getDataBuffer();
     	int data[] = dataBuffer.getData();
 
-    	cz.learning.debug("learning");
+//    	cz.learning.debug("learning");
     	
     	int R = 0, G = 0, B = 0;
     	for (int i = 0; i < data.length; i++) {
