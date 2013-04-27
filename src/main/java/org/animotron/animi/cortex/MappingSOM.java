@@ -711,4 +711,10 @@ public class MappingSOM implements Mapping {
 	public boolean isDirectLearning() {
 		return true;
 	}
+
+	@Override
+	public Matrix<Float> senapsesCode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

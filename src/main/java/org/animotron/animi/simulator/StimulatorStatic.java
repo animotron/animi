@@ -43,7 +43,7 @@ public class StimulatorStatic extends AbstractStimulator {
 	}
 
 	public void init() {
-		final IRetina retina = app.cortexs.retina;
+		final IRetina retina = app.contr.getRetina();
 		
         figures = new Figure[] {
 //        	new OvalAnime(15, mc.retina.width(), mc.retina.height()),
@@ -67,7 +67,7 @@ public class StimulatorStatic extends AbstractStimulator {
 
 	@Override
 	public BufferedImage getNextImage() {
-		final IRetina retina = app.cortexs.retina;
+		final IRetina retina = app.contr.getRetina();
 
 		img = new BufferedImage(retina.worldWidth(), retina.worldHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();
@@ -82,5 +82,10 @@ public class StimulatorStatic extends AbstractStimulator {
 	public boolean isReset() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public int getCode() {
+		return -1;
 	}
 }

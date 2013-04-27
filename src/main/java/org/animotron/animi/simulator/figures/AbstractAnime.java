@@ -37,7 +37,7 @@ public abstract class AbstractAnime implements Figure {
     protected int[][] anime;
 
     private int i = 0;
-    private double dx, dy, dt;
+    private double dx, dy; //, dt;
     protected double l = 0;
     private AffineTransform at;
     Point2D[] p;
@@ -46,7 +46,7 @@ public abstract class AbstractAnime implements Figure {
     public boolean active = true;
 
     public AbstractAnime(double dt, int[][] anime) {
-        this.dt = dt;
+//        this.dt = dt;
         this.anime = anime;
     }
 	
@@ -95,5 +95,9 @@ public abstract class AbstractAnime implements Figure {
 	@Override
 	public boolean isActive() {
 		return active;
+	}
+	
+	public int getCode() {
+		return -1;
 	}
 }

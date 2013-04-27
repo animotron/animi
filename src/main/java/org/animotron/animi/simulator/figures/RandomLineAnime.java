@@ -94,5 +94,8 @@ public class RandomLineAnime implements Figure {
 	public boolean isActive() {
 		return active;
 	}
-
+	
+	public int getCode() {
+		return -1;
+	}
 }

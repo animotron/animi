@@ -23,6 +23,8 @@ package org.animotron.animi.simulator.figures;
 import java.awt.*;
 import java.util.Random;
 
+import org.animotron.animi.tuning.Codes;
+
 import static java.lang.Math.*;
 
 
@@ -56,24 +58,54 @@ public class RotateAnime extends AbstractAnime {
         polygon.addPoint(width,0);
         polygon.addPoint(-width,0);
         
-        tremor = new int[8*2][2];
+        
+//        double twoPI = PI; //2.0 * PI;
+//        double delta = twoPI / (double)Codes.SHIFTS;
+        
+        tremor = new int[Codes.SHIFTS][2];
+        
         int i = 0;
-        for (double alfa = 0; alfa < 2.0 * PI; alfa += PI / 8.0) {
+//        for (double alfa = 0; alfa < twoPI; alfa += delta) {
+//        	tremor[i] = 
+//    			new int[] {
+//        			(int) (6.0 * worldStep * cos(alfa)), 
+//        			(int) (6.0 * worldStep * sin(alfa))
+//        		};
+//        	i++;
+//        }
+        int half = Codes.SHIFTS / 2;
+        for (int delta = -half; delta < half; delta++) {
         	tremor[i] = 
     			new int[] {
-        			(int) (6.0 * worldStep * cos(alfa)), 
-        			(int) (6.0 * worldStep * sin(alfa))
+        			(int) (1.0 * worldStep * delta), 
+        			(int) (1.0 * worldStep * delta)
         		};
         	i++;
         }
-        
 	}
 	
 	Random rnd = new Random();
 	
-	double alfa = PI * 2.0 * rnd.nextDouble();
+	double angelStep = PI / (double)Codes.CODES;
+	double alfa = nextAngel();
+	int code = 0;
+	
 	int step = 0;
 	int start = 0;
+	
+	private double nextAngel() {
+		final double angel = angelStep * code;// (code = rnd.nextInt(Codes.CODES));
+		
+		code++;
+		if (code >= Codes.CODES)
+			code = 0;
+		
+		return angel; 
+	}
+	
+	public int getCode() {
+		return code;
+	}
 
 	public void drawImage(Graphics g) {
 		
@@ -88,17 +120,12 @@ public class RotateAnime extends AbstractAnime {
 		//rotate on angel alfa
 		g2d.rotate(alfa);
 		
-		step++;
-		if (step >= tremor.length) {
-			step = 0;
-		}
 		int[] pos = tremor[step];
 		//shift by tremor
 		g2d.translate(
 			pos[0],
 			pos[1]
 		);
-		
         
 		g2d.setColor(Color.WHITE);
         if (filled)
@@ -109,13 +136,18 @@ public class RotateAnime extends AbstractAnime {
 	
 	@Override
 	public boolean step() {
-		return (start == step);
+		step++;
+		if (step >= tremor.length) {
+			step = 0;
+		} else {
+		}
+		return start == step;
 	}
 
 
 	@Override
 	public void reset() {
-		start = step = rnd.nextInt(tremor.length);
-		alfa = PI * 2.0 * rnd.nextDouble();
+//		start = step = rnd.nextInt(tremor.length);
+		alfa = nextAngel();
 	}
 }

@@ -40,6 +40,7 @@ import org.animotron.animi.cortex.*;
 import org.animotron.animi.simulator.*;
 import org.animotron.animi.tuning.CodeLayerViz;
 import org.animotron.animi.tuning.Codes;
+import org.animotron.animi.tuning.Similarity;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -56,7 +57,7 @@ public class Application extends JFrame {
 	
 	public static Application _ = null;
 
-	public MultiCortex cortexs = null;
+	public Controller contr = null;
 	
     public long fps;
 
@@ -66,8 +67,8 @@ public class Application extends JFrame {
 	
 	public JLabel count;
 	
-//    String stimulatorClass = "org.animotron.animi.simulator.StimulatorAnime";
-	String stimulatorClass = "org.animotron.animi.tuning.CodeSignal";
+    String stimulatorClass = "org.animotron.animi.simulator.StimulatorAnime";
+//	String stimulatorClass = "org.animotron.animi.tuning.CodeSignal";
     Stimulator stimulator = null;
 	
 	private Application() {
@@ -118,6 +119,8 @@ public class Application extends JFrame {
 
 //        setBounds(0, 0, 800, 600);
         setLocationByPlatform(true);
+        
+        initialize();
 	}
 	
     protected JMenuBar createMenuBar() {
@@ -190,13 +193,13 @@ public class Application extends JFrame {
         menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-		        desktop.add(new Cube(cortexs.zones[1]));
+		        desktop.add(new Cube(contr.zones[1]));
 			}
 		});
         windowsMenu.add(menuItem);
         //end of hack
 
-        for (LayerSimple zone : cortexs.zones) {
+        for (LayerSimple zone : contr.zones) {
         	if (zone instanceof LayerWLearning) {
         		JMenu menu = new JMenu(zone.toString());
     	        windowsMenu.add(menu);
@@ -204,13 +207,14 @@ public class Application extends JFrame {
     	        LayerWLearning z = (LayerWLearning) zone;
 
     	        if (z.learningMatrix instanceof Imageable) {
-	    	        addMenu(menu, (Imageable) z.learningMatrix);
+	    	        addMenu(menu, (Imageable) z.learningMatrix, true);
+	    	        
 				}
-    	       	addMenu(menu, new CodeLayerViz((LayerWLearning)zone));
+    	       	addMenu(menu, new CodeLayerViz((LayerWLearning)zone), true);
     	        
     	        addMenu(menu, z);
     	        for (Mapping m : z.in_zones) {
-    	        	addMenu(menu, m.getImageable());
+    	        	addMenu(menu, m.getImageable(), true);
     	        }
 //    	        addMenu(menu, z.getRRF());
 			} else {
@@ -221,6 +225,10 @@ public class Application extends JFrame {
     }
     
     private void addMenu(JMenu menu, final Imageable imageable) {
+    	addMenu(menu, imageable, false);
+    }
+
+    private void addMenu(JMenu menu, final Imageable imageable, boolean show) {
         JMenuItem menuItem = new JMenuItem(imageable.getImageName());
         menuItem.addActionListener(new ActionListener() {
 			@Override
@@ -230,7 +238,8 @@ public class Application extends JFrame {
 		});
         menu.add(menuItem);
         
-//    	createFrame(imageable);
+        if (show)
+        	createFrame(imageable);
     }
     
     JToolBar bar;
@@ -242,68 +251,70 @@ public class Application extends JFrame {
     		bar.removeAll();
     	}
     	
-        JButton button = new JButton("Load");
-        button.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					final JFileChooser fc = new JFileChooser();
-					
-					int returnVal = fc.showOpenDialog(Application.this);
-					if (returnVal == JFileChooser.APPROVE_OPTION) {
-			            File file = fc.getSelectedFile();
-			            
-			            cortexs = MultiCortex.load(Application.this, file);
-						
-			        	createViews();
-
-						run();
-					}
-
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		});
-        bar.add(button);
-        
-        button = new JButton("Save");
-        button.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (cortexs != null) {
-					final JFileChooser fc = new JFileChooser();
-					
-					int returnVal = fc.showSaveDialog(Application.this);
-					
-					if (returnVal == JFileChooser.APPROVE_OPTION) {
-			            File file = fc.getSelectedFile();
-
-						int was = MODE;
-						if (was == RUN)
-							stop();
-						
-						//cortexs.prepareForSerialization();
-						try {
-							if (was >= STEP) Thread.sleep(1000);
-							
-							BufferedWriter out = new BufferedWriter(new FileWriter(file));
-							cortexs.save(out);
-							out.close();
-							
-							System.out.println("saved.");
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-						if (was == RUN)
-							run();
-					}
-				}
-			}
-		});
-        bar.add(button);
+    	JButton button;
+    	
+//        button = new JButton("Load");
+//        button.addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				try {
+//					final JFileChooser fc = new JFileChooser();
+//					
+//					int returnVal = fc.showOpenDialog(Application.this);
+//					if (returnVal == JFileChooser.APPROVE_OPTION) {
+//			            File file = fc.getSelectedFile();
+//			            
+//			            cortexs = MultiCortex.load(Application.this, file);
+//						
+//			        	createViews();
+//
+//						run();
+//					}
+//
+//				} catch (Exception ex) {
+//					ex.printStackTrace();
+//				}
+//			}
+//		});
+//        bar.add(button);
+//        
+//        button = new JButton("Save");
+//        button.addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				if (cortexs != null) {
+//					final JFileChooser fc = new JFileChooser();
+//					
+//					int returnVal = fc.showSaveDialog(Application.this);
+//					
+//					if (returnVal == JFileChooser.APPROVE_OPTION) {
+//			            File file = fc.getSelectedFile();
+//
+//						int was = MODE;
+//						if (was == RUN)
+//							stop();
+//						
+//						//cortexs.prepareForSerialization();
+//						try {
+//							if (was >= STEP) Thread.sleep(1000);
+//							
+//							BufferedWriter out = new BufferedWriter(new FileWriter(file));
+//							cortexs.save(out);
+//							out.close();
+//							
+//							System.out.println("saved.");
+//						} catch (Exception ex) {
+//							ex.printStackTrace();
+//						}
+//						if (was == RUN)
+//							run();
+//					}
+//				}
+//			}
+//		});
+//        bar.add(button);
         
         bar.addSeparator();
 
@@ -411,7 +422,7 @@ public class Application extends JFrame {
     private void addToBar() {
         bar.addSeparator();
         
-        for (final LayerSimple z : cortexs.zones) {
+        for (final LayerSimple z : contr.zones) {
         	if (!(z instanceof LayerWLearning)) {
 //	        	final JCheckBox chB_ = new JCheckBox("Saccade");
 //	        	chB_.addActionListener(new ActionListener() {
@@ -476,10 +487,12 @@ public class Application extends JFrame {
     	//инициализация зон коры
     	//CortexInit
     	//Начальный сброс "хорошо - плохо"
-    	if (cortexs == null)
-    		cortexs = new MultiCortex(this);
+    	if (contr == null) {
+//    		contr = new MultiCortex(this);
+    		contr = new Similarity(this);
+    	}
     	
-    	PFInitialization form = new PFInitialization(this, cortexs);
+    	PFInitialization form = new PFInitialization(this, contr);
     	form.setVisible(true);
         desktop.add(form);
         try {
@@ -488,16 +501,18 @@ public class Application extends JFrame {
     }
     
     protected void initialize() {
-//    protected void initialize(final cl_platform_id platform, final long deviceType) {
-//    	cortexs.init(platform, deviceType);
+    	if (contr == null) {
+//    		contr = new MultiCortex(this);
+    		contr = new Similarity(this);
+    	}
     	
-    	cortexs.init();
+    	contr.init();
     	
     	createViews();
     }
     
     private void createStimulator() {
-    	if (cortexs == null)
+    	if (contr == null)
     		return;
     	
     	try {
@@ -508,13 +523,14 @@ public class Application extends JFrame {
 			stimulator = constructor.newInstance(this);
 			
 			if (stimulator instanceof IRetina) {
-				cortexs.setRetina( (IRetina) stimulator );
+				contr.setRetina( (IRetina) stimulator );
 			} else {
-				cortexs.setRetina( null );
+				contr.setRetina( null );
 			}
 			
 //	    	createFrame(stimulator);
     	} catch (Exception e) {
+    		e.printStackTrace();
 		}
     }
     
@@ -529,28 +545,24 @@ public class Application extends JFrame {
     	addToBar();
     	
 //    	createFrame(stimulator);
-		cortexs.setRetina((IRetina) stimulator);
-		cortexs.setRetina((IRetina) stimulator);
-		cortexs.setRetina((IRetina) stimulator);
-		cortexs.setRetina((IRetina) stimulator);
     }
     
     private synchronized void run() {
-    	if (cortexs != null && MODE <= STEP) {
-			cortexs.start();
+    	if (contr != null && MODE <= STEP) {
+			contr.start();
     	}
     }
     
     private synchronized void step() {
-    	if (cortexs != null && MODE <= STEP) {
+    	if (contr != null && MODE <= STEP) {
 			MODE = STEP;
-			cortexs.process();
+			contr.processing();
     	}
     }
 
     private synchronized void stop() {
-    	if (cortexs != null) {
-    		cortexs.stop();
+    	if (contr != null) {
+    		contr.stop();
     	}
     }
 
@@ -619,4 +631,8 @@ public class Application extends JFrame {
 	public Stimulator getStimulator() {
 		return stimulator;
 	}
+	
+    public void addTask(Task task) throws InterruptedException {
+		task.execute();
+    }
 }

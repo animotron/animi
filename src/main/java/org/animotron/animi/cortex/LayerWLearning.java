@@ -21,7 +21,7 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
-import org.animotron.animi.tuning.InhibitoryLearningMatrix;
+import org.animotron.animi.gui.Application;
 import org.animotron.matrix.MatrixDelay;
 
 import java.awt.Color;
@@ -87,50 +87,42 @@ public class LayerWLearning extends LayerSimple {
 		super();
     }
     
-	LayerWLearning(
-			String name, MultiCortex mc, 
+	public LayerWLearning(
+			String name, Application app, 
 			int width, int height, int depth, 
 			Mapping[] in_zones, 
 			Class<? extends Task> classOfActivation,
 			Class<? extends Task> classOfInhibitory,
 			Class<? extends Task> classOfLearningMatrix,
+			Class<? extends Task> classOfLearningMatrixInhibitory,
 			Class<? extends Task> classOfLearning,
 			MatrixDelay.Attenuation attenuation) {
 		
-		super(name, mc, width, height, depth, attenuation);
+		super(name, app, width, height, depth, attenuation);
 		
 		this.in_zones = in_zones;
 	
-		try {
-			Constructor<? extends Task> constructor = classOfActivation.getConstructor(this.getClass());
-			cnActivation = constructor.newInstance(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		try {
-			Constructor<? extends Task> constructor = classOfInhibitory.getConstructor(this.getClass());
-			cnInhibitory = constructor.newInstance(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		try {
-			Constructor<? extends Task> constructor = classOfLearning.getConstructor(this.getClass());
-			cnLearning = constructor.newInstance(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		cnActivation = createInstance(classOfActivation);
+		cnInhibitory = createInstance(classOfInhibitory);
+		cnLearning = createInstance(classOfLearning);
+		learningMatrix = createInstance(classOfLearningMatrix);
 		
-		try {
-			Constructor<? extends Task> constructor = classOfLearningMatrix.getConstructor(this.getClass());
-			learningMatrix = constructor.newInstance(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		learningMatrixInhibitory = new InhibitoryLearningMatrix(this);
+		learningMatrixInhibitory = createInstance(classOfLearningMatrixInhibitory);
     }
+	
+	private Task createInstance(Class<? extends Task> classOfObject) {
+		if (classOfObject == null) {
+			return null;
+		} else {
+			try {
+				Constructor<? extends Task> constructor = classOfObject.getConstructor(this.getClass());
+				return constructor.newInstance(this);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	}
 
 	/**
      * Initializes the OpenCL memory object and the BufferedImage which will later receive the pixels
@@ -372,8 +364,11 @@ public class LayerWLearning extends LayerSimple {
     }
     
     private void performTask(Task task) {
+    	if (task == null)
+    		return;
+    	
         try {
-            mc.addTask(task);
+            app.addTask(task);
         
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

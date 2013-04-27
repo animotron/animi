@@ -70,6 +70,21 @@ public class Visualizer extends JInternalFrame {
 
 	    BufferedImage img = imageable.getImage();
 
+	    final int imgWidth = img.getWidth();
+	    final int imgHeight = img.getHeight();
+		
+	    if (imgHeight < 20) {
+			zoom = 20;
+		} else if (imgHeight < 50) {
+			zoom = 10;
+		} else if (imgHeight < 100) {
+			zoom = 5;
+		} else if (imgHeight < 300) {
+			zoom = 2;
+		} else {
+			zoom = 1;
+		}
+
 		Dimension size = new Dimension(img.getWidth()*zoom+20, img.getHeight()*zoom+40);
 	    
 		if (img.getWidth() > 200) {

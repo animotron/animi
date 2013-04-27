@@ -71,6 +71,7 @@ public class MappingHebbian implements Mapping {
 	private Matrix<Integer[]> senapses;
 	private Matrix<Integer> _senapses;
 	
+	private Matrix<Float> senapseCode;
 	private Matrix<Float> senapseWeight;
 	private Matrix<Float> inhibitoryWeight;
 	
@@ -115,13 +116,19 @@ public class MappingHebbian implements Mapping {
 	public void map(LayerWLearning zone) {
 		toZone = zone;
 	    
-		System.out.println(toZone);
-		
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)(ns_links * frZone.depth));// / norm;
 //		w = (float) (w / Math.sqrt((w * w) * ns_links * frZone.depth));
 
-	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
+	    senapseCode = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth);
+	    senapseCode.init(new Matrix.Value<Float>() {
+			@Override
+			public Float get(int... dims) {
+				return -1f;
+			}
+		});
+
+		senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
 	    senapseWeight.init(new Matrix.Value<Float>() {
 			@Override
 			public Float get(int... dims) {
@@ -144,14 +151,6 @@ public class MappingHebbian implements Mapping {
 		    	}
 	    	}
 	    }
-	    //WORKAROUND: init by -1
-	    senapseWeight.init(new Matrix.Value<Float>() {
-			@Override
-			public Float get(int... dims) {
-				return -1f;
-			}
-		});
-	    
 	    
 	    if (haveInhibitory) {
 		    inhibitoryWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
@@ -314,6 +313,11 @@ public class MappingHebbian implements Mapping {
 	@Override
 	public Matrix<Float> senapseWeight() {
 		return senapseWeight;
+	}
+
+	@Override
+	public Matrix<Float> senapsesCode() {
+		return senapseCode;
 	}
 
 	@Override

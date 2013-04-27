@@ -37,7 +37,6 @@ public class LineAnime extends AbstractAnime {
                 new Point(anime[0][0] - a / 2, anime[0][1] - a / 2),
                 new Point(anime[0][0] + a / 2, anime[0][1] + a / 2)
         };
-
     }
 
     protected LineAnime(double dt, int[][] anime) {

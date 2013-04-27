@@ -26,7 +26,6 @@ import java.awt.image.DataBufferInt;
 
 import org.animotron.animi.Imageable;
 import org.animotron.animi.cortex.LayerWLearning;
-import org.animotron.animi.cortex.Mapping;
 import org.animotron.matrix.Matrix;
 
 /**
@@ -59,7 +58,7 @@ public class CodeLayerViz implements Imageable {
     	DataBufferInt dataBuffer = (DataBufferInt)img.getRaster().getDataBuffer();
     	int data[] = dataBuffer.getData();
 
-		Matrix<Float> ws = layer.in_zones[0].senapseWeight();
+		Matrix<Float> ws = layer.in_zones[0].senapsesCode();
     	for (int i = 0; i < data.length; i++) {
     		if (ws.getByIndex(i) >= 0f) {
     			data[i] = Codes.GRADIENT_RAINBOW[Math.round( ws.getByIndex(i) )].getRGB();

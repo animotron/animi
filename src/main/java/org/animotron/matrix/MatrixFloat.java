@@ -253,6 +253,11 @@ public class MatrixFloat implements Matrix<Float> {
 		int[] pos = new int[dimensions.length];
 		Arrays.fill(pos, 0);
 		
+		int dimensionsLength = dimensions.length;
+		if (dimensions[dimensions.length - 1] == 1) {
+			dimensionsLength--;
+		}
+		
 		int value;
 		
 		DecimalFormat df;
@@ -276,7 +281,7 @@ public class MatrixFloat implements Matrix<Float> {
         		if (value >= dimensions[dim]) {
         			pos[dim] = 0;
         			
-        			if (dim == dimensions.length - 1) {
+        			if (dim == dimensionsLength - 1) {
         				print = true;
         			}
         			continue;

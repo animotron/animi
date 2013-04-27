@@ -21,6 +21,7 @@
 package org.animotron.animi.cortex;
 
 import org.animotron.animi.*;
+import org.animotron.animi.gui.Application;
 import org.animotron.matrix.Matrix;
 import org.animotron.matrix.MatrixDelay;
 import org.animotron.matrix.MatrixFloat;
@@ -46,7 +47,7 @@ public class LayerSimple implements ILayer {
 	String id = UUID.randomUUID().toString();
 	String name;
     
-	public final MultiCortex mc;
+	public final Application app;
     
 	@InitParam(name="width")
 	public int width = 30;//160;
@@ -75,12 +76,12 @@ public class LayerSimple implements ILayer {
 
 	LayerSimple() {
     	name = null;
-    	mc = null;
+    	app = null;
     }
 
-    public LayerSimple(String name, MultiCortex mc, int width, int height, int depth, MatrixDelay.Attenuation attenuation) {
+    public LayerSimple(String name, Application app, int width, int height, int depth, MatrixDelay.Attenuation attenuation) {
         this.name = name;
-        this.mc = mc;
+        this.app = app;
 
 		this.width = width;
 		this.height = height;

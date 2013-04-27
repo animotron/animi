@@ -221,7 +221,7 @@ public class RetinaZone extends Task {
 		} else if (onOffValue == 0) {
 			if (history.get(x, y, z) == 1f && oppositeStimuli == 0) {
 				//ответ после противоположного стимула
-				value = 0.9f;
+//				value = 0.9f;
 			}
 		} else {
 			//увидил свой образ
@@ -233,6 +233,6 @@ public class RetinaZone extends Task {
 		
 		avgs.set( (avg * (float)count + value) / (float)(count + 1), x,y,z);
 
-		history.set((float)oppositeStimuli, x, y, z);
+//		history.set((float)oppositeStimuli, x, y, z);
 	}
 }

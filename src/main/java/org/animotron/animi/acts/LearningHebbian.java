@@ -118,6 +118,8 @@ public class LearningHebbian extends Task {
 
 	public void gpuMethod(final int x, final int y, final int z) {
 		
+		if (cz.toLearning.get(x,y,z) <= 0f) return;
+		
 		final Mapping m = cz.in_zones[0];
 		
 		if (!m.isDirectLearning()) {
@@ -125,10 +127,9 @@ public class LearningHebbian extends Task {
 		}
 		
 		final float act = m.toZone().neurons.get(x, y, z);
+		if (act <= 0) return;
 		
-		if (act <= 0) {
-			return;
-		}
+		m.senapsesCode().set((float)cz.app.getStimulator().getCode(), x,y,z);
 		
 //		System.out.println("["+x+","+y+","+z+"] "+act);
 

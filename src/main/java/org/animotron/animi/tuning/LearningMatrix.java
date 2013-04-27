@@ -18,42 +18,30 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.acts;
+package org.animotron.animi.tuning;
 
-import org.animotron.matrix.Matrix;
+import org.animotron.animi.acts.FormLearningMatrix;
+import org.animotron.animi.cortex.LayerWLearning;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class Mth {
+public class LearningMatrix extends FormLearningMatrix {
 
-	public static void normalization(
-			final Matrix<Float> values, 
-			final float sum2) {
-		
-		if (sum2 > 0f) {
-			final float norm = (float) Math.sqrt(sum2);
-			for (int index = 0; index < values.length(); index++) {
-		    	
-		    	final float value = values.getByIndex(index) / norm;
-		    	
-	    		values.setByIndex(value, index);
-		    }
-		}
+	public LearningMatrix(LayerWLearning cz) {
+		super(cz);
 	}
-
-	public static void normalization2(
-			final Matrix<Float> values, 
-			final float sum2) {
-		
-		if (sum2 > 0f) {
-			for (int index = 0; index < values.length(); index++) {
-		    	
-		    	final float value = values.getByIndex(index) / sum2;
-		    	
-	    		values.setByIndex(value, index);
-		    }
+	
+	int stage = - Codes.CODES * Codes.SHIFTS;
+	
+	@Override
+	public void prepare() {
+		super.prepare();
+	
+		if (stage >= 0 && stage < Codes.CODES * Codes.SHIFTS) {
+			cz.toLearning.setByIndex(1f, stage);
 		}
+		stage++;
 	}
 }

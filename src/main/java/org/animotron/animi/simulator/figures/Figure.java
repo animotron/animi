@@ -39,4 +39,5 @@ public interface Figure {
 
 	public void reset();
 
+	public int getCode();
 }

@@ -117,4 +117,9 @@ public class CodeSignal extends AbstractStimulator implements IRetina {
 	public int height() {
 		return 1;
 	}
+
+	@Override
+	public int getCode() {
+		return signal;
+	}
 }

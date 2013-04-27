@@ -110,4 +110,9 @@ public class StimulatorImage extends AbstractStimulator {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public int getCode() {
+		return -1;
+	}
 }

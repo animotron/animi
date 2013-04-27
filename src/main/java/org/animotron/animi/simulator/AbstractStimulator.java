@@ -73,7 +73,7 @@ public abstract class AbstractStimulator implements Stimulator {
 
         g.setColor(Color.WHITE);
 
-        g.drawString(app.fps + " fps; "+app.cortexs.count+" cycles;", 0, textY);
+        g.drawString(app.fps + " fps; "+app.contr.count+" cycles;", 0, textY);
 	}
 
 	@Override

@@ -32,8 +32,8 @@ import javax.swing.*;
 import org.animotron.animi.InitParam;
 import org.animotron.animi.Params;
 import org.animotron.animi.RuntimeParam;
+import org.animotron.animi.cortex.ILayer;
 import org.animotron.animi.cortex.LayerSimple;
-import org.animotron.animi.cortex.MultiCortex;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -50,7 +50,7 @@ public class PFInitialization extends JInternalFrame {
 	
 	boolean readOnly;
 
-	public PFInitialization(final Application app, final MultiCortex mc) {
+	public PFInitialization(final Application app, final Controller contr) {
 	    super("Initialization params",
 	            false, //resizable
 	            false, //closable
@@ -84,7 +84,7 @@ public class PFInitialization extends JInternalFrame {
 //        types.add("GPU");
 //        type = addCombo(gbc, "Device type: ", types);
         
-        scan(gbc, null, mc);
+        scan(gbc, null, contr);
 		
         JButton btInit = new JButton(!readOnly ? "Init" : "Apply");
 //		btInit.setEnabled(!readOnly);

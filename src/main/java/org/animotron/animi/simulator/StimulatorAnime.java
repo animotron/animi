@@ -47,7 +47,7 @@ public class StimulatorAnime extends AbstractStimulator {
 	}
 
 	public void init() {
-		IRetina retina = app.cortexs.retina;
+		IRetina retina = app.contr.getRetina();
 		
 		int width = retina.worldWidth();
 		int height = retina.worldHeight();
@@ -156,7 +156,7 @@ public class StimulatorAnime extends AbstractStimulator {
 	}
 	
 	int count = 0;
-	int changeAt = 3;
+	int changeAt = 0;
 	boolean resetStage = true;
 	Figure active = null;
 	
@@ -195,5 +195,9 @@ public class StimulatorAnime extends AbstractStimulator {
 		step();
 		
 		return getImage();
+	}
+	
+	public int getCode() {
+		return active.getCode();
 	}
 }

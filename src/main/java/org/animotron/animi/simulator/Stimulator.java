@@ -38,4 +38,6 @@ public interface Stimulator extends Imageable {
 	public BufferedImage getUserImage();
 	
 	public boolean isReset();
+
+	public int getCode();
 }

@@ -118,7 +118,7 @@ public class InhibitoryLearningMatrix extends Task {
     	
     	source.fill(0f);
 
-    	while (count == 0) {
+    	while (count <= 0) {
 	    	maxPos = cols.max();
 	        if (maxPos == null) {
 	        	break;

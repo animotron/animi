@@ -94,7 +94,7 @@ public class Retina implements IRetina {
 		}
 		
     	try {
-            NL.mc.addTask(retinaTask);
+            NL.app.addTask(retinaTask);
         
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

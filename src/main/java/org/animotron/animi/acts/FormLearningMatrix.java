@@ -18,11 +18,12 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.animotron.animi.tuning;
+package org.animotron.animi.acts;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.util.Random;
 
 import org.animotron.animi.Imageable;
 import org.animotron.animi.Utils;
@@ -31,66 +32,108 @@ import org.animotron.animi.cortex.*;
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class CodeLearningMatrix extends Task implements Imageable {
+public class FormLearningMatrix extends Task implements Imageable {
 	
 	BufferedImage img;
 
-	public CodeLearningMatrix(LayerWLearning cz) {
+	public FormLearningMatrix(LayerWLearning cz) {
 		super(cz);
 		
 		img = new BufferedImage(cz.width, cz.height, BufferedImage.TYPE_INT_RGB);
 	}
 	
+//	Matrix<Float> matrix;
+//	int stage = 0;
+	
 	@Override
 	public void prepare() {
+//		stage = 0;
+//		
+//		matrix = cz.learning.copy();
+
 		cz.learning.fill(0f);
 		cz.toLearning.fill(0f);
 	}
+	
+	int half = 1;
 
 	public void gpuMethod(final int x, final int y, final int z) {
-//		if (x == (int)(cz.width / 2.0) && y == (int)(cz.height / 2.0)) {
 		
-		final float act = cz.neurons.get(x,y,z);
-		if (act <= 0f)
-			return;
-		
-		Mapping m = cz.in_zones[0];
-		
-		for (int xx = 0; xx < cz.width; xx++) {
-			for (int yy = 0; yy < cz.height; yy++) {
-				for (int zz = 0; zz < cz.depth; zz++) {
-				
-					final int dx = xx - x;
-					final int dy = yy - y;
-					final int dz = zz - z;
-	
-					final double l = .2 / (Math.sqrt(dx*dx + dy*dy + dz*dz) + 1.0);
+//		switch (stage) {
+//		case 0:
+//			final float delta = matrix.get(x,y,z) / (float)(half * 2 * 3);
+//
+//			int fx = x - half; if (fx < 0) fx = 0;
+//			int tx = x + half; if (tx >= cz.width) tx = cz.width - 1;
+//			
+//			int fy = y - half; if (fy < 0) fy = 0;
+//			int ty = y + half; if (ty >= cz.height) ty = cz.height - 1;
+//
+//			int fz = z - half; if (fz < 0) fz = 0;
+//			int tz = z + half; if (tz >= cz.depth) tz = cz.depth - 1;
+//
+//			for (int xx = fx; xx <= tx; xx++) {
+//				for (int yy = fy; yy <= ty; yy++) {
+//					for (int zz = fz; zz <= tz; zz++) {
+//						if (xx == x && yy == y && zz == z)
+//							continue;
+//						
+//						cz.learning.set(delta, xx,yy,zz);
+//					}
+//				}
+//			}
+//			
+//			break;
+//
+//		case 1:
+			
+			final float act = cz.neurons.get(x,y,z);
+			if (act <= 0f)
+				return;
+			
+			for (int xx = 0; xx < cz.width; xx++) {
+				for (int yy = 0; yy < cz.height; yy++) {
+					for (int zz = 0; zz < cz.depth; zz++) {
 					
-					float factor = cz.learning.get(xx,yy,zz) + (float)(l > 0f ? l * act : 0f);
-					
-					cz.learning.set(factor, xx,yy,zz);
+						final int dx = xx - x;
+						final int dy = yy - y;
+						final int dz = zz - z;
+		
+						final double length = .2 / (Math.sqrt(dx*dx + dy*dy + dz*dz) + 1.0);
+						
+						float factor = cz.learning.get(xx,yy,zz) + (float)(length * act);
+						
+						cz.learning.set(factor, xx,yy,zz);
+					}
 				}
 			}
-		}
+//			break;
 //		}
 	}
 	
+	Random rnd = new Random();
+	
 	public boolean isDone() {
-		Mapping m = cz.in_zones[0];
+//		stage++;
+//		
+//		if (stage < 2)
+//			return false;
+		
+		//additional factor for neurons without memory
+		final Mapping m = cz.in_zones[0];
 		
 		for (int xx = 0; xx < cz.width; xx++) {
 			for (int yy = 0; yy < cz.height; yy++) {
 				for (int zz = 0; zz < cz.depth; zz++) {
-					final float w = m.senapseWeight().get(xx, yy, zz, 0);
+					final float w = m.senapsesCode().get(xx, yy, zz) >= 0 ? 0f : .4f + (rnd.nextFloat() * .2f);
 					
-					float factor = cz.learning.get(xx,yy,zz);
-					factor += w >= 0 ? 0f : 1f;
+					final float factor = cz.learning.get(xx,yy,zz) + w;
 					
 					cz.learning.set(factor, xx,yy,zz);
 				}
 			}
 		}
-		
+
 		return true;
 	}
 

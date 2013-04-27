@@ -39,6 +39,8 @@ public interface Mapping {
 
 	public Matrix<Float> senapseWeight();
 
+	public Matrix<Float> senapsesCode();
+
 //	public Matrix<Float> lateralWeight();
 
 	public Matrix<Float> lateralWeight();
