@@ -107,18 +107,6 @@ public class MultiCortex extends Controller {
             noAttenuation
         );
         
-//    	LayerWLearning layer_1max = new LayerWLearning("Картикальные 1го", app, 10, 10, 1,
-//                new Mapping[]{
-//                    new MappingHebbian(layer_1memory, 150, 1, true, false) //7x7 (50)
-//                },
-//                ActivationMemory.class,
-//                Inhibitory.class,
-//                FormLearningMatrix.class,
-//                InhibitoryLearningMatrix.class,
-//                LearningMemory.class,
-//                noAttenuation
-//            );
-
 //        layer_2a_on_1b = new LayerWLearning("2й SOM", this, 5, 5, 1,
 //            new Mapping[]{
 ////                new MappingHebbian(layer_1b, 25, 1, true, false) //7x7 (50)
@@ -135,21 +123,23 @@ public class MultiCortex extends Controller {
 //            LearningSOM.class
 //        );
 
-//    	LayerWLearning layer_2a_on_1b = new LayerWLearning("2й тестовый", this, 7, 7, 1,
-//            new Mapping[]{
-//                new MappingHebbian(layer_1b, 49, 1, true, false) //7x7 (50)
-//            },
-//            InhibitoryTest.class,
-//            CodeLearningMatrix.class,
-//            MassSuicide.class,
-//        	MatrixDelay.oneStepAttenuation
-//        );
-//    	((LearningHebbian)layer_2a_on_1b.cnLearning).factor = 0.001f;
+    	LayerWLearning layer_2correlation = new LayerWLearning("2й корреляция", app, 7, 7, 1,
+            new Mapping[]{
+                new MappingHebbian(layer_1memory, 9, 1, true, false) //7x7 (50)
+            },
+            ActivationHebbian.class,
+            Inhibitory.class,
+            FormLearningMatrix.class,
+            InhibitoryLearningMatrix.class,
+            LearningHebbian.class,
+            noAttenuation
+        );
+//    	((LearningHebbian)layer_2a_on_1b.cnLearning).factor = 0.01f;
 
 //        z_1st.addMappring(z_1st);
         
 //        zones = new LayerSimple[]{z_in, layer_1a, layer_1b, layer_2a_on_1b, layer_2b_on_1b};
-        zones = new LayerSimple[]{z_in, layer_1memory}; //, layer_2a_on_1b};
+        zones = new LayerSimple[]{z_in, layer_1memory, layer_2correlation}; //, layer_2a_on_1b};
         
         setRetina(null);
     }
