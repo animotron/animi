@@ -23,6 +23,7 @@ package org.animotron.animi.tuning;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.util.Arrays;
 
 import org.animotron.animi.Imageable;
 import org.animotron.animi.cortex.LayerWLearning;
@@ -57,13 +58,37 @@ public class CodeLayerViz implements Imageable {
 	public BufferedImage getImage() {
     	DataBufferInt dataBuffer = (DataBufferInt)img.getRaster().getDataBuffer();
     	int data[] = dataBuffer.getData();
+    	
+    	int[] n = new int[Codes.GRADIENT_RAINBOW.length];
 
+    	int i = 0;
 		Matrix<Float> ws = layer.in_zones[0].senapsesCode();
-    	for (int i = 0; i < data.length; i++) {
-    		if (ws.getByIndex(i) >= 0f) {
-    			data[i] = Codes.GRADIENT_RAINBOW[Math.round( ws.getByIndex(i) )].getRGB();
-    		}
-    	}
+		for (int y = 0; y < layer.height; y++) {
+			for (int x = 0; x < layer.width; x++) {
+				Arrays.fill(n, 0);
+				for (int z = 0; z < layer.depth; z++) {
+					if (ws.get(x,y,z) >= 0f) {
+						n[Math.round( ws.get(x,y,z))]++;
+					}
+				}
+				int max = -1;
+				int pos = 0;
+				for (int j = 0; j < n.length; j++) {
+					if (max < n[j]) {
+						max = n[j];
+						pos = j;
+					}
+				}
+				
+    			data[i] = Codes.GRADIENT_RAINBOW[pos].getRGB();
+    			i++;
+			}
+		}
+//    	for (int i = 0; i < data.length; i++) {
+//    		if (ws.getByIndex(i) >= 0f) {
+//    			data[i] = Codes.GRADIENT_RAINBOW[Math.round( ws.getByIndex(i) )].getRGB();
+//    		}
+//    	}
 		return img;
 	}
 

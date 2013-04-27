@@ -56,32 +56,28 @@ public class Retina implements IRetina {
 	}
 	
 	private LayerSimple NL = null;
-	/* (non-Javadoc)
-	 * @see org.animotron.animi.cortex.IRetina#setNextLayer(org.animotron.animi.cortex.LayerSimple)
-	 */
 	@Override
 	public void setNextLayer(LayerSimple sz) {
 		NL = sz;
 		
 		width = sz.width();
 		height = sz.height();
-
-		initialize();
 	}
 	
 	LayerWLearning RL = null;
-	/* (non-Javadoc)
-	 * @see org.animotron.animi.cortex.IRetina#setResetLayer(org.animotron.animi.cortex.LayerWLearning)
-	 */
 	@Override
 	public void setResetLayer(LayerWLearning layer) {
 		RL = layer;
 	}
 	
-    // создание связей сенсорных полей
-	private void initialize() {
+	@Override
+	public void init(Stimulator stimulator) {
         retinaTask = new RetinaZone(this, (LayerSimple)NL);
-    }
+        
+        for (int i = 0; i < 5; i++) {
+        	retinaTask.setInput(image = stimulator.getNextImage());
+        }
+	}
 	
     BufferedImage image = null;
 	

@@ -87,6 +87,10 @@ public class CodeSignal extends AbstractStimulator implements IRetina {
 	}
 
 	@Override
+	public void init(Stimulator stimulator) {
+	}
+
+	@Override
 	public void process(Stimulator stimulator) {
 		getNextImage();
 

@@ -47,7 +47,7 @@ public class MultiCortex extends Controller {
 
     public IRetina retina;
     LayerSimple z_in;
-    LayerWLearning layer_1b;
+    LayerWLearning layer_1memory;
 
     private MultiCortex(Application app, LayerSimple [] zones) {
     	super(app);
@@ -95,11 +95,11 @@ public class MultiCortex extends Controller {
 //	    	}
 //        );
 
-    	layer_1b = new LayerWLearning("1й факторы", app, 20, 20, 1, //120, 120, //160, 120,
+    	layer_1memory = new LayerWLearning("1й память", app, 20, 20, 9,
             new Mapping[]{
                 new MappingHebbian(z_in, 150, 1, true, false) //7x7 (50)
             },
-            ActivationTest.class,
+            ActivationMemory.class,
             Inhibitory.class,
             FormLearningMatrix.class,
             InhibitoryLearningMatrix.class,
@@ -107,6 +107,18 @@ public class MultiCortex extends Controller {
             noAttenuation
         );
         
+//    	LayerWLearning layer_1max = new LayerWLearning("Картикальные 1го", app, 10, 10, 1,
+//                new Mapping[]{
+//                    new MappingHebbian(layer_1memory, 150, 1, true, false) //7x7 (50)
+//                },
+//                ActivationMemory.class,
+//                Inhibitory.class,
+//                FormLearningMatrix.class,
+//                InhibitoryLearningMatrix.class,
+//                LearningMemory.class,
+//                noAttenuation
+//            );
+
 //        layer_2a_on_1b = new LayerWLearning("2й SOM", this, 5, 5, 1,
 //            new Mapping[]{
 ////                new MappingHebbian(layer_1b, 25, 1, true, false) //7x7 (50)
@@ -137,7 +149,7 @@ public class MultiCortex extends Controller {
 //        z_1st.addMappring(z_1st);
         
 //        zones = new LayerSimple[]{z_in, layer_1a, layer_1b, layer_2a_on_1b, layer_2b_on_1b};
-        zones = new LayerSimple[]{z_in, layer_1b}; //, layer_2a_on_1b};
+        zones = new LayerSimple[]{z_in, layer_1memory}; //, layer_2a_on_1b};
         
         setRetina(null);
     }
@@ -150,7 +162,7 @@ public class MultiCortex extends Controller {
 			this.retina = retina;
 		
         this.retina.setNextLayer(z_in);
-        this.retina.setResetLayer(layer_1b);
+        this.retina.setResetLayer(layer_1memory);
 	}
 
 	@Override

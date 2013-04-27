@@ -67,6 +67,7 @@ public class LayerSimple implements ILayer {
     public MatrixFloat neurons;
     public MatrixFloat neighbors;
 
+    public MatrixFloat pure;
     public MatrixFloat learning;
     public MatrixFloat toLearning;
 
@@ -98,6 +99,9 @@ public class LayerSimple implements ILayer {
     	neurons = new MatrixFloat(width, height, depth);
     	neurons.fill(0f);
     	
+    	pure = new MatrixFloat(width, height);
+    	pure.fill(0f);
+
     	learning = new MatrixFloat(width, height, depth);
     	learning.fill(0f);
     	

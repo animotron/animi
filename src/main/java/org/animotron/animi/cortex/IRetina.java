@@ -31,6 +31,8 @@ public interface IRetina {
 
 	public void setResetLayer(LayerWLearning layer);
 
+	public void init(Stimulator stimulator);
+
 	public void process(Stimulator stimulator);
 
 	public int worldWidth();

@@ -488,8 +488,8 @@ public class Application extends JFrame {
     	//CortexInit
     	//Начальный сброс "хорошо - плохо"
     	if (contr == null) {
-//    		contr = new MultiCortex(this);
-    		contr = new Similarity(this);
+    		contr = new MultiCortex(this);
+//    		contr = new Similarity(this);
     	}
     	
     	PFInitialization form = new PFInitialization(this, contr);
@@ -502,8 +502,8 @@ public class Application extends JFrame {
     
     protected void initialize() {
     	if (contr == null) {
-//    		contr = new MultiCortex(this);
-    		contr = new Similarity(this);
+    		contr = new MultiCortex(this);
+//    		contr = new Similarity(this);
     	}
     	
     	contr.init();
@@ -527,6 +527,8 @@ public class Application extends JFrame {
 			} else {
 				contr.setRetina( null );
 			}
+			contr.getRetina().init(stimulator);
+			
 			
 //	    	createFrame(stimulator);
     	} catch (Exception e) {

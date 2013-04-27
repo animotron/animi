@@ -27,9 +27,9 @@ import org.animotron.matrix.*;
  * @author <a href="mailto:aldrd@yahoo.com">Alexey Redozubov</a>
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class ActivationTest extends Task {
+public class ActivationMemory extends Task {
 	
-	public ActivationTest(LayerWLearning cz) {
+	public ActivationMemory(LayerWLearning cz) {
 		super(cz);
 	}
 

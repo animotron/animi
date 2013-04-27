@@ -49,7 +49,7 @@ public class Similarity extends Controller {
             new Mapping[]{
                 new MappingHebbian(z_in, 150, 1, true, false)
             },
-            ActivationTest.class,
+            ActivationMemory.class,
             null,
             LearningMatrix.class,
             null,

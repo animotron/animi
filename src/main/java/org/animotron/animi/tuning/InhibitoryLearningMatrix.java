@@ -118,6 +118,9 @@ public class InhibitoryLearningMatrix extends Task {
     	
     	source.fill(0f);
 
+    	maxPos = cols.max();
+    	final float half = cols.get(maxPos) / 5f;
+
     	while (count <= 0) {
 	    	maxPos = cols.max();
 	        if (maxPos == null) {
@@ -125,14 +128,17 @@ public class InhibitoryLearningMatrix extends Task {
 	        }
 	        
 	    	max = cols.get(maxPos);
+	    	if (half >= max)
+	    		return;
 	    	
-//	    	if (m.senapseWeight().get(maxPos[0],maxPos[1],maxPos[2],0) < 0f) {
+	    	if (m.senapsesCode().get(maxPos[0],maxPos[1],maxPos[2]) < 0f) {
 	        	source.set(max, maxPos);
 	        	count++;
 //        		return;
-//	        } else {
-	        	cols.set(0f, maxPos);
+	        }// else {
+//	        	cols.set(0f, maxPos);
 //	        }
+    		return;
     	}
 	}
 }

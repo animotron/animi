@@ -28,6 +28,7 @@ import java.util.Random;
 import org.animotron.animi.Imageable;
 import org.animotron.animi.Utils;
 import org.animotron.animi.cortex.*;
+import org.animotron.matrix.MatrixFloat;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -44,6 +45,7 @@ public class FormLearningMatrix extends Task implements Imageable {
 	
 //	Matrix<Float> matrix;
 //	int stage = 0;
+	Mapping m;
 	
 	@Override
 	public void prepare() {
@@ -51,6 +53,9 @@ public class FormLearningMatrix extends Task implements Imageable {
 //		
 //		matrix = cz.learning.copy();
 
+		m = cz.in_zones[0];
+
+		cz.pure.fill(0f);
 		cz.learning.fill(0f);
 		cz.toLearning.fill(0f);
 	}
@@ -58,6 +63,8 @@ public class FormLearningMatrix extends Task implements Imageable {
 	int half = 1;
 
 	public void gpuMethod(final int x, final int y, final int z) {
+		if (z != 0)
+			return;
 		
 //		switch (stage) {
 //		case 0:
@@ -87,26 +94,44 @@ public class FormLearningMatrix extends Task implements Imageable {
 //
 //		case 1:
 			
-			final float act = cz.neurons.get(x,y,z);
-			if (act <= 0f)
-				return;
+		float act = 0;
+		for (int zz = 0; zz < cz.depth; zz++) {
+			if (act < cz.neurons.get(x,y,zz)) {
+				act = cz.neurons.get(x,y,zz);
+			}
+		}
+		for (int zz = 0; zz < cz.depth; zz++) {
+			if (act < cz.axons().get(x,y,zz)) {
+				act = cz.axons().get(x,y,zz);
+			}
+		}
+//		act = m.senapsesCode().get(x,y,z) >= 0 ? act : .4f + (rnd.nextFloat() * .2f);
+//		act = act > 0 ? act : .4f + (rnd.nextFloat() * .2f);
 			
-			for (int xx = 0; xx < cz.width; xx++) {
-				for (int yy = 0; yy < cz.height; yy++) {
-					for (int zz = 0; zz < cz.depth; zz++) {
+		for (int xx = 0; xx < cz.width; xx++) {
+			for (int yy = 0; yy < cz.height; yy++) {
+//				for (int zz = 0; zz < cz.depth; zz++) {
+				
+					final int dx = xx - x;
+					final int dy = yy - y;
+//					final int dz = zz - z;
+	
+					final double length = .2 / ((dx*dx + dy*dy) + 1.0);
+//					final double length = .2 / (Math.sqrt(dx*dx + dy*dy + dz*dz) + 1.0);
 					
-						final int dx = xx - x;
-						final int dy = yy - y;
-						final int dz = zz - z;
-		
-						final double length = .2 / (Math.sqrt(dx*dx + dy*dy + dz*dz) + 1.0);
-						
-						float factor = cz.learning.get(xx,yy,zz) + (float)(length * act);
-						
+					float factor = cz.learning.get(xx,yy,0) + (float)(length * act);
+					
+					cz.pure.set(factor, xx,yy);
+
+					for (int zz = 0; zz < cz.depth; zz++) {
+//						float f = m.senapsesCode().get(x,y,z) >= 0 ? factor : factor + .1f + (rnd.nextFloat() * .2f);
+//						act = act > 0 ? act : .4f + (rnd.nextFloat() * .2f);
+
 						cz.learning.set(factor, xx,yy,zz);
-					}
+//					}
 				}
 			}
+		}
 //			break;
 //		}
 	}
@@ -119,20 +144,28 @@ public class FormLearningMatrix extends Task implements Imageable {
 //		if (stage < 2)
 //			return false;
 		
-		//additional factor for neurons without memory
-		final Mapping m = cz.in_zones[0];
+//		cz.learning.debug("before");
 		
+		if (cz.app.contr.count <= 1) {
+			cz.learning.set(10f, (int)(cz.width / 2.0), (int)(cz.height / 2.0), 0);
+		}
+
+		//additional factor for neurons without memory
 		for (int xx = 0; xx < cz.width; xx++) {
 			for (int yy = 0; yy < cz.height; yy++) {
+				
+				final float factor = cz.learning.get(xx,yy,0);
+				
 				for (int zz = 0; zz < cz.depth; zz++) {
-					final float w = m.senapsesCode().get(xx, yy, zz) >= 0 ? 0f : .4f + (rnd.nextFloat() * .2f);
-					
-					final float factor = cz.learning.get(xx,yy,zz) + w;
-					
-					cz.learning.set(factor, xx,yy,zz);
+					final float w = 
+							m.senapsesCode().get(xx,yy,zz) >= 0 ? 0f : 1f + (rnd.nextFloat() * .1f);
+
+					cz.learning.set(factor + w, xx,yy,zz);
 				}
 			}
 		}
+
+//		cz.learning.debug("after");
 
 		return true;
 	}
@@ -152,7 +185,9 @@ public class FormLearningMatrix extends Task implements Imageable {
 	
 	@Override
 	public BufferedImage getImage() {
-		final float maximum = cz.learning.maximum();
+		final MatrixFloat matrix = cz.learning;//pure;
+		
+		final float maximum = matrix.maximum();
 		
     	DataBufferInt dataBuffer = (DataBufferInt)img.getRaster().getDataBuffer();
     	int data[] = dataBuffer.getData();
@@ -161,7 +196,7 @@ public class FormLearningMatrix extends Task implements Imageable {
     	
     	int R = 0, G = 0, B = 0;
     	for (int i = 0; i < data.length; i++) {
-    		float act = cz.learning.getByIndex(i) / maximum;
+    		float act = matrix.getByIndex(i) / maximum;
     		if (act >= 0.5f) {
     			R = (int) (254 * (act - 0.5f) / 0.5);
     			B = (int) (254 * (1 - act));

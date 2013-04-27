@@ -73,8 +73,16 @@ public class RotateAnime extends AbstractAnime {
 //        		};
 //        	i++;
 //        }
-        int half = Codes.SHIFTS / 2;
+        int half = Codes.SHIFTS / 4;
         for (int delta = -half; delta < half; delta++) {
+        	tremor[i] = 
+    			new int[] {
+        			(int) (1.0 * worldStep * delta), 
+        			(int) (1.0 * worldStep * delta)
+        		};
+        	i++;
+        }
+        for (int delta = half; delta > -half; delta--) {
         	tremor[i] = 
     			new int[] {
         			(int) (1.0 * worldStep * delta), 

@@ -29,6 +29,7 @@ import org.animotron.animi.cortex.IRetina;
 import org.animotron.animi.gui.Application;
 import org.animotron.animi.simulator.figures.Figure;
 import org.animotron.animi.simulator.figures.RotateAnime;
+import org.animotron.animi.tuning.Codes;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -156,7 +157,7 @@ public class StimulatorAnime extends AbstractStimulator {
 	}
 	
 	int count = 0;
-	int changeAt = 0;
+	int changeAt = 0;//Codes.SHIFTIMES;
 	boolean resetStage = true;
 	Figure active = null;
 	
