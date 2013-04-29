@@ -33,11 +33,11 @@ import org.animotron.matrix.MatrixFloat;
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  */
-public class FormLearningMatrix extends Task implements Imageable {
+public class Mediator extends Task implements Imageable {
 	
 	BufferedImage img;
 
-	public FormLearningMatrix(LayerWLearning cz) {
+	public Mediator(LayerWLearning cz) {
 		super(cz);
 		
 		img = new BufferedImage(cz.width, cz.height, BufferedImage.TYPE_INT_RGB);

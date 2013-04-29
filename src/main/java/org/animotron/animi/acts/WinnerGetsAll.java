@@ -52,6 +52,8 @@ public class WinnerGetsAll extends Task {
     	float max = 0;
 
         final int linksNumber = cz.inhibitory_number_of_links;
+
+        source.fill(0f);
     	
     	while (true) {
 	    	maxPos = cols.max();
@@ -63,11 +65,9 @@ public class WinnerGetsAll extends Task {
 	    	
 //	    	System.out.println(maxPos);
 	    	
-	        if (!inhibitory) {
-	        	source.fill(0f);
+        	source.set(max, maxPos);
 
-	        	source.set(max, maxPos);
-//        		sz.rememberCols[maxPos] = max;
+        	if (!inhibitory) {
         		return;
 	        }
 	        
@@ -81,9 +81,6 @@ public class WinnerGetsAll extends Task {
 	    	    	}
     			} catch (Exception e) {
     				e.printStackTrace();
-
-//    				final int xi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 0);
-//	    	    	final int yi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 1);
     			}
     		}
     		cols.set(0f, maxPos);

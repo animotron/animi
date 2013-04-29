@@ -66,12 +66,14 @@ public class LayerWLearningOnReset extends LayerWLearning {
     	
     	//Активация колонок (узнавание)
     	performTask(cnActivation);
+    	performTask(cnInhibitory);
 
 		axons.step(neurons);
     }
 
     public void reset() {
     	if (isLearning()) {
+
         	performTask(learningMatrix);
         	
         	performTask(learningMatrixInhibitory);

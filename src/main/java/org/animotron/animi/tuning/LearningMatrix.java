@@ -20,14 +20,14 @@
  */
 package org.animotron.animi.tuning;
 
-import org.animotron.animi.acts.FormLearningMatrix;
+import org.animotron.animi.acts.Mediator;
 import org.animotron.animi.cortex.LayerWLearning;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class LearningMatrix extends FormLearningMatrix {
+public class LearningMatrix extends Mediator {
 
 	public LearningMatrix(LayerWLearning cz) {
 		super(cz);

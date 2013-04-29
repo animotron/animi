@@ -102,7 +102,7 @@ public class MultiCortex extends Controller {
             },
             ActivationMemory.class,
             Inhibitory.class,
-            FormLearningMatrix.class,
+            Mediator.class,
             InhibitoryLearningMatrix.class,
             LearningMemory.class,
             noAttenuation
@@ -128,14 +128,15 @@ public class MultiCortex extends Controller {
             new Mapping[]{
                 new MappingHebbian(layer_1memory, 12, .5, true, false) //7x7 (50)
             },
-            ActivationHebbian.class, //ActivationMemory.class,
-            Inhibitory.class,
+            Activation.class, //ActivationMemory.class,
+            WinnerGetsAll.class, //Inhibitory.class,
             null,//FormLearningMatrix.class,
             null,//InhibitoryLearningMatrix.class,
             LearningHebbian.class, //LearningMemory.class,
             noAttenuation
         );
     	layer_2correlation.singleReceptionField = false;
+    	layer_2correlation.inhibitory_number_of_links = 12;
 //    	layer_2correlation.cnLearning.factor = 0.01f;
         
 //        zones = new LayerSimple[]{z_in, layer_1a, layer_1b, layer_2a_on_1b, layer_2b_on_1b};

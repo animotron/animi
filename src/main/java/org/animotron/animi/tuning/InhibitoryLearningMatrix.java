@@ -21,7 +21,6 @@
 package org.animotron.animi.tuning;
 
 import org.animotron.animi.RuntimeParam;
-import org.animotron.animi.acts.WinnerGetsAll;
 import org.animotron.animi.cortex.*;
 import org.animotron.matrix.Matrix;
 import org.animotron.matrix.MatrixFloat;
