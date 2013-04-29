@@ -97,7 +97,8 @@ public class LearningHebbian extends Task {
 	
 	private float avg = 0f;
 
-	public void prepare() {
+	@Override
+	public boolean prepare() {
 		avg = 0f;
 		
 		final Mapping m = cz.in_zones[0];
@@ -114,8 +115,11 @@ public class LearningHebbian extends Task {
 			avg = sum / (float)neurons.length();
 		}
 //		System.out.println("Learning");
+		
+		return true;
 	}
 
+	@Override
 	public void gpuMethod(final int x, final int y, final int z) {
 		
 		if (cz.toLearning.get(x,y,z) <= 0f) return;

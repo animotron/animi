@@ -20,6 +20,7 @@
  */
 package org.animotron.animi.tuning;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -27,7 +28,10 @@ import java.util.Arrays;
 
 import org.animotron.animi.Imageable;
 import org.animotron.animi.cortex.LayerWLearning;
+import org.animotron.animi.cortex.LayerWLearningOnReset;
+import org.animotron.animi.cortex.Mapping;
 import org.animotron.matrix.Matrix;
+import org.animotron.matrix.MatrixProxy;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -59,31 +63,78 @@ public class CodeLayerViz implements Imageable {
     	DataBufferInt dataBuffer = (DataBufferInt)img.getRaster().getDataBuffer();
     	int data[] = dataBuffer.getData();
     	
-    	int[] n = new int[Codes.GRADIENT_RAINBOW.length];
-
-    	int i = 0;
-		Matrix<Float> ws = layer.in_zones[0].senapsesCode();
-		for (int y = 0; y < layer.height; y++) {
-			for (int x = 0; x < layer.width; x++) {
-				Arrays.fill(n, 0);
-				for (int z = 0; z < layer.depth; z++) {
-					if (ws.get(x,y,z) >= 0f) {
-						n[Math.round( ws.get(x,y,z))]++;
+//		if (layer instanceof LayerWLearningOnReset) {
+//			Mapping m = ((LayerWLearning)layer).in_zones[0];
+//			
+//			Matrix<Float> codes = ((LayerWLearning)m.frZone()).in_zones[0].senapsesCode();
+//			
+//			float max = 0;
+//			int pos = 0, i = 0;
+//
+//			for (int y = 0; y < layer.height; y++) {
+//				for (int x = 0; x < layer.width; x++) {
+//
+//					final MatrixProxy<Float> ws = m.senapseWeight().sub(x, y);
+//			
+//					max = 0; pos = -1;
+//					for (int index = 0; index < ws.length(); index++) {
+//						if (max < ws.getByIndex(index)) {
+//							max = ws.getByIndex(index);
+//							pos = index;
+//						}
+//					}
+//					if (pos == -1)
+//						continue;
+//					
+//					final MatrixProxy<Integer[]> sf = m.senapses().sub(x,y);
+//			
+//					Integer[] xyz = sf.getByIndex(pos);
+//					
+//					final int xi = xyz[0];
+//					final int yi = xyz[1];
+//					final int zi = xyz[2];
+//					
+//					if (codes.get(xi,yi,zi) < 0f) {
+//						data[i] = Color.BLACK.getRGB();
+//					} else {
+//						data[i] = Codes.GRADIENT_RAINBOW[Math.round( codes.get(xi,yi,zi) )].getRGB();
+//					}
+//					i++;
+//				}
+//			}
+//			
+//		} else {
+    	
+	    	int[] n = new int[Codes.GRADIENT_RAINBOW.length];
+	
+	    	int i = 0;
+			Matrix<Float> ws = layer.in_zones[0].senapsesCode();
+			for (int y = 0; y < layer.height; y++) {
+				for (int x = 0; x < layer.width; x++) {
+					Arrays.fill(n, 0);
+					for (int z = 0; z < layer.depth; z++) {
+						if (ws.get(x,y,z) >= 0f) {
+							n[Math.round( ws.get(x,y,z))]++;
+						}
 					}
-				}
-				int max = -1;
-				int pos = 0;
-				for (int j = 0; j < n.length; j++) {
-					if (max < n[j]) {
-						max = n[j];
-						pos = j;
+					int max = 0;
+					int pos = -1;
+					for (int j = 0; j < n.length; j++) {
+						if (max < n[j]) {
+							max = n[j];
+							pos = j;
+						}
 					}
+					
+					if (pos < 0) {
+						data[i] = Color.BLACK.getRGB();
+					} else {
+						data[i] = Codes.GRADIENT_RAINBOW[pos].getRGB();
+					}
+	    			i++;
 				}
-				
-    			data[i] = Codes.GRADIENT_RAINBOW[pos].getRGB();
-    			i++;
 			}
-		}
+//		}
 //    	for (int i = 0; i < data.length; i++) {
 //    		if (ws.getByIndex(i) >= 0f) {
 //    			data[i] = Codes.GRADIENT_RAINBOW[Math.round( ws.getByIndex(i) )].getRGB();

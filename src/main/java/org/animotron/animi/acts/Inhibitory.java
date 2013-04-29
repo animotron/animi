@@ -47,9 +47,11 @@ public class Inhibitory extends Task {
 	private Matrix<Float> cols = null;
 	
 	@Override
-	public void prepare() {
+	public boolean prepare() {
 		cols = cz.neurons.copy();
 		maxDelta = 0f;
+		
+		return true;
 	}
 
 	@Override

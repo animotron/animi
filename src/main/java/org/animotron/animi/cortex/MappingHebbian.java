@@ -435,7 +435,7 @@ public class MappingHebbian implements Mapping {
 			float maximum = neighbors.maximum();
 			float half = maximum / 2f;
 
-			boolean showMax = frZone instanceof LayerWLearning;
+			boolean showMax = toZone instanceof LayerWLearningOnReset;
 			Mapping m = null;
 			if (showMax) {
 				m = ((LayerWLearning)frZone).in_zones[0];
@@ -449,7 +449,7 @@ public class MappingHebbian implements Mapping {
 					if (showMax) {
 						final MatrixProxy<Float> ws = senapseWeight.sub(x, y);
 						
-						max = 0; pos = -1;
+						max = -1; pos = -1;
 						for (int index = 0; index < ws.length(); index++) {
 							if (max < ws.getByIndex(index)) {
 								max = ws.getByIndex(index);
@@ -466,6 +466,9 @@ public class MappingHebbian implements Mapping {
 						final int xi = xyz[0];
 						final int yi = xyz[1];
 						final int zi = xyz[2];
+						
+						if (m.senapsesCode().get(xi,yi,zi) < 0f)
+							continue;
 						
 						final int offsetX = boxSize * x;
 						final int offsetY = boxSize * y;
@@ -508,7 +511,6 @@ public class MappingHebbian implements Mapping {
 					}
 				}
 			}
-
 			return image;
 		}
 
@@ -639,7 +641,7 @@ public class MappingHebbian implements Mapping {
 					B = 255;
 					G = 255;
 				} else {
-					if (w > half) {
+					if (w >= half) {
 						R = (int) (254 * ((w - half) / half));
 						if (Float.isInfinite( ((w - half) / half) ) ) {
 							System.out.println("!!!");
@@ -660,6 +662,8 @@ public class MappingHebbian implements Mapping {
 					if (G > 255) G = 255;
 				}
 				
+				if (B > 255) B = 255;
+				if (B < 0) B = 0;
 				g.setColor(new Color(R, G, B));
 				g.draw3DRect(
 						offsetX + rf.boxMini * pX + 1, 

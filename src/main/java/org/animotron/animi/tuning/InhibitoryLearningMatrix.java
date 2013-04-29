@@ -50,10 +50,12 @@ public class InhibitoryLearningMatrix extends Task {
 //	private Matrix<Float> matrix = null;
 	
 	@Override
-	public void prepare() {
+	public boolean prepare() {
 //		matrix = cz.learning.copy();
 //		w = 1 / matrix.length();
 //		maxDelta = 0f;
+		
+		return true;
 	}
 
 	@Override

@@ -44,10 +44,14 @@ public class LearningTest extends LearningHebbian {
 
 	private int count = 0;
 
-	public void prepare() {
+	@Override
+	public boolean prepare() {
 		count++;
+		
+		return true;
 	}
 
+	@Override
 	public void gpuMethod(final int x, final int y, final int z) {
 		super.gpuMethod(x, y, z);
 		

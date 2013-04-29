@@ -82,12 +82,16 @@ public class MatrixDelay extends MatrixFloat {
 
 	public void set(Float value, int ... dims) {
 		final int index = index(dims);
-		super.setByIndex(value, index);
+		if (value > super.getByIndex(index)) {
+			super.setByIndex(value, index);
+		}
 		stepsFromLastSet[index] = 0;
 	}
 	
 	public void setByIndex(Float value, int index) {
-		super.setByIndex(value, index);
+		if (value > super.getByIndex(index)) {
+			super.setByIndex(value, index);
+		}
 		stepsFromLastSet[index] = 0;
 	}
 

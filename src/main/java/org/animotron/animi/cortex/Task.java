@@ -50,7 +50,9 @@ public abstract class Task {
 //    }
 	
 	public void execute() {
-		prepare();
+		if (!prepare())
+			return;
+		
 		do {
 //			System.out.println("Execute "+getClass());
 			for (int x = 0; x < sz.width; x++) {
@@ -63,7 +65,9 @@ public abstract class Task {
 		} while (!isDone());
 	}
 	
-	public void prepare() {}
+	public boolean prepare() {
+		return true;
+	}
 
 	public abstract void gpuMethod(final int x, final int y, final int z);
 	

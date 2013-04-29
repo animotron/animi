@@ -186,6 +186,8 @@ public class LayerSimple implements ILayer {
 
     @Override
 	public void process() {
+    	axons.fill(0f);
+    	
 		axons.step(neurons);
 		neurons.step();
 	}

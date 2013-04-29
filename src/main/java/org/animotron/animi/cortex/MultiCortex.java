@@ -48,6 +48,7 @@ public class MultiCortex extends Controller {
     public IRetina retina;
     LayerSimple z_in;
     LayerWLearning layer_1memory;
+    LayerWLearningOnReset layer_2correlation;
 
     private MultiCortex(Application app, LayerSimple [] zones) {
     	super(app);
@@ -123,20 +124,19 @@ public class MultiCortex extends Controller {
 //            LearningSOM.class
 //        );
 
-    	LayerWLearning layer_2correlation = new LayerWLearning("2й корреляция", app, 7, 7, 1,
+    	layer_2correlation = new LayerWLearningOnReset("2й корреляция", app, 20, 20, 1,
             new Mapping[]{
-                new MappingHebbian(layer_1memory, 9, 1, true, false) //7x7 (50)
+                new MappingHebbian(layer_1memory, 12, .5, true, false) //7x7 (50)
             },
-            ActivationHebbian.class,
+            ActivationHebbian.class, //ActivationMemory.class,
             Inhibitory.class,
-            FormLearningMatrix.class,
-            InhibitoryLearningMatrix.class,
-            LearningHebbian.class,
+            null,//FormLearningMatrix.class,
+            null,//InhibitoryLearningMatrix.class,
+            LearningHebbian.class, //LearningMemory.class,
             noAttenuation
         );
-//    	((LearningHebbian)layer_2a_on_1b.cnLearning).factor = 0.01f;
-
-//        z_1st.addMappring(z_1st);
+    	layer_2correlation.singleReceptionField = false;
+//    	layer_2correlation.cnLearning.factor = 0.01f;
         
 //        zones = new LayerSimple[]{z_in, layer_1a, layer_1b, layer_2a_on_1b, layer_2b_on_1b};
         zones = new LayerSimple[]{z_in, layer_1memory, layer_2correlation}; //, layer_2a_on_1b};
@@ -152,7 +152,8 @@ public class MultiCortex extends Controller {
 			this.retina = retina;
 		
         this.retina.setNextLayer(z_in);
-        this.retina.setResetLayer(layer_1memory);
+        this.retina.addResetLayer(layer_2correlation);
+        this.retina.addResetLayer(layer_1memory);
 	}
 
 	@Override

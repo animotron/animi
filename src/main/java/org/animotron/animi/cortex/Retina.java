@@ -23,6 +23,8 @@ package org.animotron.animi.cortex;
 import org.animotron.animi.simulator.Stimulator;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -64,10 +66,10 @@ public class Retina implements IRetina {
 		height = sz.height();
 	}
 	
-	LayerWLearning RL = null;
+	List<LayerWLearning> resetLayers = new ArrayList<LayerWLearning>();
 	@Override
-	public void setResetLayer(LayerWLearning layer) {
-		RL = layer;
+	public void addResetLayer(LayerWLearning layer) {
+		resetLayers.add(layer);
 	}
 	
 	@Override
@@ -86,7 +88,9 @@ public class Retina implements IRetina {
         retinaTask.setInput(image = stimulator.getNextImage());
 
 		if (stimulator.isReset()) {
-			RL.reset();
+			for (LayerWLearning layer : resetLayers) {
+				layer.reset();
+			}
 		}
 		
     	try {

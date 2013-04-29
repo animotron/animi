@@ -60,7 +60,9 @@ public class LearningMemory extends Task {
 		Mth.normalization2(posW, sumQ2);
 	}
 	
-	public void prepare() {
+	@Override
+	public boolean prepare() {
+		return true;
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {

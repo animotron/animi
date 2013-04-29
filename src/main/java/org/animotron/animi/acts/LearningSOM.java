@@ -115,7 +115,8 @@ public class LearningSOM extends Task {
 
 	private float avg = 0f;
 
-	public void prepare() {
+	@Override
+	public boolean prepare() {
 		avg = 0f;
 		
 		final Mapping m = cz.in_zones[0];
@@ -128,8 +129,11 @@ public class LearningSOM extends Task {
 		}
 		
 		avg = sum / (float)neurons.length();
+		
+		return true;
 	}
 
+	@Override
 	public void gpuMethod(final int x, final int y, final int z) {
 		
 //		System.out.println("! ["+x+","+y+","+z+"]");
@@ -169,6 +173,8 @@ public class LearningSOM extends Task {
 //			0.001f
 //		);
 	}
+
+	@Override
 	public boolean isDone() {
 //		final MappingSOM m = (MappingSOM) cz.in_zones[0];
 //		m.frZone().debugAxons("axons");

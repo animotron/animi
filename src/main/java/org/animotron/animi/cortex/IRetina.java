@@ -29,7 +29,7 @@ public interface IRetina {
 
 	public void setNextLayer(LayerSimple layer);
 
-	public void setResetLayer(LayerWLearning layer);
+	public void addResetLayer(LayerWLearning layer);
 
 	public void init(Stimulator stimulator);
 

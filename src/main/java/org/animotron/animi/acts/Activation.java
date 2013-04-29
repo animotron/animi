@@ -46,11 +46,13 @@ public class Activation extends Task {
 	private int stage = 0;
 	
 	@Override
-	public void prepare() {
+	public boolean prepare() {
 		positive.prepare();
 		negative.prepare();
 		
 		stage = 0;
+		
+		return true;
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {
@@ -67,30 +69,30 @@ public class Activation extends Task {
 
 			break;
 		case 2:
-			Mapping m = cz.in_zones[0];
-
-			final ILayer layer = m.toZone();
-			
-			float nAct = cz.neurons.get(x, y, z);
-			for (int dx = -1; dx <= 1; dx += 2) {
-				for (int dy = -1; dy <= 1; dy += 2) {
-					for (int dz = -1; dz <= 1; dz += 2) {
-						final int fx = x + dx;
-						final int fy = y + dy;
-						final int fz = z + dz;
-						
-						if (    (fx >= 0 && fx < layer.width()) && 
-								(fy >= 0 && fy < layer.height()) && 
-								(fz >= 0 && fz < layer.depth())
-							) {
-
-							nAct += m.toZone().axons.get(fx, fy, fz) * 0.2f;
-						}
-					}
-				}
-			}
-			
-			cz.neurons.set(nAct, x, y, z);
+//			Mapping m = cz.in_zones[0];
+//
+//			final ILayer layer = m.toZone();
+//			
+//			float nAct = cz.neurons.get(x, y, z);
+//			for (int dx = -1; dx <= 1; dx += 2) {
+//				for (int dy = -1; dy <= 1; dy += 2) {
+//					for (int dz = -1; dz <= 1; dz += 2) {
+//						final int fx = x + dx;
+//						final int fy = y + dy;
+//						final int fz = z + dz;
+//						
+//						if (    (fx >= 0 && fx < layer.width()) && 
+//								(fy >= 0 && fy < layer.height()) && 
+//								(fz >= 0 && fz < layer.depth())
+//							) {
+//
+//							nAct += m.toZone().axons.get(fx, fy, fz) * 0.2f;
+//						}
+//					}
+//				}
+//			}
+//			
+//			cz.neurons.set(nAct, x, y, z);
 			
 			break;
 		case 3:

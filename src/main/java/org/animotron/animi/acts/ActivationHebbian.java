@@ -49,26 +49,13 @@ public class ActivationHebbian extends Task {
 		
 		final Mapping m = cz.in_zones[0];
 		
-//		if (m instanceof MappingSOM) {
-//			MatrixMapped<Float> in = new MatrixMapped<Float>(m.frZone().axons, m.senapses().sub(x, y, z));
-//			MatrixProxy<Float> ws = m.senapseWeight().sub(x, y, z);
-//			
-//			System.out.println("************************************************");
-//			System.out.println("X = "+x+"; Y = "+y+"; Z = "+z);
-//			for (int i = 0; i < ws.length(); i++) {
-//				float v = in.getByIndex(i) * ws.getByIndex(i);
-//	    		System.out.println( in.getByIndex(i) + " * " + ws.getByIndex(i) + " = " + v);
-//		    }
-//		}
-		
-		
 		final float activity = 
 				activity(
 					new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z)), 
 					m.senapseWeight().sub(x, y, z)
 				);
 		
-		cz.neurons.set(activity, x, y, z);
+		cz.neurons.set(activity > 0f ? activity : 0f, x, y, z);
 	}
 
 	@Override

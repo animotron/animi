@@ -21,6 +21,8 @@
 package org.animotron.animi.tuning;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.animotron.animi.Utils;
@@ -74,7 +76,7 @@ public class CodeSignal extends AbstractStimulator implements IRetina {
 	}
 	
 	LayerSimple nextLayer = null;
-	LayerWLearning resetLayer = null;
+	List<LayerWLearning> resetLayers = new ArrayList<LayerWLearning>();
 
 	@Override
 	public void setNextLayer(LayerSimple layer) {
@@ -82,8 +84,8 @@ public class CodeSignal extends AbstractStimulator implements IRetina {
 	}
 
 	@Override
-	public void setResetLayer(LayerWLearning layer) {
-		resetLayer = layer;
+	public void addResetLayer(LayerWLearning layer) {
+		resetLayers.add(layer);
 	}
 
 	@Override

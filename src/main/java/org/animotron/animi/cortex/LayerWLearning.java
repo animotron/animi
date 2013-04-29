@@ -115,7 +115,11 @@ public class LayerWLearning extends LayerSimple {
 			return null;
 		} else {
 			try {
-				Constructor<? extends Task> constructor = classOfObject.getConstructor(this.getClass());
+				Constructor<? extends Task> constructor = 
+					classOfObject.getConstructor(
+						LayerWLearning.class
+					);
+
 				return constructor.newInstance(this);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -363,7 +367,7 @@ public class LayerWLearning extends LayerSimple {
 //		System.out.println(Arrays.toString(l));
     }
     
-    private void performTask(Task task) {
+    protected void performTask(Task task) {
     	if (task == null)
     		return;
     	

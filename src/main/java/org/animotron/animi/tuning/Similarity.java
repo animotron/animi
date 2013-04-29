@@ -70,7 +70,7 @@ public class Similarity extends Controller {
 			this.retina = retina;
 		
         this.retina.setNextLayer(z_in);
-        this.retina.setResetLayer(layer_1b);
+        this.retina.addResetLayer(layer_1b);
 	}
 
 	@Override

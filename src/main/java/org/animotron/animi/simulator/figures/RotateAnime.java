@@ -102,13 +102,14 @@ public class RotateAnime extends AbstractAnime {
 	int start = 0;
 	
 	private double nextAngel() {
-		final double angel = angelStep * code;// (code = rnd.nextInt(Codes.CODES));
-		
-		code++;
-		if (code >= Codes.CODES)
-			code = 0;
-		
-		return angel; 
+//		final double angel = angelStep * code;// (code = rnd.nextInt(Codes.CODES));
+//		
+//		code++;
+//		if (code >= Codes.CODES)
+//			code = 0;
+//		
+//		return angel; 
+		return angelStep * (code = rnd.nextInt(Codes.CODES));
 	}
 	
 	public int getCode() {

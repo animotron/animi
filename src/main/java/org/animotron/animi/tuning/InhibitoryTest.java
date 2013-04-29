@@ -44,8 +44,10 @@ public class InhibitoryTest extends Task {
 	}
 
 	@Override
-	public void prepare() {
+	public boolean prepare() {
 		cz.neighbors.fill(0f);
+		
+		return true;
 	}
 
 	@Override

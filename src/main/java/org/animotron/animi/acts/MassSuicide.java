@@ -49,12 +49,16 @@ public class MassSuicide extends LearningHebbian {
 
 	private int count = 0;
 
-	public void prepare() {
+	@Override
+	public boolean prepare() {
 		count++;
 		
 		harakiri.fill(Float.MAX_VALUE);
+		
+		return true;
 	}
 
+	@Override
 	public void gpuMethod(final int x, final int y, final int z) {
 		super.gpuMethod(x, y, z);
 		
@@ -87,6 +91,7 @@ public class MassSuicide extends LearningHebbian {
 	
 	Random rnd = new Random();
 	
+	@Override
 	public boolean isDone() {
 		if (count % eachCount == 0) {
 			LayerWLearning layer = (LayerWLearning) m.frZone();

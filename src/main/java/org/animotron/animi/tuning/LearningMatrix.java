@@ -36,12 +36,14 @@ public class LearningMatrix extends FormLearningMatrix {
 	int stage = - Codes.CODES * Codes.SHIFTS;
 	
 	@Override
-	public void prepare() {
+	public boolean prepare() {
 		super.prepare();
 	
 		if (stage >= 0 && stage < Codes.CODES * Codes.SHIFTS) {
 			cz.toLearning.setByIndex(1f, stage);
 		}
 		stage++;
+		
+		return false;
 	}
 }

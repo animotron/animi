@@ -157,7 +157,7 @@ public class StimulatorAnime extends AbstractStimulator {
 	}
 	
 	int count = 0;
-	int changeAt = 0;//Codes.SHIFTIMES;
+	int changeAt = 3;//Codes.SHIFTIMES;
 	boolean resetStage = true;
 	Figure active = null;
 	

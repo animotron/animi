@@ -48,7 +48,7 @@ public class FormLearningMatrix extends Task implements Imageable {
 	Mapping m;
 	
 	@Override
-	public void prepare() {
+	public boolean prepare() {
 //		stage = 0;
 //		
 //		matrix = cz.learning.copy();
@@ -58,6 +58,8 @@ public class FormLearningMatrix extends Task implements Imageable {
 		cz.pure.fill(0f);
 		cz.learning.fill(0f);
 		cz.toLearning.fill(0f);
+		
+		return true;
 	}
 	
 	int half = 1;

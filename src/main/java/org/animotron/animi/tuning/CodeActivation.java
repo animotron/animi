@@ -32,7 +32,8 @@ public class CodeActivation extends Task {
 	}
 	
 	@Override
-	public void prepare() {
+	public boolean prepare() {
+		return true;
 	}
 
 	public void gpuMethod(final int x, final int y, final int z) {
