@@ -24,9 +24,6 @@ import static org.animotron.animi.cortex.MultiCortex.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.lang.reflect.Constructor;
 
 import javax.media.opengl.GLCapabilities;
@@ -40,7 +37,6 @@ import org.animotron.animi.cortex.*;
 import org.animotron.animi.simulator.*;
 import org.animotron.animi.tuning.CodeLayerViz;
 import org.animotron.animi.tuning.Codes;
-import org.animotron.animi.tuning.Similarity;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -252,72 +248,7 @@ public class Application extends JFrame {
     	}
     	
     	JButton button;
-    	
-//        button = new JButton("Load");
-//        button.addActionListener(new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				try {
-//					final JFileChooser fc = new JFileChooser();
-//					
-//					int returnVal = fc.showOpenDialog(Application.this);
-//					if (returnVal == JFileChooser.APPROVE_OPTION) {
-//			            File file = fc.getSelectedFile();
-//			            
-//			            cortexs = MultiCortex.load(Application.this, file);
-//						
-//			        	createViews();
-//
-//						run();
-//					}
-//
-//				} catch (Exception ex) {
-//					ex.printStackTrace();
-//				}
-//			}
-//		});
-//        bar.add(button);
-//        
-//        button = new JButton("Save");
-//        button.addActionListener(new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				if (cortexs != null) {
-//					final JFileChooser fc = new JFileChooser();
-//					
-//					int returnVal = fc.showSaveDialog(Application.this);
-//					
-//					if (returnVal == JFileChooser.APPROVE_OPTION) {
-//			            File file = fc.getSelectedFile();
-//
-//						int was = MODE;
-//						if (was == RUN)
-//							stop();
-//						
-//						//cortexs.prepareForSerialization();
-//						try {
-//							if (was >= STEP) Thread.sleep(1000);
-//							
-//							BufferedWriter out = new BufferedWriter(new FileWriter(file));
-//							cortexs.save(out);
-//							out.close();
-//							
-//							System.out.println("saved.");
-//						} catch (Exception ex) {
-//							ex.printStackTrace();
-//						}
-//						if (was == RUN)
-//							run();
-//					}
-//				}
-//			}
-//		});
-//        bar.add(button);
         
-        bar.addSeparator();
-
         button = new JButton("Stimulator");
 //        button.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.ALT_MASK));
 //        button.setMnemonic(KeyEvent.VK_I);
