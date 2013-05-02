@@ -49,6 +49,10 @@ public class MultiCortex extends Controller {
     LayerSimple z_in;
     LayerWLearning layer_1memory;
     LayerWLearningOnReset layer_2correlation;
+    LayerWLearning layer_3factor;
+    
+    MappingHebbian m;
+    MappingHebbian mm;
 
     private MultiCortex(Application app, LayerSimple [] zones) {
     	super(app);
@@ -84,7 +88,7 @@ public class MultiCortex extends Controller {
         //1st zone
 //    	LayerWLearning layer_1a = new LayerWLearning("1й образы", this, 5, 5, 4, //120, 120, //160, 120,
 //            new Mapping[]{
-//                new MappingHebbian(z_in, 200, 1, true, true) //7x7 (50)
+//                new MappingHebbian(z_in, 200, 1, true, true)
 //            },
 //            WinnerGetsAll.class,
 //            LearningHebbian.class,
@@ -96,51 +100,50 @@ public class MultiCortex extends Controller {
 //	    	}
 //        );
 
+    	m = new MappingHebbian(z_in, 150, 1, true, false);
     	layer_1memory = new LayerWLearning("1й память", app, 20, 20, 9,
             new Mapping[]{
-                new MappingHebbian(z_in, 150, 1, true, false) //7x7 (50)
+                m //new MappingHebbian(z_in, 150, 1, true, false)
             },
             ActivationMemory.class,
-            Inhibitory.class,
+            null,//Inhibitory.class,
             Mediator.class,
             InhibitoryLearningMatrix.class,
             LearningMemory.class,
             noAttenuation
         );
         
-//        layer_2a_on_1b = new LayerWLearning("2й SOM", this, 5, 5, 1,
+//    	layer_2correlation = new LayerWLearningOnReset("2й корреляция", app, 20, 20, 1,
 //            new Mapping[]{
-////                new MappingHebbian(layer_1b, 25, 1, true, false) //7x7 (50)
-//                new MappingSOM(layer_1b, 25, 1, 25,
-//            		new MappingSOM.Value() {
-//	    				@Override
-//	    				public float value(int x1, int y1, int x2, int y2, double sigma) {
-//	    	            	return 1 / (float)25;
-//	    				}
-//	            	}
-//            	)
+//                new MappingHebbian(layer_1memory, 12, .5, true, false)
 //            },
-//            WinnerGetsAll.class,
-//            LearningSOM.class
+//            Activation.class, //ActivationMemory.class,
+//            WinnerGetsAll.class, //Inhibitory.class,
+//            null,//FormLearningMatrix.class,
+//            null,//InhibitoryLearningMatrix.class,
+//            LearningHebbian.class, //LearningMemory.class,
+//            noAttenuation
 //        );
+//    	layer_2correlation.singleReceptionField = false;
+//    	layer_2correlation.inhibitory_number_of_links = 12;
+////    	layer_2correlation.cnLearning.factor = 0.01f;
+    	
+    	mm = new MappingHebbian(z_in, 150, 1, true, false);
 
-    	layer_2correlation = new LayerWLearningOnReset("2й корреляция", app, 20, 20, 1,
+    	layer_3factor = new LayerWLearning("3й фактор", app, 20, 20, 1,
             new Mapping[]{
-                new MappingHebbian(layer_1memory, 12, .5, true, false) //7x7 (50)
+                new MappingHebbian(layer_1memory, 1, 1, true, false),
+                mm
             },
-            Activation.class, //ActivationMemory.class,
-            WinnerGetsAll.class, //Inhibitory.class,
+            null, //Activation.class, //ActivationMemory.class,
+            null, //WinnerGetsAll.class, //Inhibitory.class,
             null,//FormLearningMatrix.class,
             null,//InhibitoryLearningMatrix.class,
-            LearningHebbian.class, //LearningMemory.class,
+            LearningHebbianOnMemory.class, //LearningMemory.class,
             noAttenuation
         );
-    	layer_2correlation.singleReceptionField = false;
-    	layer_2correlation.inhibitory_number_of_links = 12;
-//    	layer_2correlation.cnLearning.factor = 0.01f;
-        
-//        zones = new LayerSimple[]{z_in, layer_1a, layer_1b, layer_2a_on_1b, layer_2b_on_1b};
-        zones = new LayerSimple[]{z_in, layer_1memory, layer_2correlation}; //, layer_2a_on_1b};
+
+    	zones = new LayerSimple[]{z_in, layer_1memory, layer_3factor}; //, layer_2a_on_1b};
         
         setRetina(null);
     }
@@ -153,7 +156,7 @@ public class MultiCortex extends Controller {
 			this.retina = retina;
 		
         this.retina.setNextLayer(z_in);
-        this.retina.addResetLayer(layer_2correlation);
+        this.retina.addResetLayer(layer_3factor);
         this.retina.addResetLayer(layer_1memory);
 	}
 
@@ -170,6 +173,10 @@ public class MultiCortex extends Controller {
 		for (LayerSimple zone : zones) {
 			zone.init();
 		}
+		
+    	mm.senapses = m.senapses;
+    	mm._senapses = m._senapses;
+
     }
 
     /**

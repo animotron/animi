@@ -68,8 +68,8 @@ public class MappingHebbian implements Mapping {
 	
 	boolean haveInhibitory;
 	
-	private Matrix<Integer[]> senapses;
-	private Matrix<Integer> _senapses;
+	protected Matrix<Integer[]> senapses;
+	protected Matrix<Integer> _senapses;
 	
 	private Matrix<Float> senapseCode;
 	private Matrix<Float> senapseWeight;
