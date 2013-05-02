@@ -100,8 +100,11 @@ public class MultiCortex extends Controller {
 //	    	}
 //        );
 
-    	m = new MappingHebbian(z_in, 150, 1, true, false);
-    	layer_1memory = new LayerWLearning("1й память", app, 20, 20, 9,
+    	int RF = 100;
+    	int W = 50, H = 50;
+    	
+    	m = new MappingHebbian(z_in, RF, 1, true, false);
+    	layer_1memory = new LayerWLearning("1й память", app, W, H, 9,
             new Mapping[]{
                 m //new MappingHebbian(z_in, 150, 1, true, false)
             },
@@ -128,9 +131,9 @@ public class MultiCortex extends Controller {
 //    	layer_2correlation.inhibitory_number_of_links = 12;
 ////    	layer_2correlation.cnLearning.factor = 0.01f;
     	
-    	mm = new MappingHebbian(z_in, 150, 1, true, false);
+    	mm = new MappingHebbian(z_in, RF, 1, true, false);
 
-    	layer_3factor = new LayerWLearning("3й фактор", app, 20, 20, 1,
+    	layer_3factor = new LayerWLearning("3й фактор", app, W, H, 1,
             new Mapping[]{
                 new MappingHebbian(layer_1memory, 9, .1, true, false),
                 mm
@@ -144,8 +147,8 @@ public class MultiCortex extends Controller {
         );
     	layer_3factor.singleReceptionField = false;
 
-    	zones = new LayerSimple[]{z_in, layer_1memory, layer_3factor}; //, layer_2a_on_1b};
-        
+    	zones = new LayerSimple[]{z_in, layer_1memory, layer_3factor}; 
+    	
         setRetina(null);
     }
     
@@ -157,7 +160,7 @@ public class MultiCortex extends Controller {
 			this.retina = retina;
 		
         this.retina.setNextLayer(z_in);
-        this.retina.addResetLayer(layer_3factor);
+//        this.retina.addResetLayer(layer_3factor);
         this.retina.addResetLayer(layer_1memory);
 	}
 
@@ -175,9 +178,8 @@ public class MultiCortex extends Controller {
 			zone.init();
 		}
 		
-    	mm.senapses = m.senapses;
-    	mm._senapses = m._senapses;
-
+//    	mm.senapses = m.senapses;
+//    	mm._senapses = m._senapses;
     }
 
     /**
