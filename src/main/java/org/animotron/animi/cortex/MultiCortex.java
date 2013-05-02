@@ -132,7 +132,7 @@ public class MultiCortex extends Controller {
 
     	layer_3factor = new LayerWLearning("3й фактор", app, 20, 20, 1,
             new Mapping[]{
-                new MappingHebbian(layer_1memory, 1, 1, true, false),
+                new MappingHebbian(layer_1memory, 9, .1, true, false),
                 mm
             },
             null, //Activation.class, //ActivationMemory.class,
@@ -142,6 +142,7 @@ public class MultiCortex extends Controller {
             LearningHebbianOnMemory.class, //LearningMemory.class,
             noAttenuation
         );
+    	layer_3factor.singleReceptionField = false;
 
     	zones = new LayerSimple[]{z_in, layer_1memory, layer_3factor}; //, layer_2a_on_1b};
         

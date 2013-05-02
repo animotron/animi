@@ -78,6 +78,7 @@ public class LearningHebbianOnMemory extends Task {
 	
 	@Override
 	public boolean prepare() {
+//		System.out.println("***************");
 		return true;
 	}
 	
@@ -88,17 +89,26 @@ public class LearningHebbianOnMemory extends Task {
 		
 //		if (cz.toLearning.get(x,y,z) <= 0f) return;
 		
-		final Mapping m = cz.in_zones[1];
-		LayerWLearning layer = (LayerWLearning) cz.in_zones[0].frZone();
-		final Mapping mm = layer.in_zones[0];
+		final Mapping m0 = cz.in_zones[0];
+		final Mapping remember = cz.in_zones[1];
+		
+		final LayerWLearning layer = (LayerWLearning) cz.in_zones[0].frZone();
+		final Mapping memoryMapping = layer.in_zones[0];
+		
+		if (m0.senapsesCode().get(x,y,z) >= 0f) {
+			return;
+		}
+		
+		MatrixProxy<Integer[]> senapses = m0.senapses().sub(x,y,z);
 		
 		int count = 0;
-		for (int zi = 0; zi < layer.depth(); zi++) {
-			if (mm.senapsesCode().get(x,y,zi) >= 0) {
+		for (int index = 0; index < senapses.length(); index++) {
+			final Integer[] pos = senapses.getByIndex(index);
+			if (memoryMapping.senapsesCode().get(pos[0], pos[1], pos[2]) >= 0) {
 				count++;
 			}
 		}
-		if (count < 7)
+		if (count < senapses.length() - 1)
 			return;
 		
 		final float act = 1f;
@@ -109,21 +119,25 @@ public class LearningHebbianOnMemory extends Task {
 		
 //		System.out.println("["+x+","+y+","+z+"] "+act);
 
+		for (int i = 1; i < 100; i++) {
+			for (int index = 0; index < senapses.length(); index++) {
+				final Integer[] pos = senapses.getByIndex(index);
+	
+				final  Matrix<Float> in = memoryMapping.senapseWeight().sub(pos[0], pos[1], pos[2]);
+				final Matrix<Float> weights = remember.senapseWeight().sub(x, y, z);
+			
+				LearningHebbianOnMemory.learn(
+					in, 
+					weights,
+					act,
+					1f / (float)(i)
+				);
+				
+//				weights.debug("*** "+index);
+			}
+		}
 		
-		int zi;
-		do {
-			zi = rnd.nextInt(layer.depth());
-		} while (mm.senapsesCode().get(x,y,zi) < 0);
-
-		Matrix<Float> in = mm.senapseWeight().sub(x,y,zi);
-		Matrix<Float> weights = m.senapseWeight().sub(x, y, z);
-		
-		LearningHebbianOnMemory.learn(
-			in, 
-			weights,
-			act,
-			factor
-		);
+		m0.senapsesCode().set(1f, x,y,z);
 	}
 
 	@Override

@@ -102,10 +102,10 @@ public class Utils {
 							offsetY + boxMini * pY,
 							cnX, cnY, z, m);
 					
-					img = drawRF(false, image, boxMini, 
-							offsetX + boxMini * pX, 
-							offsetY + boxMini * pY,
-							cnX, cnY, z, m);
+//					img = drawRF(false, image, boxMini, 
+//							offsetX + boxMini * pX, 
+//							offsetY + boxMini * pY,
+//							cnX, cnY, z, m);
 					
 					drawNA(image, m, boxMini, offsetX, offsetY, cnX, cnY, z, pX, pY);
 
@@ -193,7 +193,7 @@ public class Utils {
         	final int yi = m._senapses().get(cnX, cnY, cnZ, l, 1);
         	//XXX: final int zi = m.senapses().get(cnX, cnY, cnZ, l, 2);
         	
-        	if (m.toZone().isSingleReceptionField()) {
+        	if (m.toZone().isSingleReceptionField() || m.toZone().in_zones.length == 2) { //WORKAROUND: m.toZone().in_zones.length == 2 
 	        	pX = (boxSize / 2) + (xi - (int)(m.toZoneCenterX() * m.fX()));
 				pY = (boxSize / 2) + (yi - (int)(m.toZoneCenterY() * m.fY()));
         	} else {
