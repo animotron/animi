@@ -66,7 +66,6 @@ public class MultiCortex extends Controller {
     public MultiCortex(Application app) {
     	super(app);
 
-    	
 //    	final int delay = 8;
     	z_in = new LayerSimple("Зрительный нерв", app, 60, 60, 1,
 			oneStepAttenuation
@@ -102,7 +101,7 @@ public class MultiCortex extends Controller {
 //        );
 
     	int RF = 100;
-    	int W = 20, H = 20;
+    	int W = 17, H = 17;
     	
     	m = new MappingHebbian(z_in, RF, 1, true, false);
     	layer_1memory = new LayerWLearning("1й память", app, W, H, 9,
