@@ -101,7 +101,7 @@ public class MultiCortex extends Controller {
 //        );
 
     	int RF = 100;
-    	int W = 50, H = 50;
+    	int W = 20, H = 20;
     	
     	m = new MappingHebbian(z_in, RF, 1, true, false);
     	layer_1memory = new LayerWLearning("1й память", app, W, H, 9,
