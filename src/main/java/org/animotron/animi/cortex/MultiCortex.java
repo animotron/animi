@@ -65,6 +65,7 @@ public class MultiCortex extends Controller {
 
     public MultiCortex(Application app) {
     	super(app);
+
     	
 //    	final int delay = 8;
     	z_in = new LayerSimple("Зрительный нерв", app, 60, 60, 1,
