@@ -269,14 +269,17 @@ public class MatrixFloat implements Matrix<Float> {
 		
 		boolean print = false;
 
+		//XXX: do that if last dims is 1 element
+		int dimensionsLength = dimensions.length - 1;
+		
     	for (int index = 1; index < array.size(); index++) {
-    		for (int dim = dimensions.length - 1; dim >= 0; dim--) {
+    		for (int dim = dimensionsLength - 1; dim >= 0; dim--) {
         		value = ++pos[dim];
         		
         		if (value >= dimensions[dim]) {
         			pos[dim] = 0;
         			
-        			if (dim == dimensions.length - 1) {
+        			if (dim == dimensionsLength - 1) {
         				print = true;
         			}
         			continue;

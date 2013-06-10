@@ -69,7 +69,7 @@ public class Cube extends JInternalFrame implements GLEventListener, MouseListen
 		
 		this.layer = layer;
 
-		canvas = new GLCanvas(caps);
+//		canvas = new GLCanvas(caps);
 
 		canvas.addGLEventListener(this);
 

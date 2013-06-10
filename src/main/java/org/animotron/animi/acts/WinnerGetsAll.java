@@ -46,6 +46,7 @@ public class WinnerGetsAll extends Task {
 	public static void _(LayerWLearning cz, Matrix<Float> source, boolean inhibitory) {
 		
 		Matrix<Float> cols = source.copy();
+    	source.fill(0f);
     	
     	//max is winner & winner gets all
     	int[] maxPos;
@@ -64,10 +65,8 @@ public class WinnerGetsAll extends Task {
 //	    	System.out.println(maxPos);
 	    	
 	        if (!inhibitory) {
-	        	source.fill(0f);
-
 	        	source.set(max, maxPos);
-//        		sz.rememberCols[maxPos] = max;
+
         		return;
 	        }
 	        
@@ -87,6 +86,7 @@ public class WinnerGetsAll extends Task {
     			}
     		}
     		cols.set(0f, maxPos);
+    		source.set(max, maxPos);
     	}
 	}
 	

@@ -45,15 +45,8 @@ public class InhibitoryLearningMatrix extends Task {
 		super(cz);
 	}
 
-//	private float w = 0f;
-//	private float maxDelta = 0f;
-//	private Matrix<Float> matrix = null;
-	
 	@Override
 	public void prepare() {
-//		matrix = cz.learning.copy();
-//		w = 1 / matrix.length();
-//		maxDelta = 0f;
 	}
 
 	@Override
@@ -62,77 +55,56 @@ public class InhibitoryLearningMatrix extends Task {
 			cz.toLearning = (MatrixFloat) cz.learning.copy();
 			_(cz.in_zones[0], cz.toLearning);
 		}
-//		
-//		
-//		float delta = 0;
-//		for (int xi = 0; xi < cz.width; xi++) {
-//			for (int yi = 0; yi < cz.height; yi++) {
-//				for (int zi = 0; zi < cz.depth; zi++) {
-//				
-//					if (xi != x && yi != y && zi != z) {
-//						delta += w * matrix.get(xi, yi, zi);
-//					}
-//				}
-//			}
-//		}
-//		
-//		float activity = matrix.get(x, y, z);
-//		activity -= delta * k;
-//		if (activity < 0f) {
-//			activity = 0f;
-//			delta = 0f;
-//		}
-//		
-//		cz.learning.set(activity, x, y, z);
-//		
-//		synchronized (this) {
-//			maxDelta = Math.max(maxDelta, delta);
-//		}
 	}
 	
 	@Override
 	public boolean isDone() {
+		//cz.toLearning.debug("InhibitoryLearningMatrix");
 		return true;
-//		boolean isDone = maxDelta < minDelta;
-//		if (!isDone) {
-//			maxDelta = 0f;
-//			matrix = cz.learning.copy();
-//		}
-//		
-//		return isDone;
 	}
 	
 	@Override
 	protected void release() {
 	}
 	
-	public static void _(final Mapping m, final Matrix<Float> source) {
+	public void _(final Mapping m, final Matrix<Float> source) {
 		
 		final Matrix<Float> cols = source.copy();
 		
-		int count = 0;
-    	
     	//max is winner & winner gets all
     	int[] maxPos;
     	float max = 0;
     	
     	source.fill(0f);
 
-    	while (count == 0) {
+        final int linksNumber = cz.inhibitory_number_of_links;
+
+        while (true) {
 	    	maxPos = cols.max();
 	        if (maxPos == null) {
 	        	break;
 	        }
 	        
 	    	max = cols.get(maxPos);
+
+    		for (int l = 0; l < linksNumber; l++) {
+    			try {
+	    	    	final int xi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 0);
+	    	    	final int yi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 1);
+	    	        
+	    	    	for (int zi = 0; zi < cz.depth; zi++) {
+	    	    		cols.set(0f, xi, yi, zi);
+	    	    	}
+    			} catch (Exception e) {
+    				e.printStackTrace();
+
+//    				final int xi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 0);
+//	    	    	final int yi = cz.inhibitoryLinksSenapse(maxPos[0], maxPos[1], l, 1);
+    			}
+    		}
 	    	
-//	    	if (m.senapseWeight().get(maxPos[0],maxPos[1],maxPos[2],0) < 0f) {
-	        	source.set(max, maxPos);
-	        	count++;
-//        		return;
-//	        } else {
-	        	cols.set(0f, maxPos);
-//	        }
+        	source.set(max, maxPos);
+        	cols.set(0f, maxPos);
     	}
 	}
 }

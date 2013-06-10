@@ -41,7 +41,7 @@ import java.util.Arrays;
  */
 public class LayerWLearning extends LayerSimple {
 	
-	protected boolean singleReceptionField = true;
+	protected boolean singleReceptionField = false;
 	
 	@Params
 	public Mapping[] in_zones;
@@ -65,7 +65,7 @@ public class LayerWLearning extends LayerSimple {
 	public double disper = 1.5;
 
 	@InitParam(name="inhibitory_links")
-	public int inhibitory_number_of_links = 20;
+	public int inhibitory_number_of_links = 200;
 	
 	@InitParam(name="inhibitory_w")
 	public float inhibitory_w = (float)Math.sqrt(1 / (double)inhibitory_number_of_links);
@@ -94,6 +94,7 @@ public class LayerWLearning extends LayerSimple {
 			Class<? extends Task> classOfActivation,
 			Class<? extends Task> classOfInhibitory,
 			Class<? extends Task> classOfLearningMatrix,
+			Class<? extends Task> classOfLearningMatrixInhibitory,
 			Class<? extends Task> classOfLearning,
 			MatrixDelay.Attenuation attenuation) {
 		
@@ -101,36 +102,26 @@ public class LayerWLearning extends LayerSimple {
 		
 		this.in_zones = in_zones;
 	
-		try {
-			Constructor<? extends Task> constructor = classOfActivation.getConstructor(this.getClass());
-			cnActivation = constructor.newInstance(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		try {
-			Constructor<? extends Task> constructor = classOfInhibitory.getConstructor(this.getClass());
-			cnInhibitory = constructor.newInstance(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		try {
-			Constructor<? extends Task> constructor = classOfLearning.getConstructor(this.getClass());
-			cnLearning = constructor.newInstance(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			Constructor<? extends Task> constructor = classOfLearningMatrix.getConstructor(this.getClass());
-			learningMatrix = constructor.newInstance(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		learningMatrixInhibitory = new InhibitoryLearningMatrix(this);
+		cnActivation = newInstance(classOfActivation);
+		cnInhibitory = newInstance(classOfInhibitory);
+		cnLearning = newInstance(classOfLearning);
+		learningMatrix = newInstance(classOfLearningMatrix);
+		learningMatrixInhibitory = newInstance(classOfLearningMatrixInhibitory);
     }
+	
+	private Task newInstance(Class<? extends Task> classOfTask) {
+		if (classOfTask == null)
+			return null;
+		
+		try {
+			Constructor<? extends Task> constructor = classOfTask.getConstructor(this.getClass());
+			return constructor.newInstance(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 
 	/**
      * Initializes the OpenCL memory object and the BufferedImage which will later receive the pixels
@@ -225,10 +216,10 @@ public class LayerWLearning extends LayerSimple {
             //определяем, что не вышли за границы поля колонок
             //колонки по периметру не задействованы
             // Проверка на повтор связи
-			} while ((lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1) && nerv_links[lx][ly]);
+			} while ((lx >= 0 && ly >= 0 && lx < width() && ly < height()) && nerv_links[lx][ly]);
 //            System.out.print(".");
 
-            if ((lx >= 1 && ly >= 1 && lx < width() - 1 && ly < height() - 1)) {
+            if ((lx >= 0 && ly >= 0 && lx < width() && ly < height())) {
 				nerv_links[lx][ly] = true;
 
 				// Создаем синаптическую связь

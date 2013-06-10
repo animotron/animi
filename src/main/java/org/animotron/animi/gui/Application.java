@@ -51,8 +51,8 @@ public class Application extends JFrame {
 	
 	protected static GLU glu = new GLU();
 
-	protected static GLProfile glp = GLProfile.getDefault();
-	protected static GLCapabilities caps = new GLCapabilities(glp);
+//	protected static GLProfile glp = GLProfile.getDefault();
+//	protected static GLCapabilities caps = new GLCapabilities(glp);
 	
 	public static Application _ = null;
 
@@ -118,6 +118,8 @@ public class Application extends JFrame {
 
 //        setBounds(0, 0, 800, 600);
         setLocationByPlatform(true);
+        
+        init();
 	}
 	
     protected JMenuBar createMenuBar() {
