@@ -65,7 +65,7 @@ public class LayerWLearning extends LayerSimple {
 	public double disper = 1.5;
 
 	@InitParam(name="inhibitory_links")
-	public int inhibitory_number_of_links = 200;
+	public int inhibitory_number_of_links = 800;
 	
 	@InitParam(name="inhibitory_w")
 	public float inhibitory_w = (float)Math.sqrt(1 / (double)inhibitory_number_of_links);

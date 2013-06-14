@@ -88,7 +88,7 @@ public class MultiCortex implements Runnable {
         );
     	z_in.isZeroAvgAxons = false;
         
-    	layer_1b = new LayerWLearning("1й факторы", this, 160, 160, 1,
+    	layer_1b = new LayerWLearning("1й факторы", this, 40, 40, 1,
             new Mapping[]{
                 new MappingHebbian(z_in, 1, 1, true, false)
             },
