@@ -18,34 +18,56 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package animi.tuning;
+package animi.acts;
 
-import animi.acts.Mediator;
-import animi.cortex.LayerWLearning;
+
+import animi.cortex.*;
+import animi.matrix.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
- *
  */
-public class LearningMatrix extends Mediator {
-
-	public LearningMatrix(LayerWLearning cz) {
+public class LearningAsItis extends Task {
+	
+	public LearningAsItis(LayerWLearning cz) {
 		super(cz);
 	}
-	
-	int MAX = Codes.CODES * Codes.SHIFTS * Codes.SHIFTIMES;
-	
-	int stage = 0;//- MAX;
+
+	public static void learn(
+			final Matrix<Float> in, 
+			final Matrix<Float> posW) {
+		
+		for (int index = 0; index < posW.length(); index++) {
+			posW.setByIndex(in.getByIndex(index), index);
+		}
+	}
 	
 	@Override
 	public boolean prepare() {
-		super.prepare();
-	
-		if (stage >= 0 && stage < MAX) {
-			cz.toLearning.setByIndex(1f, stage);
-		}
-		stage++;
-		
-		return false;
+		return true;
 	}
+
+	public void gpuMethod(final int x, final int y, final int z) {
+		
+		if (cz.toLearning.get(x,y,z) <= 0f) return;
+		
+		final Mapping m = cz.in_zones[0];
+		
+		if (m.senapsesCode().get(x,y,z) >= 0f)
+			return;
+
+		m.senapsesCode().set((float)cz.app.getStimulator().getCode(), x,y,z);
+		
+		Matrix<Float> in = new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z));
+		Matrix<Float> posW = m.senapseWeight().sub(x, y, z);
+		
+		LearningAsItis.learn(
+			in, 
+			posW
+		);
+	}
+
+	@Override
+    protected void release() {
+    }
 }

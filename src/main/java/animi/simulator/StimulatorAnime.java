@@ -59,105 +59,11 @@ public class StimulatorAnime extends AbstractStimulator {
         		BufferedImage.TYPE_INT_RGB);
 		
         figures = new Figure[1];
-        
-        int f = 0;
-
-//		int step = 56;
-//        int offset = retina.worldStep() * step / 8;
-//
-//        int j = 0;
-//        int[][] steps = new int[step][];
-//
-//        for (int k = 0; k < 2; k++) {
-//	        for (int i = 0; i < step/4; i++) {
-//	        	steps[j++] = new int[] {-retina.worldStep(), 0};
-//	        }
-//	        for (int i = 0; i < step/4; i++) {
-//	        	steps[j++] = new int[] {+retina.worldStep(), 0};
-//	        }
-//        }
-//        
-//        Point first  = new Point((int)(width * 0 - offset), (int)(height * 0 - offset * 2));
-//        Point second = new Point((int)(width * 1 + offset), (int)(height * 1 + offset * 0));
-//        Point third  = new Point(second.x + width * 2, second.y);
-//        Point fourth = new Point(first.x, first.y + height * 2);
-//        		
-//    	figures[f++] = new RectAnime(
-//	        new Point2D[] {first, second, third, fourth, first},
-//    	    true,
-//    	    steps,
-//			true
-//    	);
-
-//    	j = 0;
-//        steps = new int[step][];
-//
-//        for (int k = 0; k < 2; k++) {
-//	        for (int i = 0; i < step/4; i++) {
-//	        	steps[j++] = new int[] {-retina.worldStep(), 0};
-//	        }
-//	        for (int i = 0; i < step/4; i++) {
-//	        	steps[j++] = new int[] {+retina.worldStep(), 0};
-//	        }
-//        }
-//        
-//        first  = new Point((int)(width * 0 - offset), (int)(height * 1 + offset * 2));
-//        second = new Point((int)(width * 1 + offset), (int)(height * 0 - offset * 0));
-//        third  = new Point(second.x + width * 2, second.y);
-//        fourth = new Point(first.x, first.y + height * 2);
-//        		
-//    	figures[f++] = new RectAnime(
-//	        new Point2D[] {first, second, third, fourth, first},
-//    	    true,
-//    	    steps,
-//			true
-//    	);
-//
-//    	j = 0;
-//    	steps = new int[step][];
-//
-//        for (int k = 0; k < 2; k++) {
-//	        for (int i = 0; i < step/4; i++) {
-//	        	steps[j++] = new int[] {-retina.worldStep(), 0};
-//	        }
-//	        for (int i = 0; i < step/4; i++) {
-//	        	steps[j++] = new int[] {+retina.worldStep(), 0};
-//	        }
-//        }
-//
-//    	figures[f++] = new RectAnime(
-//			(int)(img.getWidth() * 0.5) + retina.worldStep() * step / 8, (int)(img.getHeight() * -0.2),
-//			(int)(img.getWidth() * 2), (int)(img.getHeight() *  2),
-//    	    true,
-//    	    null,//steps,
-//			true
-//    	);
-//
-//    	j = 0;
-//        steps = new int[step][];
-//        
-//    	for (int k = 0; k < 2; k++) {
-//	    	for (int i = 0; i < step/4; i++) {
-//	        	steps[j++] = new int[] {0, -retina.worldStep()};
-//	        }
-//	        for (int i = 0; i < step/4; i++) {
-//	        	steps[j++] = new int[] {0, +retina.worldStep()};
-//	        }
-//    	}
-//
-//        figures[f++] = new RectAnime(
-//    			(int)(img.getWidth() * -0.5), (int)(img.getHeight() * 0.5) + retina.worldStep() * step / 8,
-//    			(int)(img.getWidth() *  2), (int)(img.getHeight() * 2),
-//	    	    true,
-//	    	    steps,
-//    			true
-//	    	);
-
-        figures[f++] = new RotateAnime(img.getWidth(), img.getHeight(), retina.worldStep(), true);
+        figures[0] = new RotateAnime(img.getWidth(), img.getHeight(), retina.worldStep(), true);
 	}
 	
 	int count = 0;
-	int changeAt = 3;//Codes.SHIFTIMES;
+	int changeAt = Codes.SHIFTIMES - 1;//3;
 	boolean resetStage = true;
 	Figure active = null;
 	

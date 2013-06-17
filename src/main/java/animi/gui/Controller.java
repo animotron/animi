@@ -57,7 +57,11 @@ public abstract class Controller implements Runnable {
     	this.app = app;
 	}
     
-    public abstract void init();
+    public void init() {
+		for (LayerSimple zone : zones) {
+			zone.init();
+		}
+    }
     
     public abstract void setRetina(IRetina retina);
 	public abstract IRetina getRetina();

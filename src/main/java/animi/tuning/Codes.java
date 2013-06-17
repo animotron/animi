@@ -36,7 +36,7 @@ public class Codes implements Imageable {
 	
 	public final static int CODES = 18;
 	public final static int SHIFTS = 16;
-//	public final static int SHIFTIMES = 2;
+	public final static int SHIFTIMES = 1;
 	
 	public final static Color[] GRADIENT_RAINBOW = Gradient.createMultiGradient(
 			new Color[] { 

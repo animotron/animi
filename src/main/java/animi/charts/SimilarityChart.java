@@ -18,52 +18,62 @@
  *  the GNU Affero General Public License along with Animotron.
  *  If not, see <http://www.gnu.org/licenses/>.
  */
-package animi.tuning;
+package animi.charts;
 
 import static animi.matrix.MatrixDelay.noAttenuation;
 import static animi.matrix.MatrixDelay.oneStepAttenuation;
-
 import animi.acts.*;
 import animi.cortex.*;
 import animi.gui.Application;
 import animi.gui.Controller;
+import animi.tuning.LearningMatrix;
 
 import static animi.tuning.Codes.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
+ *
  */
-public class Similarity extends Controller {
-
+public class SimilarityChart extends Controller {
+	
+	public ChartFrame panel;
+	
     public IRetina retina;
     LayerSimple z_in;
-    LayerWLearning layer_1b;
+    LayerWLearning layer;
+	
+    int completeTurn;
 
-    public Similarity(Application app) {
+    public SimilarityChart(Application app) {
     	super(app);
     	
+    	panel = new ChartFrame();
+    	
+    	completeTurn = SHIFTIMES * SHIFTS * CODES;
+
     	z_in = new LayerSimple("Зрительный нерв", app, 60, 60, 1,
 			oneStepAttenuation
         );
     	z_in.isZeroAvgAxons = false;
 
-    	layer_1b = new LayerWLearning("similarity", app, SHIFTIMES * SHIFTS, CODES, 1,
+    	layer = new LayerWLearning("similarity", app, SHIFTIMES * SHIFTS, CODES, 1,
             new Mapping[]{
                 new MappingHebbian(z_in, 150, 1, true, false)
             },
-            ActivationMemory.class,
+            ActivationMethodOfTwo.class,
             null,
             LearningMatrix.class,
             null,
-            LearningMemory.class,
+            LearningAsItis.class,
             noAttenuation
         );
+    	layer.singleReceptionField = true;
 
-    	zones = new LayerSimple[]{z_in, layer_1b}; //, layer_2a_on_1b};
+    	zones = new LayerSimple[]{z_in, layer};
         
         setRetina(null);
     }
-    
+
 	@Override
 	public void setRetina(IRetina retina) {
 		if (retina == null)
@@ -72,7 +82,7 @@ public class Similarity extends Controller {
 			this.retina = retina;
 		
         this.retina.setNextLayer(z_in);
-        this.retina.addResetLayer(layer_1b);
+        this.retina.addResetLayer(layer);
 	}
 
 	@Override
@@ -86,6 +96,22 @@ public class Similarity extends Controller {
     	
 		for (LayerSimple zone : zones) {
 			zone.process();
+		}
+		
+		if (app.contr.count > completeTurn) {
+			//final int stimulCode = app.getStimulator().getCode();
+			
+			for (int code = 0; code < CODES; code++) {
+				
+				for (int shift = 0; shift < SHIFTS; shift++) {
+					final float act = layer.axons.get(shift, code, 0);
+					
+					panel.values[code][shift] = act;
+				}
+			}
+			layer.axons.fill(0f);
+			panel.updateSurface();
+			System.out.println("measure!");
 		}
 	}
 }

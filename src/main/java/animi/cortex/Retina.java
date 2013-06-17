@@ -75,10 +75,9 @@ public class Retina implements IRetina {
 	@Override
 	public void init(Stimulator stimulator) {
         retinaTask = new RetinaZone(this, (LayerSimple)NL);
-        
-        for (int i = 0; i < 5; i++) {
-        	retinaTask.setInput(image = stimulator.getNextImage());
-        }
+//        for (int i = 0; i < 5; i++) {
+//        	retinaTask.setInput(image = stimulator.getNextImage());
+//        }
 	}
 	
     BufferedImage image = null;

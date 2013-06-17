@@ -24,12 +24,7 @@ import static animi.cortex.MultiCortex.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.lang.reflect.Constructor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLProfile;
@@ -38,11 +33,11 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
 import animi.Imageable;
+import animi.charts.SimilarityChart;
 import animi.cortex.*;
 import animi.simulator.*;
 import animi.tuning.CodeLayerViz;
 import animi.tuning.Codes;
-import animi.tuning.Similarity;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -69,15 +64,15 @@ public class Application extends JFrame {
 	
 	public JLabel count;
 	
-    String stimulatorClass = "org.animotron.animi.simulator.StimulatorAnime";
-//	String stimulatorClass = "org.animotron.animi.tuning.CodeSignal";
+//    String stimulatorClass = "animi.simulator.StimulatorStatic";
+    String stimulatorClass = "animi.simulator.StimulatorAnime";
+//	String stimulatorClass = "animi.tuning.CodeSignal";
     Stimulator stimulator = null;
 	
 	private Application() {
+		super("Animi");
 		
 		_ = this;
-		
-		setTitle("Animi");
 		
 		Container c = getContentPane();
 		setLayout(new BorderLayout());
@@ -122,6 +117,8 @@ public class Application extends JFrame {
 //        setBounds(0, 0, 800, 600);
         setLocationByPlatform(true);
         
+        setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
+
         initialize();
 	}
 	
@@ -231,6 +228,9 @@ public class Application extends JFrame {
     }
 
     private void addMenu(JMenu menu, final Imageable imageable, boolean show) {
+    	if (imageable == null)
+    		return;
+    		
         JMenuItem menuItem = new JMenuItem(imageable.getImageName());
         menuItem.addActionListener(new ActionListener() {
 			@Override
@@ -484,14 +484,8 @@ public class Application extends JFrame {
     
     private void init() {
 //    	camView.resume();
-    	//задание параметров зон коры и структуры связей
-    	//BrainInit
-    	//инициализация зон коры
-    	//CortexInit
-    	//Начальный сброс "хорошо - плохо"
     	if (contr == null) {
-    		contr = new MultiCortex(this);
-//    		contr = new Similarity(this);
+    		contr = newController();
     	}
     	
     	PFInitialization form = new PFInitialization(this, contr);
@@ -504,13 +498,17 @@ public class Application extends JFrame {
     
     protected void initialize() {
     	if (contr == null) {
-    		contr = new MultiCortex(this);
-//    		contr = new Similarity(this);
+    		contr = newController();
     	}
-    	
     	contr.init();
     	
     	createViews();
+    }
+    
+    private Controller newController() {
+//		return new MultiCortex(this);
+		return new SimilarityChart(this);
+//		return new Similarity(this);
     }
     
     private void createStimulator() {
@@ -549,6 +547,14 @@ public class Application extends JFrame {
     	addToBar();
     	
 //    	createFrame(stimulator);
+
+    	if (contr instanceof SimilarityChart) {
+    		final JInternalFrame frame = ((SimilarityChart) contr).panel;
+    		
+            frame.setVisible(true);
+            
+            desktop.add(frame);
+		}
     }
     
     private synchronized void run() {

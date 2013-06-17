@@ -42,7 +42,7 @@ import java.util.Arrays;
  */
 public class LayerWLearning extends LayerSimple {
 	
-	protected boolean singleReceptionField = true;
+	public boolean singleReceptionField = true;
 	
 	@Params
 	public Mapping[] in_zones;

@@ -174,13 +174,8 @@ public class MultiCortex extends Controller {
     public void init() {
     	// Flush all pending tasks
         flush();
-
-		for (LayerSimple zone : zones) {
-			zone.init();
-		}
-		
-//    	mm.senapses = m.senapses;
-//    	mm._senapses = m._senapses;
+        
+        super.init();
     }
 
     /**

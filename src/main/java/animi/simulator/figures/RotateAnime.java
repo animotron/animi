@@ -23,8 +23,7 @@ package animi.simulator.figures;
 import java.awt.*;
 import java.util.Random;
 
-import animi.tuning.Codes;
-
+import static animi.tuning.Codes.*;
 import static java.lang.Math.*;
 
 
@@ -34,6 +33,8 @@ import static java.lang.Math.*;
  *
  */
 public class RotateAnime extends AbstractAnime {
+	
+	boolean isRandom = false;
 	
 	int width;
 	int height;
@@ -58,22 +59,13 @@ public class RotateAnime extends AbstractAnime {
         polygon.addPoint(width,0);
         polygon.addPoint(-width,0);
         
-        
 //        double twoPI = PI; //2.0 * PI;
 //        double delta = twoPI / (double)Codes.SHIFTS;
         
-        tremor = new int[Codes.SHIFTS][2];
+        tremor = new int[SHIFTS][2];
         
         int i = 0;
-//        for (double alfa = 0; alfa < twoPI; alfa += delta) {
-//        	tremor[i] = 
-//    			new int[] {
-//        			(int) (6.0 * worldStep * cos(alfa)), 
-//        			(int) (6.0 * worldStep * sin(alfa))
-//        		};
-//        	i++;
-//        }
-        int half = Codes.SHIFTS / 4;
+        int half = SHIFTS / 4;
         for (int delta = -half; delta < half; delta++) {
         	tremor[i] = 
     			new int[] {
@@ -94,22 +86,26 @@ public class RotateAnime extends AbstractAnime {
 	
 	Random rnd = new Random();
 	
-	double angelStep = PI / (double)Codes.CODES;
+	double angelStep = PI / (double)CODES;
 	double alfa = nextAngel();
-	int code = 0;
+	int code = -1;
 	
 	int step = 0;
 	int start = 0;
 	
 	private double nextAngel() {
-//		final double angel = angelStep * code;// (code = rnd.nextInt(Codes.CODES));
-//		
-//		code++;
-//		if (code >= Codes.CODES)
-//			code = 0;
-//		
-//		return angel; 
-		return angelStep * (code = rnd.nextInt(Codes.CODES));
+		if (isRandom) {
+			return angelStep * (code = rnd.nextInt(CODES));
+		
+		} else {
+			code++;
+			if (code >= CODES)
+				code = 0;
+
+			final double angel = angelStep * code;
+			
+			return angel;
+		}
 	}
 	
 	public int getCode() {
@@ -152,7 +148,6 @@ public class RotateAnime extends AbstractAnime {
 		}
 		return start == step;
 	}
-
 
 	@Override
 	public void reset() {
