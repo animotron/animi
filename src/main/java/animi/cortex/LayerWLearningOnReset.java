@@ -22,7 +22,7 @@ package animi.cortex;
 
 
 import animi.gui.Application;
-import animi.matrix.MatrixDelay;
+import animi.matrix.FloatsDelay;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -41,7 +41,7 @@ public class LayerWLearningOnReset extends LayerWLearning {
 			Class<? extends Task> classOfLearningMatrixInhibitory,
 			Class<? extends Task> classOfLearning,
 			
-			MatrixDelay.Attenuation attenuation) {
+			FloatsDelay.Attenuation attenuation) {
 
 		super(name, app, 
 				

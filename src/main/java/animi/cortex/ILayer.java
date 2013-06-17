@@ -22,7 +22,7 @@ package animi.cortex;
 
 
 import animi.Imageable;
-import animi.matrix.Matrix;
+import animi.matrix.Floats;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -34,7 +34,7 @@ public interface ILayer extends Imageable {
 	public int height();
 	public int depth();
 	
-	public Matrix<Float> axons();
+	public Floats axons();
 	
     public void process();
 }

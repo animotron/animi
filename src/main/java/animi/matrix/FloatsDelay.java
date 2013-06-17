@@ -22,72 +22,92 @@ package animi.matrix;
 
 import java.util.Arrays;
 
-import animi.matrix.MatrixDelay.Attenuation;
-
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class MatrixZeroAvg extends MatrixDelay {
+public class FloatsDelay extends FloatsImpl {
 	
-	float[] avgs;
-	int count = 0;
-	
-	public MatrixZeroAvg(Attenuation attenuation, int ... dims) {
-		super(attenuation, dims);
-		
-		avgs = new float[data.length];
+	public interface Attenuation {
+		float next(int step, float value);
 	}
 	
-	public MatrixZeroAvg(Attenuation attenuation, MatrixFloat source) {
+	public final static Attenuation oneStepAttenuation = new Attenuation() {
+		@Override
+		public float next(int step, float value) {
+			return step <= 1 ? value : 0f;
+		}
+	};
+	
+	public final static Attenuation noAttenuation = new Attenuation() {
+		@Override
+		public float next(int step, float value) {
+			return value;
+		}
+	};
+
+	Attenuation attenuation;
+	
+	int[] stepsFromLastSet;
+	
+	public FloatsDelay(Attenuation attenuation, int ... dims) {
+		super(dims);
+		
+		this.attenuation = attenuation;
+
+		stepsFromLastSet = new int[data.length];
+	}
+	
+	public FloatsDelay(Attenuation attenuation, FloatsImpl source) {
 		this(attenuation, source.dimensions.clone());
 	}
 	
-	public MatrixZeroAvg(MatrixZeroAvg source) {
+	public FloatsDelay(FloatsDelay source) {
 		super(source);
 		
-		avgs = new float[source.avgs.length];
-		System.arraycopy(source.avgs, 0, avgs, 0, source.avgs.length);
+		attenuation = source.attenuation;
+		
+		stepsFromLastSet = new int[source.stepsFromLastSet.length];
+		System.arraycopy(source.stepsFromLastSet, 0, stepsFromLastSet, 0, source.stepsFromLastSet.length);
 	}
 
-	public void init(Value<Float> value) {
+	public void init(Value value) {
 		super.init(value);
 
 		//zero steps
-		for (int i = 0; i < avgs.length; i++) {
-			avgs[i] = 0;
+		for (int i = 0; i < stepsFromLastSet.length; i++) {
+			stepsFromLastSet[i] = 0;
 		}
 	}
 
-	public void set(final Float value, final int ... dims) {
+	public void set(Float value, int ... dims) {
 		final int index = index(dims);
-		super.setByIndex(value, index);
+		if (value > super.getByIndex(index)) {
+			super.setByIndex(value, index);
+		}
 		stepsFromLastSet[index] = 0;
 	}
 	
-	public void setByIndex(final Float value, final int index) {
-		super.setByIndex(value, index);
+	public void setByIndex(Float value, int index) {
+		if (value > super.getByIndex(index)) {
+			super.setByIndex(value, index);
+		}
 		stepsFromLastSet[index] = 0;
 	}
 
 	public void fill(Float value) {
 		super.fill(value);
 		Arrays.fill(stepsFromLastSet, 0);
-		Arrays.fill(avgs, 0);
 		isSet.clear(0, isSet.size() - 1);
 	}
 	
 	@Override
-	public Float getByIndex(final int index) {
-		return attenuation.next(stepsFromLastSet[index], data[index]) - avgs[index];
-	}
-
-	public Float pureByIndex(final int index) {
+	public float getByIndex(final int index) {
 		return attenuation.next(stepsFromLastSet[index], data[index]);
 	}
 
 	@Override
-	public Float get(final int ... dims) {
+	public float get(final int ... dims) {
 		return getByIndex(index(dims));
 	}
 
@@ -95,13 +115,12 @@ public class MatrixZeroAvg extends MatrixDelay {
 		return super.max();
 	}
 	
-	public MatrixZeroAvg copy() {
-		return new MatrixZeroAvg(this);
+	public FloatsDelay copy() {
+		return new FloatsDelay(this);
 	}
 
-	public MatrixProxy<Float> sub(int ... dims) {
-		throw new IllegalArgumentException();
-//		return new MatrixProxy<Float>(this, dims);
+	public FloatsProxy sub(int ... dims) {
+		return new FloatsProxy(this, dims);
 	}
 
 //	public void debug(String comment) {
@@ -110,24 +129,14 @@ public class MatrixZeroAvg extends MatrixDelay {
 //		debug(new Floats(data), false);
 //	}
 	
-	public void step(MatrixFloat matrix) {
-		float avg = 0f;
-		
+	public void step(Floats matrix) {
 		for (int index = 0; index < length(); index++) {
-
-			if (matrix.isSet(index) && matrix.getByIndex(index) != 0f) {//WORKAROUND: != 0f
+			if (matrix.isSet(index) && matrix.getByIndex(index) != 0f) {//WORKAROUND: > 0f
 				setByIndex(matrix.getByIndex(index), index);
 			}
-			//calculate average
-			avg = avgs[index];
-			avg = (avg * count + pureByIndex(index)) / (count + 1) ;
-			avgs[index] = avg;
-
 			stepsFromLastSet[index]++;
 		}
 		isSet.clear(0, isSet.size() - 1);
-		
-		count++;
 	}
 
 	@Override

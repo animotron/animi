@@ -39,7 +39,7 @@ public class CodeActivation extends Task {
 	public void gpuMethod(final int x, final int y, final int z) {
 		final Mapping m = cz.in_zones[0];
 		
-		final Integer[] pos = m.senapses().get(x,y,z,0);
+		final int[] pos = m.senapses().get(x,y,z,0);
 		final float in = m.frZone().axons().get(pos[0], pos[1], pos[2]);
 		final float mem = m.senapseWeight().get(x,y,z,0);
 		

@@ -20,9 +20,8 @@
  */
 package animi.cortex;
 
-
 import animi.Imageable;
-import animi.matrix.Matrix;
+import animi.matrix.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -34,23 +33,23 @@ public interface Mapping {
 	
 	public LayerWLearning toZone();
 
-	public Matrix<Integer[]> senapses();
+	public ArrayOfIntegers senapses();
 
-	public Matrix<Integer> _senapses();
+	public Integers _senapses();
 
-	public Matrix<Float> senapseWeight();
+	public Floats senapseWeight();
 
-	public Matrix<Float> senapsesCode();
+	public Floats senapsesCode();
 
 //	public Matrix<Float> lateralWeight();
 
-	public Matrix<Float> lateralWeight();
+	public Floats lateralWeight();
 	
-	public Matrix<Integer[]> lateralSenapse();
+	public ArrayOfIntegers lateralSenapse();
 
 	public boolean haveInhibitoryWeight();
 	
-	public Matrix<Float> inhibitoryWeight();
+	public Floats inhibitoryWeight();
 
 	public boolean isDirectLearning();
 

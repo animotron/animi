@@ -20,8 +20,8 @@
  */
 package animi.tuning;
 
-import static animi.matrix.MatrixDelay.noAttenuation;
-import static animi.matrix.MatrixDelay.oneStepAttenuation;
+import static animi.matrix.FloatsDelay.noAttenuation;
+import static animi.matrix.FloatsDelay.oneStepAttenuation;
 
 import animi.acts.*;
 import animi.cortex.*;

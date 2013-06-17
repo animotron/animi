@@ -20,10 +20,9 @@
  */
 package animi.acts;
 
-
 import animi.Params;
 import animi.cortex.*;
-import animi.matrix.MatrixProxy;
+import animi.matrix.FloatsProxy;
 
 /**
  * 
@@ -58,7 +57,7 @@ public class Activation extends Task {
 
 	public void gpuMethod(final int x, final int y, final int z) {
 //		final Mapping m = cz.in_zones[0];
-		MatrixProxy<Float> pack;
+		FloatsProxy pack;
 		
 		switch (stage) {
 		case 0:

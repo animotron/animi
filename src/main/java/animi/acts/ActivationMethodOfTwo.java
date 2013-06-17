@@ -20,7 +20,6 @@
  */
 package animi.acts;
 
-
 import animi.cortex.*;
 import animi.matrix.*;
 
@@ -37,7 +36,7 @@ public class ActivationMethodOfTwo extends Task {
 		super(cz);
 	}
 
-	private float activity(final Matrix<Float> in, final Matrix<Float> weights) {
+	private float activity(final Floats in, final Floats weights) {
 		int N = 0;
 		float sum = 0.0f;
 		float sumX2 = 0.0f;
@@ -76,7 +75,7 @@ public class ActivationMethodOfTwo extends Task {
 
 		final float activity = 
 				activity(
-					new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z)), 
+					new FloatsMapped(m.frZone().axons, m._senapses().sub(x, y, z)), 
 					m.senapseWeight().sub(x, y, z)
 				);
 			

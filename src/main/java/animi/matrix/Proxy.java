@@ -20,14 +20,13 @@
  */
 package animi.matrix;
 
-import java.text.DecimalFormat;
 import java.util.Arrays;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class MatrixProxy<T> implements Matrix<T> {
+public abstract class Proxy implements Matrix {
 	
 	interface Function {
 		public void call(int[] pos);
@@ -37,15 +36,15 @@ public class MatrixProxy<T> implements Matrix<T> {
 		public Object getPossition();
 	}
 
-	Matrix<T> matrix;
+	Matrix matrix;
 	
 	int[] fixeDimensions;
 	
 	int length;
 	
-	protected MatrixProxy(Matrix<T> other, int ... dims) {
+	protected Proxy(Matrix other, int ... dims) {
 		
-		if (other instanceof MatrixProxy) {
+		if (other instanceof Proxy) {
 			throw new IllegalArgumentException();
 		}
 		
@@ -60,14 +59,6 @@ public class MatrixProxy<T> implements Matrix<T> {
 		matrix = other;
 	}
 	
-	public void init(Value<T> value) {
-		throw new IllegalArgumentException();
-		
-//		for (int i = 0; i < length; i++) {
-//			matrix.data[offset + i] = value.get();
-//		}
-	}
-
 	protected int[] dims(final int ... dims) {
 		if (dims.length == matrix.dimensions()) {
 			return dims;
@@ -80,92 +71,7 @@ public class MatrixProxy<T> implements Matrix<T> {
 		return ds;
 	}
 
-	public T get(final int ... dims) {
-		return matrix.get(dims(dims));
-	}
-
-	public void set(final T value, int ... dims) {
-		matrix.set(value, dims(dims));
-	}
-	
-	public void fill(final T value) {
-		iterate(new Function() {
-			@Override
-			public void call(int[] pos) {
-				matrix.set(value, pos);
-			}
-		});
-	}
-	
-	public int[] max() {
-		ObjectHolderFunction function = new ObjectHolderFunction() {
-	     	
-			int[] maxPos = new int[matrix.dimensions()];
-	    	Number max = 0f;
-	    	
-	    	public void call(int[] pos) {
-	    		if (compare((Number)matrix.get(pos), max) == 1) {
-	    			System.arraycopy(pos, 0, maxPos, 0, pos.length);
-	    			max = (Number)matrix.get(pos);
-	    		}
-	    	}
-
-			private int compare(Number n1, Number n2) {
-				if (n1 instanceof Float) {
-					return ((Float)n1).compareTo((Float)n2);
-				}
-				throw new IllegalArgumentException();
-			}
-
-			@Override
-			public int[] getPossition() {
-				return maxPos;
-			}
-		};
-    	
-		iterate(function);
-    	
-    	return (int[]) function.getPossition();
-	}
-	
-	public T maximum() {
-		ObjectHolderFunction function = new ObjectHolderFunction() {
-	     	
-	    	Number max = 0f;
-	    	
-	    	public void call(int[] pos) {
-	    		if (compare((Number)matrix.get(pos), max) == 1) {
-	    			max = (Number)matrix.get(pos);
-	    		}
-	    	}
-
-			private int compare(Number n1, Number n2) {
-				if (n1 instanceof Float) {
-					return ((Float)n1).compareTo((Float)n2);
-				}
-				throw new IllegalArgumentException();
-			}
-
-			@Override
-			public Number getPossition() {
-				return max;
-			}
-		};
-    	
-		iterate(function);
-    	
-    	return (T) function.getPossition();
-	}
-
-	public MatrixProxy<T> copy() {
-		return new MatrixProxy<T>(matrix.copy(), fixeDimensions);
-	}
-
-	public MatrixProxy<T> sub(int ... dims) {
-		throw new IllegalArgumentException();
-	}
-	
-	private void iterate(Function function) {
+	protected void iterate(Function function) {
     	int[] pos = new int[matrix.dimensions()];
     	Arrays.fill(pos, 0);
     	System.arraycopy(fixeDimensions, 0, pos, 0, fixeDimensions.length);
@@ -208,29 +114,7 @@ public class MatrixProxy<T> implements Matrix<T> {
 		return matrix.dimension(fixeDimensions.length + index);
 	}
 
-	@Override
-	public T getByIndex(int index) {
-		return matrix.get(pos(index));
-	}
-
-	@Override
-	public void setByIndex(T value, int index) {
-		matrix.set(value, pos(index));
-	}
-
-	@Override
-	public void debug(String comment) {
-		DecimalFormat df = new DecimalFormat("0.00000");
-
-		System.out.println(comment);
-		for (int index = 0; index < length(); index++) {
-			System.out.print(df.format(getByIndex(index)));
-			System.out.print(" ");
-		}
-		System.out.println();
-	}
-	
-	private int[] pos(final int index) {
+	protected int[] pos(final int index) {
 		int tmp = index;
 		
 		int offset = fixeDimensions.length;

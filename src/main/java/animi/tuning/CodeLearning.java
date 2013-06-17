@@ -46,7 +46,7 @@ public class CodeLearning extends Task {
 //			return;
 //		}
 
-		final Integer[] pos = m.senapses().get(x, y, z, 0);
+		final int[] pos = m.senapses().get(x, y, z, 0);
 		final float in = m.frZone().axons().get(pos[0], pos[1], pos[2]);
 		
 		m.senapseWeight().set(in, x,y,z,0);

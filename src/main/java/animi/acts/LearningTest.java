@@ -64,15 +64,15 @@ public class LearningTest extends LearningHebbian {
 			
 			final Mapping m = cz.in_zones[0];
 			
-			Matrix<Float> posW = m.senapseWeight().sub(x, y, z);
+			Floats posW = m.senapseWeight().sub(x, y, z);
 			
-			MatrixProxy<Integer[]> sen = m.senapses().sub(x, y, z);
+			ArrayOfIntegersProxy sen = m.senapses().sub(x, y, z);
 			
 			final Mapping _m = ((LayerWLearning)m.frZone()).in_zones[0];
 
 			for (int index = 0; index < posW.length(); index++) {
 				if (posW.getByIndex(index) > 0.15f) {
-					Integer[] pos = sen.getByIndex(index);
+					int[] pos = sen.getByIndex(index);
 
 					System.out.print("["+pos[0]+","+pos[1]+","+pos[2]+"] "+posW.getByIndex(index));
 
@@ -88,7 +88,7 @@ public class LearningTest extends LearningHebbian {
 					
 //					posW.setByIndex(0f, index);
 					
-					Matrix<Float> _posW = _m.senapseWeight().sub(pos[0], pos[1], pos[2]);
+					Floats _posW = _m.senapseWeight().sub(pos[0], pos[1], pos[2]);
 //					Matrix<Float> _negW = _m.inhibitoryWeight().sub(pos[0], pos[1], pos[2]);
 					
 					float posAvg = 0f;

@@ -27,13 +27,13 @@ import java.util.Arrays;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class MatrixInteger implements Matrix<Integer> {
+public class ArrayOfIntegersImpl implements ArrayOfIntegers {
 	
 	int[] dimensions;
 	
-	int[] data;
+	int[][] data;
 	
-	public MatrixInteger(int ... dims) {
+	public ArrayOfIntegersImpl(int arraysize, int ... dims) {
 		dimensions = new int[dims.length];
 		System.arraycopy(dims, 0, dimensions, 0, dims.length);
 		
@@ -42,32 +42,34 @@ public class MatrixInteger implements Matrix<Integer> {
 			length *= dims[i];
 		}
 		
-		data = new int[length];
+		data = new int[length][arraysize];
 	}
 	
-	public MatrixInteger(MatrixInteger source) {
-		dimensions = new int[source.dimensions.length];
-		System.arraycopy(source.dimensions, 0, dimensions, 0, source.dimensions.length);
-		
-		data = new int[source.data.length];
-		System.arraycopy(source.data, 0, data, 0, source.data.length);
+	public ArrayOfIntegersImpl(ArrayOfIntegersImpl source) {
+		throw new IllegalArgumentException();
+//		dimensions = new int[source.dimensions.length];
+//		System.arraycopy(source.dimensions, 0, dimensions, 0, source.dimensions.length);
+//		
+//		data = new int[source.data.length];
+//		System.arraycopy(source.data, 0, data, 0, source.data.length);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.animotron.animi.cortex.Matrix#init(org.animotron.animi.cortex.Matrix.Value)
 	 */
 	@Override
-	public void init(Value<Integer> value) {
+	public void init(Value value) {
 		for (int i = 0; i < data.length; i++) {
-			data[i] = value.get();
+			int[] v = value.get();
+			for (int j = 0; j < v.length; j++)
+			data[i][j] = v[j];
 		}
 	}
-
+	
 	@Override
 	public void step() {
-		throw new IllegalAccessError();
 	}
-	
+
 	protected int index(int ... dims) {
 		if (dims.length != dimensions.length) {
 			throw new IndexOutOfBoundsException("Matrix have "+dimensions.length+" dimensions, but get "+dims.length+".");
@@ -114,7 +116,7 @@ public class MatrixInteger implements Matrix<Integer> {
 	 * @see org.animotron.animi.cortex.Matrix#getByIndex(int)
 	 */
 	@Override
-	public Integer getByIndex(int index) {
+	public int[] getByIndex(int index) {
 		return data[index];
 	}
 
@@ -122,15 +124,17 @@ public class MatrixInteger implements Matrix<Integer> {
 	 * @see org.animotron.animi.cortex.Matrix#setByIndex(float, int)
 	 */
 	@Override
-	public void setByIndex(Integer value, int index) {
-		data[index] = value;
+	public void setByIndex(int[] value, int index) {
+		for (int i = 0; i < value.length; i++) {
+			data[index][i] = value[i];
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.animotron.animi.cortex.Matrix#get(int)
 	 */
 	@Override
-	public Integer get(int ... dims) {
+	public int[] get(int ... dims) {
 		return data[index(dims)];
 	}
 
@@ -138,7 +142,7 @@ public class MatrixInteger implements Matrix<Integer> {
 	 * @see org.animotron.animi.cortex.Matrix#set(float, int)
 	 */
 	@Override
-	public void set(Integer value, int ... dims) {
+	public void set(int[] value, int ... dims) {
 		data[index(dims)] = value;
 	}
 	
@@ -146,7 +150,7 @@ public class MatrixInteger implements Matrix<Integer> {
 	 * @see org.animotron.animi.cortex.Matrix#fill(float)
 	 */
 	@Override
-	public void fill(Integer value) {
+	public void fill(int[] value) {
 		Arrays.fill(data, value);
 	}
 	
@@ -155,100 +159,28 @@ public class MatrixInteger implements Matrix<Integer> {
 	 */
 	@Override
 	public int[] max() {
-    	int maxPos = -1;
-    	float max = 0;
-    	for (int pos = 0; pos < data.length; pos++) {
-    		if (data[pos] > max) {
-    			maxPos = pos;
-    			max = data[pos];
-    		}
-    	}
-    	
-    	if (maxPos == -1) {
-    		return null;
-//    		throw new IllegalArgumentException("Maximum value can't be found.");
-    	}
-    	
-    	int[] dims = new int[dimensions.length];
-    	
-//		System.out.print("Max "+maxPos+" ");
-
-    	int prev = 0, factor = 1;
-    	for (int i = dimensions.length - 1; i > 0; i--) {
-    		factor = 1;
-    		for (int z = 0; z < i; z++) {
-    			factor *= dimensions[z];
-    		}
-
-			dims[i] = prev = (int)Math.floor(maxPos / factor);
-			maxPos -= (prev * factor);
-    	}
-    	dims[0] = maxPos;
-    	//maxPos must be zero
-    	
-//    	System.out.println(Arrays.toString(dims));;
-    	return dims;
+		throw new IllegalArgumentException();
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.animotron.animi.cortex.Matrix#maximum()
 	 */
 	@Override
-	public Integer maximum() {
-    	int max = 0;
-    	for (int pos = 0; pos < data.length; pos++) {
-    		if (data[pos] > max) {
-    			max = data[pos];
-    		}
-    	}
-    	return max;
+	public int[] maximum() {
+		throw new IllegalArgumentException();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.animotron.animi.cortex.Matrix#copy()
 	 */
 	@Override
-	public MatrixInteger copy() {
-		return new MatrixInteger(this);
-//		System.arraycopy(source.data, 0, data, 0, data.length);
+	public ArrayOfIntegersImpl copy() {
+		throw new IllegalArgumentException();
 	}
 
-//	public void copy(Matrix source) {
-//		if (source.dimensions.length != dimensions.length) {
-//			throw new IndexOutOfBoundsException("Matrix have "+dimensions.length+" dimensions, but get "+source.dimensions.length+".");
-//		}
-//		
-//		for (int i = 0; i < dimensions.length; i++) {
-//			if (source.dimensions[i] != dimensions[i]) {
-//				throw new IndexOutOfBoundsException("Matrix's "+i+" dimension have "+dimensions[i]+" elements, but source dimension have "+source.dimensions[i]+" element.");
-//			}
-//		}
-//
-//		System.arraycopy(source.data, 0, data, 0, data.length);
-//	}
-
-//	public void copy(Matrix source, int ... dims) {
-//		//XXX: checks?
-//		
-//		int offset = 0;
-//		for (int i = dims.length - 1; i >= 0; i--) {
-//			offset = (offset + dims[i]) * dimensions[i];
-//		}
-//		
-//		int length = 1;
-//		for (int i = dims.length; i < dimensions.length; i++) {
-//			length *= dimensions[i];
-//		}
-//
-//		System.arraycopy(source.data, 0, data, offset, length);
-//	}
-
-	/* (non-Javadoc)
-	 * @see org.animotron.animi.cortex.Matrix#sub(int)
-	 */
 	@Override
-	public MatrixProxy<Integer> sub(int ... dims) {
-		return new MatrixProxy<Integer>(this, dims);
+	public ArrayOfIntegersProxy sub(int ... dims) {
+		return new ArrayOfIntegersProxy(this, dims);
 	}
 
 	/* (non-Javadoc)
@@ -267,7 +199,7 @@ public class MatrixInteger implements Matrix<Integer> {
 		
 		System.out.print(Arrays.toString(pos));
 		System.out.print(" ");
-		System.out.print(df.format(get(pos)));
+		debugValue( df, get(pos) );
 		System.out.print(" ");
 		
 		boolean print = false;
@@ -294,9 +226,20 @@ public class MatrixInteger implements Matrix<Integer> {
 				System.out.print(" ");
     		}
 
-			System.out.print(df.format(get(pos)));
+    		debugValue( df, get(pos) );
 			System.out.print(" ");
 		}
     	System.out.println();
+	}
+	
+	private void debugValue(DecimalFormat df, Object val) {
+		if (val.getClass().isArray()) {
+			for (Object obj : (Object[])val) {
+				System.out.print(obj);
+				System.out.print(" ");
+			}
+		} else {
+			System.out.print(df.format(val));
+		}
 	}
 }

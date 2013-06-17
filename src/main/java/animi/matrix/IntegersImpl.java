@@ -21,23 +21,22 @@
 package animi.matrix;
 
 import java.text.DecimalFormat;
-import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.List;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class MatrixFloat implements Matrix<Float> {
+public class IntegersImpl implements Integers {
 	
 	int[] dimensions;
 	
-	float[] data;
+	int[] data;
+	
 	BitSet isSet;
 	
-	public MatrixFloat(final int ... dims) {
+	public IntegersImpl(int ... dims) {
 		dimensions = new int[dims.length];
 		System.arraycopy(dims, 0, dimensions, 0, dims.length);
 		
@@ -46,39 +45,30 @@ public class MatrixFloat implements Matrix<Float> {
 			length *= dims[i];
 		}
 		
-		data = new float[length];
-		isSet = new BitSet(length);
+		data = new int[length];
 	}
 	
-	public MatrixFloat(final MatrixFloat source) {
+	public IntegersImpl(IntegersImpl source) {
 		dimensions = new int[source.dimensions.length];
 		System.arraycopy(source.dimensions, 0, dimensions, 0, source.dimensions.length);
 		
-		data = new float[source.data.length];
+		data = new int[source.data.length];
 		System.arraycopy(source.data, 0, data, 0, source.data.length);
-
-		isSet = new BitSet(source.data.length);
-		isSet.or(source.isSet);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.animotron.animi.cortex.Matrix#init(org.animotron.animi.cortex.Matrix.Value)
-	 */
 	@Override
-	public void init(final Value<Float> value) {
+	public void init(Value value) {
 		for (int i = 0; i < data.length; i++) {
 			data[i] = value.get();
 		}
-		isSet.clear(0, isSet.size() - 1);
-	}
-	
-	@Override
-	public void step() {
-		isSet.clear(0, isSet.size() - 1);
-		Arrays.fill(data, 0f);
 	}
 
-	protected int index(final int ... dims) {
+	@Override
+	public void step() {
+		throw new IllegalAccessError();
+	}
+	
+	protected int index(int ... dims) {
 		if (dims.length != dimensions.length) {
 			throw new IndexOutOfBoundsException("Matrix have "+dimensions.length+" dimensions, but get "+dims.length+".");
 		}
@@ -104,44 +94,28 @@ public class MatrixFloat implements Matrix<Float> {
 		return data.length;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.animotron.animi.cortex.Matrix#dimensions()
-	 */
 	@Override
 	public int dimensions() {
 		return dimensions.length;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.animotron.animi.cortex.Matrix#dimension(int)
-	 */
 	@Override
-	public int dimension(final int index) {
+	public int dimension(int index) {
 		return dimensions[index];
 	}
 
-	/* (non-Javadoc)
-	 * @see org.animotron.animi.cortex.Matrix#getByIndex(int)
-	 */
 	@Override
-	public Float getByIndex(final int index) {
+	public int getByIndex(int index) {
 		return data[index];
 	}
 
-	/* (non-Javadoc)
-	 * @see org.animotron.animi.cortex.Matrix#setByIndex(float, int)
-	 */
 	@Override
-	public void setByIndex(final Float value, final int index) {
+	public void setByIndex(int value, int index) {
 		data[index] = value;
-		isSet.set(index);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.animotron.animi.cortex.Matrix#get(int)
-	 */
 	@Override
-	public Float get(final int ... dims) {
+	public int get(int ... dims) {
 		return data[index(dims)];
 	}
 
@@ -153,19 +127,16 @@ public class MatrixFloat implements Matrix<Float> {
 		return isSet.get(index);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.animotron.animi.cortex.Matrix#set(float, int)
-	 */
 	@Override
-	public void set(final Float value, final int ... dims) {
-		this.setByIndex(value, index(dims));
+	public void set(int value, int ... dims) {
+		data[index(dims)] = value;
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.animotron.animi.cortex.Matrix#fill(float)
 	 */
 	@Override
-	public void fill(final Float value) {
+	public void fill(int value) {
 		Arrays.fill(data, value);
 	}
 	
@@ -213,8 +184,8 @@ public class MatrixFloat implements Matrix<Float> {
 	 * @see org.animotron.animi.cortex.Matrix#maximum()
 	 */
 	@Override
-	public Float maximum() {
-    	float max = 0;
+	public int maximum() {
+    	int max = 0;
     	for (int pos = 0; pos < data.length; pos++) {
     		if (data[pos] > max) {
     			max = data[pos];
@@ -227,16 +198,14 @@ public class MatrixFloat implements Matrix<Float> {
 	 * @see org.animotron.animi.cortex.Matrix#copy()
 	 */
 	@Override
-	public Matrix<Float> copy() {
-		return new MatrixFloat(this);
+	public IntegersImpl copy() {
+		return new IntegersImpl(this);
+//		System.arraycopy(source.data, 0, data, 0, data.length);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.animotron.animi.cortex.Matrix#sub(int)
-	 */
 	@Override
-	public MatrixProxy<Float> sub(int ... dims) {
-		return new MatrixProxy<Float>(this, dims);
+	public IntegersProxy sub(int ... dims) {
+		return new IntegersProxy(this, dims);
 	}
 
 	/* (non-Javadoc)
@@ -246,42 +215,28 @@ public class MatrixFloat implements Matrix<Float> {
 	public void debug(String comment) {
 		System.out.println(comment);
 		
-		debug(new Floats(data), false);
-	}
-	
-	protected void debug(List<?> array, boolean direct) {
 		int[] pos = new int[dimensions.length];
 		Arrays.fill(pos, 0);
 		
-		int dimensionsLength = dimensions.length;
-		if (dimensions[dimensions.length - 1] == 1) {
-			dimensionsLength--;
-		}
-		
 		int value;
 		
-		DecimalFormat df;
-		if (array instanceof Integers) {
-			df = new DecimalFormat("0");
-		} else {
-			df = new DecimalFormat("0.00000");
-		}
+		DecimalFormat df = new DecimalFormat("0.00000");
 		
 		System.out.print(Arrays.toString(pos));
 		System.out.print(" ");
-		System.out.print(df.format(direct ? array.get(0) : get(pos)));
+		System.out.print(df.format(get(pos)));
 		System.out.print(" ");
 		
 		boolean print = false;
 
-    	for (int index = 1; index < array.size(); index++) {
+    	for (int i = 1; i < data.length; i++) {
     		for (int dim = dimensions.length - 1; dim >= 0; dim--) {
         		value = ++pos[dim];
         		
         		if (value >= dimensions[dim]) {
         			pos[dim] = 0;
         			
-        			if (dim == dimensionsLength - 1) {
+        			if (dim == dimensions.length - 1) {
         				print = true;
         			}
         			continue;
@@ -296,71 +251,9 @@ public class MatrixFloat implements Matrix<Float> {
 				System.out.print(" ");
     		}
 
-			System.out.print(df.format(direct ? array.get(index) : get(pos)));
+			System.out.print(df.format(get(pos)));
 			System.out.print(" ");
 		}
     	System.out.println();
-	}
-	
-    protected class Floats extends AList<Float>  {
-
-	    private final float[] a;
-	
-	    Floats(float[] data) {
-	        if (data==null)
-	            throw new NullPointerException();
-	        a = data;
-	    }
-	
-	    public int size() {
-	        return a.length;
-	    }
-	
-	    public Float get(int index) {
-	        return Float.valueOf(a[index]);
-	    }
-	}
-
-    protected class Integers extends AList<Integer>  {
-
-	    private final int[] a;
-	
-	    Integers(int[] data) {
-	        if (data==null)
-	            throw new NullPointerException();
-	        a = data;
-	    }
-	
-	    public int size() {
-	        return a.length;
-	    }
-	
-	    public Integer get(int index) {
-	        return Integer.valueOf(a[index]);
-	    }
-	}
-
-    private abstract class AList<T> extends AbstractList<T>  {
-
-	    public Object[] toArray() {
-	    	throw new IllegalArgumentException();
-	    }
-	
-	    @SuppressWarnings("hiding")
-		public <T> T[] toArray(T[] a) {
-	    	throw new IllegalArgumentException();
-	    }
-	
-	    public T set(int index, T element) {
-	    	throw new IllegalArgumentException();
-	    }
-	
-	    public int indexOf(Object o) {
-	    	throw new IllegalArgumentException();
-	    }
-	
-	    public boolean contains(Object o) {
-	    	throw new IllegalArgumentException();
-	    }
 	}
 }

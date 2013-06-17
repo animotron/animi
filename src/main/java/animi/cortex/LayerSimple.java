@@ -20,13 +20,9 @@
  */
 package animi.cortex;
 
-
 import animi.*;
 import animi.gui.Application;
-import animi.matrix.Matrix;
-import animi.matrix.MatrixDelay;
-import animi.matrix.MatrixFloat;
-import animi.matrix.MatrixZeroAvg;
+import animi.matrix.*;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -61,16 +57,16 @@ public class LayerSimple implements ILayer {
 	
 	public boolean isZeroAvgAxons = true;
 
-	public MatrixDelay.Attenuation attenuation;
+	public FloatsDelay.Attenuation attenuation;
 	
-    public MatrixDelay axons;
+    public FloatsDelay axons;
     
-    public MatrixFloat neurons;
-    public MatrixFloat neighbors;
+    public Floats neurons;
+    public Floats neighbors;
 
-    public MatrixFloat pure;
-    public MatrixFloat learning;
-    public MatrixFloat toLearning;
+    public Floats pure;
+    public Floats learning;
+    public Floats toLearning;
 
     private BufferedImage image;
 
@@ -81,7 +77,7 @@ public class LayerSimple implements ILayer {
     	app = null;
     }
 
-    public LayerSimple(String name, Application app, int width, int height, int depth, MatrixDelay.Attenuation attenuation) {
+    public LayerSimple(String name, Application app, int width, int height, int depth, FloatsDelay.Attenuation attenuation) {
         this.name = name;
         this.app = app;
 
@@ -97,25 +93,25 @@ public class LayerSimple implements ILayer {
      */
     public void init() {
     	
-    	neurons = new MatrixFloat(width, height, depth);
+    	neurons = new FloatsImpl(width, height, depth);
     	neurons.fill(0f);
     	
-    	pure = new MatrixFloat(width, height);
+    	pure = new FloatsImpl(width, height);
     	pure.fill(0f);
 
-    	learning = new MatrixFloat(width, height, depth);
+    	learning = new FloatsImpl(width, height, depth);
     	learning.fill(0f);
     	
-    	toLearning = new MatrixFloat(width, height, depth);
+    	toLearning = new FloatsImpl(width, height, depth);
     	toLearning.fill(0f);
 
-    	neighbors = new MatrixFloat(width, height, depth);
+    	neighbors = new FloatsImpl(width, height, depth);
     	neighbors.fill(0f);
 
     	if (isZeroAvgAxons) {
-    		axons = new MatrixZeroAvg(attenuation, width, height, depth);
+    		axons = new FloatsZeroAvg(attenuation, width, height, depth);
     	} else {
-    		axons = new MatrixDelay(attenuation, width, height, depth);
+    		axons = new FloatsDelay(attenuation, width, height, depth);
     	}
     	axons.fill(0f);
 
@@ -236,7 +232,7 @@ public class LayerSimple implements ILayer {
 	}
 
 	
-	private void debug(String comment, Matrix<Float> neurons) {
+	private void debug(String comment, Floats neurons) {
 		System.out.println(comment);
 		
 		DecimalFormat df = new DecimalFormat("0.00000");
@@ -262,7 +258,7 @@ public class LayerSimple implements ILayer {
 	}
 
 	@Override
-	public Matrix<Float> axons() {
+	public Floats axons() {
 		return axons;
 	}
 }

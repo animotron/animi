@@ -20,9 +20,8 @@
  */
 package animi.acts;
 
-
 import animi.cortex.*;
-import animi.matrix.Matrix;
+import animi.matrix.Floats;
 
 /**
  * Winner gets all
@@ -44,9 +43,9 @@ public class WinnerGetsAll extends Task {
 		}
 	}
 	
-	public static void _(LayerWLearning cz, Matrix<Float> source, boolean inhibitory) {
+	public static void _(LayerWLearning cz, Floats source, boolean inhibitory) {
 		
-		Matrix<Float> cols = source.copy();
+		Floats cols = source.copy();
     	
     	//max is winner & winner gets all
     	int[] maxPos;

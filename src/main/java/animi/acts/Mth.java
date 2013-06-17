@@ -20,7 +20,7 @@
  */
 package animi.acts;
 
-import animi.matrix.Matrix;
+import animi.matrix.Floats;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -29,7 +29,7 @@ import animi.matrix.Matrix;
 public class Mth {
 
 	public static void normalization(
-			final Matrix<Float> values, 
+			final Floats values, 
 			final float sum2) {
 		
 		if (sum2 > 0f) {
@@ -44,7 +44,7 @@ public class Mth {
 	}
 
 	public static void normalization2(
-			final Matrix<Float> values, 
+			final Floats values, 
 			final float sum2) {
 		
 		if (sum2 > 0f) {

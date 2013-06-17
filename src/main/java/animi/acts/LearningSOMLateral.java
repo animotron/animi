@@ -34,14 +34,14 @@ public class LearningSOMLateral {
 	
 	public static void learn(
 			final MappingSOM m,
-			final Matrix<Integer[]> lateralSenapse, 
-			final Matrix<Float> lateralWeight, 
+			final ArrayOfIntegers lateralSenapse, 
+			final Floats lateralWeight, 
 			final float act,
 			final float factor) {
 		
 		float sumQ2 = 0f;
 		for (int index = 0; index < lateralWeight.length(); index++) {
-			Integer[] xyz = lateralSenapse.getByIndex(index);
+			int[] xyz = lateralSenapse.getByIndex(index);
 			
 			final int xi = xyz[0];
 			final int yi = xyz[1];

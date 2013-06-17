@@ -29,10 +29,7 @@ import java.util.Arrays;
 
 import animi.Imageable;
 import animi.cortex.LayerWLearning;
-import animi.cortex.LayerWLearningOnReset;
-import animi.cortex.Mapping;
-import animi.matrix.Matrix;
-import animi.matrix.MatrixProxy;
+import animi.matrix.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -109,7 +106,7 @@ public class CodeLayerViz implements Imageable {
 	    	int[] n = new int[Codes.GRADIENT_RAINBOW.length];
 	
 	    	int i = 0;
-			Matrix<Float> ws = layer.in_zones[0].senapsesCode();
+			Floats ws = layer.in_zones[0].senapsesCode();
 			for (int y = 0; y < layer.height; y++) {
 				for (int x = 0; x < layer.width; x++) {
 					Arrays.fill(n, 0);

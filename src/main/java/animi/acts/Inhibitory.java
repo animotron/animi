@@ -20,10 +20,9 @@
  */
 package animi.acts;
 
-
 import animi.RuntimeParam;
 import animi.cortex.*;
-import animi.matrix.Matrix;
+import animi.matrix.Floats;
 
 /**
  * Активация простых нейронов при узнавании запомненной картины
@@ -45,7 +44,7 @@ public class Inhibitory extends Task {
 	}
 
 	private float maxDelta = 0f;
-	private Matrix<Float> cols = null;
+	private Floats cols = null;
 	
 	@Override
 	public boolean prepare() {

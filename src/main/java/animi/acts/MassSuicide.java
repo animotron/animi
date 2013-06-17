@@ -35,7 +35,7 @@ public class MassSuicide extends LearningHebbian {
 	
 	public int eachCount = 500000;
 	
-	Matrix<Float> harakiri;
+	Floats harakiri;
 
 	final Mapping m;
 
@@ -43,7 +43,7 @@ public class MassSuicide extends LearningHebbian {
 		super(cz);
 
 		LayerSimple layer = cz.in_zones[0].frZone();
-		harakiri = new MatrixFloat(layer.width, layer.height, layer.depth);
+		harakiri = new FloatsImpl(layer.width, layer.height, layer.depth);
 
 		m = cz.in_zones[0];
 	}
@@ -66,13 +66,13 @@ public class MassSuicide extends LearningHebbian {
 		if (count % eachCount == 0) {
 			System.out.println("===== ["+x+","+y+","+z+"]");
 			
-			Matrix<Float> posW = m.senapseWeight().sub(x, y, z);
+			Floats posW = m.senapseWeight().sub(x, y, z);
 			
-			MatrixProxy<Integer[]> sen = m.senapses().sub(x, y, z);
+			ArrayOfIntegersProxy sen = m.senapses().sub(x, y, z);
 			
 			for (int index = 0; index < posW.length(); index++) {
 				if (posW.getByIndex(index) > 0.15f) {
-					Integer[] pos = sen.getByIndex(index);
+					int[] pos = sen.getByIndex(index);
 
 //					System.out.print("["+pos[0]+","+pos[1]+","+pos[2]+"] "+posW.getByIndex(index));
 
@@ -105,7 +105,7 @@ public class MassSuicide extends LearningHebbian {
 					for (int z = 0; z < layer.depth; z++) {
 						
 						if (harakiri.get(x,y,z) > 3f) {
-							Matrix<Float> posW = m.senapseWeight().sub(x,y,z);
+							Floats posW = m.senapseWeight().sub(x,y,z);
 							float sumQ2 = 0f;
 							
 							for (int index = 0; index < posW.length(); index++) {

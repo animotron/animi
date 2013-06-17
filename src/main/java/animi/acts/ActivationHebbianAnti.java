@@ -20,11 +20,10 @@
  */
 package animi.acts;
 
-
 import animi.RuntimeParam;
 import animi.cortex.*;
-import animi.matrix.Matrix;
-import animi.matrix.MatrixMapped;
+import animi.matrix.Floats;
+import animi.matrix.FloatsMapped;
 
 /**
  * 
@@ -40,7 +39,7 @@ public class ActivationHebbianAnti extends Task {
 		super(cz);
 	}
 
-	public static float activity(final Matrix<Float> in, final Matrix<Float> weights) {
+	public static float activity(final Floats in, final Floats weights) {
 		float sum = 0.0f;
 
 		for (int i = 0; i < weights.length(); i++) {
@@ -57,7 +56,7 @@ public class ActivationHebbianAnti extends Task {
 		final float activity = 
 				cz.neurons.get(x, y, z) - 
 				k * activity(
-					new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z)), 
+					new FloatsMapped(m.frZone().axons, m._senapses().sub(x, y, z)), 
 					m.inhibitoryWeight().sub(x, y, z)
 				);
 	

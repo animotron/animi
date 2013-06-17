@@ -29,7 +29,7 @@ import java.util.Random;
 import animi.Imageable;
 import animi.Utils;
 import animi.cortex.*;
-import animi.matrix.MatrixFloat;
+import animi.matrix.FloatsImpl;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -188,7 +188,7 @@ public class Mediator extends Task implements Imageable {
 	
 	@Override
 	public BufferedImage getImage() {
-		final MatrixFloat matrix = cz.learning;//pure;
+		final FloatsImpl matrix = (FloatsImpl) cz.learning;//pure;
 		
 		final float maximum = matrix.maximum();
 		

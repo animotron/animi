@@ -1,12 +1,12 @@
 package animi.matrix;
 
-public interface Matrix<T> {
+public interface Matrix { //XXX: <T> {
 
-	public interface Value<K> {
-		public K get(int... dims);
-	}
+	//XXX: public interface Value<K> {
+	//	public K get(int... dims);
+	//}
 
-	public void init(Value<T> value);
+	//XXX: public void init(Value<T> value);
 	
 	public void step();
 
@@ -16,22 +16,22 @@ public interface Matrix<T> {
 
 	public int dimension(int index);
 
-	public T getByIndex(int index);
+	//XXX: public T getByIndex(int index);
 
-	public void setByIndex(T value, int index);
+	//XXX: public void setByIndex(T value, int index);
 
-	public T get(int... dims);
+	//XXX: public T get(int... dims);
 
-	public void set(T value, int... dims);
+	//XXX: public void set(T value, int... dims);
 
-	public void fill(T value);
+	//XXX: public void fill(T value);
 
-	public int[] max();
-	public T maximum();
+	//XXX: public int[] max();
+	//XXX: public T maximum();
 
-	public Matrix<T> copy();
+	//XXX: public Matrix<T> copy();
 
-	public MatrixProxy<T> sub(int... dims);
+	//XXX: public MatrixProxy<T> sub(int... dims);
 
 	public void debug(String comment);
 }

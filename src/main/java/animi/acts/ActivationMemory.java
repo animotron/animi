@@ -34,7 +34,7 @@ public class ActivationMemory extends Task {
 		super(cz);
 	}
 
-	private float activity(final Matrix<Float> in, final Matrix<Float> weights) {
+	private float activity(final Floats in, final Floats weights) {
 		float sum = 0.0f;
 
 		for (int i = 0; i < weights.length(); i++) {
@@ -51,7 +51,7 @@ public class ActivationMemory extends Task {
 		if (m.senapsesCode().get(x,y,z) >= 0) {
 			final float activity = 
 					activity(
-						new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z)), 
+						new FloatsMapped(m.frZone().axons, m._senapses().sub(x, y, z)), 
 						m.senapseWeight().sub(x, y, z)
 					);
 			

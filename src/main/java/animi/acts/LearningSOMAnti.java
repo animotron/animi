@@ -33,9 +33,9 @@ import animi.matrix.*;
 public class LearningSOMAnti {
 	
 	private static float adjust(
-			final Matrix<Float> in, 
-			final Matrix<Float> posW, 
-			final Matrix<Float> negW, 
+			final Floats in, 
+			final Floats posW, 
+			final Floats negW, 
 			final float avg, 
 			final float factor) {
 		
@@ -66,23 +66,23 @@ public class LearningSOMAnti {
 
 	public static void learn(
 			final MappingSOM m,
-			final Matrix<Integer[]> lateralSenapse, 
-			final Matrix<Float> lateralWeight, 
+			final ArrayOfIntegers lateralSenapse, 
+			final Floats lateralWeight, 
 			final float avg,
 			final float factor) {
 		
 		for (int index = 0; index < lateralWeight.length(); index++) {
-			Integer[] xyz = lateralSenapse.getByIndex(index);
+			int[] xyz = lateralSenapse.getByIndex(index);
 			
 			final int xi = xyz[0];
 			final int yi = xyz[1];
 			final int zi = xyz[2];
 		
-			final Matrix<Float> posW = m.senapseWeight().sub(xi, yi, zi);
-			final Matrix<Float> negW = m.inhibitoryWeight().sub(xi, yi, zi);
+			final Floats posW = m.senapseWeight().sub(xi, yi, zi);
+			final Floats negW = m.inhibitoryWeight().sub(xi, yi, zi);
 			
 			final float sumQ2 = adjust(
-					new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(xi, yi, zi)), 
+					new FloatsMapped(m.frZone().axons, m._senapses().sub(xi, yi, zi)), 
 					posW,
 					negW, 
 					avg,

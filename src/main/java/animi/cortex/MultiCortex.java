@@ -38,7 +38,7 @@ import animi.gui.Application;
 import animi.gui.Controller;
 import animi.tuning.InhibitoryLearningMatrix;
 
-import static animi.matrix.MatrixDelay.*;
+import static animi.matrix.FloatsDelay.*;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>

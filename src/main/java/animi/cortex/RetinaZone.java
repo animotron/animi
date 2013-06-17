@@ -23,8 +23,8 @@ package animi.cortex;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
-import animi.matrix.Matrix;
-import animi.matrix.MatrixFloat;
+import animi.matrix.Floats;
+import animi.matrix.FloatsImpl;
 
 /**
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
@@ -48,8 +48,8 @@ public class RetinaZone extends Task {
     
     float XScale, YScale;
 	
-	Matrix<Float> history = null;
-	Matrix<Float> avgs = null;
+	Floats history = null;
+	Floats avgs = null;
 	
 	int count = -1;
 	
@@ -71,12 +71,12 @@ public class RetinaZone extends Task {
 	public void setInput(final BufferedImage image) {
 		
 		if (history == null) {// || history.length != sz.cols.length) {
-			history = new MatrixFloat(sz.neurons);
+			history = new FloatsImpl((FloatsImpl)sz.neurons);
 			history.fill(0f);
 		}
 		
 		if (avgs == null) {
-			avgs = new MatrixFloat(sz.neurons);
+			avgs = new FloatsImpl((FloatsImpl)sz.neurons);
 			avgs.fill(0f);
 		}
 		
@@ -107,7 +107,7 @@ public class RetinaZone extends Task {
 		return input[(y * inputSizeX) + x];
 	}
 
-	private void output(final float value, final int x, final int y, final int z) {
+	private void output(final Float value, final int x, final int y, final int z) {
     	sz.neurons.set(value, x, y, z);
     }
 	
@@ -193,7 +193,7 @@ public class RetinaZone extends Task {
     	}
     	if (numInCenter == 0 || numInPeref == 0) {
 			history.set(0f, x, y, z);
-			output(0, x, y, z);
+			output(0f, x, y, z);
 			return;
     	}
     	
@@ -208,7 +208,7 @@ public class RetinaZone extends Task {
 		
 		int type = ((x + y) % 2) + 1;
 	
-		float value = Float.NaN;//0.2f;
+		Float value = Float.NaN;//0.2f;
 		
 		float onOffValue = onOff(type, SA, SC, SP, K_cont);
 		

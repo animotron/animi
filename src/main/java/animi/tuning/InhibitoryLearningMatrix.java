@@ -20,11 +20,9 @@
  */
 package animi.tuning;
 
-
 import animi.RuntimeParam;
 import animi.cortex.*;
-import animi.matrix.Matrix;
-import animi.matrix.MatrixFloat;
+import animi.matrix.*;
 
 /**
  * Активация простых нейронов при узнавании запомненной картины
@@ -61,7 +59,7 @@ public class InhibitoryLearningMatrix extends Task {
 	@Override
 	public void gpuMethod(final int x, final int y, final int z) {
 		if (x == 0 && y == 0 && z == 0) {
-			cz.toLearning = (MatrixFloat) cz.learning.copy();
+			cz.toLearning = (FloatsImpl) cz.learning.copy();
 			_(cz.in_zones[0], cz.toLearning);
 		}
 //		
@@ -108,9 +106,9 @@ public class InhibitoryLearningMatrix extends Task {
 	protected void release() {
 	}
 	
-	public static void _(final Mapping m, final Matrix<Float> source) {
+	public static void _(final Mapping m, final Floats source) {
 		
-		final Matrix<Float> cols = source.copy();
+		final Floats cols = source.copy();
 		
 		int count = 0;
     	

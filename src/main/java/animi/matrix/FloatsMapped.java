@@ -24,12 +24,12 @@ package animi.matrix;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class MatrixMapped<T extends Number> implements Matrix<T> {
+public class FloatsMapped implements Floats {
 	
-	final Matrix<T> source;
-	final Matrix<Integer> mapper;
+	final Floats source;
+	final Integers mapper;
 	
-	public MatrixMapped(final Matrix<T> source, final Matrix<Integer> mapper) {
+	public FloatsMapped(final Floats source, final Integers mapper) {
 		this.source = source;
 		this.mapper = mapper;
 		
@@ -37,7 +37,7 @@ public class MatrixMapped<T extends Number> implements Matrix<T> {
 	}
 
 	@Override
-	public void init(final Value<T> value) {
+	public void init(final Value value) {
 		throw new IllegalArgumentException();
 	}
 	
@@ -62,7 +62,7 @@ public class MatrixMapped<T extends Number> implements Matrix<T> {
 	}
 
 	@Override
-	public T getByIndex(final int index) {
+	public float getByIndex(final int index) {
 		final int length = mapper.dimension(1);
 		int[] dims = new int[length];
 		for (int i = 0; i < length; i++) {
@@ -72,22 +72,33 @@ public class MatrixMapped<T extends Number> implements Matrix<T> {
 	}
 
 	@Override
-	public void setByIndex(final T value, final int index) {
+	public void setByIndex(final float value, final int index) {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public T get(final int... dims) {
+	public float get(final int... dims) {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public void set(final T value, final int... dims) {
+	public void set(final float value, final int... dims) {
+		throw new IllegalArgumentException();
+	}
+
+
+	@Override
+	public boolean isSet(int... dims) {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public void fill(final T value) {
+	public boolean isSet(int index) {
+		throw new IllegalArgumentException();
+	}
+
+	@Override
+	public void fill(final float value) {
 		throw new IllegalArgumentException();
 	}
 
@@ -97,17 +108,17 @@ public class MatrixMapped<T extends Number> implements Matrix<T> {
 	}
 
 	@Override
-	public T maximum() {
+	public float maximum() {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public MatrixMapped<T> copy() {
+	public FloatsMapped copy() {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public MatrixProxy<T> sub(final int... dims) {
+	public FloatsProxy sub(final int... dims) {
 		throw new IllegalArgumentException();
 	}
 

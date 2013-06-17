@@ -69,14 +69,14 @@ public class MappingSOM implements Mapping {
 	@InitParam(name="disp")
 	public double disp;      // Describe a size of sensor field
 
-	private Matrix<Integer[]> senapses;
-	private Matrix<Integer> _senapses;
+	private ArrayOfIntegers senapses;
+	private Integers _senapses;
 
-	private Matrix<Float> senapseWeight;
-	private Matrix<Float> inhibitoryWeight;
+	private Floats senapseWeight;
+	private Floats inhibitoryWeight;
 	
-	private Matrix<Float> lateralWeight;
-	private Matrix<Integer[]> lateralSenapse;
+	private Floats lateralWeight;
+	private ArrayOfIntegers lateralSenapse;
 	private Value lateralWeightValue;
 	
 	private void linksSenapse(int Sx, int Sy, int Sz, int x, int y, int z, int l) {
@@ -84,7 +84,7 @@ public class MappingSOM implements Mapping {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
 					for (int zi = 0; zi < toZone.depth; zi++) {
-						senapses.set(new Integer[] {Sx, Sy, Sz}, xi, yi, zi, l);
+						senapses.set(new int[] {Sx, Sy, Sz}, xi, yi, zi, l);
 
 						_senapses.set(Sx, xi, yi, zi, l, 0);
 						_senapses.set(Sy, xi, yi, zi, l, 1);
@@ -93,7 +93,7 @@ public class MappingSOM implements Mapping {
 				}
 			}
 		} else {
-			senapses.set(new Integer[] {Sx, Sy, Sz}, x, y, z, l);
+			senapses.set(new int[] {Sx, Sy, Sz}, x, y, z, l);
 
 			_senapses.set(Sx, x, y, z, l, 0);
 			_senapses.set(Sy, x, y, z, l, 1);
@@ -108,12 +108,12 @@ public class MappingSOM implements Mapping {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
 					for (int zi = 0; zi < toZone.depth; zi++) {
-						lateralSenapse.set(new Integer[] {Sx, Sy, Sz}, xi, yi, zi, l);
+						lateralSenapse.set(new int[] {Sx, Sy, Sz}, xi, yi, zi, l);
 					}
 				}
 			}
 		} else {
-			lateralSenapse.set(new Integer[] {Sx, Sy, Sz}, x, y, z, l);
+			lateralSenapse.set(new int[] {Sx, Sy, Sz}, x, y, z, l);
 		}
 	}
 
@@ -175,39 +175,39 @@ public class MappingSOM implements Mapping {
 //		float norm = (float) Math.sqrt(sumQ2);
 		w = (1 / (float)(ns_links * frZone.depth));// / norm;
 
-		senapses = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth);
-		_senapses = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth, 3);
+		senapses = new ArrayOfIntegersImpl(3, toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth);
+		_senapses = new IntegersImpl(toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth, 3);
 		_senapses.fill(0);
 		
-	    senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth);
-	    senapseWeight.init(new Matrix.Value<Float>() {
+	    senapseWeight = new FloatsImpl(toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth);
+	    senapseWeight.init(new Floats.Value() {
 			@Override
-			public Float get(int... dims) {
+			public float get(int... dims) {
 				return getInitWeight();
 			}
 		});
 	    
-	    inhibitoryWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth);
-	    inhibitoryWeight.init(new Matrix.Value<Float>() {
+	    inhibitoryWeight = new FloatsImpl(toZone.width(), toZone.height(), toZone.depth(), ns_links * frZone.depth);
+	    inhibitoryWeight.init(new Floats.Value() {
 			@Override
-			public Float get(int... dims) {
+			public float get(int... dims) {
 				return 0f;//getInitWeight();
 			}
 		});
 
-	    lateralWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth(), nl_links);
-	    lateralWeight.init(new Matrix.Value<Float>() {
+	    lateralWeight = new FloatsImpl(toZone.width(), toZone.height(), toZone.depth(), nl_links);
+	    lateralWeight.init(new Floats.Value() {
 			@Override
-			public Float get(int... dims) {
+			public float get(int... dims) {
 				return 0f;
 			}
 		});
 	    
-	    lateralSenapse = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth, nl_links);
-	    lateralSenapse.init(new Matrix.Value<Integer[]>() {
+	    lateralSenapse = new ArrayOfIntegersImpl(3, toZone.width(), toZone.height(), toZone.depth, nl_links);
+	    lateralSenapse.init(new ArrayOfIntegers.Value() {
 			@Override
-			public Integer[] get(int... dims) {
-				return new Integer[] {0, 0, 0};
+			public int[] get(int... dims) {
+				return new int[] {0, 0, 0};
 			}
 		});
 
@@ -432,27 +432,27 @@ public class MappingSOM implements Mapping {
 	}
 
 	@Override
-	public Matrix<Integer[]> senapses() {
+	public ArrayOfIntegers senapses() {
 		return senapses;
 	}
 
 	@Override
-	public Matrix<Integer> _senapses() {
+	public Integers _senapses() {
 		return _senapses;
 	}
 
 	@Override
-	public Matrix<Float> senapseWeight() {
+	public Floats senapseWeight() {
 		return senapseWeight;
 	}
 
 	@Override
-	public Matrix<Integer[]> lateralSenapse() {
+	public ArrayOfIntegers lateralSenapse() {
 		return lateralSenapse;
 	}
 
 	@Override
-	public Matrix<Float> lateralWeight() {
+	public Floats lateralWeight() {
 		return lateralWeight;
 	}
 
@@ -462,7 +462,7 @@ public class MappingSOM implements Mapping {
 	}
 
 	@Override
-	public Matrix<Float> inhibitoryWeight() {
+	public Floats inhibitoryWeight() {
 		return inhibitoryWeight;
 	}
 
@@ -545,7 +545,7 @@ public class MappingSOM implements Mapping {
 
 			for (int x = 0; x < toZone.width(); x++) {
 				for (int y = 0; y < toZone.height(); y++) {
-					final MatrixProxy<Float> ws = senapseWeight.sub(x, y);
+					final FloatsProxy ws = senapseWeight.sub(x, y);
 					
 					max = 0; pos = -1;
 					for (int index = 0; index < ws.length(); index++) {
@@ -557,9 +557,9 @@ public class MappingSOM implements Mapping {
 					if (pos == -1)
 						continue;
 					
-					final MatrixProxy<Integer[]> sf = senapses.sub(x,y);
+					final ArrayOfIntegersProxy sf = senapses.sub(x,y);
 					
-					Integer[] xyz = sf.getByIndex(pos);
+					int[] xyz = sf.getByIndex(pos);
 					
 					final int xi = xyz[0];
 					final int yi = xyz[1];
@@ -650,12 +650,12 @@ public class MappingSOM implements Mapping {
 			
 			Graphics g = image.getGraphics();
 
-			final MatrixProxy<Float> pos = senapseWeight.sub(nX, nY, 0);
-			final MatrixProxy<Float> neg = inhibitoryWeight.sub(nX, nY, 0);
+			final FloatsProxy pos = senapseWeight.sub(nX, nY, 0);
+			final FloatsProxy neg = inhibitoryWeight.sub(nX, nY, 0);
 			
-			final MatrixProxy<Integer[]> sf = senapses.sub(nX, nY, 0);
+			final ArrayOfIntegersProxy sf = senapses.sub(nX, nY, 0);
 
-			Integer[] xyz = null;
+			int[] xyz = null;
 			
 			for (int index = 0; index < pos.length(); index++) {
 				
@@ -714,8 +714,7 @@ public class MappingSOM implements Mapping {
 	}
 
 	@Override
-	public Matrix<Float> senapsesCode() {
-		// TODO Auto-generated method stub
+	public Floats senapsesCode() {
 		return null;
 	}
 }

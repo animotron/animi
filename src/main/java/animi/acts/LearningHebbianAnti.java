@@ -20,7 +20,7 @@
  */
 package animi.acts;
 
-import animi.matrix.Matrix;
+import animi.matrix.Floats;
 
 /**
  * 
@@ -32,9 +32,9 @@ public class LearningHebbianAnti {
 	private LearningHebbianAnti() {}
 
 	private static float adjust(
-			final Matrix<Float> in, 
-			final Matrix<Float> posW, 
-			final Matrix<Float> negW, 
+			final Floats in, 
+			final Floats posW, 
+			final Floats negW, 
 			final float activity,
 			final float avg,
 			final float factor) {
@@ -64,9 +64,9 @@ public class LearningHebbianAnti {
 	}
 	
 	public static void learn(
-			final Matrix<Float> in, 
-			final Matrix<Float> posW, 
-			final Matrix<Float> negW, 
+			final Floats in, 
+			final Floats posW, 
+			final Floats negW, 
 			final float activity, 
 			final float avg,
 			final float factor) {

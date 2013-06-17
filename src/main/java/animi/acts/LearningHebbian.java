@@ -49,9 +49,9 @@ public class LearningHebbian extends Task {
 	}
 
 	private static float adjust(
-			final Matrix<Float> in, 
-			final Matrix<Float> posW, 
-			final Matrix<Float> negW, 
+			final Floats in, 
+			final Floats posW, 
+			final Floats negW, 
 			final float activity, 
 			final float avg,
 			final float factor) {
@@ -82,9 +82,9 @@ public class LearningHebbian extends Task {
 	}
 
 	public static void learn(
-			final Matrix<Float> in, 
-			final Matrix<Float> posW, 
-			final Matrix<Float> negW, 
+			final Floats in, 
+			final Floats posW, 
+			final Floats negW, 
 			final float activity,
 			final float avg,
 			final float factor) {
@@ -106,7 +106,7 @@ public class LearningHebbian extends Task {
 		
 		if (m.haveInhibitoryWeight()) {
 
-			final MatrixFloat neurons = m.frZone().axons;
+			final FloatsImpl neurons = m.frZone().axons;
 			
 			float sum = 0f;
 			for (int index = 0; index < neurons.length(); index++) {
@@ -138,9 +138,9 @@ public class LearningHebbian extends Task {
 		
 //		System.out.println("["+x+","+y+","+z+"] "+act);
 
-		Matrix<Float> in = new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z));
-		Matrix<Float> posW = m.senapseWeight().sub(x, y, z);
-		Matrix<Float> negW = null;
+		Floats in = new FloatsMapped(m.frZone().axons, m._senapses().sub(x, y, z));
+		Floats posW = m.senapseWeight().sub(x, y, z);
+		Floats negW = null;
 		if (m.haveInhibitoryWeight()) {
 			negW = m.inhibitoryWeight().sub(x, y, z);
 		}

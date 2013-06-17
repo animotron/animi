@@ -69,19 +69,19 @@ public class MappingHebbian implements Mapping {
 	
 	boolean haveInhibitory;
 	
-	protected Matrix<Integer[]> senapses;
-	protected Matrix<Integer> _senapses;
+	protected ArrayOfIntegers senapses;
+	protected Integers _senapses;
 	
-	private Matrix<Float> senapseCode;
-	private Matrix<Float> senapseWeight;
-	private Matrix<Float> inhibitoryWeight;
+	private Floats senapseCode;
+	private Floats senapseWeight;
+	private Floats inhibitoryWeight;
 	
 	private void linksSenapse(final int Sx, final int Sy, final int Sz, final int x, final int y, final int z, final int l) {
 		if (toZone.singleReceptionField) {
 			for (int xi = 0; xi < toZone.width(); xi++) {
 				for (int yi = 0; yi < toZone.height(); yi++) {
 					for (int zi = 0; zi < toZone.depth; zi++) {
-						senapses.set(new Integer[] {Sx, Sy, Sz}, xi, yi, zi, l);
+						senapses.set(new int[] {Sx, Sy, Sz}, xi, yi, zi, l);
 						_senapses.set(Sx, xi, yi, zi, l, 0);
 						_senapses.set(Sy, xi, yi, zi, l, 1);
 						_senapses.set(Sz, xi, yi, zi, l, 2);
@@ -89,7 +89,7 @@ public class MappingHebbian implements Mapping {
 				}
 			}
 		} else {
-			senapses.set(new Integer[] {Sx, Sy, Sz}, x, y, z, l);
+			senapses.set(new int[] {Sx, Sy, Sz}, x, y, z, l);
 			_senapses.set(Sx, x, y, z, l, 0);
 			_senapses.set(Sy, x, y, z, l, 1);
 			_senapses.set(Sz, x, y, z, l, 2);
@@ -121,18 +121,18 @@ public class MappingHebbian implements Mapping {
 		w = (1 / (float)(ns_links * frZone.depth));// / norm;
 //		w = (float) (w / Math.sqrt((w * w) * ns_links * frZone.depth));
 
-	    senapseCode = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth);
-	    senapseCode.init(new Matrix.Value<Float>() {
+	    senapseCode = new FloatsImpl(toZone.width(), toZone.height(), toZone.depth);
+	    senapseCode.init(new Floats.Value() {
 			@Override
-			public Float get(int... dims) {
+			public float get(int... dims) {
 				return -1f;
 			}
 		});
 
-		senapseWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
-	    senapseWeight.init(new Matrix.Value<Float>() {
+		senapseWeight = new FloatsImpl(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
+	    senapseWeight.init(new Floats.Value() {
 			@Override
-			public Float get(int... dims) {
+			public float get(int... dims) {
 				return rnd.nextFloat();//getInitWeight();
 			}
 		});
@@ -140,7 +140,7 @@ public class MappingHebbian implements Mapping {
 	    for (int x = 0; x < toZone.width(); x++) {
 	    	for (int y = 0; y < toZone.height(); y++) {
 		    	for (int z = 0; z < toZone.depth(); z++) {
-		    		final Matrix<Float> weights = senapseWeight.sub(x, y, z);
+		    		final Floats weights = senapseWeight.sub(x, y, z);
 		    		
 		    		sumQ2 = 0f;
 		    		for (int index = 0; index < weights.length(); index++) {
@@ -154,10 +154,10 @@ public class MappingHebbian implements Mapping {
 	    }
 	    
 	    if (haveInhibitory) {
-		    inhibitoryWeight = new MatrixFloat(toZone.width(), toZone.height(), toZone.depth, ns_links);
-		    inhibitoryWeight.init(new Matrix.Value<Float>() {
+		    inhibitoryWeight = new FloatsImpl(toZone.width(), toZone.height(), toZone.depth, ns_links);
+		    inhibitoryWeight.init(new Floats.Value() {
 				@Override
-				public Float get(int... dims) {
+				public float get(int... dims) {
 					return getInitWeight();
 				}
 			});
@@ -165,8 +165,8 @@ public class MappingHebbian implements Mapping {
 	    	inhibitoryWeight = null;
 	    }
 
-		senapses = new MatrixArrayInteger(3, toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
-		_senapses = new MatrixInteger(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth, 3);
+		senapses = new ArrayOfIntegersImpl(3, toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth);
+		_senapses = new IntegersImpl(toZone.width(), toZone.height(), toZone.depth, ns_links * frZone.depth, 3);
 		_senapses.fill(0);
 		
 //        for (int x = 0; x < zone.width(); x++) {
@@ -302,27 +302,27 @@ public class MappingHebbian implements Mapping {
 	}
 
 	@Override
-	public Matrix<Integer[]> senapses() {
+	public ArrayOfIntegers senapses() {
 		return senapses;
 	}
 
 	@Override
-	public Matrix<Integer> _senapses() {
+	public Integers _senapses() {
 		return _senapses;
 	}
 
 	@Override
-	public Matrix<Float> senapseWeight() {
+	public Floats senapseWeight() {
 		return senapseWeight;
 	}
 
 	@Override
-	public Matrix<Float> senapsesCode() {
+	public Floats senapsesCode() {
 		return senapseCode;
 	}
 
 	@Override
-	public Matrix<Float> lateralWeight() {
+	public Floats lateralWeight() {
 		return null;
 	}
 
@@ -347,7 +347,7 @@ public class MappingHebbian implements Mapping {
 	}
 
 	@Override
-	public Matrix<Integer[]> lateralSenapse() {
+	public ArrayOfIntegers lateralSenapse() {
 		return null;
 	}
 	
@@ -362,7 +362,7 @@ public class MappingHebbian implements Mapping {
 	}
 
 	@Override
-	public Matrix<Float> inhibitoryWeight() {
+	public Floats inhibitoryWeight() {
 		return inhibitoryWeight;
 	}
 
@@ -431,7 +431,7 @@ public class MappingHebbian implements Mapping {
 			
 			int R = 0, G = 0, B = 0;
 			
-			final Matrix<Float> neighbors = toZone().neighbors;
+			final Floats neighbors = toZone().neighbors;
 			
 			float maximum = neighbors.maximum();
 			float half = maximum / 2f;
@@ -448,7 +448,7 @@ public class MappingHebbian implements Mapping {
 			for (int x = 0; x < toZone().width(); x++) {
 				for (int y = 0; y < toZone().height(); y++) {
 					if (showMax) {
-						final MatrixProxy<Float> ws = senapseWeight.sub(x, y);
+						final FloatsProxy ws = senapseWeight.sub(x, y);
 						
 						max = -1; pos = -1;
 						for (int index = 0; index < ws.length(); index++) {
@@ -460,9 +460,9 @@ public class MappingHebbian implements Mapping {
 						if (pos == -1)
 							continue;
 						
-						final MatrixProxy<Integer[]> sf = senapses.sub(x,y);
+						final ArrayOfIntegersProxy sf = senapses.sub(x,y);
 						
-						Integer[] xyz = sf.getByIndex(pos);
+						int[] xyz = sf.getByIndex(pos);
 						
 						final int xi = xyz[0];
 						final int yi = xyz[1];
@@ -600,17 +600,17 @@ public class MappingHebbian implements Mapping {
 			
 			Graphics g = image.getGraphics();
 
-			final MatrixProxy<Float> pos = senapseWeight.sub(nX, nY, 0);
-			final MatrixProxy<Float> neg;
+			final FloatsProxy pos = senapseWeight.sub(nX, nY, 0);
+			final FloatsProxy neg;
 			if (haveInhibitoryWeight()) {
 				neg = inhibitoryWeight.sub(nX, nY, 0);
 			} else {
 				neg = null;
 			}
 			
-			final MatrixProxy<Integer[]> sf = senapses.sub(nX, nY, 0);
+			final ArrayOfIntegersProxy sf = senapses.sub(nX, nY, 0);
 
-			Integer[] xyz = null;
+			int[] xyz = null;
 			
 			float maximum = pos.maximum();
 			float half = maximum / 2f;
@@ -620,7 +620,7 @@ public class MappingHebbian implements Mapping {
 				
 				xyz = sf.getByIndex(index);
 				
-				if (xyz == null || xyz[0] == null || xyz[1] == null || xyz[2] == null) {
+				if (xyz == null) {// || xyz[0] == null || xyz[1] == null || xyz[2] == null) {
 					System.out.println("ERROR! at ["+nX+","+nY+",0] "+index);
 					continue;
 				}

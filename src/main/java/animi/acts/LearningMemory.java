@@ -37,8 +37,8 @@ public class LearningMemory extends Task {
 	}
 
 	private static float adjust(
-			final Matrix<Float> in, 
-			final Matrix<Float> posW) {
+			final Floats in, 
+			final Floats posW) {
 		
 		float sumQ2 = 0.0f;
 		for (int index = 0; index < posW.length(); index++) {
@@ -53,8 +53,8 @@ public class LearningMemory extends Task {
 	}
 
 	public static void learn(
-			final Matrix<Float> in, 
-			final Matrix<Float> posW) {
+			final Floats in, 
+			final Floats posW) {
 		
 		final float sumQ2 = adjust(in, posW);
 		
@@ -77,8 +77,8 @@ public class LearningMemory extends Task {
 
 		m.senapsesCode().set((float)cz.app.getStimulator().getCode(), x,y,z);
 		
-		Matrix<Float> in = new MatrixMapped<Float>(m.frZone().axons, m._senapses().sub(x, y, z));
-		Matrix<Float> posW = m.senapseWeight().sub(x, y, z);
+		Floats in = new FloatsMapped(m.frZone().axons, m._senapses().sub(x, y, z));
+		Floats posW = m.senapseWeight().sub(x, y, z);
 		
 		LearningMemory.learn(
 			in, 

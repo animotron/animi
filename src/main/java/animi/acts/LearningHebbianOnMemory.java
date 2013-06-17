@@ -47,8 +47,8 @@ public class LearningHebbianOnMemory extends Task {
 	}
 
 	private static float adjust(
-			final Matrix<Float> in, 
-			final Matrix<Float> posW, 
+			final Floats in, 
+			final Floats posW, 
 			final float activity, 
 			final float factor) {
 		
@@ -65,8 +65,8 @@ public class LearningHebbianOnMemory extends Task {
 	}
 
 	public static void learn(
-			final Matrix<Float> in, 
-			final Matrix<Float> posW, 
+			final Floats in, 
+			final Floats posW, 
 			final float activity,
 			final float factor) {
 		
@@ -100,11 +100,11 @@ public class LearningHebbianOnMemory extends Task {
 			return;
 		}
 		
-		MatrixProxy<Integer[]> senapses = m0.senapses().sub(x,y,z);
+		ArrayOfIntegersProxy senapses = m0.senapses().sub(x,y,z);
 		
 		int count = 0;
 		for (int index = 0; index < senapses.length(); index++) {
-			final Integer[] pos = senapses.getByIndex(index);
+			final int[] pos = senapses.getByIndex(index);
 			if (memoryMapping.senapsesCode().get(pos[0], pos[1], pos[2]) >= 0) {
 				count++;
 			}
@@ -122,10 +122,10 @@ public class LearningHebbianOnMemory extends Task {
 
 		for (int i = 1; i < 100; i++) {
 			for (int index = 0; index < senapses.length(); index++) {
-				final Integer[] pos = senapses.getByIndex(index);
+				final int[] pos = senapses.getByIndex(index);
 	
-				final  Matrix<Float> in = memoryMapping.senapseWeight().sub(pos[0], pos[1], pos[2]);
-				final Matrix<Float> weights = remember.senapseWeight().sub(x, y, z);
+				final Floats in = memoryMapping.senapseWeight().sub(pos[0], pos[1], pos[2]);
+				final Floats weights = remember.senapseWeight().sub(x, y, z);
 			
 				LearningHebbianOnMemory.learn(
 					in, 

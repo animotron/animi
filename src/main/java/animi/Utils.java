@@ -26,7 +26,7 @@ import javolution.xml.stream.XMLStreamReader;
 
 import animi.cortex.LayerSimple;
 import animi.cortex.Mapping;
-import animi.matrix.Matrix;
+import animi.matrix.Floats;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -169,7 +169,7 @@ public class Utils {
 			final int cnX, final int cnY, final int cnZ,
 			final Mapping m) {
 
-    	Matrix<Float> ws = m.senapseWeight().sub(cnX, cnY, cnZ);
+    	Floats ws = m.senapseWeight().sub(cnX, cnY, cnZ);
     	
     	float maximum = Float.MIN_VALUE;
     	float minimum = Float.MAX_VALUE;

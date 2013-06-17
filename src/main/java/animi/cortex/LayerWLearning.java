@@ -23,7 +23,7 @@ package animi.cortex;
 
 import animi.*;
 import animi.gui.Application;
-import animi.matrix.MatrixDelay;
+import animi.matrix.FloatsDelay;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -97,7 +97,7 @@ public class LayerWLearning extends LayerSimple {
 			Class<? extends Task> classOfLearningMatrix,
 			Class<? extends Task> classOfLearningMatrixInhibitory,
 			Class<? extends Task> classOfLearning,
-			MatrixDelay.Attenuation attenuation) {
+			FloatsDelay.Attenuation attenuation) {
 		
 		super(name, app, width, height, depth, attenuation);
 		
