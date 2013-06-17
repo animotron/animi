@@ -30,8 +30,8 @@ import animi.matrix.*;
  */
 public class ActivationMethodOfTwo extends Task {
 	
-	public float Nu = 0.1f;
-	public float Nr = 5f;
+	public int Nu = 10;
+	public float Nr = 10f;
 	
 	public ActivationMethodOfTwo(LayerWLearning cz) {
 		super(cz);
@@ -56,7 +56,7 @@ public class ActivationMethodOfTwo extends Task {
 			}
 	    }
 		
-		if (N / weights.length() < Nu) {
+		if (N < Nu) {
 			return Float.NaN;
 		}
 		

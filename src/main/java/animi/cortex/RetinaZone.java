@@ -208,14 +208,14 @@ public class RetinaZone extends Task {
 		
 		int type = ((x + y) % 2) + 1;
 	
-		float value = 0.2f;
+		float value = Float.NaN;//0.2f;
 		
 		float onOffValue = onOff(type, SA, SC, SP, K_cont);
 		
 		int oppositeStimuli = onOff(type % 2 + 1, SA, SC, SP, K_cont);
 		
 		if (oppositeStimuli == 1) {
-			value = 0f;
+			value = -1f;
 			
 			//if no stimuli, check if opposite was 
 		} else if (onOffValue == 0) {
@@ -228,11 +228,14 @@ public class RetinaZone extends Task {
 			value = 1f;
 		}
 
-		final float avg = avgs.get(x,y,z);
-		output(value - avg, x, y, z);
+		//as it is
+		output(value, x, y, z);
 		
-		avgs.set( (avg * (float)count + value) / (float)(count + 1), x,y,z);
-
+		//устредненное значение
+		//final float avg = avgs.get(x,y,z);
+		//output(value - avg, x, y, z);
+		//avgs.set( (avg * (float)count + value) / (float)(count + 1), x,y,z);
+		
 //		history.set((float)oppositeStimuli, x, y, z);
 	}
 }

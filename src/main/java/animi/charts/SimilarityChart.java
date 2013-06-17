@@ -60,11 +60,11 @@ public class SimilarityChart extends Controller {
             new Mapping[]{
                 new MappingHebbian(z_in, 150, 1, true, false)
             },
-            ActivationMethodOfTwo.class,
+            ActivationMethodOfTwo.class,//ActivationMemory.class,
             null,
             LearningMatrix.class,
             null,
-            LearningAsItis.class,
+            LearningAsItis.class,//LearningMemory.class,
             noAttenuation
         );
     	layer.singleReceptionField = true;
