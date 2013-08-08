@@ -129,10 +129,13 @@ public class FloatsDelay extends FloatsImpl {
 //		debug(new Floats(data), false);
 //	}
 	
-	public void step(Floats matrix) {
+	public void step(final Floats matrix) {
 		for (int index = 0; index < length(); index++) {
-			if (matrix.isSet(index) && matrix.getByIndex(index) != 0f) {//WORKAROUND: > 0f
-				setByIndex(matrix.getByIndex(index), index);
+			if (matrix.isSet(index)) {
+				final float v = matrix.getByIndex(index);
+				if (v != 0f || Float.isNaN(v)) {//WORKAROUND: > 0f
+					setByIndex(matrix.getByIndex(index), index);
+				}
 			}
 			stepsFromLastSet[index]++;
 		}

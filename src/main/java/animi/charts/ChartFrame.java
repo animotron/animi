@@ -22,22 +22,15 @@ package animi.charts;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
 import org.jzy3d.bridge.IFrame;
-import org.jzy3d.bridge.swing.FrameSwing;
 import org.jzy3d.chart.Chart;
-import org.jzy3d.chart.ChartLauncher;
 import org.jzy3d.chart.Settings;
 import org.jzy3d.chart.controllers.keyboard.camera.AWTCameraKeyController;
-import org.jzy3d.chart.controllers.keyboard.camera.NewtCameraKeyController;
-import org.jzy3d.chart.factories.AWTChartComponentFactory;
 import org.jzy3d.chart.factories.SwingChartComponentFactory;
 import org.jzy3d.colors.Color;
 import org.jzy3d.colors.ColorMapper;

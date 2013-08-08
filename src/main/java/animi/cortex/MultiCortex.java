@@ -68,7 +68,7 @@ public class MultiCortex extends Controller {
     	super(app);
 
 //    	final int delay = 8;
-    	z_in = new LayerSimple("Зрительный нерв", app, 60, 60, 1,
+    	z_in = new LayerSimple("Зрительный нерв", app, 40, 40, 1,
 			oneStepAttenuation
 //    		new MatrixDelay.Attenuation() {
 //
@@ -286,12 +286,12 @@ public class MultiCortex extends Controller {
 			} else if ("zone".equals(qName)) {
 				if ("complex".equals(attrs.getValue("type"))) {
 					LayerWLearning cZone;
-					zone = cZone = new LayerWLearning();
+					zone = cZone = null; //XXX: new LayerWLearning();
 
 					cZone.count = Integer.valueOf(attrs.getValue("count"));
 					
 				} else {
-					zone = new  LayerSimple();
+					zone = null; //XXX: new  LayerSimple();
 				}
 				zone.id = attrs.getValue("id");
 				zone.name = attrs.getValue("name");

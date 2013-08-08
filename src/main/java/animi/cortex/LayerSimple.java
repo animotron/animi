@@ -59,7 +59,7 @@ public class LayerSimple implements ILayer {
 
 	public FloatsDelay.Attenuation attenuation;
 	
-    public FloatsDelay axons;
+    public final FloatsDelay axons;
     
     public Floats neurons;
     public Floats neighbors;
@@ -72,10 +72,10 @@ public class LayerSimple implements ILayer {
 
 	public int count = 0;
 
-	LayerSimple() {
-    	name = null;
-    	app = null;
-    }
+//	LayerSimple() {
+//    	name = null;
+//    	app = null;
+//    }
 
     public LayerSimple(String name, Application app, int width, int height, int depth, FloatsDelay.Attenuation attenuation) {
         this.name = name;
@@ -86,6 +86,14 @@ public class LayerSimple implements ILayer {
 		this.depth = depth;
 
 		this.attenuation = attenuation;
+
+    	if (isZeroAvgAxons) {
+    		axons = new FloatsZeroAvg(attenuation, width, height, depth);
+    	} else {
+    		axons = new FloatsDelay(attenuation, width, height, depth);
+    	}
+    	axons.fill(0f);
+
     }
     
     /**
@@ -107,13 +115,6 @@ public class LayerSimple implements ILayer {
 
     	neighbors = new FloatsImpl(width, height, depth);
     	neighbors.fill(0f);
-
-    	if (isZeroAvgAxons) {
-    		axons = new FloatsZeroAvg(attenuation, width, height, depth);
-    	} else {
-    		axons = new FloatsDelay(attenuation, width, height, depth);
-    	}
-    	axons.fill(0f);
 
     	image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
@@ -186,6 +187,10 @@ public class LayerSimple implements ILayer {
     	axons.fill(0f);
     	
 		axons.step(neurons);
+
+		neurons.debug("neurons");
+		axons.debug("axons");
+		
 		neurons.step();
 	}
 

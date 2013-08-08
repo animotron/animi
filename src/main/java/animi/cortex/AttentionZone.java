@@ -26,7 +26,7 @@ import java.util.Random;
  * @author <a href="mailto:shabanovd@gmail.com">Dmitriy Shabanov</a>
  *
  */
-public class AttentionZone extends LayerWLearning {
+public class AttentionZone { //extends LayerWLearning {
 	
 	public AttentionZone(String name, MultiCortex mc, int width, int height, MappingHebbian[] in_zones) {
 //		super(name, mc, width, height, 1, in_zones, null, null, null);
@@ -35,8 +35,8 @@ public class AttentionZone extends LayerWLearning {
 	Random rnd = new Random();
 	
     public void process() {
-    	if (!isActive())// || !mc.retina.needShift())
-    		return;
+//    	if (!isActive())// || !mc.retina.needShift())
+//    		return;
     	
 //    	cycleActivation();
     	
@@ -66,8 +66,8 @@ public class AttentionZone extends LayerWLearning {
 //            }
 //        }
 
-        X = (int)(X * in_zones[0].frZone().width / (double) width());
-		Y = (int)(Y * in_zones[0].frZone().height / (double) height());
+//        X = (int)(X * in_zones[0].frZone().width / (double) width());
+//		Y = (int)(Y * in_zones[0].frZone().height / (double) height());
 		
 //		mc.retina.shift(X + nextRandom(), Y + nextRandom());
     }

@@ -84,9 +84,9 @@ public class LayerWLearning extends LayerSimple {
 	/** Number of synaptic connections of the all simple neurons **/
 	public int ns_links;
 
-    LayerWLearning() {
-		super();
-    }
+//    LayerWLearning() {
+//		super();
+//    }
     
 	public LayerWLearning(
 			String name, Application app, 

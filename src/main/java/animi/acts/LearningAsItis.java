@@ -38,9 +38,6 @@ public class LearningAsItis extends Task {
 			final Floats posW) {
 		
 		for (int index = 0; index < posW.length(); index++) {
-			if (Float.isNaN(in.getByIndex(index))) {
-				System.out.println("!");
-			}
 			posW.setByIndex(in.getByIndex(index), index);
 		}
 	}

@@ -20,17 +20,9 @@
  */
 package animi.acts;
 
-
 import animi.RuntimeParam;
 import animi.cortex.*;
-import animi.matrix.ArrayOfIntegers;
-import animi.matrix.Floats;
-import animi.matrix.Matrix;
-import animi.matrix.FloatsImpl;
-import animi.matrix.FloatsMapped;
-import animi.matrix.Proxy;
-import animi.matrix.ArrayOfIntegersProxy;
-import animi.matrix.FloatsProxy;
+import animi.matrix.*;
 
 /**
  * Self-organizing feature map.
